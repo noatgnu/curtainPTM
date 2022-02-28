@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {UniprotService} from "../../../services/uniprot.service";
-import {Event} from "@angular/router";
+import {ActivatedRoute, Event} from "@angular/router";
 import {DataService} from "../../../services/data.service";
 import {SettingsService} from "../../../services/settings.service";
 import {WebService} from "../../../services/web.service";
@@ -13,13 +13,26 @@ import {fromCSV} from "data-forge";
 })
 export class HomeComponent implements OnInit {
 
-  constructor(private uniprot: UniprotService, public dataService: DataService, private settings: SettingsService, private web: WebService) {
-    this.web.postSettings("bf1b14ee-dac3-48e3-89bd-93e672dd28e6", "").subscribe(data => {
-      if (data.body) {
-        const a = JSON.parse(<string>data.body, this.web.reviver)
-        this.restoreSettings(a)
+  constructor(private uniprot: UniprotService, public dataService: DataService, private settings: SettingsService, private web: WebService, private route: ActivatedRoute) {
+    this.route.params.subscribe(params => {
+      if (params) {
+        console.log(params)
+        if (params["settings"]) {
+          this.web.postSettings(params["settings"], "").subscribe(data => {
+            if (data.body) {
+              const a = JSON.parse(<string>data.body, this.web.reviver)
+              this.restoreSettings(a)
+            }
+          })
+        }
       }
     })
+    // this.web.postSettings("bf1b14ee-dac3-48e3-89bd-93e672dd28e6", "").subscribe(data => {
+    //   if (data.body) {
+    //     const a = JSON.parse(<string>data.body, this.web.reviver)
+    //     this.restoreSettings(a)
+    //   }
+    // })
     this.uniprot.uniprotParseStatusObserver.subscribe(data => {
       if (data) {
 
@@ -46,7 +59,6 @@ export class HomeComponent implements OnInit {
         this.dataService.queryMap.set(i[this.dataService.cols.accessionCol], d)
       }
     }
-    console.log(this.dataService.queryMap)
     this.dataService.selectionNotifier.next(true)
   }
 

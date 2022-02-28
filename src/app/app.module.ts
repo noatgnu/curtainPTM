@@ -18,6 +18,7 @@ import { VolcanoColorGroupsComponent } from './components/volcano-color-groups/v
 import {ColorPickerModule} from "ngx-color-picker";
 import { ProteinExtraDataComponent } from './components/protein-extra-data/protein-extra-data.component';
 import {ProteinDomainComponent} from "./components/protein-domain/protein-domain.component";
+import {AppRoutingModule} from "./app-routing.module";
 
 PlotlyModule.plotlyjs = PlotlyJS;
 @NgModule({
@@ -34,15 +35,16 @@ PlotlyModule.plotlyjs = PlotlyJS;
     ProteinExtraDataComponent,
     ProteinDomainComponent
   ],
-  imports: [
-    BrowserModule,
-    NgbModule,
-    PlotlyModule,
-    HttpClientModule,
-    FormsModule,
-    ReactiveFormsModule,
-    ColorPickerModule
-  ],
+    imports: [
+        BrowserModule,
+        NgbModule,
+        PlotlyModule,
+        HttpClientModule,
+        FormsModule,
+        ReactiveFormsModule,
+        ColorPickerModule,
+        AppRoutingModule
+    ],
   providers: [HttpClient],
   bootstrap: [AppComponent]
 })
