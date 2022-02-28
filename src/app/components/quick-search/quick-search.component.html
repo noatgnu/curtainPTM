@@ -1,0 +1,11 @@
+<div class="form-inline my-2 my-lg-0 ml-auto">
+  <input class="form-control mr-sm-2" type="text" placeholder="Quick Navigation" aria-label="quickNav"
+         [(ngModel)]="selectedProteinModel"
+         [ngbTypeahead]="selectedProtein">
+  <select class="form-control mr-sm-2" [(ngModel)]="searchType">
+    <option value="Primary IDs">Primary IDs</option>
+    <option value="Accession IDs">Accession IDs</option>
+    <option value="Gene names">Gene names</option>
+  </select>
+  <button class="btn btn-outline-success my-2 my-sm-0" (click)="selectData()">Search</button>
+</div>

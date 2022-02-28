@@ -1,0 +1,48 @@
+<div class="card mt-2 mr-2 ml-2 mb-2" *ngIf="data.length > 0">
+  <div class="card-body">
+    <h5 class="card-title">{{uniprotData["Gene names"]}}</h5>
+    <app-protein-extra-data [data]="uniprotData" *ngIf="sequence.length > 0"></app-protein-extra-data>
+    <app-protein-domain [data]="uniprotData" *ngIf="sequence.length > 0"></app-protein-domain>
+    <app-heatmap [data]="data"></app-heatmap>
+    <form [formGroup]="form">
+      <div class="form-group">
+        <label for="probabilityRange">Probability Range</label>
+        <input formControlName="probability" type="range" class="form-control-range" id="probabilityRange" min="0" max="100">
+      </div>
+    </form>
+    <table class="table table-striped">
+      <thead>
+      <tr>
+        <th scope="col"># UID</th>
+        <th scope="col" (click)="sortHeader(dataService.cols.foldChangeCol)">Fold Change</th>
+        <th scope="col" (click)="sortHeader(dataService.cols.significantCol)">Significant</th>
+        <th scope="col">Residue</th>
+        <th scope="col" (click)="sortHeader(dataService.cols.positionCol)">Position</th>
+        <th scope="col">Sequence</th>
+        <th scope="col" (click)="sortHeader(dataService.cols.score)">Probability</th>
+      </tr>
+      </thead>
+      <tbody>
+      <ng-container *ngFor="let r of df">
+        <tr *ngIf="residueMap[r[dataService.cols.positionCol]]">
+          <th scope="row">{{r[dataService.cols.primaryIDComparisonCol]}}</th>
+          <td>
+            {{r[dataService.cols.foldChangeCol]}}
+          </td>
+          <td>{{r[dataService.cols.significantCol]}}</td>
+          <td>
+            {{residueMap[r[dataService.cols.positionCol]]}}
+          </td>
+          <td>{{r[dataService.cols.positionCol]}}</td>
+          <td>{{r[dataService.cols.sequenceCol]}}</td>
+          <td>{{r[dataService.cols.score]}}</td>
+        </tr>
+        <tr *ngIf="residueMap[r[dataService.cols.positionCol]]">
+          <td colspan="7"><app-bar-chart [data]="r[dataService.cols.primaryIDComparisonCol]"></app-bar-chart></td>
+        </tr>
+      </ng-container>
+
+      </tbody>
+    </table>
+  </div>
+</div>

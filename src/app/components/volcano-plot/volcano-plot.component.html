@@ -1,0 +1,30 @@
+<div class="row">
+  <div class="col-3 ml-2">
+    <form [formGroup]="form">
+      <div class="row">
+        <div class="form-group">
+          <label for="significantCutoff">Significant Cut-off</label>
+          <input id="significantCutoff" type="number" class="form-control" formControlName="pvalueCutoff">
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group">
+          <label for="foldChangeCutoff">Fold Change Cut-off</label>
+          <input id="foldChangeCutoff" type="number" class="form-control" formControlName="fcCutoff">
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-check">
+          <input id="backgroundColor" type="checkbox" class="form-check-input" formControlName="setBackgroundDataColor">
+          <label class="form-check-label" for="backgroundColor">Set non-significant data grey color</label>
+        </div>
+      </div>
+      <app-volcano-color-groups [colorGroups]="colorGroups" *ngIf="form.value['setBackgroundDataColor'] === false" (colorChange)="updateColor($event)"></app-volcano-color-groups>
+      <button class="btn btn-primary" (click)="drawVolcano()">Redraw volcano plot</button>
+
+    </form>
+
+  </div>
+  <plotly-plot [data]="graphData" [layout]="graphLayout" [updateOnDataChange]="true"></plotly-plot>
+</div>
+

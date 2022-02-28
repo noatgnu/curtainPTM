@@ -14,6 +14,10 @@ import { QuickSearchComponent } from './components/quick-search/quick-search.com
 import { VolcanoPlotComponent } from './components/volcano-plot/volcano-plot.component';
 import { ProteinViewerComponent } from './components/protein-viewer/protein-viewer.component';
 import { BarChartComponent } from './components/bar-chart/bar-chart.component';
+import { VolcanoColorGroupsComponent } from './components/volcano-color-groups/volcano-color-groups.component';
+import {ColorPickerModule} from "ngx-color-picker";
+import { ProteinExtraDataComponent } from './components/protein-extra-data/protein-extra-data.component';
+import {ProteinDomainComponent} from "./components/protein-domain/protein-domain.component";
 
 PlotlyModule.plotlyjs = PlotlyJS;
 @NgModule({
@@ -26,6 +30,9 @@ PlotlyModule.plotlyjs = PlotlyJS;
     VolcanoPlotComponent,
     ProteinViewerComponent,
     BarChartComponent,
+    VolcanoColorGroupsComponent,
+    ProteinExtraDataComponent,
+    ProteinDomainComponent
   ],
   imports: [
     BrowserModule,
@@ -33,7 +40,8 @@ PlotlyModule.plotlyjs = PlotlyJS;
     PlotlyModule,
     HttpClientModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    ColorPickerModule
   ],
   providers: [HttpClient],
   bootstrap: [AppComponent]

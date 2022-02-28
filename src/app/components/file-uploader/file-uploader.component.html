@@ -1,0 +1,155 @@
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-10">
+      <div class="form-group">
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <span class="input-group-text" id="label-input-file">Input File:</span>
+          </div>
+          <div class="custom-file">
+            <input type="file" class="custom-file-input" aria-label="input-file" aria-describedby="label-input-file" (change)="handleFile($event, false)">
+            <label class="custom-file-label" for="label-input-file">{{data.fileName||'Select File'}}</label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-10">
+      <div class="form-group">
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <span class="input-group-text" id="label-raw-file">Raw File:</span>
+          </div>
+          <div class="custom-file">
+            <input type="file" class="custom-file-input" aria-label="input-file" aria-describedby="label-input-file" (change)="handleFile($event, true)">
+            <label class="custom-file-label" for="label-input-file">{{rawData.fileName||'Select File'}}</label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container mt-2">
+  <form [formGroup]="form">
+    <div class="card" *ngIf="data.data.count()>0">
+      <div class="card-body">
+        <div class="card-title">
+          <h5>Differential Analysis File</h5>
+        </div>
+        <div class="row">
+          <div class="col-3">
+            <div class="form-group">
+              <label for="primaryIDs">Primary IDs</label>
+              <select class="form-control" formControlName="primaryIDComparisonCol" id="primaryIDs">
+                <option *ngFor="let n of data.data.getColumnNames()" [value]="n">{{n}}</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-3">
+            <div class="form-group">
+              <label for="accessionCol">Accession IDs</label>
+              <select class="form-control" formControlName="accessionCol" id="accessionCol">
+                <option *ngFor="let n of data.data.getColumnNames()" [value]="n">{{n}}</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-3">
+            <div class="form-group">
+              <label for="sequenceCol">Peptide sequences</label>
+              <select class="form-control" formControlName="sequenceCol" id="sequenceCol">
+                <option *ngFor="let n of data.data.getColumnNames()" [value]="n">{{n}}</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-3">
+            <div class="form-group">
+              <label for="positionCol">PTM positions</label>
+              <select class="form-control" formControlName="positionCol" id="positionCol">
+                <option *ngFor="let n of data.data.getColumnNames()" [value]="n">{{n}}</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-3">
+            <div class="form-group">
+              <label for="FCCol">Fold change</label>
+              <select class="form-control" formControlName="foldChangeCol" id="FCCol">
+                <option *ngFor="let n of data.data.getColumnNames()" [value]="n">{{n}}</option>
+              </select>
+            </div>
+            <div class="form-check">
+              <input type="checkbox" class="form-check-input" formControlName="log2transform" id="log2Transform">
+              <label class="form-check-label" for="log2Transform">Perform log2 transform</label>
+            </div>
+          </div>
+          <div class="col-3">
+            <div class="form-group">
+              <label for="comparisonCol">Comparison</label>
+              <select class="form-control" formControlName="comparisonCol" id="comparisonCol">
+                <option *ngFor="let n of data.data.getColumnNames()" [value]="n">{{n}}</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-3">
+            <div class="form-group">
+              <label for="significantCol">P-value</label>
+              <select class="form-control" formControlName="significantCol" id="significantCol">
+                <option *ngFor="let n of data.data.getColumnNames()" [value]="n">{{n}}</option>
+              </select>
+            </div>
+            <div class="form-check">
+              <input type="checkbox" class="form-check-input" formControlName="log10transform" id="log10Transform">
+              <label class="form-check-label" for="log10Transform">Perform -log10 transform</label>
+            </div>
+          </div>
+          <div class="col-3">
+            <div class="form-group">
+              <label for="scoreCol">Localization</label>
+              <select class="form-control" formControlName="score" id="scoreCol">
+                <option *ngFor="let n of data.data.getColumnNames()" [value]="n">{{n}}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card mt-2" *ngIf="rawData.data.count()>0">
+      <div class="card-body">
+        <div class="card-title">
+          <h5>Raw File</h5>
+        </div>
+        <div class="row">
+          <div class="col-3">
+            <div class="form-group">
+              <label for="primaryRawCol">Primary IDs</label>
+              <select class="form-control" formControlName="primaryIDRawCol" id="primaryRawCol">
+                <option *ngFor="let n of rawData.data.getColumnNames()" [value]="n">{{n}}</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-3">
+            <div class="form-group">
+              <label for="intensityCol">Sample Columns</label>
+              <select multiple class="form-control" formControlName="rawValueCols" id="intensityCol">
+                <option *ngFor="let n of rawData.data.getColumnNames()" [value]="n">{{n}}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <div class="row mt-2" *ngIf="data.data.count()>0 && rawData.data.count()>0">
+    <div class="col-2">
+      <button class="btn btn-primary" (click)="getUniProt()">Submit</button>
+    </div>
+    <div class="col-3">
+      <div class="form-check">
+        <input type="checkbox" class="form-check-input" [(ngModel)]="settings.settings.fetchUniprot">
+        <label class="form-check-label" for="log10Transform">Get sequence data from Uniprot</label>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,22 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+  <a class="navbar-brand" href="#">CurtainPTM</a>
+  <ng-container *ngIf="dataService.finishedProcessing">
+    <app-quick-search (selected)="handleRes($event)"></app-quick-search>
+    <button class="btn btn-outline-primary" (click)="saveSession()">Save Session</button>
+  </ng-container>
+
+</nav>
+<div class="container">
+  <app-file-uploader></app-file-uploader>
+</div>
+
+<ng-container *ngIf="dataService.finishedProcessing">
+  <div class="container-fluid">
+    <app-volcano-plot [data]="dataService.dataFile.data"></app-volcano-plot>
+  </div>
+  <ng-container class="mt-2 ml-2 mr-2" *ngFor="let d of dataService.queryProtein">
+    <app-protein-viewer [data]="d"></app-protein-viewer>
+  </ng-container>
+</ng-container>
+
+
