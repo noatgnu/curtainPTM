@@ -12,8 +12,8 @@ import {fromCSV} from "data-forge";
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
-
-  constructor(private uniprot: UniprotService, public dataService: DataService, private settings: SettingsService, private web: WebService, private route: ActivatedRoute) {
+  uniqueLink: string = ""
+  constructor(private uniprot: UniprotService, public dataService: DataService, public settings: SettingsService, private web: WebService, private route: ActivatedRoute) {
     this.route.params.subscribe(params => {
       if (params) {
         console.log(params)
@@ -22,6 +22,7 @@ export class HomeComponent implements OnInit {
             if (data.body) {
               const a = JSON.parse(<string>data.body, this.web.reviver)
               this.restoreSettings(a)
+
             }
           })
         }
@@ -75,6 +76,7 @@ export class HomeComponent implements OnInit {
     this.web.putSettings(data).subscribe(data => {
       if (data.body) {
         this.settings.currentID = data.body
+        this.uniqueLink = location.origin +"/#/" + this.settings.currentID
       }
     })
   }
@@ -93,5 +95,6 @@ export class HomeComponent implements OnInit {
     this.dataService.dataFile.data = fromCSV(object.processed)
     this.dataService.rawDataFile.data = fromCSV(object.raw)
     this.dataService.restoreTrigger.next(true)
+
   }
 }
