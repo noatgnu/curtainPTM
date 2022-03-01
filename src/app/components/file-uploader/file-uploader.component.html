@@ -57,8 +57,16 @@
           </div>
           <div class="col-3">
             <div class="form-group">
-              <label for="sequenceCol">Peptide sequences</label>
+              <label for="sequenceCol">Sequence Window</label>
               <select class="form-control" formControlName="sequenceCol" id="sequenceCol">
+                <option *ngFor="let n of data.data.getColumnNames()" [value]="n">{{n}}</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-3">
+            <div class="form-group">
+              <label for="peptideSequenceCol">Peptide sequences</label>
+              <select class="form-control" formControlName="peptideSequenceCol" id="peptideSequenceCol">
                 <option *ngFor="let n of data.data.getColumnNames()" [value]="n">{{n}}</option>
               </select>
             </div>
@@ -67,6 +75,14 @@
             <div class="form-group">
               <label for="positionCol">PTM positions</label>
               <select class="form-control" formControlName="positionCol" id="positionCol">
+                <option *ngFor="let n of data.data.getColumnNames()" [value]="n">{{n}}</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-3">
+            <div class="form-group">
+              <label for="positionPeptideCol">PTM position in peptides</label>
+              <select class="form-control" formControlName="positionPeptideCol" id="positionPeptideCol">
                 <option *ngFor="let n of data.data.getColumnNames()" [value]="n">{{n}}</option>
               </select>
             </div>

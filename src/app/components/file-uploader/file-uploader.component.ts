@@ -23,11 +23,13 @@ export class FileUploaderComponent implements OnInit {
     accessionCol: "Leading proteins",
     sequenceCol: "Sequence window",
     positionCol: "Position",
+    positionPeptideCol: "Position in peptide",
+    peptideSequenceCol: "Phospho (STY) Probabilities",
     comparisonCol: "Comparison",
-    significantCol: "P-value(-Log10): WT/KO",
+    significantCol: "p-value: WT/KD",
     log10transform: false,
     score: "Localization prob",
-    foldChangeCol: "Difference(Log2): WT/KO",
+    foldChangeCol: "Difference: WT/KD",
     log2transform: false,
     primaryIDRawCol: "T: Unique identifier",
     rawValueCols: []
@@ -39,14 +41,18 @@ export class FileUploaderComponent implements OnInit {
         this.rawData = this.dataService.rawDataFile
         this.data = this.dataService.dataFile
         const f: any = {}
-        for (const v in this.dataService.cols) {
-          if (v === "rawValueCols") {
-            f[v] = [this.dataService.cols[v]]
+        for (const v in this.form.value) {
+          if (this.dataService.cols[v]) {
+            if (v === "rawValueCols") {
+              f[v] = [this.dataService.cols[v]]
+            } else {
+              f[v] = this.dataService.cols[v]
+            }
           } else {
-            f[v] = this.dataService.cols[v]
+            f[v] = ""
           }
         }
-        this.form = this.fb.group(f)
+        this.form.setValue(f)
         this.getUniProt()
       }
     })
@@ -160,14 +166,40 @@ export class FileUploaderComponent implements OnInit {
     temp[this.form.value.score] = []
     temp[this.form.value.significantCol] = []
     temp[this.form.value.foldChangeCol] = []
+    temp[this.form.value.positionPeptideCol] = []
+    temp[this.form.value.peptideSequenceCol] = []
     for (const r of this.data.data) {
       temp[this.form.value.positionCol].push(parseInt(r[this.form.value.positionCol]))
+      if (r[this.form.value.positionPeptideCol]) {
+        temp[this.form.value.positionPeptideCol].push(parseInt(r[this.form.value.positionPeptideCol]))
+      }
+
+      if (r[this.form.value.peptideSequenceCol]) {
+        let count = 0
+        let seq = ""
+        for (const a of r[this.form.value.peptideSequenceCol]) {
+          if (["(", "[", "{"].includes(a)) {
+            count = count + 1
+          }
+          if (count === 0) {
+            seq = seq + a
+          }
+          if ([")", "]", "}"].includes(a)) {
+            count = count - 1
+          }
+        }
+        temp[this.form.value.peptideSequenceCol].push(seq)
+      }
       temp[this.form.value.score].push(parseFloat(r[this.form.value.score]))
       temp[this.form.value.significantCol].push(parseFloat(r[this.form.value.significantCol]))
       temp[this.form.value.foldChangeCol].push(parseFloat(r[this.form.value.foldChangeCol]))
     }
+    console.log(temp)
     for (const t in temp) {
-      this.data.data = this.data.data.withSeries(t, new Series(temp[t])).bake()
+      if (temp[t].length > 0) {
+
+        this.data.data = this.data.data.withSeries(t, new Series(temp[t])).bake()
+      }
     }
   }
 

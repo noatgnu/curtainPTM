@@ -63,10 +63,23 @@ export class ProteinViewerComponent implements OnInit, OnDestroy {
         this.changeDF = this.df.where(row => this.selectedUID.includes(row[this.dataService.cols.primaryIDComparisonCol])).bake()
         for (const r of this.df) {
           if (r[this.dataService.cols.score] >= (this.settings.settings.probabilityFilterMap[this._data])) {
-            this.residueMap[r[this.dataService.cols.positionCol]] = this.sequence[r[this.dataService.cols.positionCol] - 1]
+            const seq = {prefix: "", site: "", suffix: "", seq: ""}
+            if (this.dataService.cols.positionPeptideCol && this.dataService.cols.peptideSequenceCol) {
+              if (r[this.dataService.cols.positionPeptideCol] && r[this.dataService.cols.peptideSequenceCol]) {
+                seq.site = r[this.dataService.cols.peptideSequenceCol][r[this.dataService.cols.positionPeptideCol] -1]
+                seq.prefix = r[this.dataService.cols.peptideSequenceCol].slice(0, r[this.dataService.cols.positionPeptideCol] - 1)
+                seq.suffix = r[this.dataService.cols.peptideSequenceCol].slice(r[this.dataService.cols.positionPeptideCol], r[this.dataService.cols.peptideSequenceCol].length)
+              } else {
+                seq.site = this.sequence[r[this.dataService.cols.positionCol] - 1]
+              }
+            } else {
+              seq.site = this.sequence[r[this.dataService.cols.positionCol] - 1]
+            }
+            this.residueMap[r[this.dataService.cols.positionCol]] = seq
           }
         }
       }
+      console.log(this.residueMap)
     }
   }
 

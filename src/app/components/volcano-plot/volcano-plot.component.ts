@@ -51,7 +51,6 @@ export class VolcanoPlotComponent implements OnInit {
 
   selectData(e: any) {
     if ("points" in e) {
-      console.log(e)
       const unid = this.nameToIDMap[e["points"][0].text]
       this.selected.emit(unid)
     }

@@ -23,7 +23,8 @@
         <th scope="col" (click)="sortHeader(dataService.cols.significantCol)">Significant</th>
         <th scope="col">Residue</th>
         <th scope="col" (click)="sortHeader(dataService.cols.positionCol)">Position</th>
-        <th scope="col">Sequence</th>
+        <th scope="col">Sequence Window</th>
+        <th scope="col">Peptide Sequence</th>
         <th scope="col" (click)="sortHeader(dataService.cols.score)">Probability</th>
       </tr>
       </thead>
@@ -36,14 +37,21 @@
           </td>
           <td>{{r[dataService.cols.significantCol]}}</td>
           <td>
-            {{residueMap[r[dataService.cols.positionCol]]}}
+            {{residueMap[r[dataService.cols.positionCol]].site}}
           </td>
           <td>{{r[dataService.cols.positionCol]}}</td>
           <td>{{r[dataService.cols.sequenceCol]}}</td>
+          <td>
+            <ng-container *ngIf="residueMap[r[dataService.cols.positionCol]] !== ''">
+              <span>{{residueMap[r[dataService.cols.positionCol]].prefix}}</span>
+              <span class="text-danger"><b>{{residueMap[r[dataService.cols.positionCol]].site}}</b></span>
+              <span>{{residueMap[r[dataService.cols.positionCol]].suffix}}</span>
+            </ng-container>
+          </td>
           <td>{{r[dataService.cols.score]}}</td>
         </tr>
         <tr *ngIf="residueMap[r[dataService.cols.positionCol]]">
-          <td colspan="7"><app-bar-chart [data]="r[dataService.cols.primaryIDComparisonCol]"></app-bar-chart></td>
+          <td colspan="8"><app-bar-chart [data]="r[dataService.cols.primaryIDComparisonCol]"></app-bar-chart></td>
         </tr>
       </ng-container>
 
