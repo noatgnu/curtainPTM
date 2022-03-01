@@ -57,6 +57,9 @@ export class VolcanoPlotComponent implements OnInit {
   }
 
   drawVolcano() {
+    this.settings.settings.pCutoff = this.form.value.pvalueCutoff
+    this.settings.settings.log2FCCutoff = this.form.value.fcCutoff
+    this.settings.settings.backGroundColorGrey = this.form.value.setBackgroundDataColor
     const traces: any = {}
     const x = this._data.getSeries(this.dataService.cols.foldChangeCol).bake()
     this.layoutMaxMin.xMin = x.min()
