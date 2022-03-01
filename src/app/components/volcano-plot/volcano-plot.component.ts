@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {DataFrame, IDataFrame} from "data-forge";
 import {DataService} from "../../../services/data.service";
 import {FormBuilder, FormGroup} from "@angular/forms";
@@ -10,6 +10,8 @@ import {SettingsService} from "../../../services/settings.service";
   styleUrls: ['./volcano-plot.component.css']
 })
 export class VolcanoPlotComponent implements OnInit {
+  @Output() selected: EventEmitter<string> = new EventEmitter<string>()
+  nameToIDMap: any = {}
   form: FormGroup = this.fb.group({
     pvalueCutoff: 0.05,
     fcCutoff: 0.6,
@@ -47,6 +49,14 @@ export class VolcanoPlotComponent implements OnInit {
     })
   }
 
+  selectData(e: any) {
+    if ("points" in e) {
+      console.log(e)
+      const unid = this.nameToIDMap[e["points"][0].text]
+      this.selected.emit(unid)
+    }
+  }
+
   drawVolcano() {
     const traces: any = {}
     const x = this._data.getSeries(this.dataService.cols.foldChangeCol).bake()
@@ -60,6 +70,7 @@ export class VolcanoPlotComponent implements OnInit {
     traces[""] = {
       x:[],
       y:[],
+      text: [],
       type: "scattergl",
       mode: "markers",
       name: "background"
@@ -69,6 +80,9 @@ export class VolcanoPlotComponent implements OnInit {
         color: "#a4a2a2"
       }
     }
+
+    const backgroundTraces: string[] = []
+
     for (const r of this._data) {
       if (this.dataService.queryMap.has(r[this.dataService.cols.accessionCol])) {
         const q = this.dataService.queryMap.get(r[this.dataService.cols.accessionCol])
@@ -77,6 +91,7 @@ export class VolcanoPlotComponent implements OnInit {
             traces[c] = {
               x:[],
               y:[],
+              text: [],
               type: "scattergl",
               mode: "markers",
               name: c
@@ -84,6 +99,8 @@ export class VolcanoPlotComponent implements OnInit {
           }
           traces[c].x.push(r[this.dataService.cols.foldChangeCol])
           traces[c].y.push(r[this.dataService.cols.significantCol])
+          traces[c].text.push(r["Gene names"] + "(" + r[this.dataService.cols.primaryIDComparisonCol]+ ")")
+          this.nameToIDMap[r["Gene names"] + "(" + r[this.dataService.cols.primaryIDComparisonCol]+ ")"] = r[this.dataService.cols.primaryIDComparisonCol]
         }
       } else if (!(this.form.value.setBackgroundDataColor)) {
         const groups = this.significantGroup(r[this.dataService.cols.foldChangeCol], r[this.dataService.cols.significantCol])
@@ -91,29 +108,51 @@ export class VolcanoPlotComponent implements OnInit {
           traces[groups] = {
             x:[],
             y:[],
+            text: [],
             type: "scattergl",
             mode: "markers",
             name: groups
           }
+          backgroundTraces.push(groups)
         }
         traces[groups].x.push(r[this.dataService.cols.foldChangeCol])
         traces[groups].y.push(r[this.dataService.cols.significantCol])
+        traces[groups].text.push(r["Gene names"] + "(" + r[this.dataService.cols.primaryIDComparisonCol]+ ")")
+        this.nameToIDMap[r["Gene names"] + "(" + r[this.dataService.cols.primaryIDComparisonCol]+ ")"] = r[this.dataService.cols.primaryIDComparisonCol]
+
       } else {
         traces[""].x.push(r[this.dataService.cols.foldChangeCol])
         traces[""].y.push(r[this.dataService.cols.significantCol])
+        traces[""].text.push(r["Gene names"] + "(" + r[this.dataService.cols.primaryIDComparisonCol]+ ")")
+        this.nameToIDMap[r["Gene names"] + "(" + r[this.dataService.cols.primaryIDComparisonCol]+ ")"] = r[this.dataService.cols.primaryIDComparisonCol]
       }
     }
     const colorGroups: string[] = []
     this.graphData = []
-    for (const t in traces) {
-      if (t in this.settings.settings.colorMap) {
-        if (this.settings.settings.colorMap[t] !== "") {
-          traces[t]["marker"] = {color: this.settings.settings.colorMap[t]}
+    for (const b of backgroundTraces) {
+      if (traces[b]) {
+        if (this.settings.settings.colorMap[b]) {
+          if (this.settings.settings.colorMap[b] !== "") {
+            traces[b]["marker"] = {color: this.settings.settings.colorMap[b]}
+          }
+        }
+        this.graphData.push(traces[b])
+        if (traces[b].y.length > 0) {
+          colorGroups.push(b)
         }
       }
-      this.graphData.push(traces[t])
-      if (traces[t].y.length > 0) {
-        colorGroups.push(t)
+    }
+    for (const t in traces) {
+      if (!backgroundTraces.includes(t)) {
+        if (t in this.settings.settings.colorMap) {
+          if (this.settings.settings.colorMap[t] !== "") {
+            traces[t]["marker"] = {color: this.settings.settings.colorMap[t]}
+          }
+        }
+        this.graphData.push(traces[t])
+        if (traces[t].y.length > 0) {
+          colorGroups.push(t)
+        }
       }
     }
     this.colorGroups = colorGroups

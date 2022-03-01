@@ -1,0 +1,14 @@
+<div class="card">
+  <div class="card-body">
+    <h6 class="card-title">Color legend</h6>
+    <div class="row" *ngFor="let c of colorGroups">
+      <div class="form-group">
+        <label for="{{c}}id" class="col-6">{{c}}</label>
+        <input id="{{c}}id" class="col-3" [(colorPicker)]="data[c]" [style.background]="data[c]" (colorPickerChange)="updateColor(c, $event)">
+      </div>
+    </div>
+  </div>
+</div>
+
+
+

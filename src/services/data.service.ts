@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {SettingsService} from "./settings.service";
 import {InputData} from "../app/classes/input-data";
-import {BehaviorSubject} from "rxjs";
+import {BehaviorSubject, Subject} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
@@ -10,6 +10,7 @@ export class DataService {
   _cols: any = {}
   _dataFile: InputData = new InputData()
   _conditionMap: any = {}
+  selectionService: Subject<any> = new Subject<any>()
   set dataFile(value: InputData) {
     this._dataFile = value
   }

@@ -25,9 +25,15 @@ export class ProteinViewerComponent implements OnInit, OnDestroy {
 
   sortReverse: any = {}
   @Input() set data(value: string)  {
+    if (!this.dataService.observableTriggerMap[value] && value !== "") {
+      this.dataService.observableTriggerMap[value] = new BehaviorSubject<boolean>(false)
+    }
     this._data = value
-    if (!this.dataService.observableTriggerMap[this._data] && this._data !== "") {
-      this.dataService.observableTriggerMap[this._data] = new BehaviorSubject<boolean>(false)
+
+    if (this.settings.settings.probabilityFilterMap[this._data]) {
+      this.form.setValue({
+        probability: this.settings.settings.probabilityFilterMap[this._data]*100
+      })
     }
     this.processData();
 
@@ -56,7 +62,7 @@ export class ProteinViewerComponent implements OnInit, OnDestroy {
         this.df = this.dataService.dataFile.data.where(row => row[this.dataService.cols.accessionCol] === this._data).bake()
         this.changeDF = this.df.where(row => this.selectedUID.includes(row[this.dataService.cols.primaryIDComparisonCol])).bake()
         for (const r of this.df) {
-          if (r[this.dataService.cols.score] >= (this.settings.settings.probabilityFilterMap[this._data]/100)) {
+          if (r[this.dataService.cols.score] >= (this.settings.settings.probabilityFilterMap[this._data])) {
             this.residueMap[r[this.dataService.cols.positionCol]] = this.sequence[r[this.dataService.cols.positionCol] - 1]
           }
         }
@@ -73,7 +79,7 @@ export class ProteinViewerComponent implements OnInit, OnDestroy {
   constructor(public dataService: DataService, private uniprot: UniprotService, private fb: FormBuilder, private settings: SettingsService) {
 
     this.form.valueChanges.pipe(debounceTime(1000), distinctUntilChanged()).subscribe(data=> {
-      this.settings.settings.probabilityFilterMap[this._data] = this.form.value["probability"]
+      this.settings.settings.probabilityFilterMap[this._data] = this.form.value["probability"]/100
       this.processData()
       this.dataService.observableTriggerMap[this._data].next(true)
     })

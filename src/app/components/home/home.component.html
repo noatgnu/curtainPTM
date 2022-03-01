@@ -5,7 +5,6 @@
     <button class="btn btn-outline-primary ml-2" (click)="saveSession()">Save Session</button>
     <a *ngIf="uniqueLink !== ''" href="{{uniqueLink}}">{{uniqueLink}}</a>
   </ng-container>
-
 </nav>
 <div class="container">
   <app-file-uploader></app-file-uploader>
@@ -13,10 +12,10 @@
 
 <ng-container *ngIf="dataService.finishedProcessing">
   <div class="container-fluid">
-    <app-volcano-plot [data]="dataService.dataFile.data"></app-volcano-plot>
+    <app-volcano-plot [data]="dataService.dataFile.data" (selected)="volcanoSelection($event)"></app-volcano-plot>
   </div>
   <ng-container class="mt-2 ml-2 mr-2" *ngFor="let d of dataService.queryProtein">
-    <app-protein-viewer [data]="d"></app-protein-viewer>
+    <app-protein-viewer [data]="d" id="{{d}}scrollid"></app-protein-viewer>
   </ng-container>
 </ng-container>
 

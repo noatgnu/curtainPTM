@@ -31,15 +31,16 @@ export class HeatmapComponent implements OnInit, OnDestroy {
   observeChange: Subscription | undefined
   @Input() set data(value: string)  {
     this._data = value
-    if (this.settings.settings.probabilityFilterMap[this._data]) {
-      if (this.observeChange) {
-        this.observeChange.unsubscribe()
-      } else {
-        this.observeChange = this.settings.settings.probabilityFilterMap[this._data].subscribe((data: any) => {
+    console.log(this._data)
+    if (this.dataService.observableTriggerMap[this._data]) {
+      if (this.observeChange === undefined) {
+        this.observeChange = this.dataService.observableTriggerMap[this._data].subscribe((data:boolean) => {
           if (data) {
             this.processData()
           }
         })
+      } else {
+
       }
 
     }
@@ -76,7 +77,7 @@ export class HeatmapComponent implements OnInit, OnDestroy {
 
         this.positions["user-data"] = []
         for (const p of this.df) {
-          if (p[this.dataService.cols.score] >= (this.settings.settings.probabilityFilterMap[this._data]/100)) {
+          if (p[this.dataService.cols.score] >= this.settings.settings.probabilityFilterMap[this._data]) {
             this.positions["user-data"].push({res: parseInt(p[this.dataService.cols.positionCol]) - 1})
           }
         }

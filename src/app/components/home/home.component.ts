@@ -13,6 +13,7 @@ import {fromCSV} from "data-forge";
 })
 export class HomeComponent implements OnInit {
   uniqueLink: string = ""
+  unidSelection: string = ""
   constructor(private uniprot: UniprotService, public dataService: DataService, public settings: SettingsService, private web: WebService, private route: ActivatedRoute) {
     this.route.params.subscribe(params => {
       if (params) {
@@ -46,7 +47,11 @@ export class HomeComponent implements OnInit {
   }
 
   handleRes(e: any[], selectionTitle: string = "Selected") {
+    let acc = ""
     for (const i of e) {
+      if (selectionTitle === "Selected") {
+        selectionTitle = i["Gene names"]
+      }
       if (!(this.dataService.queryMap.has(i[this.dataService.cols.accessionCol]))) {
         this.dataService.queryMap.set(i[this.dataService.cols.accessionCol], {})
         this.dataService.queryProtein.push(i[this.dataService.cols.accessionCol])
@@ -59,8 +64,41 @@ export class HomeComponent implements OnInit {
         d[selectionTitle].push(i[this.dataService.cols.primaryIDComparisonCol])
         this.dataService.queryMap.set(i[this.dataService.cols.accessionCol], d)
       }
+      acc = i[this.dataService.cols.accessionCol]
     }
     this.dataService.selectionNotifier.next(true)
+    if (acc !== "") {
+      let e = this.scrollToID(acc+"scrollid");
+    }
+
+  }
+
+  private scrollToID(id: string) {
+    let e = document.getElementById(id)
+    if (e) {
+      e.scrollIntoView()
+    } else {
+      let observer = new MutationObserver(mutations => {
+        mutations.forEach(function (mutation) {
+          let nodes = Array.from(mutation.addedNodes)
+          for (const node of nodes) {
+            if (node.contains(document.getElementById(id))) {
+              e = document.getElementById(id)
+              if (e) {
+                e.scrollIntoView()
+              }
+              observer.disconnect()
+              break
+            }
+          }
+        })
+      })
+      observer.observe(document.documentElement, {
+        childList: true,
+        subtree: true
+      })
+    }
+    return e;
   }
 
   saveSession() {
@@ -82,7 +120,6 @@ export class HomeComponent implements OnInit {
   }
 
   restoreSettings(object: any) {
-
     for (const s of object.selections) {
       this.dataService.queryProtein.push(s)
     }
@@ -95,6 +132,10 @@ export class HomeComponent implements OnInit {
     this.dataService.dataFile.data = fromCSV(object.processed)
     this.dataService.rawDataFile.data = fromCSV(object.raw)
     this.dataService.restoreTrigger.next(true)
+  }
 
+  volcanoSelection(e: string) {
+    this.unidSelection = e
+    this.dataService.selectionService.next({data: this.unidSelection, type: "Primary IDs"})
   }
 }

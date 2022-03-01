@@ -33,7 +33,16 @@ export class QuickSearchComponent implements OnInit {
     }
   }
 
-  constructor(private dataService: DataService, private uniprot: UniprotService) { }
+  constructor(private dataService: DataService, private uniprot: UniprotService) {
+    this.dataService.selectionService.subscribe(data => {
+      if (data) {
+        console.log(data)
+        this.searchType = data.type
+        this.selectedProteinModel = data.data
+        this.selectData()
+      }
+    })
+  }
 
   ngOnInit(): void {
   }

@@ -5,9 +5,14 @@
     <app-protein-domain [data]="uniprotData" *ngIf="sequence.length > 0"></app-protein-domain>
     <app-heatmap [data]="data"></app-heatmap>
     <form [formGroup]="form">
-      <div class="form-group">
-        <label for="probabilityRange">Probability Range</label>
-        <input formControlName="probability" type="range" class="form-control-range" id="probabilityRange" min="0" max="100">
+      <div class="form-row">
+        <div class="form-group col-3">
+          <label for="probabilityRange">Probability Range</label>
+          <input formControlName="probability" type="range" class="form-control-range" id="probabilityRange" min="0" max="100">
+          <small class="form-text text-muted">
+            {{form.value["probability"]/100}}
+          </small>
+        </div>
       </div>
     </form>
     <table class="table table-striped">
