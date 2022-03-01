@@ -21,9 +21,10 @@
       </div>
       <app-volcano-color-groups [colorGroups]="colorGroups" *ngIf="form.value['setBackgroundDataColor'] === false" (colorChange)="updateColor($event)"></app-volcano-color-groups>
       <button class="btn btn-primary mt-2" (click)="drawVolcano()">Redraw volcano plot</button>
+      <button class="btn btn-success ml-2 mt-2" (click)="dataService.downloadPlotlyExtra('volcanoplot')">Download volcano plot</button>
     </form>
 
   </div>
-  <plotly-plot [data]="graphData" [layout]="graphLayout" [updateOnDataChange]="true" (plotlyClick)="selectData($event)"></plotly-plot>
+  <plotly-plot [divId]="'volcanoplot'" [data]="graphData" [layout]="graphLayout" [updateOnDataChange]="true" (plotlyClick)="selectData($event)"></plotly-plot>
 </div>
 

@@ -35,7 +35,7 @@ export class VolcanoPlotComponent implements OnInit {
       orientation: 'h'
     }
   }
-  constructor(private dataService: DataService, private fb: FormBuilder, private settings: SettingsService) {
+  constructor(public dataService: DataService, private fb: FormBuilder, private settings: SettingsService) {
     this.form = this.fb.group({
       pvalueCutoff: this.settings.settings.pCutoff,
       fcCutoff: this.settings.settings.log2FCCutoff,

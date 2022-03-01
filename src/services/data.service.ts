@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {SettingsService} from "./settings.service";
 import {InputData} from "../app/classes/input-data";
 import {BehaviorSubject, Subject} from "rxjs";
+import {PlotlyService} from "angular-plotly.js";
 
 @Injectable({
   providedIn: 'root'
@@ -43,5 +44,11 @@ export class DataService {
   }
 
   selectionNotifier: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false)
-  constructor(private settings: SettingsService) { }
+  constructor(private settings: SettingsService, private plotly: PlotlyService) { }
+
+  async downloadPlotlyExtra(id: string, format: string = "svg") {
+    const graph = this.plotly.getInstanceByDivId(id);
+    const p = await this.plotly.getPlotly();
+    await p.downloadImage(graph, {format: format, width: 1000, height: 1000, filename: "image"})
+  }
 }
