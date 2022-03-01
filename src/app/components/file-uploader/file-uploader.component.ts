@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {DataFrame, IDataFrame, fromCSV, Series} from "data-forge";
 import {UniprotService} from "../../../services/uniprot.service";
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {InputData} from "../../classes/input-data";
 import {SettingsService} from "../../../services/settings.service";
 import {DataService} from "../../../services/data.service";
@@ -32,7 +32,7 @@ export class FileUploaderComponent implements OnInit {
     foldChangeCol: "Difference: WT/KD",
     log2transform: false,
     primaryIDRawCol: "T: Unique identifier",
-    rawValueCols: []
+    rawValueCols: [[], Validators.required]
   })
 
   constructor(private uniprot: UniprotService, private fb: FormBuilder, public settings: SettingsService, private dataService: DataService) {
@@ -52,7 +52,8 @@ export class FileUploaderComponent implements OnInit {
             f[v] = ""
           }
         }
-        this.form.setValue(f)
+        this.form = this.fb.group(f)
+        console.log(this.form.value)
         this.getUniProt()
       }
     })
@@ -65,8 +66,14 @@ export class FileUploaderComponent implements OnInit {
         this.dataService.rawDataFile = this.rawData
         this.dataService.primaryIDsList = this.rawData.data.getSeries(this.form.value.primaryIDRawCol).bake().toArray()
         this.dataService.cols = this.form.value
-
-        for (const c of this.dataService.cols.rawValueCols) {
+        let raw: string[] = []
+        if (typeof(this.dataService.cols.rawValueCols[0]) !== "string") {
+          raw = this.dataService.cols.rawValueCols[0]
+        } else {
+          raw = this.dataService.cols.rawValueCols
+        }
+        this.dataService.cols.rawValueCols = raw
+        for (const c of raw) {
           const group = c.split(".")
           let condition = ""
           let replicate = ""
@@ -151,7 +158,14 @@ export class FileUploaderComponent implements OnInit {
   }
 
   parseSampleValues() {
-    for (const col of this.form.value.rawValueCols) {
+    let raw: string[] = []
+    if (typeof(this.form.value.rawValueCols[0]) !== "string") {
+      raw = this.form.value.rawValueCols[0]
+    } else {
+      raw = this.form.value.rawValueCols
+    }
+    for (const col of raw) {
+      console.log(col)
       const d: any = []
       for (const c of this.rawData.data.getSeries(col).toArray()) {
         d.push(parseFloat(c))
@@ -168,7 +182,23 @@ export class FileUploaderComponent implements OnInit {
     temp[this.form.value.foldChangeCol] = []
     temp[this.form.value.positionPeptideCol] = []
     temp[this.form.value.peptideSequenceCol] = []
+    temp["-log10(p)"] = []
+    temp["log2(fc)"] = []
     for (const r of this.data.data) {
+      const signi = parseFloat(r[this.form.value.significantCol])
+      if (this.form.value.log10transform) {
+        const log10s = -Math.log10(signi)
+        temp["-log10(p)"].push(log10s)
+      } else {
+        temp[this.form.value.significantCol].push(signi)
+      }
+      const foldc = parseFloat(r[this.form.value.foldChangeCol])
+      if (this.form.value.log2transform) {
+        const log2f = Math.log2(foldc)
+        temp["log2(fc)"].push(log2f)
+      } else {
+        temp[this.form.value.foldChangeCol].push(foldc)
+      }
       temp[this.form.value.positionCol].push(parseInt(r[this.form.value.positionCol]))
       if (r[this.form.value.positionPeptideCol]) {
         temp[this.form.value.positionPeptideCol].push(parseInt(r[this.form.value.positionPeptideCol]))
@@ -191,16 +221,37 @@ export class FileUploaderComponent implements OnInit {
         temp[this.form.value.peptideSequenceCol].push(seq)
       }
       temp[this.form.value.score].push(parseFloat(r[this.form.value.score]))
-      temp[this.form.value.significantCol].push(parseFloat(r[this.form.value.significantCol]))
-      temp[this.form.value.foldChangeCol].push(parseFloat(r[this.form.value.foldChangeCol]))
     }
-    console.log(temp)
+
     for (const t in temp) {
       if (temp[t].length > 0) {
-
         this.data.data = this.data.data.withSeries(t, new Series(temp[t])).bake()
       }
     }
+    const f: any = {}
+    for (const v in this.form.value) {
+      if (v === "rawValueCols") {
+        f[v] = [this.form.value[v]]
+      } else {
+        if (v === "significantCol") {
+          if (this.form.value.log10transform) {
+            f[v] = "-log10(p)"
+          } else {
+            f[v] = this.form.value[v]
+          }
+        } else if (v === "foldChangeCol") {
+          if (this.form.value.log2transform) {
+            f[v] = "log2(fc)"
+          } else {
+            f[v] = this.form.value[v]
+          }
+        } else {
+          f[v] = this.form.value[v]
+        }
+      }
+    }
+    this.form = this.fb.group(f)
+
   }
 
   addGeneNameMap() {
