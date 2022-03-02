@@ -36,7 +36,6 @@ export class QuickSearchComponent implements OnInit {
   constructor(private dataService: DataService, private uniprot: UniprotService) {
     this.dataService.selectionService.subscribe(data => {
       if (data) {
-        console.log(data)
         this.searchType = data.type
         this.selectedProteinModel = data.data
         this.selectData()
@@ -52,6 +51,10 @@ export class QuickSearchComponent implements OnInit {
     switch (this.searchType) {
       case "Primary IDs":
         const res = this.dataService.dataFile.data.where(row => row[this.dataService.cols.primaryIDComparisonCol] === this.selectedProteinModel).bake().toArray()
+        if (res.length > 0) {
+          this.dataService.addSelected(this.selectedProteinModel)
+        }
+
         this.selected.emit(res)
         break
       case "Accession IDs":

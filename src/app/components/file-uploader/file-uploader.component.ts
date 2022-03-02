@@ -53,7 +53,6 @@ export class FileUploaderComponent implements OnInit {
           }
         }
         this.form = this.fb.group(f)
-        console.log(this.form.value)
         this.getUniProt()
       }
     })

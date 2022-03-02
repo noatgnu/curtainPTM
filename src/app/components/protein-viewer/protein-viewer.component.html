@@ -26,6 +26,7 @@
         <th scope="col">Sequence Window</th>
         <th scope="col">Peptide Sequence</th>
         <th scope="col" (click)="sortHeader(dataService.cols.score)">Probability</th>
+        <th scope="col">Actions</th>
       </tr>
       </thead>
       <tbody>
@@ -49,10 +50,16 @@
             </ng-container>
           </td>
           <td>{{r[dataService.cols.score]}}</td>
+          <td><button class="btn btn-sm btn-outline-primary" (click)="viewBar(r[dataService.cols.primaryIDComparisonCol])">C</button></td>
         </tr>
-        <tr *ngIf="residueMap[r[dataService.cols.positionCol]]">
-          <td colspan="8"><app-bar-chart [data]="r[dataService.cols.primaryIDComparisonCol]"></app-bar-chart></td>
-        </tr>
+        <ng-container *ngIf="residueMap[r[dataService.cols.positionCol]] && enableBar[r[dataService.cols.primaryIDComparisonCol]]">
+          <tr>
+            <td colspan="9">
+              <app-bar-chart [data]="r[dataService.cols.primaryIDComparisonCol]"></app-bar-chart>
+            </td>
+          </tr>
+        </ng-container>
+
       </ng-container>
 
       </tbody>

@@ -19,6 +19,7 @@ export class ProteinViewerComponent implements OnInit, OnDestroy {
   descending = false
   residueMap: any = {}
   uniprotData: any = {}
+  enableBar: any = {}
   form: FormGroup = this.fb.group({
     probability: 0
   })
@@ -63,6 +64,12 @@ export class ProteinViewerComponent implements OnInit, OnDestroy {
         this.changeDF = this.df.where(row => this.selectedUID.includes(row[this.dataService.cols.primaryIDComparisonCol])).bake()
         for (const r of this.df) {
           if (r[this.dataService.cols.score] >= (this.settings.settings.probabilityFilterMap[this._data])) {
+            if (this.dataService.highlights[r[this.dataService.cols.primaryIDComparisonCol]]) {
+              this.enableBar[r[this.dataService.cols.primaryIDComparisonCol]] = this.dataService.highlights[r[this.dataService.cols.primaryIDComparisonCol]].selected
+            } else {
+              this.enableBar[r[this.dataService.cols.primaryIDComparisonCol]] = false
+            }
+
             const seq = {prefix: "", site: "", suffix: "", seq: ""}
             if (this.dataService.cols.positionPeptideCol && this.dataService.cols.peptideSequenceCol) {
               if (r[this.dataService.cols.positionPeptideCol] && r[this.dataService.cols.peptideSequenceCol]) {
@@ -121,5 +128,14 @@ export class ProteinViewerComponent implements OnInit, OnDestroy {
 
   getResidue(position: string) {
     return this.sequence[parseInt(position)-1]
+  }
+
+  viewBar(primaryIDs: string) {
+    this.enableBar[primaryIDs] = !this.enableBar[primaryIDs]
+    if (this.enableBar[primaryIDs]) {
+      this.dataService.addSelected(primaryIDs)
+    } else {
+      this.dataService.removeSelected(primaryIDs)
+    }
   }
 }

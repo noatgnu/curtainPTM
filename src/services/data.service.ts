@@ -35,6 +35,7 @@ export class DataService {
   restoreTrigger: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false)
   finishedProcessing: boolean = false
   observableTriggerMap: any = {}
+  highlights: any = {}
   set cols(value: any) {
     this._cols = value
     this.settings.settings.inputDataCols = value
@@ -50,5 +51,21 @@ export class DataService {
     const graph = this.plotly.getInstanceByDivId(id);
     const p = await this.plotly.getPlotly();
     await p.downloadImage(graph, {format: format, width: 1000, height: 1000, filename: "image"})
+  }
+
+  addSelected(primaryIDs: string) {
+    if (this.highlights[primaryIDs]) {
+      this.highlights[primaryIDs].selected = true
+    } else {
+      this.highlights[primaryIDs] = {selected: true}
+    }
+  }
+
+  removeSelected(primaryIDs: string) {
+    if (this.highlights[primaryIDs]) {
+      this.highlights[primaryIDs].selected = false
+    } else {
+      this.highlights[primaryIDs] = {selected: false}
+    }
   }
 }
