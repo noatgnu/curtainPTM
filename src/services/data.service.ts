@@ -70,4 +70,5 @@ export class DataService {
   }
 
   annotateService: Subject<any> = new Subject<any>()
+  progressBarEvent: Subject<any> = new Subject<any>()
 }

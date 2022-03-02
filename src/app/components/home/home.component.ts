@@ -14,6 +14,7 @@ import {fromCSV} from "data-forge";
 export class HomeComponent implements OnInit {
   uniqueLink: string = ""
   unidSelection: string = ""
+
   constructor(private uniprot: UniprotService, public dataService: DataService, public settings: SettingsService, private web: WebService, private route: ActivatedRoute) {
     this.route.params.subscribe(params => {
       if (params) {

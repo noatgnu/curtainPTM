@@ -3,6 +3,7 @@ import {HttpClient} from "@angular/common/http";
 import {DataFrame, fromCSV, IDataFrame, Series} from "data-forge";
 import {BehaviorSubject, Observable, Subject} from "rxjs";
 import {CurtainLink} from "../app/classes/curtain-link";
+import {DataService} from "./data.service";
 @Injectable({
   providedIn: 'root'
 })
@@ -18,7 +19,7 @@ export class UniprotService {
   primaryIDsToGeneNamesMap: Map<string, string[]> = new Map<string, string[]>()
   organism: string = ""
   fetched: boolean = false
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private dataService: DataService) { }
 
   uniprotParseStatus: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false)
   uniprotParseStatusObserver: Observable<boolean> = this.uniprotParseStatus.asObservable()
@@ -76,7 +77,6 @@ export class UniprotService {
           currentRun = currentRun + 1
           // @ts-ignore
           const df = fromCSV(<string>data.body, {delimiter: '\t'});
-          console.log(df)
           const columns = df.getColumnNames()
           const lastColumn = columns[columns.length -1]
           let new_df = df.withSeries("query", df.getSeries(lastColumn).bake()).bake()
@@ -157,6 +157,7 @@ export class UniprotService {
               }
             }
           }
+          this.dataService.progressBarEvent.next({event: "Fetch UniProt Data Job#"+currentRun, value: currentRun, maxValue: this.run})
           if (currentRun === this.run) {
             this.organism = new_df.first()["Organism ID"]
             this.uniprotParseStatus.next(true)

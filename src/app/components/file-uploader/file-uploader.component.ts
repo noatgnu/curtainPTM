@@ -14,7 +14,8 @@ import {DataService} from "../../../services/data.service";
 export class FileUploaderComponent implements OnInit {
   data: InputData = new InputData()
   rawData: InputData = new InputData()
-
+  progressBarValue: number = 0
+  progressBarText: string = ""
   file: File|undefined;
   fetched: boolean = true
   accessionList: string[] = []
@@ -36,6 +37,12 @@ export class FileUploaderComponent implements OnInit {
   })
 
   constructor(private uniprot: UniprotService, private fb: FormBuilder, public settings: SettingsService, private dataService: DataService) {
+    this.dataService.progressBarEvent.subscribe(data => {
+      if (data) {
+        this.progressBarText = data.event
+        this.progressBarValue = 100/data.maxValue*data.value
+      }
+    })
     this.dataService.restoreTrigger.subscribe(data => {
       if (data) {
         this.rawData = this.dataService.rawDataFile
@@ -59,8 +66,11 @@ export class FileUploaderComponent implements OnInit {
     this.uniprot.uniprotParseStatusObserver.subscribe(data => {
       if (data) {
         this.parseSampleValues()
+        this.dataService.progressBarEvent.next({event: "Parse numeric values from raw file", value: 1, maxValue: 4})
         this.addGeneNameMap()
+        this.dataService.progressBarEvent.next({event: "Map gene names", value: 2, maxValue: 4})
         this.parseComparisonValues()
+        this.dataService.progressBarEvent.next({event: "Parse numeric values from differential analysis file", value: 3, maxValue: 4})
         this.dataService.dataFile = this.data
         this.dataService.rawDataFile = this.rawData
         this.dataService.primaryIDsList = this.rawData.data.getSeries(this.form.value.primaryIDRawCol).bake().toArray()
@@ -87,7 +97,7 @@ export class FileUploaderComponent implements OnInit {
         }
 
         this.dataService.finishedProcessing = true
-
+        this.dataService.progressBarEvent.next({event: "Processing completed!", value: 4, maxValue: 4})
       }
     })
   }

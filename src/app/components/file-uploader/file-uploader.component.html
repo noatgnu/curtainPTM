@@ -4,7 +4,7 @@
       <div class="form-group">
         <div class="input-group">
           <div class="input-group-prepend">
-            <span class="input-group-text" id="label-input-file">Input File:</span>
+            <span class="input-group-text" id="label-input-file">Differential Analysis File:</span>
           </div>
           <div class="custom-file">
             <input type="file" class="custom-file-input" aria-label="input-file" aria-describedby="label-input-file" (change)="handleFile($event, false)">
@@ -168,4 +168,7 @@
       </div>
     </div>
   </div>
+  <p class="mt-2" *ngIf="data.data.count()>0 && rawData.data.count()>0">
+    <ngb-progressbar type="info" [value]="progressBarValue">{{progressBarText}}</ngb-progressbar>
+  </p>
 </div>
