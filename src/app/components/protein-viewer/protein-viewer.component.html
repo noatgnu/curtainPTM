@@ -50,7 +50,10 @@
             </ng-container>
           </td>
           <td>{{r[dataService.cols.score]}}</td>
-          <td><button class="btn btn-sm btn-outline-primary" (click)="viewBar(r[dataService.cols.primaryIDComparisonCol])">C</button></td>
+          <td>
+            <button class="btn btn-sm btn-outline-primary" (click)="viewBar(r[dataService.cols.primaryIDComparisonCol])">C</button>
+            <button class="btn btn-sm btn-outline-primary ml-2" (click)="volcanoAnnotate(r)">V</button>
+          </td>
         </tr>
         <ng-container *ngIf="residueMap[r[dataService.cols.positionCol]] && enableBar[r[dataService.cols.primaryIDComparisonCol]]">
           <tr>

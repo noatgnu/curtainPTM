@@ -68,4 +68,6 @@ export class DataService {
       this.highlights[primaryIDs] = {selected: false}
     }
   }
+
+  annotateService: Subject<any> = new Subject<any>()
 }

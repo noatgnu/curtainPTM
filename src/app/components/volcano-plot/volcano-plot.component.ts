@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {DataFrame, IDataFrame} from "data-forge";
 import {DataService} from "../../../services/data.service";
 import {FormBuilder, FormGroup} from "@angular/forms";
@@ -35,7 +35,30 @@ export class VolcanoPlotComponent implements OnInit {
       orientation: 'h'
     }
   }
-  constructor(public dataService: DataService, private fb: FormBuilder, private settings: SettingsService) {
+  annotated: any[] = []
+  constructor(public dataService: DataService, private fb: FormBuilder, private settings: SettingsService, private elementRef: ElementRef) {
+    this.dataService.annotateService.subscribe(data => {
+      if (data) {
+        const annotated: any[] = []
+        annotated.push({
+          xref: 'x',
+          yref: 'y',
+          x: data[dataService.cols.foldChangeCol],
+          y: data[dataService.cols.significantCol],
+          text: "<b>"+data["Gene names"]+ "("+ data[dataService.cols.primaryIDComparisonCol]+")"+"</b>",
+          showarrow: true,
+          arrowhead: 0.5,
+          font: {
+            size: 16,
+            color: "black"
+          }
+        })
+        this.annotated = annotated
+        this.drawVolcano()
+        this.elementRef.nativeElement.scrollIntoView()
+      }
+    })
+
     this.form = this.fb.group({
       pvalueCutoff: this.settings.settings.pCutoff,
       fcCutoff: this.settings.settings.log2FCCutoff,
@@ -196,7 +219,7 @@ export class VolcanoPlotComponent implements OnInit {
       }
     })
     this.graphLayout.shapes = cutOff
-    console.log(this.graphData)
+    this.graphLayout.annotations = this.annotated
   }
 
   ngOnInit(): void {

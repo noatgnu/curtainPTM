@@ -109,7 +109,8 @@ export class HomeComponent implements OnInit {
       settings: this.settings.settings,
       password: "",
       selections: this.dataService.queryProtein,
-      selectionsMap: this.dataService.queryMap
+      selectionsMap: this.dataService.queryMap,
+      highlights: this.dataService.highlights
     }
     this.web.putSettings(data).subscribe(data => {
       if (data.body) {
@@ -131,6 +132,9 @@ export class HomeComponent implements OnInit {
     this.dataService.cols = object.cols;
     this.dataService.dataFile.data = fromCSV(object.processed)
     this.dataService.rawDataFile.data = fromCSV(object.raw)
+    if (object.highlights) {
+      this.dataService.highlights = object.highlights
+    }
     this.dataService.restoreTrigger.next(true)
   }
 

@@ -138,4 +138,7 @@ export class ProteinViewerComponent implements OnInit, OnDestroy {
       this.dataService.removeSelected(primaryIDs)
     }
   }
+  volcanoAnnotate(r: any) {
+    this.dataService.annotateService.next(r)
+  }
 }
