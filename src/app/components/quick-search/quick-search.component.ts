@@ -53,6 +53,7 @@ export class QuickSearchComponent implements OnInit {
         const res = this.dataService.dataFile.data.where(row => row[this.dataService.cols.primaryIDComparisonCol] === this.selectedProteinModel).bake().toArray()
         if (res.length > 0) {
           this.dataService.addSelected(this.selectedProteinModel)
+          this.dataService.justSelected = this.selectedProteinModel
         }
 
         this.selected.emit(res)

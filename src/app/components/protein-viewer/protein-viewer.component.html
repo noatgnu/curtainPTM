@@ -31,30 +31,58 @@
       </thead>
       <tbody>
       <ng-container *ngFor="let r of df">
-        <tr *ngIf="residueMap[r[dataService.cols.positionCol]]">
-          <th scope="row">{{r[dataService.cols.primaryIDComparisonCol]}}</th>
-          <td>
-            {{r[dataService.cols.foldChangeCol]}}
-          </td>
-          <td>{{r[dataService.cols.significantCol]}}</td>
-          <td>
-            {{residueMap[r[dataService.cols.positionCol]].site}}
-          </td>
-          <td>{{r[dataService.cols.positionCol]}}</td>
-          <td>{{r[dataService.cols.sequenceCol]}}</td>
-          <td>
-            <ng-container *ngIf="residueMap[r[dataService.cols.positionCol]] !== ''">
-              <span>{{residueMap[r[dataService.cols.positionCol]].prefix}}</span>
-              <span class="text-danger"><b>{{residueMap[r[dataService.cols.positionCol]].site}}</b></span>
-              <span>{{residueMap[r[dataService.cols.positionCol]].suffix}}</span>
-            </ng-container>
-          </td>
-          <td>{{r[dataService.cols.score]}}</td>
-          <td>
-            <button class="btn btn-sm btn-outline-primary" (click)="viewBar(r[dataService.cols.primaryIDComparisonCol])">C</button>
-            <button class="btn btn-sm btn-outline-primary ml-2" (click)="volcanoAnnotate(r)">V</button>
-          </td>
-        </tr>
+        <ng-container *ngIf="dataService.justSelected === r[dataService.cols.primaryIDComparisonCol]">
+          <tr *ngIf="residueMap[r[dataService.cols.positionCol]]" class="table-success" id="{{r[dataService.cols.primaryIDComparisonCol]}}row">
+            <th scope="row">{{r[dataService.cols.primaryIDComparisonCol]}}</th>
+            <td>
+              {{r[dataService.cols.foldChangeCol]}}
+            </td>
+            <td>{{r[dataService.cols.significantCol]}}</td>
+            <td>
+              {{residueMap[r[dataService.cols.positionCol]].site}}
+            </td>
+            <td>{{r[dataService.cols.positionCol]}}</td>
+            <td>{{r[dataService.cols.sequenceCol]}}</td>
+            <td>
+              <ng-container *ngIf="residueMap[r[dataService.cols.positionCol]] !== ''">
+                <span>{{residueMap[r[dataService.cols.positionCol]].prefix}}</span>
+                <span class="text-danger"><b>{{residueMap[r[dataService.cols.positionCol]].site}}</b></span>
+                <span>{{residueMap[r[dataService.cols.positionCol]].suffix}}</span>
+              </ng-container>
+            </td>
+            <td>{{r[dataService.cols.score]}}</td>
+            <td>
+              <button class="btn btn-sm btn-outline-primary" (click)="viewBar(r[dataService.cols.primaryIDComparisonCol])">C</button>
+              <button class="btn btn-sm btn-outline-primary ml-2" (click)="volcanoAnnotate(r)">V</button>
+            </td>
+          </tr>
+        </ng-container>
+        <ng-container *ngIf="dataService.justSelected !== r[dataService.cols.primaryIDComparisonCol]">
+          <tr *ngIf="residueMap[r[dataService.cols.positionCol]]" id="{{r[dataService.cols.primaryIDComparisonCol]}}row">
+            <th scope="row">{{r[dataService.cols.primaryIDComparisonCol]}}</th>
+            <td>
+              {{r[dataService.cols.foldChangeCol]}}
+            </td>
+            <td>{{r[dataService.cols.significantCol]}}</td>
+            <td>
+              {{residueMap[r[dataService.cols.positionCol]].site}}
+            </td>
+            <td>{{r[dataService.cols.positionCol]}}</td>
+            <td>{{r[dataService.cols.sequenceCol]}}</td>
+            <td>
+              <ng-container *ngIf="residueMap[r[dataService.cols.positionCol]] !== ''">
+                <span>{{residueMap[r[dataService.cols.positionCol]].prefix}}</span>
+                <span class="text-danger"><b>{{residueMap[r[dataService.cols.positionCol]].site}}</b></span>
+                <span>{{residueMap[r[dataService.cols.positionCol]].suffix}}</span>
+              </ng-container>
+            </td>
+            <td>{{r[dataService.cols.score]}}</td>
+            <td>
+              <button class="btn btn-sm btn-outline-primary" (click)="viewBar(r[dataService.cols.primaryIDComparisonCol])">C</button>
+              <button class="btn btn-sm btn-outline-primary ml-2" (click)="volcanoAnnotate(r)">V</button>
+            </td>
+          </tr>
+        </ng-container>
         <ng-container *ngIf="residueMap[r[dataService.cols.positionCol]] && enableBar[r[dataService.cols.primaryIDComparisonCol]]">
           <tr>
             <td colspan="9">

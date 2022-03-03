@@ -19,6 +19,7 @@ import {ColorPickerModule} from "ngx-color-picker";
 import { ProteinExtraDataComponent } from './components/protein-extra-data/protein-extra-data.component';
 import {ProteinDomainComponent} from "./components/protein-domain/protein-domain.component";
 import {AppRoutingModule} from "./app-routing.module";
+import { SequenceLogoComponent } from './components/sequence-logo/sequence-logo.component';
 
 PlotlyModule.plotlyjs = PlotlyJS;
 @NgModule({
@@ -33,7 +34,8 @@ PlotlyModule.plotlyjs = PlotlyJS;
     BarChartComponent,
     VolcanoColorGroupsComponent,
     ProteinExtraDataComponent,
-    ProteinDomainComponent
+    ProteinDomainComponent,
+    SequenceLogoComponent
   ],
     imports: [
         BrowserModule,

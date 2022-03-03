@@ -30,7 +30,7 @@ export class VolcanoPlotComponent implements OnInit {
   }
   graphData: any[] = []
   graphLayout: any = {
-    height: 800, xaxis: {title: "Log2FC", range: [-1, 1]}, yaxis: {title: "-log10(p-value)", range: [-1,1]}, annotations: [],
+    height: 900, width: 900, xaxis: {title: "Log2FC", range: [-1, 1]}, yaxis: {title: "-log10(p-value)", range: [-1,1]}, annotations: [],
     showlegend: true, legend: {
       orientation: 'h'
     }

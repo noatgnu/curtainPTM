@@ -74,7 +74,7 @@ export class ProteinDomainComponent implements OnInit {
       autotick: true,
       ticks: '',
       showticklabels: false
-    }, margin: {t: 25, b: 25, r: 200, l: 200},
+    }, margin: {t: 25, b: 25, r: 125, l: 125},
     showlegend: false
   }
   constructor() { }

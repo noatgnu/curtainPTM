@@ -26,6 +26,7 @@ export class HeatmapComponent implements OnInit, OnDestroy {
       "Phosphotyrosine"
     ]]
   })
+  customRange: any = []
   modTypes: string[] = []
   uniprotEntry: string = ""
   observeChange: Subscription | undefined
@@ -78,7 +79,16 @@ export class HeatmapComponent implements OnInit, OnDestroy {
         this.positions["user-data"] = []
         for (const p of this.df) {
           if (p[this.dataService.cols.score] >= this.settings.settings.probabilityFilterMap[this._data]) {
-            this.positions["user-data"].push({res: parseInt(p[this.dataService.cols.positionCol]) - 1})
+            const pos = parseInt(p[this.dataService.cols.positionCol]) - 1
+            let ap = true
+            for (const r of this.positions["user-data"]) {
+              if (r.res === pos) {
+                ap = false
+              }
+            }
+            if (ap) {
+              this.positions["user-data"].push({res: pos})
+            }
           }
         }
       }
@@ -113,6 +123,7 @@ export class HeatmapComponent implements OnInit, OnDestroy {
   }
 
   drawHeatmap() {
+
     const seqLength = this.sequence.length
     const z: any = {}
     const seq: any[] = []
@@ -135,12 +146,13 @@ export class HeatmapComponent implements OnInit, OnDestroy {
       }
     }
     tempPosition["uniprot"] = uniprotPosition
-
+    console.log(tempPosition)
     for (const u in tempPosition) {
       z[u] = []
       barData[u] = {
         x: [],
         y: [],
+        text: [],
         type: "bar",
         marker: {
           color: []
@@ -149,7 +161,7 @@ export class HeatmapComponent implements OnInit, OnDestroy {
       }
       seqNames.push(u)
       for (let i = 0; i < seqLength; i++) {
-        let start = i - ((this.windows - 1) / 2)
+        let start = i - ((this.windows - 1) / 2) - 1
         let end = i + ((this.windows - 1) / 2) + 1
         if (start < 0) {
           start = 0
@@ -160,6 +172,7 @@ export class HeatmapComponent implements OnInit, OnDestroy {
         let match = false
         for (const p of tempPosition[u]) {
           if (start < p.res && end > p.res) {
+            console.log(i,start, p.res, end, score, u)
             score += 1
           }
           if (p.res === i) {
@@ -168,9 +181,11 @@ export class HeatmapComponent implements OnInit, OnDestroy {
         }
         if (match) {
           barData[u].y.push(2)
+          barData[u].text.push(seq[i] + "(Modified)")
           barData[u].marker.color.push('rgba(222,45,38,0.8)')
         } else {
           barData[u].y.push(1)
+          barData[u].text.push(seq[i])
           barData[u].marker.color.push('rgba(248,219,217,0.8)')
         }
         if (score > 0) {
@@ -178,6 +193,7 @@ export class HeatmapComponent implements OnInit, OnDestroy {
         } else {
           z[u].push(null)
         }
+        console.log(score)
       }
     }
 
@@ -210,6 +226,9 @@ export class HeatmapComponent implements OnInit, OnDestroy {
       margin: {t: 25, b: 25, r: 200, l: 200},
       plot_bgcolor: "#f1f1f1"
     }
+    if (this.customRange.length > 0) {
+      this.graphLayout.xaxis.range = this.customRange
+    }
     for (const u in z) {
       this.graphLayout2[u] = {
         title: u,
@@ -228,6 +247,10 @@ export class HeatmapComponent implements OnInit, OnDestroy {
         height: temp.y.length * 100,
         margin: {t: 25, b: 25, r: 200, l: 200},
       }
+      if (this.customRange.length > 0) {
+        this.graphLayout2[u].xaxis.range = this.customRange
+      }
+      console.log(this.graphData)
     }
 
   }
@@ -246,7 +269,7 @@ export class HeatmapComponent implements OnInit, OnDestroy {
 
   }
 
-  async updateBoundary(graphName: string, event: any) {
+  /*async updateBoundary(graphName: string, event: any) {
     if (graphName === "heatmap") {
       for (const c in this.graphLayout2) {
         if ((this.graphLayout2[c].xaxis.range[0] !== event["xaxis.range[0]"]) || (this.graphLayout2[c].xaxis.range[1] !== event["xaxis.range[1]"])) {
@@ -275,5 +298,10 @@ export class HeatmapComponent implements OnInit, OnDestroy {
         }
       }
     }
+  }*/
+  updateBoundary(graphName: string, event: any) {
+    this.customRange = [event["xaxis.range[0]"], event["xaxis.range[1]"]]
+    console.log(this.customRange)
+    this.drawHeatmap()
   }
 }
