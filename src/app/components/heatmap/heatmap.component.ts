@@ -146,7 +146,7 @@ export class HeatmapComponent implements OnInit, OnDestroy {
       }
     }
     tempPosition["uniprot"] = uniprotPosition
-    console.log(tempPosition)
+
     for (const u in tempPosition) {
       z[u] = []
       barData[u] = {
@@ -172,7 +172,6 @@ export class HeatmapComponent implements OnInit, OnDestroy {
         let match = false
         for (const p of tempPosition[u]) {
           if (start < p.res && end > p.res) {
-            console.log(i,start, p.res, end, score, u)
             score += 1
           }
           if (p.res === i) {
@@ -193,7 +192,6 @@ export class HeatmapComponent implements OnInit, OnDestroy {
         } else {
           z[u].push(null)
         }
-        console.log(score)
       }
     }
 
@@ -250,7 +248,6 @@ export class HeatmapComponent implements OnInit, OnDestroy {
       if (this.customRange.length > 0) {
         this.graphLayout2[u].xaxis.range = this.customRange
       }
-      console.log(this.graphData)
     }
 
   }

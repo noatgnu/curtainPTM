@@ -174,7 +174,6 @@ export class FileUploaderComponent implements OnInit {
       raw = this.form.value.rawValueCols
     }
     for (const col of raw) {
-      console.log(col)
       const d: any = []
       for (const c of this.rawData.data.getSeries(col).toArray()) {
         d.push(parseFloat(c))

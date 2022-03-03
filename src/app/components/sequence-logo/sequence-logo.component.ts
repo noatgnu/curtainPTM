@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import {Component, OnInit, AfterViewInit, Input} from '@angular/core';
 // @ts-ignore
 import * as logojs from "logojs-react";
 @Component({
@@ -7,7 +7,12 @@ import * as logojs from "logojs-react";
   styleUrls: ['./sequence-logo.component.css']
 })
 export class SequenceLogoComponent implements OnInit, AfterViewInit {
-
+  _data: any = {}
+  @Input() set data(value: any) {
+    if (value) {
+      this._data = value
+    }
+  }
   constructor() { }
 
   ngOnInit(): void {
