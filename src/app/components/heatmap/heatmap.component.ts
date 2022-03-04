@@ -7,6 +7,7 @@ import {PlotlyService} from "angular-plotly.js";
 import {waitForAsync} from "@angular/core/testing";
 import {Observable, Subscription} from "rxjs";
 import {SettingsService} from "../../../services/settings.service";
+import {PspService} from "../../../services/psp.service";
 
 
 @Component({
@@ -16,7 +17,7 @@ import {SettingsService} from "../../../services/settings.service";
 })
 export class HeatmapComponent implements OnInit, OnDestroy {
   _data = ""
-  titleOrder = ["uniprot", "user-data"]
+  titleOrder = ["uniprot", "user-data", "PSP"]
   selectedUID: any[] = []
   df: IDataFrame = new DataFrame()
   form: FormGroup = this.fb.group({
@@ -55,6 +56,10 @@ export class HeatmapComponent implements OnInit, OnDestroy {
       this.sequence = d["Sequence"]
       this.uniprotEntry = d["Entry"]
       this.positions["uniprot"] = d["Modified residue"]
+      if (this.psp.pspMap[this.uniprotEntry]) {
+        this.positions["PSP"] = this.psp.pspMap[this.uniprotEntry]
+      }
+
       const mods: string[] = []
       for (const m of this.positions["uniprot"]) {
         if (!(mods.includes(m.modType))) {
@@ -118,7 +123,7 @@ export class HeatmapComponent implements OnInit, OnDestroy {
       tickvals: [],
     }
   }
-  constructor(private uniprot: UniprotService, private dataService: DataService, private fb: FormBuilder, public plotly: PlotlyService, private settings: SettingsService) {
+  constructor(private psp: PspService, private uniprot: UniprotService, private dataService: DataService, private fb: FormBuilder, public plotly: PlotlyService, private settings: SettingsService) {
 
   }
 
@@ -134,19 +139,21 @@ export class HeatmapComponent implements OnInit, OnDestroy {
     }
 
     const uniprotPosition: number[] = []
+    const pspPosition: number[] = []
+
     const tempPosition: any = {}
+
     for (const n of this.positions["uniprot"]) {
       if (this.form.value.modificationTypes.includes(n.modType)) {
         uniprotPosition.push(n)
       }
     }
     for (const u in this.positions) {
-      if (u !== "uniprot") {
+      if ((u !== "uniprot")) {
         tempPosition[u] = this.positions[u]
       }
     }
     tempPosition["uniprot"] = uniprotPosition
-
     for (const u in tempPosition) {
       z[u] = []
       barData[u] = {

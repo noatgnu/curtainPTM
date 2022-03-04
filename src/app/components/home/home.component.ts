@@ -5,6 +5,7 @@ import {DataService} from "../../../services/data.service";
 import {SettingsService} from "../../../services/settings.service";
 import {WebService} from "../../../services/web.service";
 import {fromCSV} from "data-forge";
+import {PspService} from "../../../services/psp.service";
 
 @Component({
   selector: 'app-home',
@@ -15,7 +16,8 @@ export class HomeComponent implements OnInit {
   uniqueLink: string = ""
   unidSelection: string = ""
 
-  constructor(private uniprot: UniprotService, public dataService: DataService, public settings: SettingsService, private web: WebService, private route: ActivatedRoute) {
+  constructor(private psp: PspService, private uniprot: UniprotService, public dataService: DataService, public settings: SettingsService, private web: WebService, private route: ActivatedRoute) {
+    this.psp.getPSP()
     this.route.params.subscribe(params => {
       if (params) {
         console.log(params)
