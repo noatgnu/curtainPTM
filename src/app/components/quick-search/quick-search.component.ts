@@ -55,7 +55,6 @@ export class QuickSearchComponent implements OnInit {
           this.dataService.addSelected(this.selectedProteinModel)
           this.dataService.justSelected = this.selectedProteinModel
         }
-
         this.selected.emit(res)
         break
       case "Accession IDs":

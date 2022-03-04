@@ -58,6 +58,7 @@ export class HomeComponent implements OnInit {
       if (!(this.dataService.queryMap.has(i[this.dataService.cols.accessionCol]))) {
         this.dataService.queryMap.set(i[this.dataService.cols.accessionCol], {})
         this.dataService.queryProtein.push(i[this.dataService.cols.accessionCol])
+        console.log(this.uniprot.getUniprotFromPrimary(i[this.dataService.cols.accessionCol]))
       }
       const d = this.dataService.queryMap.get(i[this.dataService.cols.accessionCol])
       if (!(selectionTitle in d)) {
@@ -69,6 +70,7 @@ export class HomeComponent implements OnInit {
       }
       acc = i[this.dataService.cols.accessionCol]
     }
+    console.log(this.dataService.queryProtein)
     this.dataService.selectionNotifier.next(true)
     if (acc !== "") {
       let e = this.dataService.scrollToID(acc+"scrollid");

@@ -41,7 +41,7 @@ export class ProteinViewerComponent implements OnInit, OnDestroy {
   }
 
   private processData() {
-    const d = this.uniprot.results.get(this._data)
+    const d = this.uniprot.getUniprotFromPrimary(this._data)
     if (!(this.settings.settings.probabilityFilterMap[this._data])) {
       this.settings.settings.probabilityFilterMap[this._data] = 0
     }
@@ -126,8 +126,8 @@ export class ProteinViewerComponent implements OnInit, OnDestroy {
     this.sortReverse[headerName] = !this.sortReverse[headerName]
   }
 
-  getResidue(position: string) {
-    return this.sequence[parseInt(position)-1]
+  getResidue(position: number) {
+    return this.sequence[position-1]
   }
 
   viewBar(primaryIDs: string) {

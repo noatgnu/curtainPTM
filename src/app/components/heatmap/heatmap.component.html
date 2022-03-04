@@ -1,21 +1,24 @@
-<div class="container">
-  <form [formGroup]="form">
-    <div class="row">
-      <div class="form-group">
-        <label for="modTypes">Modification types for UniProt heatmap</label>
-        <select multiple id="modTypes" class="form-control" formControlName="modificationTypes">
-          <option *ngFor="let m of modTypes" [value]="m">
-            {{m}}
-          </option>
-        </select>
+<ng-container *ngIf="_data !== ''">
+  <div class="container">
+    <form [formGroup]="form">
+      <div class="row">
+        <div class="form-group">
+          <label for="modTypes">Modification types for UniProt heatmap</label>
+          <select multiple id="modTypes" class="form-control" formControlName="modificationTypes">
+            <option *ngFor="let m of modTypes" [value]="m">
+              {{m}}
+            </option>
+          </select>
+        </div>
       </div>
-    </div>
-    <button class="btn btn-primary" (click)="drawHeatmap()">Redraw Uniprot Plots with Selected PTM</button>
-  </form>
-</div>
+      <button class="btn btn-primary" (click)="drawHeatmap()">Redraw Uniprot Plots with Selected PTM</button>
+    </form>
+  </div>
 
-<ng-container *ngFor="let g of titleOrder">
-  <plotly-plot divId="{{uniprotEntry+g}}" [data]="[graphData2[g]]" [layout]="graphLayout2[g]" [updateOnLayoutChange]="true" [updateOnDataChange]="true" (relayout)="updateBoundary(g, $event)"></plotly-plot>
+  <ng-container *ngFor="let g of titleOrder">
+    <plotly-plot divId="{{uniprotEntry+g}}" [data]="[graphData2[g]]" [layout]="graphLayout2[g]" [updateOnLayoutChange]="true" [updateOnDataChange]="true" (relayout)="updateBoundary(g, $event)"></plotly-plot>
+  </ng-container>
+
+  <plotly-plot divId="{{uniprotEntry+'heatmap'}}" [data]="graphData" [layout]="graphLayout" [updateOnLayoutChange]="true" [updateOnDataChange]="true" (relayout)="updateBoundary('heatmap', $event)"></plotly-plot>
+
 </ng-container>
-
-<plotly-plot divId="{{uniprotEntry+'heatmap'}}" [data]="graphData" [layout]="graphLayout" [updateOnLayoutChange]="true" [updateOnDataChange]="true" (relayout)="updateBoundary('heatmap', $event)"></plotly-plot>

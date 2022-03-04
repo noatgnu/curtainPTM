@@ -152,8 +152,8 @@ export class UniprotService {
               r["Domain [FT]"] = domains
             }
             if (r["query"]) {
-              if (r["query"]) {
-                this.results.set(this.accMap.get(r["query"]), r)
+              for (const q of r["query"].split(",")) {
+                this.results.set(q, r)
               }
             }
           }
@@ -204,10 +204,18 @@ export class UniprotService {
           }
 
           r["Subcellular location [CC]"] = subLoc
-
+          for (const q of r["query"].split(";")) {
+            this.results.set(q, r)
+          }
           this.results.set(r["query"], r)
+          if (r["Entry"] === "Q9BZL4") {
+            console.log(r)
+            console.log(this.results.get("Q9BZL4"))
+          }
+          if (this.results.has("Q9BZL4")) {
+            console.log(this.results.get(r["query"]))
+          }
         }
-
         this.organism = new_df.first()["Organism ID"]
         this.uniprotParseStatus.next(true)
         this.fetched = true

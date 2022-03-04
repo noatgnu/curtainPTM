@@ -4,7 +4,6 @@ import {DataService} from "../../../services/data.service";
 import {DataFrame, IDataFrame} from "data-forge";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {PlotlyService} from "angular-plotly.js";
-import {waitForAsync} from "@angular/core/testing";
 import {Observable, Subscription} from "rxjs";
 import {SettingsService} from "../../../services/settings.service";
 import {PspService} from "../../../services/psp.service";
@@ -32,26 +31,27 @@ export class HeatmapComponent implements OnInit, OnDestroy {
   uniprotEntry: string = ""
   observeChange: Subscription | undefined
   @Input() set data(value: string)  {
-    this._data = value
-    console.log(this._data)
-    if (this.dataService.observableTriggerMap[this._data]) {
-      if (this.observeChange === undefined) {
-        this.observeChange = this.dataService.observableTriggerMap[this._data].subscribe((data:boolean) => {
-          if (data) {
-            this.processData()
-          }
-        })
-      } else {
+    if (value) {
+      this._data = value
+      if (this.dataService.observableTriggerMap[this._data]) {
+        if (this.observeChange === undefined) {
+          this.observeChange = this.dataService.observableTriggerMap[this._data].subscribe((data:boolean) => {
+            if (data) {
+              this.processData()
+            }
+          })
+        } else {
+
+        }
 
       }
-
+      this.processData();
     }
-    this.processData();
-
   }
 
   private processData() {
-    const d = this.uniprot.results.get(this._data)
+    const d = this.uniprot.getUniprotFromPrimary(this._data)
+
     if (d) {
       this.sequence = d["Sequence"]
       this.uniprotEntry = d["Entry"]
@@ -84,7 +84,7 @@ export class HeatmapComponent implements OnInit, OnDestroy {
         this.positions["user-data"] = []
         for (const p of this.df) {
           if (p[this.dataService.cols.score] >= this.settings.settings.probabilityFilterMap[this._data]) {
-            const pos = parseInt(p[this.dataService.cols.positionCol]) - 1
+            const pos = p[this.dataService.cols.positionCol]
             let ap = true
             for (const r of this.positions["user-data"]) {
               if (r.res === pos) {
@@ -97,6 +97,7 @@ export class HeatmapComponent implements OnInit, OnDestroy {
           }
         }
       }
+      console.log(this.positions)
       this.drawHeatmap()
     }
   }
@@ -135,14 +136,14 @@ export class HeatmapComponent implements OnInit, OnDestroy {
     const seqNames: string[] = []
     const barData: any = {}
     for (let i = 0; i < seqLength; i++) {
-      seq.push(this.sequence[i] + "." + (i+1))
+      seq.push(this.sequence[i] + "." + i)
     }
 
     const uniprotPosition: number[] = []
     const pspPosition: number[] = []
 
     const tempPosition: any = {}
-
+    console.log(tempPosition)
     for (const n of this.positions["uniprot"]) {
       if (this.form.value.modificationTypes.includes(n.modType)) {
         uniprotPosition.push(n)

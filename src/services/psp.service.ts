@@ -24,7 +24,7 @@ export class PspService {
             }
             const ps = reg.exec(row[1])
             if (ps) {
-              this.pspMap[row[0]].push({res: parseInt(ps[2]), aa: ps[1], window: row[2]})
+              this.pspMap[row[0]].push({res: parseInt(ps[2])-1, aa: ps[1], window: row[2]})
             }
           }
         }

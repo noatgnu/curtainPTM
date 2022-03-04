@@ -151,7 +151,6 @@ export class FileUploaderComponent implements OnInit {
             if (!(this.accessionList.includes(accession[0]))) {
               this.accessionList.push(accession[0])
             }
-
             if (!this.uniprot.results.has(accession[0])) {
               accList.push(accession[0])
             }
@@ -161,6 +160,7 @@ export class FileUploaderComponent implements OnInit {
       }
 
       if (accList.length > 0) {
+        console.log(this.accessionList)
         this.uniprot.UniProtParseGet(this.accessionList, false)
       }
     }
@@ -264,11 +264,15 @@ export class FileUploaderComponent implements OnInit {
 
   addGeneNameMap() {
     for (const c of this.data.data) {
-      if (this.uniprot.results.has(c[this.form.value.accessionCol])) {
+      if (!(this.dataService.accList.includes(c[this.form.value.accessionCol]))) {
+        this.dataService.accList.push(c[this.form.value.accessionCol])
+      }
+      if (this.uniprot.accMap.has(c[this.form.value.accessionCol])) {
+        const acc = this.uniprot.accMap.get(c[this.form.value.accessionCol])
         if (!(this.dataService.accList.includes(c[this.form.value.accessionCol]))) {
           this.dataService.accList.push(c[this.form.value.accessionCol])
         }
-        const ac = this.uniprot.results.get(c[this.form.value.accessionCol])
+        const ac = this.uniprot.getUniprotFromPrimary(acc)
         if (ac) {
           if (!(this.dataService.geneList.includes(ac["Gene names"]))) {
             this.dataService.geneList.push(ac["Gene names"])
@@ -309,6 +313,5 @@ export class FileUploaderComponent implements OnInit {
         }
       }
     }
-
   }
 }
