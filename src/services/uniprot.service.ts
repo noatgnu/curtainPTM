@@ -13,7 +13,7 @@ export class UniprotService {
   private baseURL = this.links.uniprotBASE;
   public Re = /([OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9]([A-Z][A-Z0-9]{2}[0-9]){1,2})(-\d+)?/;
 
-  accMap: Map<any, any> = new Map<string, string>()
+  accMap: Map<string, string> = new Map<string, string>()
   results: Map<string, any> = new Map<string, any>()
   geneNamesMap: Map<string, any[]> = new Map<string, string[]>()
   primaryIDsToGeneNamesMap: Map<string, string[]> = new Map<string, string[]>()
@@ -152,7 +152,8 @@ export class UniprotService {
               r["Domain [FT]"] = domains
             }
             if (r["query"]) {
-              for (const q of r["query"].split(",")) {
+              const query = r["query"].replace(",", ";")
+              for (const q of query.split(";")) {
                 this.results.set(q, r)
               }
             }
@@ -177,7 +178,6 @@ export class UniprotService {
     if (maxLength >0) {
       this.http.post(this.links.proxyURL + "uniprot", {acc: accList}, {responseType: "text", observe: "response"}).subscribe(data => {
         const df = fromCSV(<string>data.body);
-        console.log(df)
         const columns = df.getColumnNames()
         const lastColumn = columns[columns.length -1]
         let new_df = df.withSeries("query", df.getSeries(lastColumn).bake()).bake()

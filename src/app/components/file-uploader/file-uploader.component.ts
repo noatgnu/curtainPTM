@@ -124,8 +124,7 @@ export class FileUploaderComponent implements OnInit {
           } else {
             this.data.data = fromCSV(<string>loadedFile)
           }
-
-        };
+        }
         reader.readAsText(this.file);
       }
     }
@@ -143,24 +142,50 @@ export class FileUploaderComponent implements OnInit {
         this.dataService.dataMap.set(a, r[this.form.value.primaryIDComparisonCol])
         this.dataService.dataMap.set(r[this.form.value.primaryIDComparisonCol], a)
         const d = a.split(";")
-        for (const acc of d) {
+        const accession = this.uniprot.Re.exec(d[0])
+        if (accession) {
+          this.uniprot.accMap.set(a, accession[1])
+          if (!(this.accessionList.includes(accession[1]))) {
+            this.accessionList.push(accession[1])
+          }
+          if (!this.uniprot.results.has(accession[1])) {
+            accList.push(accession[1])
+          }
+        }
+
+        /*for (const acc of d) {
           const accession = this.uniprot.Re.exec(acc)
           if (accession !== null) {
-            this.uniprot.accMap.set(accession[0], a)
-            this.uniprot.accMap.set(a, accession[0])
-            if (!(this.accessionList.includes(accession[0]))) {
-              this.accessionList.push(accession[0])
+            if (!this.uniprot.accMap.has(acc)) {
+              this.uniprot.accMap.set(acc, d)
+            } else {
+              const m = this.uniprot.accMap.get(acc)
+              if (m) {
+                m.push(acc)
+                this.uniprot.accMap.set(acc, m)
+              }
             }
-            if (!this.uniprot.results.has(accession[0])) {
-              accList.push(accession[0])
+            if (!(this.accessionList.includes(acc))) {
+              this.accessionList.push(acc)
+            }
+            if (!this.uniprot.results.has(acc)) {
+              accList.push(acc)
             }
             break
           }
-        }
+
+
+
+          if (!(this.accessionList.includes(acc))) {
+            this.accessionList.push(acc)
+          }
+          if (!this.uniprot.results.has(acc)) {
+            accList.push(acc)
+          }
+        }*/
       }
 
       if (accList.length > 0) {
-        console.log(this.accessionList)
         this.uniprot.UniProtParseGet(this.accessionList, false)
       }
     }
@@ -263,17 +288,20 @@ export class FileUploaderComponent implements OnInit {
   }
 
   addGeneNameMap() {
+    const geneNames = []
     for (const c of this.data.data) {
       if (!(this.dataService.accList.includes(c[this.form.value.accessionCol]))) {
         this.dataService.accList.push(c[this.form.value.accessionCol])
       }
       if (this.uniprot.accMap.has(c[this.form.value.accessionCol])) {
-        const acc = this.uniprot.accMap.get(c[this.form.value.accessionCol])
+
         if (!(this.dataService.accList.includes(c[this.form.value.accessionCol]))) {
           this.dataService.accList.push(c[this.form.value.accessionCol])
         }
-        const ac = this.uniprot.getUniprotFromPrimary(acc)
+        const ac = this.uniprot.getUniprotFromPrimary(c[this.form.value.accessionCol])
+
         if (ac) {
+          geneNames.push(ac["Gene names"])
           if (!(this.dataService.geneList.includes(ac["Gene names"]))) {
             this.dataService.geneList.push(ac["Gene names"])
           }
@@ -310,8 +338,19 @@ export class FileUploaderComponent implements OnInit {
             // @ts-ignore
             this.uniprot.geneNamesMap.set(g, ids)
           }*/
+        } else {
+          if (!this.uniprot.results.has(c[this.form.value.accessionCol])) {
+            console.log(c[this.form.value.accessionCol])
+          }
+          geneNames.push("")
         }
+
+      } else {
+        geneNames.push("")
       }
     }
+
+    this.data.data = this.data.data.withSeries("Gene names", new Series(geneNames).bake()).bake()
+    console.log(this.data.data)
   }
 }

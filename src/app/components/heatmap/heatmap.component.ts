@@ -16,7 +16,7 @@ import {PspService} from "../../../services/psp.service";
 })
 export class HeatmapComponent implements OnInit, OnDestroy {
   _data = ""
-  titleOrder = ["uniprot", "user-data", "PSP"]
+  titleOrder = ["uniprot", "Experimental Data", "PSP"]
   selectedUID: any[] = []
   df: IDataFrame = new DataFrame()
   form: FormGroup = this.fb.group({
@@ -29,7 +29,10 @@ export class HeatmapComponent implements OnInit, OnDestroy {
   customRange: any = []
   modTypes: string[] = []
   uniprotEntry: string = ""
+  unidStack: any = {}
+  selectedPosition: number|undefined
   observeChange: Subscription | undefined
+  heatmapEnable: boolean = false
   @Input() set data(value: string)  {
     if (value) {
       this._data = value
@@ -81,24 +84,33 @@ export class HeatmapComponent implements OnInit, OnDestroy {
         this.df = this.dataService.dataFile.data.where(row => row[this.dataService.cols.accessionCol] === this._data).bake()
         this.changeDF = this.dataService.dataFile.data.where(row => this.selectedUID.includes(row[this.dataService.cols.primaryIDComparisonCol])).bake()
 
-        this.positions["user-data"] = []
+        this.positions["Experimental Data"] = []
         for (const p of this.df) {
           if (p[this.dataService.cols.score] >= this.settings.settings.probabilityFilterMap[this._data]) {
             const pos = p[this.dataService.cols.positionCol]
             let ap = true
-            for (const r of this.positions["user-data"]) {
+            for (const r of this.positions["Experimental Data"]) {
               if (r.res === pos) {
                 ap = false
               }
             }
             if (ap) {
-              this.positions["user-data"].push({res: pos})
+              this.positions["Experimental Data"].push({res: pos, unid: p[this.dataService.cols.primaryIDComparisonCol]})
+              this.unidStack[p[this.dataService.cols.primaryIDComparisonCol]] = pos
             }
           }
         }
+
       }
-      console.log(this.positions)
-      this.drawHeatmap()
+      if (this.unidStack[this.dataService.justSelected]) {
+        this.selectedPosition = this.unidStack[this.dataService.justSelected]
+      }
+      if (this.heatmapEnable) {
+        this.drawHeatmap()
+      } else {
+        this.drawBarChart()
+      }
+
     }
   }
 
@@ -125,7 +137,18 @@ export class HeatmapComponent implements OnInit, OnDestroy {
     }
   }
   constructor(private psp: PspService, private uniprot: UniprotService, private dataService: DataService, private fb: FormBuilder, public plotly: PlotlyService, private settings: SettingsService) {
-
+    this.dataService.selectionNotifier.subscribe(data => {
+      if (data) {
+        if (this.unidStack[this.dataService.justSelected]) {
+          this.selectedPosition = this.unidStack[this.dataService.justSelected]
+          if (this.heatmapEnable) {
+            this.drawHeatmap()
+          } else {
+            this.drawBarChart()
+          }
+        }
+      }
+    })
   }
 
   drawHeatmap() {
@@ -178,18 +201,27 @@ export class HeatmapComponent implements OnInit, OnDestroy {
         }
         let score = 0
         let match = false
+        let matchColor = 'rgba(222,45,38,0.8)'
         for (const p of tempPosition[u]) {
-          if (start < p.res && end > p.res) {
-            score += 1
+          if (this.heatmapEnable) {
+            if (start < p.res && end > p.res) {
+              score += 1
+            }
           }
           if (p.res === i) {
             match = true
+            if (this.selectedPosition !== undefined) {
+              if (p.res === this.selectedPosition) {
+                matchColor = 'rgba(78,222,38,0.8)'
+              }
+            }
           }
         }
         if (match) {
           barData[u].y.push(2)
           barData[u].text.push(seq[i] + "(Modified)")
-          barData[u].marker.color.push('rgba(222,45,38,0.8)')
+
+          barData[u].marker.color.push(matchColor)
         } else {
           barData[u].y.push(1)
           barData[u].text.push(seq[i])
@@ -202,8 +234,10 @@ export class HeatmapComponent implements OnInit, OnDestroy {
         }
       }
     }
+    if (this.heatmapEnable) {
+      this.graphLayout.xaxis.tickvals = seq
+    }
 
-    this.graphLayout.xaxis.tickvals = seq
     const rz: any[] = []
     for (const u in z) {
       rz.push(z[u])
@@ -218,23 +252,25 @@ export class HeatmapComponent implements OnInit, OnDestroy {
       colorscale: 'Viridis',
       showscale: false
     }
+    if (this.heatmapEnable) {
+      this.graphData = [temp]
+      this.graphLayout = {
+        xaxis: {
+          showticklabels: false,
+          type: 'category',
+          tickmode: 'array',
+          tickvals: seq,
+          visible: false
+        },
+        height: temp.y.length * 100,
+        margin: {t: 25, b: 25, r: 200, l: 200},
+        plot_bgcolor: "#f1f1f1"
+      }
+      if (this.customRange.length > 0) {
+        this.graphLayout.xaxis.range = this.customRange
+      }
+    }
 
-    this.graphData = [temp]
-    this.graphLayout = {
-      xaxis: {
-        showticklabels: false,
-        type: 'category',
-        tickmode: 'array',
-        tickvals: seq,
-        visible: false
-      },
-      height: temp.y.length * 100,
-      margin: {t: 25, b: 25, r: 200, l: 200},
-      plot_bgcolor: "#f1f1f1"
-    }
-    if (this.customRange.length > 0) {
-      this.graphLayout.xaxis.range = this.customRange
-    }
     for (const u in z) {
       this.graphLayout2[u] = {
         title: u,
@@ -258,6 +294,92 @@ export class HeatmapComponent implements OnInit, OnDestroy {
       }
     }
 
+  }
+
+  drawBarChart() {
+    const seqLength = this.sequence.length
+    const z: any = {}
+    const seq: any[] = []
+    const barData: any = {}
+    for (let i = 0; i < seqLength; i++) {
+      seq.push(this.sequence[i] + "." + i)
+    }
+
+    const uniprotPosition: any = {}
+
+    const tempPosition: any = {}
+    for (const n of this.positions["uniprot"]) {
+      if (this.form.value.modificationTypes.includes(n.modType)) {
+        uniprotPosition[n.res] = true
+      }
+    }
+    for (const u in this.positions) {
+      if ((u !== "uniprot")) {
+        tempPosition[u] = {}
+        for (const p of this.positions[u]) {
+          tempPosition[u][p.res]= true
+        }
+      }
+    }
+    tempPosition["uniprot"] = uniprotPosition
+    console.log(tempPosition)
+    for (const u in tempPosition) {
+      z[u] = []
+      barData[u] = {
+        x: [],
+        y: [],
+        text: [],
+        type: "bar",
+        marker: {
+          color: []
+        },
+        name: u
+      }
+      for (let i = 0; i < seqLength; i++) {
+        let matchColor = 'rgba(222,45,38,0.8)'
+        if (tempPosition[u][i]) {
+          if (this.selectedPosition !== undefined) {
+            if (i === this.selectedPosition) {
+              matchColor = 'rgba(78,222,38,0.8)'
+            }
+          }
+          barData[u].y.push(2)
+          barData[u].text.push(seq[i] + "(Modified)")
+          barData[u].marker.color.push(matchColor)
+        } else {
+          barData[u].y.push(1)
+          barData[u].text.push(seq[i])
+          barData[u].marker.color.push('rgba(248,219,217,0.8)')
+        }
+      }
+    }
+
+    for (const u in z) {
+      barData[u].x = seq
+    }
+    this.graphData2 = barData
+    for (const u in z) {
+      this.graphLayout2[u] = {
+        title: u,
+        xaxis: {
+          showticklabels: false,
+          type: 'category',
+          tickmode: 'array',
+          tickvals: seq,
+          visible: false
+        },
+        yaxis: {
+          showticklabels: false,
+          range: [0,2],
+          visible: false
+        },
+        height: this.titleOrder.length * 100,
+        margin: {t: 25, b: 25, r: 200, l: 200},
+      }
+      if (this.customRange.length > 0) {
+        this.graphLayout2[u].xaxis.range = this.customRange
+      }
+    }
   }
 
   ngOnInit(): void {
@@ -306,7 +428,11 @@ export class HeatmapComponent implements OnInit, OnDestroy {
   }*/
   updateBoundary(graphName: string, event: any) {
     this.customRange = [event["xaxis.range[0]"], event["xaxis.range[1]"]]
-    console.log(this.customRange)
-    this.drawHeatmap()
+    if (this.heatmapEnable) {
+      this.drawHeatmap()
+    } else {
+      this.drawBarChart()
+    }
+
   }
 }

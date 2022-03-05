@@ -70,7 +70,6 @@ export class HomeComponent implements OnInit {
       }
       acc = i[this.dataService.cols.accessionCol]
     }
-    console.log(this.dataService.queryProtein)
     this.dataService.selectionNotifier.next(true)
     if (acc !== "") {
       let e = this.dataService.scrollToID(acc+"scrollid");
