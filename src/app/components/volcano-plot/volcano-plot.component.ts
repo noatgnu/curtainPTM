@@ -10,6 +10,7 @@ import {SettingsService} from "../../../services/settings.service";
   styleUrls: ['./volcano-plot.component.css']
 })
 export class VolcanoPlotComponent implements OnInit {
+
   @Output() selected: EventEmitter<string> = new EventEmitter<string>()
   nameToIDMap: any = {}
   form: FormGroup = this.fb.group({

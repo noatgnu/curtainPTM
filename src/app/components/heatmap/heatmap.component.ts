@@ -15,6 +15,9 @@ import {PspService} from "../../../services/psp.service";
   styleUrls: ['./heatmap.component.css']
 })
 export class HeatmapComponent implements OnInit, OnDestroy {
+  opacityMap: any = {}
+  significant = {max: 0, min: 0}
+  foldChange = {max: 0, min: 0}
   _data = ""
   titleOrder = ["uniprot", "Experimental Data", "PSP"]
   selectedUID: any[] = []
@@ -83,11 +86,17 @@ export class HeatmapComponent implements OnInit, OnDestroy {
         }
         this.df = this.dataService.dataFile.data.where(row => row[this.dataService.cols.accessionCol] === this._data).bake()
         this.changeDF = this.dataService.dataFile.data.where(row => this.selectedUID.includes(row[this.dataService.cols.primaryIDComparisonCol])).bake()
-
+        const sign = this.df.getSeries(this.dataService.cols.significantCol).bake()
+        this.significant.max = sign.max()
+        this.significant.min = sign.min()
+        const fc = this.df.getSeries(this.dataService.cols.foldChangeCol).bake()
+        this.foldChange.max = fc.max()
+        this.foldChange.min = fc.min()
         this.positions["Experimental Data"] = []
         for (const p of this.df) {
           if (p[this.dataService.cols.score] >= this.settings.settings.probabilityFilterMap[this._data]) {
             const pos = p[this.dataService.cols.positionCol]
+            this.opacityMap[pos] = (p[this.dataService.cols.foldChangeCol]-this.foldChange.min)/(this.foldChange.max - this.foldChange.min) * 0.75 +0.25
             let ap = true
             for (const r of this.positions["Experimental Data"]) {
               if (r.res === pos) {
@@ -201,7 +210,7 @@ export class HeatmapComponent implements OnInit, OnDestroy {
         }
         let score = 0
         let match = false
-        let matchColor = 'rgba(222,45,38,0.8)'
+        let matchColor = 'rgba(222,45,38,0.1)'
         for (const p of tempPosition[u]) {
           if (this.heatmapEnable) {
             if (start < p.res && end > p.res) {
@@ -213,6 +222,10 @@ export class HeatmapComponent implements OnInit, OnDestroy {
             if (this.selectedPosition !== undefined) {
               if (p.res === this.selectedPosition) {
                 matchColor = 'rgba(78,222,38,0.8)'
+              }
+            } else {
+              if (u === "Experimental Data") {
+                matchColor = 'rgba(222,45,38,'+this.opacityMap[i] + ')'
               }
             }
           }
@@ -286,7 +299,7 @@ export class HeatmapComponent implements OnInit, OnDestroy {
           range: [0,2],
           visible: false
         },
-        height: temp.y.length * 100,
+        height: temp.y.length * 75,
         margin: {t: 25, b: 25, r: 200, l: 200},
       }
       if (this.customRange.length > 0) {
@@ -336,8 +349,9 @@ export class HeatmapComponent implements OnInit, OnDestroy {
         name: u
       }
       for (let i = 0; i < seqLength; i++) {
-        let matchColor = 'rgba(222,45,38,0.8)'
+        let matchColor = 'rgba(84,38,222,0.8)'
         if (tempPosition[u][i]) {
+          matchColor = 'rgba(222,45,38,'+this.opacityMap[i] + ')'
           if (this.selectedPosition !== undefined) {
             if (i === this.selectedPosition) {
               matchColor = 'rgba(78,222,38,0.8)'
