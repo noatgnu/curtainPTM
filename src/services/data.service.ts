@@ -32,6 +32,7 @@ export class DataService {
   dataMap: Map<string, string> = new Map<string, string>()
   queryProtein: string[] = []
   queryMap: Map<string, any> = new Map<string, any>()
+  clearSelections: Subject<boolean> = new Subject<boolean>()
   restoreTrigger: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false)
   finishedProcessing: boolean = false
   observableTriggerMap: any = {}

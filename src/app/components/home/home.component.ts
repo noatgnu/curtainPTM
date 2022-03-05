@@ -58,7 +58,6 @@ export class HomeComponent implements OnInit {
       if (!(this.dataService.queryMap.has(i[this.dataService.cols.accessionCol]))) {
         this.dataService.queryMap.set(i[this.dataService.cols.accessionCol], {})
         this.dataService.queryProtein.push(i[this.dataService.cols.accessionCol])
-        console.log(this.uniprot.getUniprotFromPrimary(i[this.dataService.cols.accessionCol]))
       }
       const d = this.dataService.queryMap.get(i[this.dataService.cols.accessionCol])
       if (!(selectionTitle in d)) {
@@ -77,6 +76,13 @@ export class HomeComponent implements OnInit {
 
   }
 
+  clearSelections() {
+    this.dataService.queryProtein = []
+    this.dataService.queryMap = new Map<string, any>()
+    this.dataService.highlights = {}
+    this.dataService.justSelected = ""
+    this.dataService.clearSelections.next(true)
+  }
 
 
   saveSession() {

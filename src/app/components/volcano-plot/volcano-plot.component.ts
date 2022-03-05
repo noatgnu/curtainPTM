@@ -37,6 +37,13 @@ export class VolcanoPlotComponent implements OnInit {
   }
   annotated: any[] = []
   constructor(public dataService: DataService, private fb: FormBuilder, private settings: SettingsService, private elementRef: ElementRef) {
+    this.dataService.clearSelections.subscribe(data => {
+      if (data) {
+        this.annotated = []
+        this.drawVolcano()
+      }
+    })
+
     this.dataService.annotateService.subscribe(data => {
       if (data) {
         const annotated: any[] = []

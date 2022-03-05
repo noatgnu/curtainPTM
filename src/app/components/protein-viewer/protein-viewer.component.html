@@ -1,8 +1,12 @@
 <div class="card mt-2 mr-2 ml-2 mb-2" *ngIf="data.length > 0">
   <div class="card-body">
-    <h5 class="card-title">{{uniprotData["Gene names"]}}</h5>
-    <app-protein-extra-data [data]="uniprotData" *ngIf="sequence.length > 0"></app-protein-extra-data>
-    <app-protein-domain [data]="uniprotData" *ngIf="sequence.length > 0"></app-protein-domain>
+    <h3 class="card-title">{{uniprotData["Gene names"]}}</h3>
+
+    <ng-container *ngIf="sequence.length > 0">
+      <app-protein-extra-data [data]="uniprotData"></app-protein-extra-data>
+      <app-protein-domain [data]="uniprotData"></app-protein-domain>
+    </ng-container>
+
     <app-heatmap [data]="data"></app-heatmap>
     <form [formGroup]="form">
       <div class="form-row">
@@ -15,6 +19,7 @@
         </div>
       </div>
     </form>
+    <h5>{{uniprotData["Gene names"]}}</h5>
     <table class="table table-striped">
       <thead>
       <tr>
