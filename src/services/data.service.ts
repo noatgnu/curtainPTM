@@ -37,6 +37,7 @@ export class DataService {
   finishedProcessing: boolean = false
   observableTriggerMap: any = {}
   highlights: any = {}
+  pspIDMap: any = {}
   justSelected: string = ""
   set cols(value: any) {
     this._cols = value

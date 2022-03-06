@@ -82,6 +82,7 @@ export class HomeComponent implements OnInit {
     this.dataService.highlights = {}
     this.dataService.justSelected = ""
     this.dataService.clearSelections.next(true)
+    this.dataService.pspIDMap = {}
   }
 
 
@@ -94,7 +95,8 @@ export class HomeComponent implements OnInit {
       password: "",
       selections: this.dataService.queryProtein,
       selectionsMap: this.dataService.queryMap,
-      highlights: this.dataService.highlights
+      highlights: this.dataService.highlights,
+      pspIDMap: this.dataService.pspIDMap
     }
     this.web.putSettings(data).subscribe(data => {
       if (data.body) {
@@ -118,6 +120,9 @@ export class HomeComponent implements OnInit {
     this.dataService.rawDataFile.data = fromCSV(object.raw)
     if (object.highlights) {
       this.dataService.highlights = object.highlights
+    }
+    if (object.pspIDMap) {
+      this.dataService.pspIDMap = object.pspIDMap
     }
     this.dataService.restoreTrigger.next(true)
   }

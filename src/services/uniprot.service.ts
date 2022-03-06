@@ -4,6 +4,7 @@ import {DataFrame, fromCSV, IDataFrame, Series} from "data-forge";
 import {BehaviorSubject, Observable, Subject} from "rxjs";
 import {CurtainLink} from "../app/classes/curtain-link";
 import {DataService} from "./data.service";
+import * as biomsa from "biomsa";
 @Injectable({
   providedIn: 'root'
 })
@@ -237,5 +238,24 @@ export class UniprotService {
       }
     }
     return null
+  }
+
+  getUniprotFasta(accession_id: string) {
+    return this.http.get("https://www.uniprot.org/uniprot/"+accession_id+".fasta", {responseType: "text", observe: "body"})
+  }
+
+  parseFasta(data: string) {
+    const lines = data.split("\n")
+    let seq = ""
+    for (const line of lines) {
+      if (!line.startsWith(">")) {
+        seq = seq + line
+      }
+    }
+    return seq
+  }
+
+  alignSequences(sequences: any) {
+    return biomsa.default.align(Object.values(sequences))
   }
 }

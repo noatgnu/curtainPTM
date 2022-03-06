@@ -22,6 +22,7 @@
     "@ng-bootstrap/ng-bootstrap": "^11.0.0",
     "angular-plotly.js": "^4.0.4",
     "biojs-io-fasta": "^0.1.17",
+    "biomsa": "^0.2.4",
     "bootstrap": "^4.6.0",
     "data-forge": "^1.9.2",
     "logojs-react": "^2.1.1",

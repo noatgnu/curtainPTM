@@ -4,7 +4,7 @@ import {DataService} from "../../../services/data.service";
 import {DataFrame, IDataFrame} from "data-forge";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {PlotlyService} from "angular-plotly.js";
-import {Observable, Subscription} from "rxjs";
+import {forkJoin, Observable, Subject, Subscription} from "rxjs";
 import {SettingsService} from "../../../services/settings.service";
 import {PspService} from "../../../services/psp.service";
 
@@ -15,11 +15,12 @@ import {PspService} from "../../../services/psp.service";
   styleUrls: ['./heatmap.component.css']
 })
 export class HeatmapComponent implements OnInit, OnDestroy {
+  accMap: any = {}
   opacityMap: any = {}
   significant = {max: 0, min: 0}
   foldChange = {max: 0, min: 0}
   _data = ""
-  titleOrder = ["uniprot", "Experimental Data", "PSP"]
+  titleOrder = ["Uniprot", "Experimental Data", "PSP"]
   selectedUID: any[] = []
   df: IDataFrame = new DataFrame()
   form: FormGroup = this.fb.group({
@@ -27,7 +28,8 @@ export class HeatmapComponent implements OnInit, OnDestroy {
       "Phosphoserine",
       "Phosphothreonine",
       "Phosphotyrosine"
-    ]]
+    ]],
+    pspSelected: ""
   })
   customRange: any = []
   modTypes: string[] = []
@@ -36,6 +38,9 @@ export class HeatmapComponent implements OnInit, OnDestroy {
   selectedPosition: number|undefined
   observeChange: Subscription | undefined
   heatmapEnable: boolean = false
+  expDataAcc: string = ""
+  maxSeqLength = 0
+
   @Input() set data(value: string)  {
     if (value) {
       this._data = value
@@ -59,15 +64,42 @@ export class HeatmapComponent implements OnInit, OnDestroy {
     const d = this.uniprot.getUniprotFromPrimary(this._data)
 
     if (d) {
-      this.sequence = d["Sequence"]
+      this.sequence[d["Entry"]] = d["Sequence"]
       this.uniprotEntry = d["Entry"]
-      this.positions["uniprot"] = d["Modified residue"]
-      if (this.psp.pspMap[this.uniprotEntry]) {
-        this.positions["PSP"] = this.psp.pspMap[this.uniprotEntry]
+      this.accMap["Uniprot"] = this.uniprotEntry
+      this.positions["Uniprot"] = d["Modified residue"]
+      const seqNeeded: any = {}
+      const accs = this._data.split(";")
+      this.expDataAcc = accs[0]
+      this.accMap["Experimental Data"] = this.expDataAcc
+      if (this.psp.pspMap[this.uniprotEntry] || this.psp.pspMap[this.expDataAcc]) {
+        if (!this.dataService.pspIDMap[this._data]) {
+          this.dataService.pspIDMap[this._data] = {selected: this.uniprotEntry, associated: [this.uniprotEntry]}
+          if (this.psp.pspMap[accs[0]]) {
+            this.dataService.pspIDMap[this._data].selected = accs[0]
+          }
+        }
+        this.form = this.fb.group({
+          modificationTypes: [[
+            "Phosphoserine",
+            "Phosphothreonine",
+            "Phosphotyrosine"
+          ]],
+          pspSelected: this.dataService.pspIDMap[this._data].selected
+        })
+        for (const acc of accs) {
+          if (this.psp.pspMap[acc]) {
+            if (!this.sequence[acc]) {
+              seqNeeded[acc] = this.uniprot.getUniprotFasta(acc)
+            }
+
+            this.dataService.pspIDMap[this._data].associated.push(acc)
+          }
+        }
       }
 
       const mods: string[] = []
-      for (const m of this.positions["uniprot"]) {
+      for (const m of this.positions["Uniprot"]) {
         if (!(mods.includes(m.modType))) {
           mods.push(m.modType)
         }
@@ -92,10 +124,12 @@ export class HeatmapComponent implements OnInit, OnDestroy {
         const fc = this.df.getSeries(this.dataService.cols.foldChangeCol).bake()
         this.foldChange.max = fc.max()
         this.foldChange.min = fc.min()
+
         this.positions["Experimental Data"] = []
+
         for (const p of this.df) {
           if (p[this.dataService.cols.score] >= this.settings.settings.probabilityFilterMap[this._data]) {
-            const pos = p[this.dataService.cols.positionCol]
+            const pos = p[this.dataService.cols.positionCol] -1
             this.opacityMap[pos] = (p[this.dataService.cols.foldChangeCol]-this.foldChange.min)/(this.foldChange.max - this.foldChange.min) * 0.75 +0.25
             let ap = true
             for (const r of this.positions["Experimental Data"]) {
@@ -114,18 +148,35 @@ export class HeatmapComponent implements OnInit, OnDestroy {
       if (this.unidStack[this.dataService.justSelected]) {
         this.selectedPosition = this.unidStack[this.dataService.justSelected]
       }
-      if (this.heatmapEnable) {
-        this.drawHeatmap()
-      } else {
-        this.drawBarChart()
-      }
+      const accx = Object.keys(seqNeeded)
+      if (accx.length > 0) {
+        forkJoin(seqNeeded).subscribe(results => {
+          if (results) {
+            for (const s in seqNeeded) {
+              // @ts-ignore
+              this.sequence[s] = this.uniprot.parseFasta(results[s])
+            }
+            this.uniprot.alignSequences(this.sequence).then((data) => {
+              const seqLabels = Object.keys(this.sequence)
 
+              for (let i = 0; i < seqLabels.length; i ++) {
+                this.sequence[seqLabels[i]] = data[i]
+              }
+              this.draw()
+            })
+          }
+        })
+      } else {
+        this.draw()
+      }
     }
   }
 
+  drawTrigger: Subject<boolean> = new Subject<boolean>()
+
   queries: any[] = []
   changeDF: IDataFrame = new DataFrame()
-  sequence = ``
+  sequence: any = {}
   positions: any = {}
   windows = 21
   graphData: any[] = []
@@ -145,48 +196,48 @@ export class HeatmapComponent implements OnInit, OnDestroy {
       tickvals: [],
     }
   }
-  constructor(private psp: PspService, private uniprot: UniprotService, private dataService: DataService, private fb: FormBuilder, public plotly: PlotlyService, private settings: SettingsService) {
+  constructor(private psp: PspService, private uniprot: UniprotService, public dataService: DataService, private fb: FormBuilder, public plotly: PlotlyService, private settings: SettingsService) {
     this.dataService.selectionNotifier.subscribe(data => {
       if (data) {
         if (this.unidStack[this.dataService.justSelected]) {
           this.selectedPosition = this.unidStack[this.dataService.justSelected]
-          if (this.heatmapEnable) {
-            this.drawHeatmap()
-          } else {
-            this.drawBarChart()
-          }
+          this.draw()
         }
       }
     })
   }
 
   drawHeatmap() {
-
-    const seqLength = this.sequence.length
-    const z: any = {}
-    const seq: any[] = []
-    const seqNames: string[] = []
-    const barData: any = {}
-    for (let i = 0; i < seqLength; i++) {
-      seq.push(this.sequence[i] + "." + i)
+    if (this.dataService.pspIDMap[this._data]) {
+      this.positions["PSP"] = this.psp.pspMap[this.dataService.pspIDMap[this._data].selected]
     }
 
+    const seqLength = this.maxSeqLength
+    const z: any = {}
+    const seq: any = {}
+    const seqNames: string[] = []
+    const barData: any = {}
     const uniprotPosition: number[] = []
-    const pspPosition: number[] = []
-
     const tempPosition: any = {}
-    console.log(tempPosition)
-    for (const n of this.positions["uniprot"]) {
+    for (const n of this.positions["Uniprot"]) {
       if (this.form.value.modificationTypes.includes(n.modType)) {
         uniprotPosition.push(n)
       }
     }
+
+    for (let i = 0; i < seqLength; i++) {
+
+      seq.push(this.sequence[i] + "." + (i+1))
+    }
+
     for (const u in this.positions) {
-      if ((u !== "uniprot")) {
+
+      if ((u !== "Uniprot")) {
         tempPosition[u] = this.positions[u]
       }
     }
-    tempPosition["uniprot"] = uniprotPosition
+    tempPosition["Uniprot"] = uniprotPosition
+    const alignedExpPos: number[] = []
     for (const u in tempPosition) {
       z[u] = []
       barData[u] = {
@@ -226,6 +277,7 @@ export class HeatmapComponent implements OnInit, OnDestroy {
             } else {
               if (u === "Experimental Data") {
                 matchColor = 'rgba(222,45,38,'+this.opacityMap[i] + ')'
+
               }
             }
           }
@@ -302,40 +354,75 @@ export class HeatmapComponent implements OnInit, OnDestroy {
         height: temp.y.length * 75,
         margin: {t: 25, b: 25, r: 200, l: 200},
       }
+      switch (u) {
+        case "Uniprot":
+          this.graphLayout2[u].title = this.graphLayout2[u].title + " " + this.uniprotEntry
+          break
+        case "PSP":
+          this.graphLayout2[u].title = this.graphLayout2[u].title + " " + this.dataService.pspIDMap[this._data].selected
+          break
+        case "Experimental Data":
+          this.graphLayout2[u].title = this.graphLayout2[u].title + " " + this._data
+          break
+        default:
+          break
+      }
+
       if (this.customRange.length > 0) {
         this.graphLayout2[u].xaxis.range = this.customRange
       }
     }
 
-  }
 
-  drawBarChart() {
-    const seqLength = this.sequence.length
-    const z: any = {}
-    const seq: any[] = []
-    const barData: any = {}
+  }
+  setSeqArray(accession: string, seqLength: number) {
+    const seq = []
     for (let i = 0; i < seqLength; i++) {
-      seq.push(this.sequence[i] + "." + i)
+      if (this.sequence[accession][i]) {
+        seq.push(this.sequence[accession][i] + "." + (i+1))
+      } else {
+        seq.push("_")
+      }
     }
+    return seq
+  }
+  drawBarChart() {
+    if (this.dataService.pspIDMap[this._data]) {
+      this.positions["PSP"] = this.psp.pspMap[this.dataService.pspIDMap[this._data].selected]
+      this.accMap["PSP"] = this.dataService.pspIDMap[this._data].selected
+    }
+    const seqLength = this.maxSeqLength
+    const z: any = {}
+    const seq: any = {}
+    const barData: any = {}
+    if (this.sequence[this.uniprotEntry]) {
+      seq["Uniprot"] = this.setSeqArray(this.uniprotEntry, this.maxSeqLength)
+    }
+    if (this.uniprotEntry === this.expDataAcc) {
+      seq["Experimental Data"] = seq["Uniprot"]
+    } else {
+      seq["Experimental Data"] = this.setSeqArray(this.expDataAcc, this.maxSeqLength)
+    }
+    seq["PSP"] = this.setSeqArray(this.dataService.pspIDMap[this._data].selected, this.maxSeqLength)
 
     const uniprotPosition: any = {}
 
     const tempPosition: any = {}
-    for (const n of this.positions["uniprot"]) {
+    for (const n of this.positions["Uniprot"]) {
       if (this.form.value.modificationTypes.includes(n.modType)) {
         uniprotPosition[n.res] = true
       }
     }
     for (const u in this.positions) {
-      if ((u !== "uniprot")) {
+      if ((u !== "Uniprot")) {
         tempPosition[u] = {}
         for (const p of this.positions[u]) {
           tempPosition[u][p.res]= true
         }
       }
     }
-    tempPosition["uniprot"] = uniprotPosition
-    console.log(tempPosition)
+    tempPosition["Uniprot"] = uniprotPosition
+    const alignedPos: any[] =[]
     for (const u in tempPosition) {
       z[u] = []
       barData[u] = {
@@ -348,29 +435,63 @@ export class HeatmapComponent implements OnInit, OnDestroy {
         },
         name: u
       }
+      let emptyCount = 0
       for (let i = 0; i < seqLength; i++) {
-        let matchColor = 'rgba(84,38,222,0.8)'
-        if (tempPosition[u][i]) {
-          matchColor = 'rgba(222,45,38,'+this.opacityMap[i] + ')'
-          if (this.selectedPosition !== undefined) {
-            if (i === this.selectedPosition) {
-              matchColor = 'rgba(78,222,38,0.8)'
-            }
-          }
-          barData[u].y.push(2)
-          barData[u].text.push(seq[i] + "(Modified)")
-          barData[u].marker.color.push(matchColor)
-        } else {
+        if (this.sequence[this.accMap[u]][i] === "-") {
+          emptyCount = emptyCount + 1
+
           barData[u].y.push(1)
-          barData[u].text.push(seq[i])
-          barData[u].marker.color.push('rgba(248,219,217,0.8)')
+          barData[u].text.push("-")
+          barData[u].marker.color.push('rgb(255,255,255)')
+        } else {
+          const currentPosition = i - emptyCount
+          if (seq[u][i] !== "_") {
+            let matchColor = 'rgba(172,238,227,0.3)'
+            if (tempPosition[u][currentPosition]) {
+              matchColor = 'rgba(176,6,0,'+this.opacityMap[currentPosition] + ')'
+              if (u ==="Experimental Data") {
+                alignedPos.push({pos: i, color: 'rgba(176,6,0,'+this.opacityMap[currentPosition] + ')'})
+              }
+              if (this.selectedPosition !== undefined) {
+                if (currentPosition === this.selectedPosition) {
+                  matchColor = 'rgba(78,222,38,0.8)'
+                }
+              }
+
+
+              barData[u].y.push(2)
+              barData[u].text.push(seq[u][i] + "(" + (currentPosition + 1) + ":Modified)")
+              barData[u].marker.color.push(matchColor)
+            } else {
+              barData[u].y.push(1)
+              barData[u].text.push(seq[u][i] + "(" + (currentPosition + 1) + ")")
+              barData[u].marker.color.push('rgba(231,217,189,0.8)')
+            }
+          } else {
+            barData[u].y.push(1)
+            barData[u].text.push("_")
+            barData[u].marker.color.push('rgba(252,250,247,0.8)')
+          }
+        }
+
+
+
+      }
+    }
+    for (const i of alignedPos) {
+      for (const u in tempPosition) {
+        if (u !== "Experimental Data") {
+          if (barData[u].y[i.pos] === 2) {
+            barData[u].marker.color[i.pos] = i.color
+          }
+
         }
       }
     }
-
     for (const u in z) {
-      barData[u].x = seq
+      barData[u].x = seq[u]
     }
+    console.log(barData)
     this.graphData2 = barData
     for (const u in z) {
       this.graphLayout2[u] = {
@@ -389,6 +510,19 @@ export class HeatmapComponent implements OnInit, OnDestroy {
         },
         height: this.titleOrder.length * 100,
         margin: {t: 25, b: 25, r: 200, l: 200},
+      }
+      switch (u) {
+        case "Uniprot":
+          this.graphLayout2[u].title = this.graphLayout2[u].title + " " + this.uniprotEntry
+          break
+        case "PSP":
+          this.graphLayout2[u].title = this.graphLayout2[u].title + " " + this.dataService.pspIDMap[this._data].selected
+          break
+        case "Experimental Data":
+          this.graphLayout2[u].title = this.graphLayout2[u].title + " " + this._data
+          break
+        default:
+          break
       }
       if (this.customRange.length > 0) {
         this.graphLayout2[u].xaxis.range = this.customRange
@@ -442,11 +576,23 @@ export class HeatmapComponent implements OnInit, OnDestroy {
   }*/
   updateBoundary(graphName: string, event: any) {
     this.customRange = [event["xaxis.range[0]"], event["xaxis.range[1]"]]
+    this.draw()
+  }
+
+  draw() {
+    if (this.dataService.pspIDMap[this._data]) {
+      this.dataService.pspIDMap[this._data].selected = this.form.value["pspSelected"]
+    }
+    for (const s in this.sequence) {
+      if (this.sequence[s].length > this.maxSeqLength) {
+        this.maxSeqLength = this.sequence[s].length
+      }
+    }
+
     if (this.heatmapEnable) {
       this.drawHeatmap()
     } else {
       this.drawBarChart()
     }
-
   }
 }
