@@ -72,6 +72,9 @@ export class HeatmapComponent implements OnInit, OnDestroy {
       const accs = this._data.split(";")
       this.expDataAcc = accs[0]
       this.accMap["Experimental Data"] = this.expDataAcc
+      if (this.expDataAcc !== this.uniprotEntry) {
+        seqNeeded[this.expDataAcc] = this.uniprot.getUniprotFasta(this.expDataAcc)
+      }
       if (this.psp.pspMap[this.uniprotEntry] || this.psp.pspMap[this.expDataAcc]) {
         if (!this.dataService.pspIDMap[this._data]) {
           this.dataService.pspIDMap[this._data] = {selected: this.uniprotEntry, associated: [this.uniprotEntry]}
@@ -90,12 +93,15 @@ export class HeatmapComponent implements OnInit, OnDestroy {
         for (const acc of accs) {
           if (this.psp.pspMap[acc]) {
             if (!this.sequence[acc]) {
-              seqNeeded[acc] = this.uniprot.getUniprotFasta(acc)
+              if (!seqNeeded[acc]) {
+                seqNeeded[acc] = this.uniprot.getUniprotFasta(acc)
+              }
             }
-
             this.dataService.pspIDMap[this._data].associated.push(acc)
           }
         }
+      } else {
+
       }
 
       const mods: string[] = []
@@ -149,6 +155,7 @@ export class HeatmapComponent implements OnInit, OnDestroy {
         this.selectedPosition = this.unidStack[this.dataService.justSelected]
       }
       const accx = Object.keys(seqNeeded)
+      console.log(this.sequence)
       if (accx.length > 0) {
         forkJoin(seqNeeded).subscribe(results => {
           if (results) {
@@ -395,15 +402,12 @@ export class HeatmapComponent implements OnInit, OnDestroy {
     const z: any = {}
     const seq: any = {}
     const barData: any = {}
-    if (this.sequence[this.uniprotEntry]) {
-      seq["Uniprot"] = this.setSeqArray(this.uniprotEntry, this.maxSeqLength)
+    console.log(this.accMap)
+    for (const a in this.accMap) {
+      console.log(seq[a])
+      seq[a] = this.setSeqArray(this.accMap[a], this.maxSeqLength)
     }
-    if (this.uniprotEntry === this.expDataAcc) {
-      seq["Experimental Data"] = seq["Uniprot"]
-    } else {
-      seq["Experimental Data"] = this.setSeqArray(this.expDataAcc, this.maxSeqLength)
-    }
-    seq["PSP"] = this.setSeqArray(this.dataService.pspIDMap[this._data].selected, this.maxSeqLength)
+
 
     const uniprotPosition: any = {}
 

@@ -10,8 +10,8 @@
             </option>
           </select>
         </div>
-        <div class="form-group ml-2" *ngIf="dataService.pspIDMap[_data]">
-          <label for="pspVariants">Phosphosite Isotype Selection</label>
+        <div class="form-group ml-5" *ngIf="dataService.pspIDMap[_data]">
+          <label for="pspVariants">PhosphoSitePlus Isotype Selection</label>
           <select id="pspVariants" class="form-control" formControlName="pspSelected">
             <option *ngFor="let m of dataService.pspIDMap[_data].associated" [value]="m">
               {{m}}
