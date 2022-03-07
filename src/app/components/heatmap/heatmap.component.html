@@ -25,7 +25,7 @@
 
   <ng-container *ngFor="let g of titleOrder">
     <ng-container *ngIf="graphData2[g]">
-      <plotly-plot divId="{{uniprotEntry+g}}" [data]="[graphData2[g]]" [layout]="graphLayout2[g]" [updateOnLayoutChange]="true" [updateOnDataChange]="true" (relayout)="updateBoundary(g, $event)"></plotly-plot>
+      <plotly-plot [contentEditable]="true" divId="{{uniprotEntry+g}}" [data]="[graphData2[g]]" [layout]="graphLayout2[g]" [updateOnLayoutChange]="true" [updateOnDataChange]="true" (relayout)="updateBoundary(g, $event)"></plotly-plot>
     </ng-container>
   </ng-container>
   <ng-container *ngIf="heatmapEnable">

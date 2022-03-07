@@ -155,7 +155,7 @@ export class HeatmapComponent implements OnInit, OnDestroy {
         this.selectedPosition = this.unidStack[this.dataService.justSelected]
       }
       const accx = Object.keys(seqNeeded)
-      console.log(this.sequence)
+
       if (accx.length > 0) {
         forkJoin(seqNeeded).subscribe(results => {
           if (results) {
@@ -201,7 +201,8 @@ export class HeatmapComponent implements OnInit, OnDestroy {
       type: 'category',
       tickmode: 'array',
       tickvals: [],
-    }
+    },
+    annotations: []
   }
   constructor(private psp: PspService, private uniprot: UniprotService, public dataService: DataService, private fb: FormBuilder, public plotly: PlotlyService, private settings: SettingsService) {
     this.dataService.selectionNotifier.subscribe(data => {
@@ -402,9 +403,9 @@ export class HeatmapComponent implements OnInit, OnDestroy {
     const z: any = {}
     const seq: any = {}
     const barData: any = {}
-    console.log(this.accMap)
+
     for (const a in this.accMap) {
-      console.log(seq[a])
+
       seq[a] = this.setSeqArray(this.accMap[a], this.maxSeqLength)
     }
 
@@ -427,8 +428,10 @@ export class HeatmapComponent implements OnInit, OnDestroy {
     }
     tempPosition["Uniprot"] = uniprotPosition
     const alignedPos: any[] =[]
+    const annotations: any = {}
     for (const u in tempPosition) {
       z[u] = []
+      annotations[u] = []
       barData[u] = {
         x: [],
         y: [],
@@ -454,7 +457,23 @@ export class HeatmapComponent implements OnInit, OnDestroy {
             if (tempPosition[u][currentPosition]) {
               matchColor = 'rgba(176,6,0,'+this.opacityMap[currentPosition] + ')'
               if (u ==="Experimental Data") {
-                alignedPos.push({pos: i, color: 'rgba(176,6,0,'+this.opacityMap[currentPosition] + ')'})
+                alignedPos.push({
+                  pos: i,
+                  color: 'rgba(176,6,0,'+this.opacityMap[currentPosition] + ')',
+                  annotation: {
+                    xref: 'x',
+                    yref: 'y',
+                    x: seq[u][i],
+                    y: 1.5,
+                    text: "<b>"+currentPosition+"</b>",
+                    showarrow: true,
+                    arrowhead: 0.2,
+                    font: {
+                      size: 10,
+                      color: 'rgb(171,0,88)'
+                    }
+                  }
+                })
               }
               if (this.selectedPosition !== undefined) {
                 if (currentPosition === this.selectedPosition) {
@@ -482,20 +501,23 @@ export class HeatmapComponent implements OnInit, OnDestroy {
 
       }
     }
+
     for (const i of alignedPos) {
       for (const u in tempPosition) {
         if (u !== "Experimental Data") {
           if (barData[u].y[i.pos] === 2) {
             barData[u].marker.color[i.pos] = i.color
           }
-
+        }
+        if (barData[u].y[i.pos] === 2) {
+          annotations[u].push(i.annotation)
         }
       }
     }
     for (const u in z) {
       barData[u].x = seq[u]
     }
-    console.log(barData)
+
     this.graphData2 = barData
     for (const u in z) {
       this.graphLayout2[u] = {
