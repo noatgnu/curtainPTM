@@ -19,13 +19,17 @@
           </select>
         </div>
       </div>
-      <button class="btn btn-primary" (click)="draw()">Redraw</button>
+      <div class="row">
+        <button class="btn btn-primary" (click)="draw()">Redraw</button>
+        <!--<button class="btn btn-success ml-2" (click)="downloadPlot()">Download plots</button>-->
+      </div>
+
     </form>
   </div>
 
   <ng-container *ngFor="let g of titleOrder">
     <ng-container *ngIf="graphData2[g]">
-      <plotly-plot [contentEditable]="true" divId="{{uniprotEntry+g}}" [data]="[graphData2[g]]" [layout]="graphLayout2[g]" [updateOnLayoutChange]="true" [updateOnDataChange]="true" (relayout)="updateBoundary(g, $event)"></plotly-plot>
+      <plotly-plot divId="{{uniprotEntry+g}}" [data]="[graphData2[g]]" [layout]="graphLayout2[g]" [updateOnLayoutChange]="true" [updateOnDataChange]="true" (relayout)="updateBoundary(g, $event)"></plotly-plot>
     </ng-container>
   </ng-container>
   <ng-container *ngIf="heatmapEnable">

@@ -621,4 +621,12 @@ export class HeatmapComponent implements OnInit, OnDestroy {
       this.drawBarChart()
     }
   }
+
+  async downloadPlot() {
+    for (const g of this.titleOrder) {
+      if (this.graphData2[g]) {
+        await this.dataService.downloadPlotlyExtra(this.uniprotEntry+g, "svg")
+      }
+    }
+  }
 }
