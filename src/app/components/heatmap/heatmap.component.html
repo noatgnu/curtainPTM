@@ -3,7 +3,7 @@
     <form [formGroup]="form">
       <div class="row">
         <div class="form-group">
-          <label for="modTypes">Modification types for UniProt heatmap</label>
+          <label for="modTypes">Modification types for UniProt</label>
           <select multiple id="modTypes" class="form-control" formControlName="modificationTypes">
             <option *ngFor="let m of modTypes" [value]="m">
               {{m}}
