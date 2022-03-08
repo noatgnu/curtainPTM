@@ -136,7 +136,7 @@ export class HeatmapComponent implements OnInit, OnDestroy {
         for (const p of this.df) {
           if (p[this.dataService.cols.score] >= this.settings.settings.probabilityFilterMap[this._data]) {
             const pos = p[this.dataService.cols.positionCol] -1
-            this.opacityMap[pos] = (p[this.dataService.cols.foldChangeCol]-this.foldChange.min)/(this.foldChange.max - this.foldChange.min) * 0.75 +0.25
+            this.opacityMap[pos] = (p[this.dataService.cols.foldChangeCol]-this.significant.min)/(this.significant.max - this.significant.min) * 0.75 +0.25
             let ap = true
             for (const r of this.positions["Experimental Data"]) {
               if (r.res === pos) {
