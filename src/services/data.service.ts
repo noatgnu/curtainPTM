@@ -8,6 +8,7 @@ import {PlotlyService} from "angular-plotly.js";
   providedIn: 'root'
 })
 export class DataService {
+  highlightMap: any = {}
   _cols: any = {}
   _dataFile: InputData = new InputData()
   _conditionMap: any = {}

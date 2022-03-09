@@ -20,6 +20,7 @@ import { ProteinExtraDataComponent } from './components/protein-extra-data/prote
 import {ProteinDomainComponent} from "./components/protein-domain/protein-domain.component";
 import {AppRoutingModule} from "./app-routing.module";
 import { SequenceLogoComponent } from './components/sequence-logo/sequence-logo.component';
+import { AdvanceHighlightsComponent } from './components/advance-highlights/advance-highlights.component';
 
 PlotlyModule.plotlyjs = PlotlyJS;
 @NgModule({
@@ -35,7 +36,8 @@ PlotlyModule.plotlyjs = PlotlyJS;
     VolcanoColorGroupsComponent,
     ProteinExtraDataComponent,
     ProteinDomainComponent,
-    SequenceLogoComponent
+    SequenceLogoComponent,
+    AdvanceHighlightsComponent
   ],
     imports: [
         BrowserModule,

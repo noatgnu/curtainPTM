@@ -2,6 +2,7 @@
   <a class="navbar-brand" href="#">CurtainPTM</a>
   <ng-container *ngIf="dataService.finishedProcessing">
     <app-quick-search (selected)="handleRes($event)"></app-quick-search>
+    <button class="btn btn-primary ml-2" (click)="openAdvancedHighlight()">Advanced Search</button>
     <button class="btn btn-outline-primary ml-2" (click)="saveSession()">Save Session</button>
     <button class="btn btn-outline-danger ml-2" (click)="clearSelections()">Clear Selections</button>
     <a *ngIf="uniqueLink !== ''" href="{{uniqueLink}}" class="ml-2 text-success">{{uniqueLink}}</a>

@@ -6,6 +6,8 @@ import {SettingsService} from "../../../services/settings.service";
 import {WebService} from "../../../services/web.service";
 import {fromCSV} from "data-forge";
 import {PspService} from "../../../services/psp.service";
+import {NgbModal, NgbModalRef} from "@ng-bootstrap/ng-bootstrap";
+import {AdvanceHighlightsComponent} from "../advance-highlights/advance-highlights.component";
 
 @Component({
   selector: 'app-home',
@@ -16,7 +18,7 @@ export class HomeComponent implements OnInit {
   uniqueLink: string = ""
   unidSelection: string = ""
 
-  constructor(private psp: PspService, private uniprot: UniprotService, public dataService: DataService, public settings: SettingsService, private web: WebService, private route: ActivatedRoute) {
+  constructor(private dialog: NgbModal, private psp: PspService, private uniprot: UniprotService, public dataService: DataService, public settings: SettingsService, private web: WebService, private route: ActivatedRoute) {
     this.psp.getPSP()
     this.route.params.subscribe(params => {
       if (params) {
@@ -96,7 +98,8 @@ export class HomeComponent implements OnInit {
       selections: this.dataService.queryProtein,
       selectionsMap: this.dataService.queryMap,
       highlights: this.dataService.highlights,
-      pspIDMap: this.dataService.pspIDMap
+      pspIDMap: this.dataService.pspIDMap,
+      highlightMap: this.dataService.highlightMap
     }
     this.web.putSettings(data).subscribe(data => {
       if (data.body) {
@@ -124,11 +127,56 @@ export class HomeComponent implements OnInit {
     if (object.pspIDMap) {
       this.dataService.pspIDMap = object.pspIDMap
     }
+    if (object.highlightMap) {
+      this.dataService.highlightMap = object.highlightMap
+    }
     this.dataService.restoreTrigger.next(true)
   }
 
   volcanoSelection(e: string) {
     this.unidSelection = e
     this.dataService.selectionService.next({data: this.unidSelection, type: "Primary IDs"})
+  }
+
+  openAdvancedHighlight() {
+    const dialogRef = this.dialog.open(AdvanceHighlightsComponent)
+    dialogRef.result.then((result) => {
+      if (result) {
+        this.dataService.highlightMap = {}
+        const rows = this.dataService.dataFile.data.where(row =>
+          (Math.abs(row[this.dataService.cols.foldChangeCol]) <= result["maxfc"]) &&
+          (Math.abs(row[this.dataService.cols.foldChangeCol]) >= result["minfc"]) &&
+          (row[this.dataService.cols.significantCol] <= result["maxP"]) &&
+          (row[this.dataService.cols.significantCol] >= result["minP"])
+        ).bake()
+        const proteins = rows.getSeries(this.dataService.cols.accessionCol).distinct().bake().toArray()
+        for (const r of rows) {
+          this.dataService.highlightMap[r[this.dataService.cols.primaryIDComparisonCol]] = true
+        }
+        const rowP = this.dataService.dataFile.data.where(row => proteins.includes(row[this.dataService.cols.accessionCol])).bake()
+
+        for (const i of rowP) {
+          if (i[this.dataService.cols.primaryIDComparisonCol]) {
+            if (!(this.dataService.queryMap.has(i[this.dataService.cols.accessionCol]))) {
+              this.dataService.queryMap.set(i[this.dataService.cols.accessionCol], {})
+              this.dataService.queryProtein.push(i[this.dataService.cols.accessionCol])
+            }
+            const d = this.dataService.queryMap.get(i[this.dataService.cols.accessionCol])
+            if (!(i["Gene names"] in d)) {
+              d[i["Gene names"]] = []
+            }
+            if (d) {
+              d[i["Gene names"]].push(i[this.dataService.cols.primaryIDComparisonCol])
+              this.dataService.queryMap.set(i[this.dataService.cols.accessionCol], d)
+            }
+          }
+        }
+        console.log(proteins)
+      }
+    }, (reason) => {
+      if (reason) {
+        console.log(reason)
+      }
+    })
   }
 }
