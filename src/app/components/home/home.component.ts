@@ -85,6 +85,7 @@ export class HomeComponent implements OnInit {
     this.dataService.justSelected = ""
     this.dataService.clearSelections.next(true)
     this.dataService.pspIDMap = {}
+    this.dataService.highlightMap =  {}
   }
 
 
