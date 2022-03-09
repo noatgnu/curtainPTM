@@ -150,12 +150,14 @@ export class HomeComponent implements OnInit {
           (row[this.dataService.cols.significantCol] <= result["maxP"]) &&
           (row[this.dataService.cols.significantCol] >= result["minP"])
         ).bake()
+
         const proteins = rows.getSeries(this.dataService.cols.accessionCol).distinct().bake().toArray()
+        this.dataService.progressBarEvent.next({event: "Find proteins with fitting filter parameters", value: 1, maxValue: 3})
         for (const r of rows) {
           this.dataService.highlightMap[r[this.dataService.cols.primaryIDComparisonCol]] = true
         }
         const rowP = this.dataService.dataFile.data.where(row => proteins.includes(row[this.dataService.cols.accessionCol])).bake()
-
+        this.dataService.progressBarEvent.next({event: "Find IDs from the selected proteins", value: 2, maxValue: 3})
         for (const i of rowP) {
           if (i[this.dataService.cols.primaryIDComparisonCol]) {
             if (!(this.dataService.queryMap.has(i[this.dataService.cols.accessionCol]))) {
@@ -172,7 +174,7 @@ export class HomeComponent implements OnInit {
             }
           }
         }
-        console.log(proteins)
+        this.dataService.progressBarEvent.next({event: "Processing completed!", value: 3, maxValue: 3})
       }
     }, (reason) => {
       if (reason) {
