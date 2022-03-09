@@ -85,6 +85,7 @@
               <td>{{r[dataService.cols.score]}}</td>
               <td>
                 <button class="btn btn-sm btn-outline-primary" (click)="viewBar(r[dataService.cols.primaryIDComparisonCol])">C</button>
+                <button class="btn btn-sm btn-outline-primary ml-2" *ngIf="enableBar[r[dataService.cols.primaryIDComparisonCol]]" (click)="viewAverageBar(r[dataService.cols.primaryIDComparisonCol])">A</button>
                 <button class="btn btn-sm btn-outline-primary ml-2" (click)="volcanoAnnotate(r)">V</button>
               </td>
             </tr>
@@ -111,6 +112,7 @@
               <td>{{r[dataService.cols.score]}}</td>
               <td>
                 <button class="btn btn-sm btn-outline-primary" (click)="viewBar(r[dataService.cols.primaryIDComparisonCol])">C</button>
+                <button class="btn btn-sm btn-outline-primary ml-2" *ngIf="enableBar[r[dataService.cols.primaryIDComparisonCol]]" (click)="viewAverageBar(r[dataService.cols.primaryIDComparisonCol])">A</button>
                 <button class="btn btn-sm btn-outline-primary ml-2" (click)="volcanoAnnotate(r)">V</button>
               </td>
             </tr>
@@ -120,7 +122,7 @@
         <ng-container *ngIf="residueMap[r[dataService.cols.positionCol]] && enableBar[r[dataService.cols.primaryIDComparisonCol]]">
           <tr>
             <td colspan="9">
-              <app-bar-chart [data]="r[dataService.cols.primaryIDComparisonCol]"></app-bar-chart>
+              <app-bar-chart [data]="r[dataService.cols.primaryIDComparisonCol]" [average]="averageBar[r[dataService.cols.primaryIDComparisonCol]]"></app-bar-chart>
             </td>
           </tr>
         </ng-container>

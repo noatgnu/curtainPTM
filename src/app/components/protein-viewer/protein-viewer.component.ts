@@ -20,6 +20,7 @@ export class ProteinViewerComponent implements OnInit, OnDestroy {
   residueMap: any = {}
   uniprotData: any = {}
   enableBar: any = {}
+  averageBar: any = {}
   form: FormGroup = this.fb.group({
     probability: 0
   })
@@ -63,6 +64,7 @@ export class ProteinViewerComponent implements OnInit, OnDestroy {
         this.df = this.dataService.dataFile.data.where(row => row[this.dataService.cols.accessionCol] === this._data).bake()
         this.changeDF = this.df.where(row => this.selectedUID.includes(row[this.dataService.cols.primaryIDComparisonCol])).bake()
         for (const r of this.df) {
+          this.averageBar[r[this.dataService.cols.primaryIDComparisonCol]] = false
           if (r[this.dataService.cols.score] >= (this.settings.settings.probabilityFilterMap[this._data])) {
             if (this.dataService.highlights[r[this.dataService.cols.primaryIDComparisonCol]]) {
               this.enableBar[r[this.dataService.cols.primaryIDComparisonCol]] = this.dataService.highlights[r[this.dataService.cols.primaryIDComparisonCol]].selected
@@ -138,6 +140,11 @@ export class ProteinViewerComponent implements OnInit, OnDestroy {
       this.dataService.removeSelected(primaryIDs)
     }
   }
+
+  viewAverageBar(primaryIDs: string) {
+    this.averageBar[primaryIDs] = !this.averageBar[primaryIDs]
+  }
+
   volcanoAnnotate(r: any) {
     this.dataService.annotateService.next(r)
   }

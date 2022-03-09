@@ -1,1 +1,5 @@
-<plotly-plot [data]="graphData" [layout]="graphLayout"></plotly-plot>
+<plotly-plot [data]="graphData" [layout]="graphLayout" [updateOnDataChange]="true" [updateOnLayoutChange]="true"></plotly-plot>
+
+<div class="mt-2" *ngIf="_average">
+  <plotly-plot [data]="graphData2" [layout]="graphLayout2" [updateOnDataChange]="true" [updateOnLayoutChange]="true"></plotly-plot>
+</div>
