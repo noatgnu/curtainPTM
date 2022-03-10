@@ -60,6 +60,7 @@ export class HomeComponent implements OnInit {
       if (!(this.dataService.queryMap.has(i[this.dataService.cols.accessionCol]))) {
         this.dataService.queryMap.set(i[this.dataService.cols.accessionCol], {})
         this.dataService.queryProtein.push(i[this.dataService.cols.accessionCol])
+        this.dataService.queryGeneNames.push(i["Gene names"])
       }
       const d = this.dataService.queryMap.get(i[this.dataService.cols.accessionCol])
       if (!(selectionTitle in d)) {
@@ -75,6 +76,7 @@ export class HomeComponent implements OnInit {
     if (acc !== "") {
       let e = this.dataService.scrollToID(acc+"scrollid");
     }
+    this.dataService.finishedSelection.next(true)
 
   }
 
@@ -86,6 +88,8 @@ export class HomeComponent implements OnInit {
     this.dataService.clearSelections.next(true)
     this.dataService.pspIDMap = {}
     this.dataService.highlightMap =  {}
+    this.dataService.queryGeneNames = []
+    this.dataService.finishedSelection.next(false)
   }
 
 
@@ -100,7 +104,8 @@ export class HomeComponent implements OnInit {
       selectionsMap: this.dataService.queryMap,
       highlights: this.dataService.highlights,
       pspIDMap: this.dataService.pspIDMap,
-      highlightMap: this.dataService.highlightMap
+      highlightMap: this.dataService.highlightMap,
+      queryGeneNames: this.dataService.queryGeneNames
     }
     this.web.putSettings(data).subscribe(data => {
       if (data.body) {
@@ -130,6 +135,9 @@ export class HomeComponent implements OnInit {
     }
     if (object.highlightMap) {
       this.dataService.highlightMap = object.highlightMap
+    }
+    if (object.queryGeneNames) {
+      this.dataService.queryGeneNames = object.queryGeneNames
     }
     this.dataService.restoreTrigger.next(true)
   }
@@ -163,6 +171,7 @@ export class HomeComponent implements OnInit {
             if (!(this.dataService.queryMap.has(i[this.dataService.cols.accessionCol]))) {
               this.dataService.queryMap.set(i[this.dataService.cols.accessionCol], {})
               this.dataService.queryProtein.push(i[this.dataService.cols.accessionCol])
+              this.dataService.queryGeneNames.push(i["Gene names"])
             }
             const d = this.dataService.queryMap.get(i[this.dataService.cols.accessionCol])
             if (!(i["Gene names"] in d)) {
@@ -175,6 +184,7 @@ export class HomeComponent implements OnInit {
           }
         }
         this.dataService.progressBarEvent.next({event: "Processing completed!", value: 3, maxValue: 3})
+        this.dataService.finishedSelection.next(true)
       }
     }, (reason) => {
       if (reason) {

@@ -21,6 +21,8 @@ import {ProteinDomainComponent} from "./components/protein-domain/protein-domain
 import {AppRoutingModule} from "./app-routing.module";
 import { SequenceLogoComponent } from './components/sequence-logo/sequence-logo.component';
 import { AdvanceHighlightsComponent } from './components/advance-highlights/advance-highlights.component';
+import { ContentComponent } from './components/content/content.component';
+import { QuickSearchSelectedComponent } from './components/quick-search-selected/quick-search-selected.component';
 
 PlotlyModule.plotlyjs = PlotlyJS;
 @NgModule({
@@ -37,7 +39,9 @@ PlotlyModule.plotlyjs = PlotlyJS;
     ProteinExtraDataComponent,
     ProteinDomainComponent,
     SequenceLogoComponent,
-    AdvanceHighlightsComponent
+    AdvanceHighlightsComponent,
+    ContentComponent,
+    QuickSearchSelectedComponent
   ],
     imports: [
         BrowserModule,

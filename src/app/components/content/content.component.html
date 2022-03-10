@@ -1,0 +1,12 @@
+<ng-container *ngIf="displayArray.length>0">
+  <div class="row">
+    <ngb-pagination id="top-page" [pageSize]="perPage" [collectionSize]="displayArray.length" [(page)]="currentPage" (pageChange)="scrollToTop()"></ngb-pagination>
+    <app-quick-search-selected class="ml-2" (selected)="selectAndScroll($event)"></app-quick-search-selected>
+  </div>
+
+  <ng-container class="mt-2 ml-2 mr-2" *ngFor="let d of displayArray[currentPage-1]">
+    <app-protein-viewer [data]="d.data" id="{{d.data}}scrollid"></app-protein-viewer>
+  </ng-container>
+  <ngb-pagination id="bottom-page" [pageSize]="perPage" [collectionSize]="displayArray.length" [(page)]="currentPage" (pageChange)="scrollToTop()"></ngb-pagination>
+</ng-container>
+

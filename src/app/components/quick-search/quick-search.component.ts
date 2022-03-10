@@ -12,6 +12,7 @@ export class QuickSearchComponent implements OnInit {
   @Output() selected: EventEmitter<any[]> = new EventEmitter<any[]>()
   searchType = "Gene names"
   selectedProteinModel: string = ""
+
   selectedProtein: OperatorFunction<string, readonly string[]> = (text$: Observable<string>) =>
     text$.pipe(
       debounceTime(200),

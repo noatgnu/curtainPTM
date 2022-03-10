@@ -166,6 +166,7 @@ export class HeatmapComponent implements OnInit, OnDestroy {
             for (const s in seqNeeded) {
               // @ts-ignore
               this.sequence[s] = this.uniprot.parseFasta(results[s])
+              this.uniprot.fastaMap[s] = this.sequence[s].slice()
             }
             this.uniprot.alignSequences(this.sequence).then((data) => {
               const seqLabels = Object.keys(this.sequence)

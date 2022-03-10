@@ -8,6 +8,7 @@ import {PlotlyService} from "angular-plotly.js";
   providedIn: 'root'
 })
 export class DataService {
+  finishedSelection: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false)
   highlightMap: any = {}
   _cols: any = {}
   _dataFile: InputData = new InputData()
@@ -32,6 +33,8 @@ export class DataService {
   primaryIDsList: string[] = []
   dataMap: Map<string, string> = new Map<string, string>()
   queryProtein: string[] = []
+  queryGeneNames: string[] = []
+
   queryMap: Map<string, any> = new Map<string, any>()
   clearSelections: Subject<boolean> = new Subject<boolean>()
   restoreTrigger: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false)

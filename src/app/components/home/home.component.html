@@ -16,9 +16,7 @@
   <div class="container-fluid">
     <app-volcano-plot [data]="dataService.dataFile.data" (selected)="volcanoSelection($event)"></app-volcano-plot>
   </div>
-  <ng-container class="mt-2 ml-2 mr-2" *ngFor="let d of dataService.queryProtein">
-    <app-protein-viewer [data]="d" id="{{d}}scrollid"></app-protein-viewer>
-  </ng-container>
+  <app-content></app-content>
 </ng-container>
 
 
