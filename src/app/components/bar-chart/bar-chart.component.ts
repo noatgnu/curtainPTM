@@ -29,15 +29,35 @@ export class BarChartComponent implements OnInit {
   graphData: any[] = []
   graphLayout: any = {
     xaxis: {
+      tickfont: {
+        size: 17,
+        color: "black",
+      },
       tickvals: [],
       ticktext: []
+    },
+    yaxis: {
+      tickfont: {
+        size: 17,
+        color: "black",
+      },
     }
   }
   graphData2: any[] = []
   graphLayout2: any = {
     xaxis: {
+      tickfont: {
+        size: 17,
+        color: "black",
+      },
       tickvals: [],
       ticktext: []
+    },
+    yaxis: {
+      tickfont: {
+        size: 17,
+        color: "black",
+      },
     }
   }
   constructor(private dataService: DataService) { }
@@ -93,6 +113,26 @@ export class BarChartComponent implements OnInit {
     }
 
     for (const t in temp ) {
+      const box = {
+        x: t, y: temp[t],
+        type: 'box',
+        boxpoints: 'all',
+        pointpos: 0,
+        jitter: 0.3,
+        fillcolor: 'rgba(255,255,255,0)',
+        line: {
+        color: 'rgba(255,255,255,0)',
+      },
+        hoveron: 'points',
+          marker: {
+        color: "#654949",
+          opacity: 0.8,
+      },
+        name: t,
+          //visible: visible,
+          showlegend: false
+      }
+
       const s = new Series(temp[t])
       const std =  s.std()
       const standardError = std/Math.sqrt(s.count())
@@ -109,6 +149,7 @@ export class BarChartComponent implements OnInit {
         //visible: temp[t].visible,
         showlegend: false
       })
+      this.graphData2.push(box)
       this.graphLayout2.xaxis.tickvals.push(t)
       this.graphLayout2.xaxis.ticktext.push(t)
     }

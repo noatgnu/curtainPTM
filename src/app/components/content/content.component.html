@@ -1,5 +1,5 @@
 <ng-container *ngIf="displayArray.length>0">
-  <div class="row">
+  <div class="row mt-2">
     <ngb-pagination id="top-page" [pageSize]="perPage" [collectionSize]="collectionSize" [(page)]="currentPage" (pageChange)="scrollToTop()"></ngb-pagination>
     <app-quick-search-selected class="ml-2" (selected)="selectAndScroll($event)"></app-quick-search-selected>
   </div>
