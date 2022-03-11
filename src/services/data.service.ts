@@ -8,6 +8,7 @@ import {PlotlyService} from "angular-plotly.js";
   providedIn: 'root'
 })
 export class DataService {
+  selectNScroll: BehaviorSubject<string> = new BehaviorSubject<string>("")
   finishedSelection: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false)
   highlightMap: any = {}
   _cols: any = {}

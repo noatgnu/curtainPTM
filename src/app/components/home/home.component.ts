@@ -73,10 +73,13 @@ export class HomeComponent implements OnInit {
       acc = i[this.dataService.cols.accessionCol]
     }
     this.dataService.selectionNotifier.next(true)
-    if (acc !== "") {
-      let e = this.dataService.scrollToID(acc+"scrollid");
-    }
     this.dataService.finishedSelection.next(true)
+    if (acc !== "") {
+      //let e = this.dataService.scrollToID(acc+"scrollid");
+      this.dataService.selectNScroll.next(acc)
+    }
+
+
 
   }
 

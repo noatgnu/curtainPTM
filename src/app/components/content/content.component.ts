@@ -8,6 +8,7 @@ import {DataService} from "../../../services/data.service";
 })
 export class ContentComponent implements OnInit {
   displayArray: any[] = []
+  collectionSize = 1
   perPage: number = 5
   currentPage: number = 1
   constructor(public dataService: DataService) {
@@ -16,11 +17,18 @@ export class ContentComponent implements OnInit {
         this.createPages()
       }
     })
+    this.dataService.selectNScroll.subscribe(data => {
+      if (data) {
+        if (data !== "") {
+          this.selectAndScroll(data)
+        }
+      }
+    })
+
   }
 
   ngOnInit(): void {
     this.createPages();
-    console.log(this.displayArray.length)
   }
 
   private createPages() {
@@ -28,17 +36,20 @@ export class ContentComponent implements OnInit {
     let n = 0
     let tempArray: any[] = []
     for (let i = 0; i < this.dataService.queryProtein.length; i++) {
+
+      tempArray.push({pos: i, data: this.dataService.queryProtein[i]})
+      n++
       if (n === this.perPage) {
         n = 0
         this.displayArray.push(tempArray.slice())
         tempArray = []
       }
-      tempArray.push({pos: i, data: this.dataService.queryProtein[i]})
-      n++
     }
     if (n !== this.perPage && n !== 0) {
       this.displayArray.push(tempArray.slice())
     }
+
+    this.collectionSize = this.dataService.queryProtein.length
   }
 
   scrollToTop() {
@@ -51,7 +62,7 @@ export class ContentComponent implements OnInit {
       for (const c of this.displayArray[i]) {
         if (c.data === e) {
           this.currentPage = i+1
-          this.dataService.scrollToID(c.data+"id")
+          this.dataService.scrollToID(c.data+"scrollid")
           breaking = true
           break
         }

@@ -73,7 +73,13 @@ export class HeatmapComponent implements OnInit, OnDestroy {
       this.expDataAcc = accs[0]
       this.accMap["Experimental Data"] = this.expDataAcc
       if (this.expDataAcc !== this.uniprotEntry) {
-        seqNeeded[this.expDataAcc] = this.uniprot.getUniprotFasta(this.expDataAcc)
+        if (!this.sequence[this.expDataAcc]) {
+          if (this.uniprot.fastaMap[this.expDataAcc]) {
+            this.sequence[this.expDataAcc] = this.uniprot.fastaMap[this.expDataAcc].slice()
+          } else {
+            seqNeeded[this.expDataAcc] = this.uniprot.getUniprotFasta(this.expDataAcc)
+          }
+        }
       }
       if (this.psp.pspMap[this.uniprotEntry] || this.psp.pspMap[this.expDataAcc]) {
         if (!this.dataService.pspIDMap[this._data]) {
@@ -93,11 +99,17 @@ export class HeatmapComponent implements OnInit, OnDestroy {
         for (const acc of accs) {
           if (this.psp.pspMap[acc]) {
             if (!this.sequence[acc]) {
-              if (!seqNeeded[acc]) {
-                seqNeeded[acc] = this.uniprot.getUniprotFasta(acc)
+              if (this.uniprot.fastaMap[acc]) {
+                this.sequence = this.uniprot.fastaMap[acc].slice()
+              } else {
+                if (!seqNeeded[acc]) {
+                  seqNeeded[acc] = this.uniprot.getUniprotFasta(acc)
+                }
               }
             }
-            this.dataService.pspIDMap[this._data].associated.push(acc)
+            if (!this.dataService.pspIDMap[this._data].associated.includes(acc)) {
+              this.dataService.pspIDMap[this._data].associated.push(acc)
+            }
           }
         }
       } else {
@@ -179,7 +191,19 @@ export class HeatmapComponent implements OnInit, OnDestroy {
           }
         })
       } else {
-        this.draw()
+        if (Object.keys(this.sequence).length > 1) {
+          this.uniprot.alignSequences(this.sequence).then((data) => {
+            const seqLabels = Object.keys(this.sequence)
+
+            for (let i = 0; i < seqLabels.length; i ++) {
+              this.sequence[seqLabels[i]] = data[i]
+            }
+            this.draw()
+          })
+        } else {
+          this.draw()
+        }
+
       }
     }
   }
