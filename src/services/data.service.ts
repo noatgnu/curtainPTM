@@ -173,4 +173,16 @@ export class DataService {
     }
     return result
   }
+
+  clearAll() {
+    this.queryProtein = []
+    this.queryMap = new Map<string, any>()
+    this.highlights = {}
+    this.justSelected = ""
+    this.clearSelections.next(true)
+    this.pspIDMap = {}
+    this.highlightMap =  {}
+    this.queryGeneNames = []
+    this.finishedSelection.next(false)
+  }
 }

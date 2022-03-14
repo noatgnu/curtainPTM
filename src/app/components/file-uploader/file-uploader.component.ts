@@ -218,24 +218,31 @@ export class FileUploaderComponent implements OnInit {
     temp["-log10(p)"] = []
     temp["log2(fc)"] = []
     for (const r of this.data.data) {
-      const signi = parseFloat(r[this.form.value.significantCol])
-      if (this.form.value.log10transform) {
-        const log10s = -Math.log10(signi)
-        temp["-log10(p)"].push(log10s)
-      } else {
-        temp[this.form.value.significantCol].push(signi)
+      if (typeof r[this.form.value.significantCol] === "string") {
+        const signi = parseFloat(r[this.form.value.significantCol])
+        if (this.form.value.log10transform) {
+          const log10s = -Math.log10(signi)
+          temp["-log10(p)"].push(log10s)
+        } else {
+          temp[this.form.value.significantCol].push(signi)
+        }
       }
-      const foldc = parseFloat(r[this.form.value.foldChangeCol])
-      if (this.form.value.log2transform) {
-        const log2f = Math.log2(foldc)
-        temp["log2(fc)"].push(log2f)
-      } else {
-        temp[this.form.value.foldChangeCol].push(foldc)
+      if (typeof r[this.form.value.foldChangeCol] === "string") {
+        const foldc = parseFloat(r[this.form.value.foldChangeCol])
+        if (this.form.value.log2transform) {
+          const log2f = Math.log2(foldc)
+          temp["log2(fc)"].push(log2f)
+        } else {
+          temp[this.form.value.foldChangeCol].push(foldc)
+        }
       }
-      temp[this.form.value.positionCol].push(parseInt(r[this.form.value.positionCol]))
-      if (r[this.form.value.positionPeptideCol]) {
-        temp[this.form.value.positionPeptideCol].push(parseInt(r[this.form.value.positionPeptideCol]))
+      if (typeof r[this.form.value.positionCol] === "string") {
+        temp[this.form.value.positionCol].push(parseInt(r[this.form.value.positionCol]))
+        if (r[this.form.value.positionPeptideCol]) {
+          temp[this.form.value.positionPeptideCol].push(parseInt(r[this.form.value.positionPeptideCol]))
+        }
       }
+
 
       if (r[this.form.value.peptideSequenceCol]) {
         let count = 0
