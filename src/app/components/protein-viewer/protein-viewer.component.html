@@ -47,7 +47,9 @@
               {{residueMap[r[dataService.cols.positionCol]].site}}
             </td>
             <td>{{r[dataService.cols.positionCol]}}</td>
-            <td>{{r[dataService.cols.sequenceCol]}}</td>
+            <td><span>{{r[dataService.cols.sequenceCol].slice(0, 15)}}</span>
+              <span class="text-danger"><b>{{r[dataService.cols.sequenceCol][15]}}</b></span>
+              <span>{{r[dataService.cols.sequenceCol].slice(16, 31)}}</span></td>
             <td>
               <ng-container *ngIf="residueMap[r[dataService.cols.positionCol]] !== ''">
                 <span>{{residueMap[r[dataService.cols.positionCol]].prefix}}</span>
@@ -74,7 +76,11 @@
                 {{residueMap[r[dataService.cols.positionCol]].site}}
               </td>
               <td>{{r[dataService.cols.positionCol]}}</td>
-              <td>{{r[dataService.cols.sequenceCol]}}</td>
+              <td>
+                <span>{{r[dataService.cols.sequenceCol].slice(0, 15)}}</span>
+                <span class="text-danger"><b>{{r[dataService.cols.sequenceCol][15]}}</b></span>
+                <span>{{r[dataService.cols.sequenceCol].slice(16, 31)}}</span>
+              </td>
               <td>
                 <ng-container *ngIf="residueMap[r[dataService.cols.positionCol]] !== ''">
                   <span>{{residueMap[r[dataService.cols.positionCol]].prefix}}</span>
@@ -101,7 +107,11 @@
                 {{residueMap[r[dataService.cols.positionCol]].site}}
               </td>
               <td>{{r[dataService.cols.positionCol]}}</td>
-              <td>{{r[dataService.cols.sequenceCol]}}</td>
+              <td>
+                <span>{{r[dataService.cols.sequenceCol].slice(0, 15)}}</span>
+                <span class="text-danger"><b>{{r[dataService.cols.sequenceCol][15]}}</b></span>
+                <span>{{r[dataService.cols.sequenceCol].slice(16, 31)}}</span>
+                </td>
               <td>
                 <ng-container *ngIf="residueMap[r[dataService.cols.positionCol]] !== ''">
                   <span>{{residueMap[r[dataService.cols.positionCol]].prefix}}</span>
