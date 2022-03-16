@@ -47,9 +47,11 @@
               {{residueMap[r[dataService.cols.positionCol]].site}}
             </td>
             <td>{{r[dataService.cols.positionCol]}}</td>
-            <td><span>{{r[dataService.cols.sequenceCol].slice(0, 15)}}</span>
-              <span class="text-danger"><b>{{r[dataService.cols.sequenceCol][15]}}</b></span>
-              <span>{{r[dataService.cols.sequenceCol].slice(16, 31)}}</span></td>
+            <td>
+              <span>{{r[dataService.cols.sequenceCol].slice(0, (r[dataService.cols.sequenceCol].length-1)/2)}}</span>
+              <span class="text-danger"><b>{{r[dataService.cols.sequenceCol][(r[dataService.cols.sequenceCol].length-1)/2]}}</b></span>
+              <span>{{r[dataService.cols.sequenceCol].slice((r[dataService.cols.sequenceCol].length-1)/2+1, 31)}}</span>
+            </td>
             <td>
               <ng-container *ngIf="residueMap[r[dataService.cols.positionCol]] !== ''">
                 <span>{{residueMap[r[dataService.cols.positionCol]].prefix}}</span>
@@ -77,9 +79,9 @@
               </td>
               <td>{{r[dataService.cols.positionCol]}}</td>
               <td>
-                <span>{{r[dataService.cols.sequenceCol].slice(0, 15)}}</span>
-                <span class="text-danger"><b>{{r[dataService.cols.sequenceCol][15]}}</b></span>
-                <span>{{r[dataService.cols.sequenceCol].slice(16, 31)}}</span>
+                <span>{{r[dataService.cols.sequenceCol].slice(0, (r[dataService.cols.sequenceCol].length-1)/2)}}</span>
+                <span class="text-danger"><b>{{r[dataService.cols.sequenceCol][(r[dataService.cols.sequenceCol].length-1)/2]}}</b></span>
+                <span>{{r[dataService.cols.sequenceCol].slice((r[dataService.cols.sequenceCol].length-1)/2+1, 31)}}</span>
               </td>
               <td>
                 <ng-container *ngIf="residueMap[r[dataService.cols.positionCol]] !== ''">
@@ -108,9 +110,9 @@
               </td>
               <td>{{r[dataService.cols.positionCol]}}</td>
               <td>
-                <span>{{r[dataService.cols.sequenceCol].slice(0, 15)}}</span>
-                <span class="text-danger"><b>{{r[dataService.cols.sequenceCol][15]}}</b></span>
-                <span>{{r[dataService.cols.sequenceCol].slice(16, 31)}}</span>
+                <span>{{r[dataService.cols.sequenceCol].slice(0, (r[dataService.cols.sequenceCol].length-1)/2)}}</span>
+                <span class="text-danger"><b>{{r[dataService.cols.sequenceCol][(r[dataService.cols.sequenceCol].length-1)/2]}}</b></span>
+                <span>{{r[dataService.cols.sequenceCol].slice((r[dataService.cols.sequenceCol].length-1)/2+1, 31)}}</span>
                 </td>
               <td>
                 <ng-container *ngIf="residueMap[r[dataService.cols.positionCol]] !== ''">

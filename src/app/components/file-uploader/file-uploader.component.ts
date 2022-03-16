@@ -21,7 +21,7 @@ export class FileUploaderComponent implements OnInit {
   accessionList: string[] = []
   form: FormGroup = this.fb.group({
     primaryIDComparisonCol: "Unique identifier",
-    accessionCol: "Leading proteins",
+    accessionCol: "Protein",
     sequenceCol: "Sequence window",
     positionCol: "Position",
     positionPeptideCol: "Position in peptide",
