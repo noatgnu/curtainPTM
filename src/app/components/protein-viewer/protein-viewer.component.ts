@@ -24,7 +24,7 @@ export class ProteinViewerComponent implements OnInit, OnDestroy {
   form: FormGroup = this.fb.group({
     probability: 0
   })
-
+  sequenceWindows: string[] = []
   sortReverse: any = {}
   @Input() set data(value: string)  {
     if (!this.dataService.observableTriggerMap[value] && value !== "") {
@@ -62,10 +62,12 @@ export class ProteinViewerComponent implements OnInit, OnDestroy {
           }
         }
         this.df = this.dataService.dataFile.data.where(row => row[this.dataService.cols.accessionCol] === this._data).bake()
+        this.sequenceWindows = []
         this.changeDF = this.df.where(row => this.selectedUID.includes(row[this.dataService.cols.primaryIDComparisonCol])).bake()
         for (const r of this.df) {
           this.averageBar[r[this.dataService.cols.primaryIDComparisonCol]] = false
           if (r[this.dataService.cols.score] >= (this.settings.settings.probabilityFilterMap[this._data])) {
+            this.sequenceWindows.push(r[this.dataService.cols.sequenceCol])
             if (this.dataService.highlights[r[this.dataService.cols.primaryIDComparisonCol]]) {
               this.enableBar[r[this.dataService.cols.primaryIDComparisonCol]] = this.dataService.highlights[r[this.dataService.cols.primaryIDComparisonCol]].selected
             } else {
@@ -147,5 +149,9 @@ export class ProteinViewerComponent implements OnInit, OnDestroy {
 
   volcanoAnnotate(r: any) {
     this.dataService.annotateService.next(r)
+  }
+
+  openLogo() {
+    this.dataService.openSequenceLogo({window: this.sequenceWindows[0].length, data: this.sequenceWindows, id: this._data+"logo"})
   }
 }

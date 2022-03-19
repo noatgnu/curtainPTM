@@ -1,34 +1,85 @@
 import {Component, OnInit, AfterViewInit, Input} from '@angular/core';
 // @ts-ignore
 import * as logojs from "logojs-react";
+import {DataService} from "../../../services/data.service";
+import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 @Component({
   selector: 'app-sequence-logo',
   templateUrl: './sequence-logo.component.html',
   styleUrls: ['./sequence-logo.component.css']
 })
 export class SequenceLogoComponent implements OnInit, AfterViewInit {
-  _data: any = {}
+  _data: any[] = []
+  window = 0
+  idName = ""
+  dataCount = 0
+  dataSorted: any[] = []
+  Math: Math = Math
   @Input() set data(value: any) {
     if (value) {
-      this._data = value
+      const data: any[] = []
+      if (value.window > 0) {
+        this.idName = value.id
+        this.window = value.window
+        for (let i = 0; i < this.window; i ++) {
+          const window: any = {}
+          for (const a of this.dataService.aaList) {
+            window[a.res] = 0
+          }
+          window["total"] = 0
+          data.push(window)
+        }
+
+        if (value.data) {
+          if (value.data.length > 0) {
+            this.dataCount = value.data.length
+            for (const s of value.data) {
+              for (let i = 0; i < this.window; i ++) {
+                if (data[i][s[i]] !== undefined) {
+                  data[i][s[i]] = data[i][s[i]] + 1
+                  data[i]["total"] = data[i]["total"] + 1
+                }
+              }
+            }
+          }
+        }
+        const finData = []
+        const dataSorted = []
+        for (const w of data) {
+          const wD = []
+          const tobeSort = []
+          for (const a of this.dataService.aaList) {
+            if (w[a.res] !== 0) {
+              w[a.res] = w[a.res]/w["total"]
+              tobeSort.push([a.res, w[a.res]])
+            } else {
+              tobeSort.push([a.res, 0])
+            }
+            wD.push(w[a.res])
+          }
+          tobeSort.sort(function(a, b) {
+            return b[1]-a[1];
+          });
+          dataSorted.push(tobeSort)
+          finData.push(wD)
+        }
+        this.dataSorted = dataSorted
+
+        console.log(dataSorted)
+        this._data = finData
+        logojs.embedProteinLogo(document.getElementById("seqLogo"), { ppm: this._data })
+        logojs.embedProteinLogo(document.getElementById("seqLogoFreq"), { ppm: this._data, mode: "FREQUENCY" })
+      }
+
     }
   }
-  constructor() { }
+  constructor(private dataService: DataService, public modal: NgbActiveModal) { }
 
   ngOnInit(): void {
   }
 
   ngAfterViewInit() {
-    const CTCF_PPM = [
-      [0.09, 0.31, 0.08, 0.50], [0.18, 0.15, 0.45, 0.20], [0.30, 0.05, 0.49, 0.14],
-      [0.06, 0.87, 0.02, 0.03], [0.00, 0.98, 0.00, 0.02], [0.81, 0.01, 0.07, 0.09],
-      [0.04, 0.57, 0.36, 0.01], [0.11, 0.47, 0.05, 0.35], [0.93, 0.01, 0.03, 0.01],
-      [0.00, 0.00, 0.99, 0.01], [0.36, 0.00, 0.64, 0.00], [0.05, 0.01, 0.55, 0.37],
-      [0.03, 0.00, 0.97, 0.00], [0.06, 0.00, 0.85, 0.07], [0.11, 0.80, 0.00, 0.07],
-      [0.40, 0.01, 0.55, 0.01], [0.09, 0.53, 0.33, 0.04], [0.12, 0.35, 0.08, 0.43],
-      [0.44, 0.19, 0.29, 0.06]
-    ];
-    logojs.embedDNALogo(document.getElementById("logo"), { ppm: CTCF_PPM });
+
   }
 
 }

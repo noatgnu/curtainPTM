@@ -8,6 +8,8 @@ import {fromCSV} from "data-forge";
 import {PspService} from "../../../services/psp.service";
 import {NgbModal, NgbModalRef} from "@ng-bootstrap/ng-bootstrap";
 import {AdvanceHighlightsComponent} from "../advance-highlights/advance-highlights.component";
+import {SequenceLogoPromptComponent} from "../sequence-logo-prompt/sequence-logo-prompt.component";
+import {SequenceLogoComponent} from "../sequence-logo/sequence-logo.component";
 
 @Component({
   selector: 'app-home',
@@ -194,5 +196,24 @@ export class HomeComponent implements OnInit {
         console.log(reason)
       }
     })
+  }
+
+  openSequenceLogo() {
+    let data: string[] = []
+    const dialogRef = this.dialog.open(SequenceLogoPromptComponent)
+    dialogRef.dismissed.subscribe(result => {
+      const rows = this.dataService.dataFile.data.where(row =>
+        (Math.abs(row[this.dataService.cols.foldChangeCol]) <= result["maxfc"]) &&
+        (Math.abs(row[this.dataService.cols.foldChangeCol]) >= result["minfc"]) &&
+        (row[this.dataService.cols.significantCol] <= result["maxP"]) &&
+        (row[this.dataService.cols.significantCol] >= result["minP"]) && (row[this.dataService.cols.score] >= result["minScore"])
+      ).bake()
+      data = rows.getSeries(this.dataService.cols.sequenceCol).bake().toArray()
+      if (data.length > 0) {
+        const ref = this.dialog.open(SequenceLogoComponent, {size: "xl"})
+        ref.componentInstance.data = {window: data[0].length, data: data, id: "SequenceLogo"}
+      }
+    })
+
   }
 }

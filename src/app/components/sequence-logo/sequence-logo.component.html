@@ -1,1 +1,29 @@
-<div id="logo" style="width:500px"></div>
+<div class="modal-header">
+  <h5 class="modal-title">Sequence Logo</h5>
+</div>
+<div class="modal-body">
+  <p>Window Length: <span>{{window}}</span></p>
+  <p>Sequences: <span>{{dataCount}}</span></p>
+  <div id="seqLogo" class="mt-2" style="width:1000px; height: 200px"></div>
+  <div id="seqLogoFreq" class="mt-4" style="width:1000px; height: 200px"></div>
+  <div style="max-width: 1000px; overflow-x: scroll">
+    <table class="table table-striped mt-2">
+      <thead>
+      <tr>
+        <th class="col"><b>Rank\Pos</b></th>
+        <th class="col" *ngFor="let i of dataSorted; let ind = index"><b>{{ind+1}}</b></th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let i of dataSorted[0]; let ind = index">
+        <td><b>{{ind+1}}</b></td>
+        <td *ngFor="let i2 of dataSorted; let ind2 = index">
+          <span>{{dataSorted[ind2][ind][0]}}</span><span class="text-muted">({{dataSorted[ind2][ind][1]|number}})</span>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+

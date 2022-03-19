@@ -3,6 +3,8 @@ import {SettingsService} from "./settings.service";
 import {InputData} from "../app/classes/input-data";
 import {BehaviorSubject, Subject} from "rxjs";
 import {PlotlyService} from "angular-plotly.js";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {SequenceLogoComponent} from "../app/components/sequence-logo/sequence-logo.component";
 
 @Injectable({
   providedIn: 'root'
@@ -76,7 +78,7 @@ export class DataService {
     { res: "Z"}
   ]
   selectionNotifier: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false)
-  constructor(private settings: SettingsService, private plotly: PlotlyService) { }
+  constructor(private settings: SettingsService, private plotly: PlotlyService, private modal: NgbModal) { }
 
   async downloadPlotlyExtra(id: string, format: string = "svg") {
     const graph = this.plotly.getInstanceByDivId(id);
@@ -184,5 +186,11 @@ export class DataService {
     this.highlightMap =  {}
     this.queryGeneNames = []
     this.finishedSelection.next(false)
+  }
+
+  openSequenceLogo(data: any) {
+    console.log(data)
+    const diagRef = this.modal.open(SequenceLogoComponent, {size:"xl"})
+    diagRef.componentInstance.data = data
   }
 }

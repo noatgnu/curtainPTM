@@ -2,9 +2,23 @@
   <a class="navbar-brand" href="#">CurtainPTM</a>
   <ng-container *ngIf="dataService.finishedProcessing">
     <app-quick-search (selected)="handleRes($event)"></app-quick-search>
-    <button class="btn btn-primary ml-2" (click)="openAdvancedHighlight()">Advanced Search</button>
-    <button class="btn btn-outline-primary ml-2" (click)="saveSession()">Save Session</button>
-    <button class="btn btn-outline-danger ml-2" (click)="clearSelections()">Clear Selections</button>
+    <div ngbDropdown class="d-inline-block">
+      <button class="btn btn-outline-primary ml-2" id="dropdownAdvanced" ngbDropdownToggle>Advanced</button>
+      <div ngbDropdownMenu aria-labelledby="dropdownAdvanced">
+        <button ngbDropdownItem (click)="openAdvancedHighlight()">Advanced Search</button>
+        <button ngbDropdownItem (click)="openSequenceLogo()">Sequence Logo</button>
+      </div>
+    </div>
+
+
+    <div ngbDropdown class="d-inline-block">
+      <button class="btn btn-outline-primary ml-2" id="dropdownSession" ngbDropdownToggle>Session</button>
+      <div ngbDropdownMenu aria-labelledby="dropdownSession">
+        <button ngbDropdownItem (click)="saveSession()">Save Session</button>
+        <button ngbDropdownItem (click)="clearSelections()">Clear Selections</button>
+      </div>
+    </div>
+
     <a *ngIf="uniqueLink !== ''" href="{{uniqueLink}}" class="ml-2 text-success">{{uniqueLink}}</a>
   </ng-container>
 </nav>
