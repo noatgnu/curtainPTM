@@ -7,6 +7,7 @@ import {PlotlyService} from "angular-plotly.js";
 import {forkJoin, Observable, Subject, Subscription} from "rxjs";
 import {SettingsService} from "../../../services/settings.service";
 import {PspService} from "../../../services/psp.service";
+import {WebService} from "../../../services/web.service";
 
 
 @Component({
@@ -177,6 +178,14 @@ export class HeatmapComponent implements OnInit, OnDestroy {
             for (const s in seqNeeded) {
               // @ts-ignore
               this.sequence[s] = this.uniprot.parseFasta(results[s])
+              // @ts-ignore
+              this.web.postNetphos(s, results[s]).subscribe(data => {
+                if (data.body) {
+                  // @ts-ignore
+                  this.dataService.netphosMap[s] = this.dataService.parseNetphos(data.body["data"])
+                  console.log(this.dataService.netphosMap[s])
+                }
+              })
               this.uniprot.fastaMap[s] = this.sequence[s].slice()
             }
             this.uniprot.alignSequences(this.sequence).then((data) => {
@@ -191,15 +200,35 @@ export class HeatmapComponent implements OnInit, OnDestroy {
         })
       } else {
         if (Object.keys(this.sequence).length > 1) {
+          for (const s of Object.keys(this.sequence)) {
+            this.web.postNetphos(s, this.sequence[s]).subscribe(data => {
+              if (data.body) {
+                // @ts-ignore
+                this.dataService.netphosMap[s] = this.dataService.parseNetphos(data.body["data"])
+                console.log(this.dataService.netphosMap[s])
+              }
+            })
+          }
           this.uniprot.alignSequences(this.sequence).then((data) => {
             const seqLabels = Object.keys(this.sequence)
 
             for (let i = 0; i < seqLabels.length; i ++) {
               this.sequence[seqLabels[i]] = data[i]
+
             }
             this.draw()
           })
         } else {
+          for (const s of Object.keys(this.sequence)) {
+            this.web.postNetphos(s, this.sequence[s]).subscribe(data => {
+              if (data.body) {
+                // @ts-ignore
+                this.dataService.netphosMap[s] = this.dataService.parseNetphos(data.body["data"])
+                console.log(this.dataService.netphosMap[s])
+              }
+            })
+          }
+
           this.draw()
         }
 
@@ -232,7 +261,7 @@ export class HeatmapComponent implements OnInit, OnDestroy {
     },
     annotations: []
   }
-  constructor(private psp: PspService, private uniprot: UniprotService, public dataService: DataService, private fb: FormBuilder, public plotly: PlotlyService, private settings: SettingsService) {
+  constructor(private psp: PspService, private uniprot: UniprotService, public dataService: DataService, private fb: FormBuilder, public plotly: PlotlyService, private settings: SettingsService, private web: WebService) {
     this.dataService.selectionNotifier.subscribe(data => {
       if (data) {
         if (this.unidStack[this.dataService.justSelected]) {

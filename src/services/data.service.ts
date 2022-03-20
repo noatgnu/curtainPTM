@@ -5,6 +5,7 @@ import {BehaviorSubject, Subject} from "rxjs";
 import {PlotlyService} from "angular-plotly.js";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {SequenceLogoComponent} from "../app/components/sequence-logo/sequence-logo.component";
+import {NetphosKinasesComponent} from "../app/components/netphos-kinases/netphos-kinases.component";
 
 @Injectable({
   providedIn: 'root'
@@ -46,6 +47,7 @@ export class DataService {
   highlights: any = {}
   pspIDMap: any = {}
   justSelected: string = ""
+  netphosMap: any = {}
   set cols(value: any) {
     this._cols = value
     this.settings.settings.inputDataCols = value
@@ -192,5 +194,32 @@ export class DataService {
     console.log(data)
     const diagRef = this.modal.open(SequenceLogoComponent, {size:"xl"})
     diagRef.componentInstance.data = data
+  }
+
+  parseNetphos(data: string) {
+    const lines = data.split("\n")
+    const dataO: any = {}
+    for (const line of lines) {
+      const d: any = line.split(" ")
+      if (d.length >1) {
+        const row = {id: d[2], res: d[1], pos: parseInt(d[3]), score: parseFloat(d[4]), kinase: d[6].replace("\t", "")}
+        if (!dataO[row.pos]) {
+          dataO[row.pos] = []
+        }
+        dataO[row.pos].push(row)
+      }
+    }
+    for (const d in dataO) {
+      dataO[d].sort(function (a:any, b:any) {
+        return b.score - a.score
+      })
+    }
+
+    return dataO
+  }
+
+  openNetphos(id: string, position: number) {
+    const dialogRef = this.modal.open(NetphosKinasesComponent, {size: "xl"})
+    dialogRef.componentInstance.data = this.netphosMap[id][position]
   }
 }

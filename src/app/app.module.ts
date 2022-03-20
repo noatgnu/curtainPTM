@@ -24,6 +24,7 @@ import { AdvanceHighlightsComponent } from './components/advance-highlights/adva
 import { ContentComponent } from './components/content/content.component';
 import { QuickSearchSelectedComponent } from './components/quick-search-selected/quick-search-selected.component';
 import { SequenceLogoPromptComponent } from './components/sequence-logo-prompt/sequence-logo-prompt.component';
+import { NetphosKinasesComponent } from './components/netphos-kinases/netphos-kinases.component';
 
 PlotlyModule.plotlyjs = PlotlyJS;
 @NgModule({
@@ -43,7 +44,8 @@ PlotlyModule.plotlyjs = PlotlyJS;
     AdvanceHighlightsComponent,
     ContentComponent,
     QuickSearchSelectedComponent,
-    SequenceLogoPromptComponent
+    SequenceLogoPromptComponent,
+    NetphosKinasesComponent
   ],
     imports: [
         BrowserModule,

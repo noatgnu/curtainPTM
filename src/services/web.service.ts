@@ -36,4 +36,8 @@ export class WebService {
   postSettings(id: string, password: string) {
     return this.http.post(this.links.proxyURL +"file_data", JSON.stringify({id: id, password: password}), {responseType: "text", observe: "response"})
   }
+
+  postNetphos(id: string, seq: string) {
+    return this.http.post(this.links.proxyURL + "netphos/predict", JSON.stringify({id: id, fasta: ">"+id+"\n"+ seq}), {responseType: "json", observe: "response"})
+  }
 }

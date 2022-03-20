@@ -26,6 +26,7 @@ export class ProteinViewerComponent implements OnInit, OnDestroy {
   })
   sequenceWindows: string[] = []
   sortReverse: any = {}
+
   @Input() set data(value: string)  {
     if (!this.dataService.observableTriggerMap[value] && value !== "") {
       this.dataService.observableTriggerMap[value] = new BehaviorSubject<boolean>(false)
@@ -153,5 +154,9 @@ export class ProteinViewerComponent implements OnInit, OnDestroy {
 
   openLogo() {
     this.dataService.openSequenceLogo({window: this.sequenceWindows[0].length, data: this.sequenceWindows, id: this._data+"logo"})
+  }
+
+  openNetphos(pos: number) {
+    this.dataService.openNetphos(this._data, pos)
   }
 }
