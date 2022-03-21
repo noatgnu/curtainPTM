@@ -19,7 +19,8 @@ export class SequenceLogoPromptComponent implements OnInit {
       "minP" : 0,
       "maxP": 0,
       "minScore": this.settings.settings.probabilityFilterMap[this._id],
-      "id": this._id
+      "id": this._id,
+      "direction": "both",
     })
   }
 
@@ -29,7 +30,8 @@ export class SequenceLogoPromptComponent implements OnInit {
     "minP" : 0,
     "maxP": 0,
     "minScore": 0,
-    "id": ""
+    "id": "",
+    "direction": "both"
   })
   constructor(private fb: FormBuilder, public modal: NgbActiveModal, private settings: SettingsService) { }
 

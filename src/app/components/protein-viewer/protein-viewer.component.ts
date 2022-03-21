@@ -159,13 +159,25 @@ export class ProteinViewerComponent implements OnInit, OnDestroy {
     const dialogRef = this.modal.open(SequenceLogoPromptComponent)
     dialogRef.componentInstance.Id = this._data
     dialogRef.dismissed.subscribe(result => {
-      const rows = this.dataService.dataFile.data.where(row =>
+      let rows = this.dataService.dataFile.data.where(row =>
         (row[this.dataService.cols.accessionCol] === this._data) &&
-        (Math.abs(row[this.dataService.cols.foldChangeCol]) <= result["maxfc"]) &&
-        (Math.abs(row[this.dataService.cols.foldChangeCol]) >= result["minfc"]) &&
         (row[this.dataService.cols.significantCol] <= result["maxP"]) &&
         (row[this.dataService.cols.significantCol] >= result["minP"]) && (row[this.dataService.cols.score] >= result["minScore"])
       ).bake()
+      switch (result["direction"]) {
+        case "both":
+          rows = rows.where(row => (Math.abs(row[this.dataService.cols.foldChangeCol]) <= result["maxfc"]) &&
+            (Math.abs(row[this.dataService.cols.foldChangeCol]) >= result["minfc"])).bake()
+          break
+        case "left":
+          rows = rows.where(row => (row[this.dataService.cols.foldChangeCol] >= -result["maxfc"]) &&
+            (row[this.dataService.cols.foldChangeCol] <= -result["minfc"])).bake()
+          break
+        case "right":
+          rows = rows.where(row => (row[this.dataService.cols.foldChangeCol] <= result["maxfc"]) &&
+            (row[this.dataService.cols.foldChangeCol] >= result["minfc"])).bake()
+          break
+      }
       const data = rows.getSeries(this.dataService.cols.sequenceCol).bake().toArray()
       if (data.length > 0) {
         const ref = this.modal.open(SequenceLogoComponent, {size: "xl"})

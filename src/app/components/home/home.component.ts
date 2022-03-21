@@ -202,12 +202,24 @@ export class HomeComponent implements OnInit {
     let data: string[] = []
     const dialogRef = this.dialog.open(SequenceLogoPromptComponent)
     dialogRef.dismissed.subscribe(result => {
-      const rows = this.dataService.dataFile.data.where(row =>
-        (Math.abs(row[this.dataService.cols.foldChangeCol]) <= result["maxfc"]) &&
-        (Math.abs(row[this.dataService.cols.foldChangeCol]) >= result["minfc"]) &&
+      let rows = this.dataService.dataFile.data.where(row =>
         (row[this.dataService.cols.significantCol] <= result["maxP"]) &&
         (row[this.dataService.cols.significantCol] >= result["minP"]) && (row[this.dataService.cols.score] >= result["minScore"])
       ).bake()
+      switch (result["direction"]) {
+        case "both":
+          rows = rows.where(row => (Math.abs(row[this.dataService.cols.foldChangeCol]) <= result["maxfc"]) &&
+            (Math.abs(row[this.dataService.cols.foldChangeCol]) >= result["minfc"])).bake()
+          break
+        case "left":
+          rows = rows.where(row => (row[this.dataService.cols.foldChangeCol] >= -result["maxfc"]) &&
+            (row[this.dataService.cols.foldChangeCol] <= -result["minfc"])).bake()
+          break
+        case "right":
+          rows = rows.where(row => (row[this.dataService.cols.foldChangeCol] <= result["maxfc"]) &&
+            (row[this.dataService.cols.foldChangeCol] >= result["minfc"])).bake()
+          break
+      }
       data = rows.getSeries(this.dataService.cols.sequenceCol).bake().toArray()
       if (data.length > 0) {
         const ref = this.dialog.open(SequenceLogoComponent, {size: "xl"})
