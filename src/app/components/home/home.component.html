@@ -9,8 +9,6 @@
         <button ngbDropdownItem (click)="openSequenceLogo()">Sequence Logo</button>
       </div>
     </div>
-
-
     <div ngbDropdown class="d-inline-block">
       <button class="btn btn-outline-primary ml-2" id="dropdownSession" ngbDropdownToggle>Session</button>
       <div ngbDropdownMenu aria-labelledby="dropdownSession">
@@ -18,8 +16,8 @@
         <button ngbDropdownItem (click)="clearSelections()">Clear Selections</button>
       </div>
     </div>
-
     <a *ngIf="uniqueLink !== ''" href="{{uniqueLink}}" class="ml-2 text-success">{{uniqueLink}}</a>
+
   </ng-container>
 </nav>
 <div class="container">

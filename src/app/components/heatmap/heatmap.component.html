@@ -28,8 +28,15 @@
   </div>
 
   <ng-container *ngFor="let g of titleOrder">
-    <ng-container *ngIf="graphData2[g]">
-      <plotly-plot divId="{{uniprotEntry+g}}" [data]="[graphData2[g]]" [layout]="graphLayout2[g]" [updateOnLayoutChange]="true" [updateOnDataChange]="true" (relayout)="updateBoundary(g, $event)"></plotly-plot>
+    <ng-container *ngIf="settings.settings.academic">
+      <ng-container *ngIf="graphData2[g]">
+        <plotly-plot divId="{{uniprotEntry+g}}" [data]="[graphData2[g]]" [layout]="graphLayout2[g]" [updateOnLayoutChange]="true" [updateOnDataChange]="true" (relayout)="updateBoundary(g, $event)"></plotly-plot>
+      </ng-container>
+    </ng-container>
+    <ng-container *ngIf="!settings.settings.academic">
+      <ng-container *ngIf="graphData2[g] && (g!=='PSP')">
+        <plotly-plot divId="{{uniprotEntry+g}}" [data]="[graphData2[g]]" [layout]="graphLayout2[g]" [updateOnLayoutChange]="true" [updateOnDataChange]="true" (relayout)="updateBoundary(g, $event)"></plotly-plot>
+      </ng-container>
     </ng-container>
   </ng-container>
   <ng-container *ngIf="heatmapEnable">

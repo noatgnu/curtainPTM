@@ -261,7 +261,7 @@ export class HeatmapComponent implements OnInit, OnDestroy {
     },
     annotations: []
   }
-  constructor(private psp: PspService, private uniprot: UniprotService, public dataService: DataService, private fb: FormBuilder, public plotly: PlotlyService, private settings: SettingsService, private web: WebService) {
+  constructor(private psp: PspService, private uniprot: UniprotService, public dataService: DataService, private fb: FormBuilder, public plotly: PlotlyService, public settings: SettingsService, private web: WebService) {
     this.dataService.selectionNotifier.subscribe(data => {
       if (data) {
         if (this.unidStack[this.dataService.justSelected]) {

@@ -104,7 +104,7 @@ export class ProteinViewerComponent implements OnInit, OnDestroy {
   get data(): string {
     return this._data
   }
-  constructor(public dataService: DataService, private modal: NgbModal, private uniprot: UniprotService, private fb: FormBuilder, private settings: SettingsService) {
+  constructor(public dataService: DataService, private modal: NgbModal, private uniprot: UniprotService, private fb: FormBuilder, public settings: SettingsService) {
 
     this.form.valueChanges.pipe(debounceTime(1000), distinctUntilChanged()).subscribe(data=> {
       this.settings.settings.probabilityFilterMap[this._data] = this.form.value["probability"]/100

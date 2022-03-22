@@ -128,6 +128,9 @@ export class HomeComponent implements OnInit {
       this.dataService.queryMap.set(s, object.selectionsMap.get(s))
     }
     this.dataService.queryProtein = object.selections;
+    if (!object.settings.academic) {
+      object.settings.academic = true
+    }
     this.settings.settings = object.settings;
     this.dataService.cols = object.cols;
     this.dataService.dataFile.data = fromCSV(object.processed)

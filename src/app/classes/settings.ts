@@ -7,5 +7,6 @@ export class Settings {
   description: string = ""
   uniprot: boolean = true
   colorMap: any = {}
+  academic: boolean = true
   backGroundColorGrey: boolean = false
 }
