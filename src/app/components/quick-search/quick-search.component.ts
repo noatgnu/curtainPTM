@@ -2,6 +2,7 @@ import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {DataService} from "../../../services/data.service";
 import {debounceTime, distinctUntilChanged, map, Observable, OperatorFunction} from "rxjs";
 import {UniprotService} from "../../../services/uniprot.service";
+import {SettingsService} from "../../../services/settings.service";
 
 @Component({
   selector: 'app-quick-search',
@@ -34,7 +35,7 @@ export class QuickSearchComponent implements OnInit {
     }
   }
 
-  constructor(private dataService: DataService, private uniprot: UniprotService) {
+  constructor(private dataService: DataService, private uniprot: UniprotService, private settings: SettingsService) {
     this.dataService.selectionService.subscribe(data => {
       if (data) {
         this.searchType = data.type
@@ -51,7 +52,9 @@ export class QuickSearchComponent implements OnInit {
 
     switch (this.searchType) {
       case "Primary IDs":
-        const res = this.dataService.dataFile.data.where(row => row[this.dataService.cols.primaryIDComparisonCol] === this.selectedProteinModel).bake().toArray()
+        const res = this.dataService.dataFile.data.where(row =>
+          (row[this.dataService.cols.primaryIDComparisonCol] === this.selectedProteinModel)&&
+          (row[this.dataService.cols.comparisonCol] === this.settings.settings.currentComparison)).bake().toArray()
         if (res.length > 0) {
           this.dataService.addSelected(this.selectedProteinModel)
           this.dataService.justSelected = this.selectedProteinModel
@@ -60,7 +63,9 @@ export class QuickSearchComponent implements OnInit {
         break
       case "Accession IDs":
         if (this.dataService.dataMap.has(this.selectedProteinModel)) {
-          const res = this.dataService.dataFile.data.where(row => row[this.dataService.cols.accessionCol] === this.selectedProteinModel).bake().toArray()
+          const res = this.dataService.dataFile.data.where(row => (row[this.dataService.cols.accessionCol] === this.selectedProteinModel)
+            &&
+            (row[this.dataService.cols.comparisonCol] === this.settings.settings.currentComparison)).bake().toArray()
           this.selected.emit(res)
         }
         break
@@ -71,7 +76,8 @@ export class QuickSearchComponent implements OnInit {
           for (const g of this.uniprot.geneNamesMap.get(this.selectedProteinModel)) {
             ids.push(g.primaryIDs)
           }
-          const res = this.dataService.dataFile.data.where(row =>  ids.includes(row[this.dataService.cols.primaryIDComparisonCol]) ).bake().toArray()
+          const res = this.dataService.dataFile.data.where(row =>  ids.includes(row[this.dataService.cols.primaryIDComparisonCol]) &&
+            (row[this.dataService.cols.comparisonCol] === this.settings.settings.currentComparison)).bake().toArray()
           this.selected.emit(res)
         }
         break

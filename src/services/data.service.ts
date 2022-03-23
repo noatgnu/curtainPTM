@@ -38,7 +38,7 @@ export class DataService {
   dataMap: Map<string, string> = new Map<string, string>()
   queryProtein: string[] = []
   queryGeneNames: string[] = []
-
+  comparisons: string[] = []
   queryMap: Map<string, any> = new Map<string, any>()
   clearSelections: Subject<boolean> = new Subject<boolean>()
   restoreTrigger: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false)
@@ -80,6 +80,7 @@ export class DataService {
     { res: "Z"}
   ]
   selectionNotifier: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false)
+  comparisonChangeNotifier: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false)
   constructor(private settings: SettingsService, private plotly: PlotlyService, private modal: NgbModal) { }
 
   async downloadPlotlyExtra(id: string, format: string = "svg") {

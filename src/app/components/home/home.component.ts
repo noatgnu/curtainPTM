@@ -52,7 +52,14 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
   }
+  setComparison(value: string) {
+    if (value !== this.settings.settings.currentComparison) {
+      console.log(value)
+      this.settings.settings.currentComparison = value
+      this.clearSelections()
+    }
 
+  }
   handleRes(e: any[], selectionTitle: string = "Selected") {
     let acc = ""
     for (const i of e) {
@@ -131,10 +138,14 @@ export class HomeComponent implements OnInit {
     if (!object.settings.academic) {
       object.settings.academic = true
     }
+
     this.settings.settings = object.settings;
     this.dataService.cols = object.cols;
     this.dataService.dataFile.data = fromCSV(object.processed)
     this.dataService.rawDataFile.data = fromCSV(object.raw)
+    if (!object.settings.currentComparison) {
+      this.settings.settings.currentComparison = ""
+    }
     if (object.highlights) {
       this.dataService.highlights = object.highlights
     }
@@ -164,7 +175,8 @@ export class HomeComponent implements OnInit {
           (Math.abs(row[this.dataService.cols.foldChangeCol]) <= result["maxfc"]) &&
           (Math.abs(row[this.dataService.cols.foldChangeCol]) >= result["minfc"]) &&
           (row[this.dataService.cols.significantCol] <= result["maxP"]) &&
-          (row[this.dataService.cols.significantCol] >= result["minP"])
+          (row[this.dataService.cols.significantCol] >= result["minP"] &&
+            (row[this.dataService.cols.comparisonCol] === this.settings.settings.currentComparison))
         ).bake()
 
         const proteins = rows.getSeries(this.dataService.cols.accessionCol).distinct().bake().toArray()
@@ -207,7 +219,8 @@ export class HomeComponent implements OnInit {
     dialogRef.dismissed.subscribe(result => {
       let rows = this.dataService.dataFile.data.where(row =>
         (row[this.dataService.cols.significantCol] <= result["maxP"]) &&
-        (row[this.dataService.cols.significantCol] >= result["minP"]) && (row[this.dataService.cols.score] >= result["minScore"])
+        (row[this.dataService.cols.significantCol] >= result["minP"]) && (row[this.dataService.cols.score] >= result["minScore"]) &&
+        (row[this.dataService.cols.comparisonCol] === this.settings.settings.currentComparison)
       ).bake()
       switch (result["direction"]) {
         case "both":

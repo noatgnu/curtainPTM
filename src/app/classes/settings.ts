@@ -9,4 +9,5 @@ export class Settings {
   colorMap: any = {}
   academic: boolean = true
   backGroundColorGrey: boolean = false
+  currentComparison: string = ""
 }

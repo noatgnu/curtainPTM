@@ -24,6 +24,11 @@ export class ContentComponent implements OnInit {
         }
       }
     })
+    this.dataService.clearSelections.subscribe(data => {
+      if (data) {
+        this.displayArray = []
+      }
+    })
 
   }
 

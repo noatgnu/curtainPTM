@@ -95,7 +95,10 @@ export class FileUploaderComponent implements OnInit {
           }
           this.dataService._conditionMap[c] = [condition, replicate]
         }
-
+        this.dataService.comparisons = this.dataService.dataFile.data.getSeries(this.dataService.cols.comparisonCol).bake().distinct().toArray()
+        if (this.settings.settings.currentComparison === "") {
+          this.settings.settings.currentComparison = this.dataService.comparisons[0]
+        }
         this.dataService.finishedProcessing = true
         this.dataService.progressBarEvent.next({event: "Processing completed!", value: 4, maxValue: 4})
       }

@@ -135,8 +135,10 @@ export class HeatmapComponent implements OnInit, OnDestroy {
             }
           }
         }
-        this.df = this.dataService.dataFile.data.where(row => row[this.dataService.cols.accessionCol] === this._data).bake()
-        this.changeDF = this.dataService.dataFile.data.where(row => this.selectedUID.includes(row[this.dataService.cols.primaryIDComparisonCol])).bake()
+        this.df = this.dataService.dataFile.data.where(row => (row[this.dataService.cols.accessionCol] === this._data)&&
+          (row[this.dataService.cols.comparisonCol] === this.settings.settings.currentComparison)).bake()
+        this.changeDF = this.dataService.dataFile.data.where(row => this.selectedUID.includes(row[this.dataService.cols.primaryIDComparisonCol])&&
+          (row[this.dataService.cols.comparisonCol] === this.settings.settings.currentComparison)).bake()
         const sign = this.df.getSeries(this.dataService.cols.significantCol).bake()
         this.significant.max = sign.max()
         this.significant.min = sign.min()

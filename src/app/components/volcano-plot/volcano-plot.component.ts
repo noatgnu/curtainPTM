@@ -20,9 +20,10 @@ export class VolcanoPlotComponent implements OnInit {
   })
   _data: IDataFrame = new DataFrame()
   colorGroups: string[] = []
+
   @Input() set data(value: IDataFrame) {
-    this._data = value
     if (value.count() > 0) {
+      this._data = this.dataService.dataFile.data.where(row => row[this.dataService.cols.comparisonCol] === this.settings.settings.currentComparison)
       this.drawVolcano()
     }
   }
@@ -44,7 +45,10 @@ export class VolcanoPlotComponent implements OnInit {
         this.drawVolcano()
       }
     })
-
+    this.dataService.comparisonChangeNotifier.subscribe(data => {
+      this._data = this.dataService.dataFile.data.where(row => row[this.dataService.cols.comparisonCol] === this.settings.settings.currentComparison)
+      this.drawVolcano()
+    })
     this.dataService.annotateService.subscribe(data => {
       if (data) {
         const annotated: any[] = []

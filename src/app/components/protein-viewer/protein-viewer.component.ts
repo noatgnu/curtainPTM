@@ -65,9 +65,11 @@ export class ProteinViewerComponent implements OnInit, OnDestroy {
             }
           }
         }
-        this.df = this.dataService.dataFile.data.where(row => row[this.dataService.cols.accessionCol] === this._data).bake()
+        this.df = this.dataService.dataFile.data.where(row => (row[this.dataService.cols.accessionCol] === this._data) &&
+          (row[this.dataService.cols.comparisonCol] === this.settings.settings.currentComparison)).bake()
         this.sequenceWindows = []
-        this.changeDF = this.df.where(row => this.selectedUID.includes(row[this.dataService.cols.primaryIDComparisonCol])).bake()
+        this.changeDF = this.df.where(row => this.selectedUID.includes(row[this.dataService.cols.primaryIDComparisonCol]) &&
+          (row[this.dataService.cols.comparisonCol] === this.settings.settings.currentComparison)).bake()
         for (const r of this.df) {
           this.averageBar[r[this.dataService.cols.primaryIDComparisonCol]] = false
           if (r[this.dataService.cols.score] >= (this.settings.settings.probabilityFilterMap[this._data])) {
@@ -162,7 +164,8 @@ export class ProteinViewerComponent implements OnInit, OnDestroy {
       let rows = this.dataService.dataFile.data.where(row =>
         (row[this.dataService.cols.accessionCol] === this._data) &&
         (row[this.dataService.cols.significantCol] <= result["maxP"]) &&
-        (row[this.dataService.cols.significantCol] >= result["minP"]) && (row[this.dataService.cols.score] >= result["minScore"])
+        (row[this.dataService.cols.significantCol] >= result["minP"]) && (row[this.dataService.cols.score] >= result["minScore"]) &&
+        (row[this.dataService.cols.comparisonCol] === this.settings.settings.currentComparison)
       ).bake()
       switch (result["direction"]) {
         case "both":
