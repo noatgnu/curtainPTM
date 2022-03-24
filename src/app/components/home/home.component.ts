@@ -23,8 +23,9 @@ export class HomeComponent implements OnInit {
 
   constructor(private dialog: NgbModal, private psp: PspService, private uniprot: UniprotService, public dataService: DataService, public settings: SettingsService, private web: WebService, private route: ActivatedRoute, private toast: ToastService) {
     this.psp.getPSP()
-    if (location.protocol === "https:" && location.hostname === "curtainPTM.proteo.info") {
-      toast.show("Initialization", "Please change the page protocol to 'http'")
+    console.log(location)
+    if (location.protocol === "https:" && location.hostname === "curtainptm.proteo.info") {
+      toast.show("Initialization", "Error: The webpage requires the url protocol to be http instead of https")
     }
 
     this.route.params.subscribe(params => {
