@@ -12,7 +12,8 @@ export class AdvanceHighlightsComponent implements OnInit {
     minfc: 0,
     maxfc: 0,
     minP: 0,
-    maxP: 0
+    maxP: 0,
+    direction: "both"
   })
   constructor(public activeModal: NgbActiveModal, private fb: FormBuilder) { }
 

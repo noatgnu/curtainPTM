@@ -10,6 +10,7 @@ import {NgbModal, NgbModalRef} from "@ng-bootstrap/ng-bootstrap";
 import {AdvanceHighlightsComponent} from "../advance-highlights/advance-highlights.component";
 import {SequenceLogoPromptComponent} from "../sequence-logo-prompt/sequence-logo-prompt.component";
 import {SequenceLogoComponent} from "../sequence-logo/sequence-logo.component";
+import {ToastService} from "../../../services/toast.service";
 
 @Component({
   selector: 'app-home',
@@ -20,8 +21,12 @@ export class HomeComponent implements OnInit {
   uniqueLink: string = ""
   unidSelection: string = ""
 
-  constructor(private dialog: NgbModal, private psp: PspService, private uniprot: UniprotService, public dataService: DataService, public settings: SettingsService, private web: WebService, private route: ActivatedRoute) {
+  constructor(private dialog: NgbModal, private psp: PspService, private uniprot: UniprotService, public dataService: DataService, public settings: SettingsService, private web: WebService, private route: ActivatedRoute, private toast: ToastService) {
     this.psp.getPSP()
+    if (location.protocol === "https:" && location.hostname === "curtainPTM.proteo.info") {
+      toast.show("Initialization", "Please change the page protocol to 'http'")
+    }
+
     this.route.params.subscribe(params => {
       if (params) {
         console.log(params)
@@ -171,13 +176,25 @@ export class HomeComponent implements OnInit {
     dialogRef.result.then((result) => {
       if (result) {
         this.dataService.highlightMap = {}
-        const rows = this.dataService.dataFile.data.where(row =>
-          (Math.abs(row[this.dataService.cols.foldChangeCol]) <= result["maxfc"]) &&
-          (Math.abs(row[this.dataService.cols.foldChangeCol]) >= result["minfc"]) &&
+        let rows = this.dataService.dataFile.data.where(row =>
           (row[this.dataService.cols.significantCol] <= result["maxP"]) &&
-          (row[this.dataService.cols.significantCol] >= result["minP"] &&
-            (row[this.dataService.cols.comparisonCol] === this.settings.settings.currentComparison))
+          (row[this.dataService.cols.significantCol] >= result["minP"]) &&
+          (row[this.dataService.cols.comparisonCol] === this.settings.settings.currentComparison)
         ).bake()
+        switch (result["direction"]) {
+          case "both":
+            rows = rows.where(row => (Math.abs(row[this.dataService.cols.foldChangeCol]) <= result["maxfc"]) &&
+              (Math.abs(row[this.dataService.cols.foldChangeCol]) >= result["minfc"])).bake()
+            break
+          case "left":
+            rows = rows.where(row => (row[this.dataService.cols.foldChangeCol] >= -result["maxfc"]) &&
+              (row[this.dataService.cols.foldChangeCol] <= -result["minfc"])).bake()
+            break
+          case "right":
+            rows = rows.where(row => (row[this.dataService.cols.foldChangeCol] <= result["maxfc"]) &&
+              (row[this.dataService.cols.foldChangeCol] >= result["minfc"])).bake()
+            break
+        }
 
         const proteins = rows.getSeries(this.dataService.cols.accessionCol).distinct().bake().toArray()
         this.dataService.progressBarEvent.next({event: "Find proteins with fitting filter parameters", value: 1, maxValue: 3})
