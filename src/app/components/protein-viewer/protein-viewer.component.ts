@@ -8,6 +8,7 @@ import {SettingsService} from "../../../services/settings.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {SequenceLogoPromptComponent} from "../sequence-logo-prompt/sequence-logo-prompt.component";
 import {SequenceLogoComponent} from "../sequence-logo/sequence-logo.component";
+import {ToastService} from "../../../services/toast.service";
 
 @Component({
   selector: 'app-protein-viewer',
@@ -106,7 +107,7 @@ export class ProteinViewerComponent implements OnInit, OnDestroy {
   get data(): string {
     return this._data
   }
-  constructor(public dataService: DataService, private modal: NgbModal, private uniprot: UniprotService, private fb: FormBuilder, public settings: SettingsService) {
+  constructor(public dataService: DataService, private modal: NgbModal, private uniprot: UniprotService, private fb: FormBuilder, public settings: SettingsService, private toastService: ToastService) {
 
     this.form.valueChanges.pipe(debounceTime(1000), distinctUntilChanged()).subscribe(data=> {
       this.settings.settings.probabilityFilterMap[this._data] = this.form.value["probability"]/100
@@ -185,6 +186,8 @@ export class ProteinViewerComponent implements OnInit, OnDestroy {
       if (data.length > 0) {
         const ref = this.modal.open(SequenceLogoComponent, {size: "xl"})
         ref.componentInstance.data = {window: data[0].length, data: data, id: "SequenceLogo"}
+      } else {
+        this.toastService.show("Sequence Logo", "No sequence met the filtering criteria.")
       }
     })
     // this.dataService.openSequenceLogo({window: this.sequenceWindows[0].length, data: this.sequenceWindows, id: this._data+"logo"})

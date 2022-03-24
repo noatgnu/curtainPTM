@@ -63,7 +63,9 @@
             <td>
               <button class="btn btn-sm btn-outline-primary" (click)="viewBar(r[dataService.cols.primaryIDComparisonCol])">C</button>
               <button class="btn btn-sm btn-outline-primary ml-2" (click)="volcanoAnnotate(r)">V</button>
-              <button *ngIf="dataService.netphosMap[_data][r[dataService.cols.positionCol]] && settings.settings.academic" class="btn btn-sm btn-outline-primary ml-2" (click)="openNetphos(r[dataService.cols.positionCol])">Net</button>
+              <ng-container *ngIf="dataService.netphosMap[_data]">
+                <button *ngIf="dataService.netphosMap[_data][r[dataService.cols.positionCol]] && settings.settings.academic" class="btn btn-sm btn-outline-primary ml-2" (click)="openNetphos(r[dataService.cols.positionCol])">Net</button>
+              </ng-container>
             </td>
           </tr>
         </ng-container>
@@ -96,7 +98,9 @@
                 <button class="btn btn-sm btn-outline-primary" (click)="viewBar(r[dataService.cols.primaryIDComparisonCol])">C</button>
                 <button class="btn btn-sm btn-outline-primary ml-2" *ngIf="enableBar[r[dataService.cols.primaryIDComparisonCol]]" (click)="viewAverageBar(r[dataService.cols.primaryIDComparisonCol])">A</button>
                 <button class="btn btn-sm btn-outline-primary ml-2" (click)="volcanoAnnotate(r)">V</button>
-                <button *ngIf="dataService.netphosMap[_data][r[dataService.cols.positionCol]] && settings.settings.academic" class="btn btn-sm btn-outline-primary ml-2" (click)="openNetphos(r[dataService.cols.positionCol])">Net</button>
+                <ng-container *ngIf="dataService.netphosMap[_data]">
+                  <button *ngIf="dataService.netphosMap[_data][r[dataService.cols.positionCol]] && settings.settings.academic" class="btn btn-sm btn-outline-primary ml-2" (click)="openNetphos(r[dataService.cols.positionCol])">Net</button>
+                </ng-container>
               </td>
             </tr>
           </ng-container>
@@ -128,7 +132,9 @@
                 <button class="btn btn-sm btn-outline-primary" (click)="viewBar(r[dataService.cols.primaryIDComparisonCol])">C</button>
                 <button class="btn btn-sm btn-outline-primary ml-2" *ngIf="enableBar[r[dataService.cols.primaryIDComparisonCol]]" (click)="viewAverageBar(r[dataService.cols.primaryIDComparisonCol])">A</button>
                 <button class="btn btn-sm btn-outline-primary ml-2" (click)="volcanoAnnotate(r)">V</button>
-                <button *ngIf="dataService.netphosMap[_data][r[dataService.cols.positionCol]] && settings.settings.academic" class="btn btn-sm btn-outline-primary ml-2" (click)="openNetphos(r[dataService.cols.positionCol])">Net</button>
+                <ng-container *ngIf="dataService.netphosMap[_data]">
+                  <button *ngIf="dataService.netphosMap[_data][r[dataService.cols.positionCol]] && settings.settings.academic" class="btn btn-sm btn-outline-primary ml-2" (click)="openNetphos(r[dataService.cols.positionCol])">Net</button>
+                </ng-container>
               </td>
             </tr>
           </ng-container>

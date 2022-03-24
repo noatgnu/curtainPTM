@@ -25,6 +25,7 @@ import { ContentComponent } from './components/content/content.component';
 import { QuickSearchSelectedComponent } from './components/quick-search-selected/quick-search-selected.component';
 import { SequenceLogoPromptComponent } from './components/sequence-logo-prompt/sequence-logo-prompt.component';
 import { NetphosKinasesComponent } from './components/netphos-kinases/netphos-kinases.component';
+import { ToastContainerComponent } from './components/toast-container/toast.container.component';
 
 PlotlyModule.plotlyjs = PlotlyJS;
 @NgModule({
@@ -45,7 +46,8 @@ PlotlyModule.plotlyjs = PlotlyJS;
     ContentComponent,
     QuickSearchSelectedComponent,
     SequenceLogoPromptComponent,
-    NetphosKinasesComponent
+    NetphosKinasesComponent,
+    ToastContainerComponent
   ],
     imports: [
         BrowserModule,
