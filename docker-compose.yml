@@ -1,0 +1,34 @@
+version: "3.8"
+services:
+  curtainptm:
+    tty: true
+    stdin_open: true
+    build:
+      context: ./dockerfiles
+      dockerfile: Dockerfile-curtainptm
+    container_name: production_curtainptm
+    ports:
+      - "80:80"
+    networks:
+      - curtainptm-net
+  cactus:
+    build:
+      context: ./dockerfiles
+      dockerfile: Dockerfile-cactus
+    container_name: production_cactus
+    networks:
+      - curtainptm-net
+    volumes:
+      - type: bind
+        source: ./files
+        target: /app/cactus/files
+        volume:
+          nocopy: false
+      - type: bind
+        source: ./db
+        target: /app/cactus/db
+        volume:
+          nocopy: false
+networks:
+  curtainptm-net:
+
