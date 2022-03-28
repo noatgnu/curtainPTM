@@ -57,6 +57,27 @@
               ],
               "outputHashing": "all"
             },
+            "docker": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kb",
+                  "maximumError": "6mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kb",
+                  "maximumError": "4kb"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.docker.ts"
+                }
+              ],
+              "outputHashing": "all"
+            },
             "development": {
               "buildOptimizer": false,
               "optimization": false,
@@ -73,6 +94,9 @@
           "configurations": {
             "production": {
               "browserTarget": "curtainPTM:build:production"
+            },
+            "docker": {
+              "browserTarget": "curtain:build:docker"
             },
             "development": {
               "browserTarget": "curtainPTM:build:development"
