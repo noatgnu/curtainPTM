@@ -96,7 +96,7 @@
               "browserTarget": "curtainPTM:build:production"
             },
             "docker": {
-              "browserTarget": "curtain:build:docker"
+              "browserTarget": "curtainPTM:build:docker"
             },
             "development": {
               "browserTarget": "curtainPTM:build:development"
