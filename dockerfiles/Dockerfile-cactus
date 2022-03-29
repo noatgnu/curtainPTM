@@ -14,7 +14,10 @@ RUN apt-get -y install git
 RUN apt-get -y install nginx
 RUN git clone https://github.com/noatgnu/cactus.git temp
 RUN cp -R /app/temp /app/cactus
+RUN sed -i 's/fil_config/#file_config/g' /app/cactus/cactus/handlers.py
+RUN sed -i 's/#config_file_docker/file_config/g' /app/cactus/cactus/handlers.py
 WORKDIR /app/cactus
+RUN mkdir /app/cactus/netphos
 RUN mkdir /app/cactus/db
 RUN mkdir files
 RUN mkdir /app/nginx

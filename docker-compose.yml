@@ -29,6 +29,11 @@ services:
         target: /app/cactus/db
         volume:
           nocopy: false
+      - type: bind
+        source: ./netphos
+        target: /app/cactus/netphos
+        volume:
+          nocopy: false
 networks:
   curtainptm-net:
 
