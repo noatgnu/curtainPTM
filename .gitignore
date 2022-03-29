@@ -5,7 +5,7 @@
 /tmp
 /out-tsc
 /bazel-out
-
+/netphos
 # Node
 /node_modules
 npm-debug.log
