@@ -12,6 +12,8 @@ RUN apt-get -y update
 RUN apt-get -y upgrade
 RUN apt-get -y install git
 RUN apt-get -y install nginx
+RUN apt-get -y install tcsh
+RUN apt-get -y install gawk
 RUN git clone https://github.com/noatgnu/cactus.git temp
 RUN mkdir /app/netphos
 RUN cp -R /app/temp /app/cactus
