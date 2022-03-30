@@ -3,7 +3,7 @@ LABEL maintainer="tphung001@dundee.ac.uk"
 
 ARG BUILD_DATE
 LABEL build-date=$BUILD_DATE
-
+ARG NETPHOS
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 ENV CACTUS docker
@@ -16,6 +16,11 @@ RUN apt-get -y install tcsh
 RUN apt-get -y install gawk
 RUN git clone https://github.com/noatgnu/cactus.git temp
 RUN mkdir /app/netphos
+RUN if [ "$NETPHOS" = "1"]; then \
+    cd /app/netphos && \
+    uncompress /app/netphos/netphos-3.1.Linux.tar.Z && \
+    tar -xvf /app/netphos/netphos-3.1.Linux.tar && \
+    yes | cp -rf /app/cactus/ape.docker /app/netphos/ape-1.0/ape
 RUN cp -R /app/temp /app/cactus
 RUN sed -i 's/fil_config/#file_config/g' /app/cactus/cactus/handlers.py
 RUN sed -i 's/#config_file_docker/file_config/g' /app/cactus/cactus/handlers.py
