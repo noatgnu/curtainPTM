@@ -20,7 +20,8 @@ RUN if [ "$NETPHOS" = "1"]; then \
     cd /app/netphos && \
     uncompress /app/netphos/netphos-3.1.Linux.tar.Z && \
     tar -xvf /app/netphos/netphos-3.1.Linux.tar && \
-    yes | cp -rf /app/cactus/ape.docker /app/netphos/ape-1.0/ape
+    yes | cp -rf /app/cactus/ape.docker /app/netphos/ape-1.0/ape; \
+    fi
 RUN cp -R /app/temp /app/cactus
 RUN sed -i 's/fil_config/#file_config/g' /app/cactus/cactus/handlers.py
 RUN sed -i 's/#config_file_docker/file_config/g' /app/cactus/cactus/handlers.py
