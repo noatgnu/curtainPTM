@@ -14,11 +14,11 @@ export class PlmdService {
         const lines = data.split("\n")
         for (const line of lines) {
           const row = line.split("\t")
-          if (row.length === 7) {
-            if (!this.plmdMap[row[0]]) {
+          if (row.length === 3) {
+            if (!this.plmdMap[row[1]]) {
               this.plmdMap[row[1]] = []
             }
-            this.plmdMap[row[1]].push({res: parseInt(row[2])-1, aa: row[4][parseInt(row[2])-1], window: ""})
+            this.plmdMap[row[1]].push({res: parseInt(row[2])-1, aa: "", window: ""})
           }
         }
       }
