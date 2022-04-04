@@ -10,4 +10,8 @@ export class Settings {
   academic: boolean = true
   backGroundColorGrey: boolean = false
   currentComparison: string = ""
+  enableDB: any = {
+    PSP_PHOSPHO: true,
+    PLMD_UBI: true,
+  }
 }

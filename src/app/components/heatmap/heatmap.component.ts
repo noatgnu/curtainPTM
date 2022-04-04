@@ -16,12 +16,13 @@ import {WebService} from "../../../services/web.service";
   styleUrls: ['./heatmap.component.css']
 })
 export class HeatmapComponent implements OnInit, OnDestroy {
+  dbPTMMap: any = {}
   accMap: any = {}
   opacityMap: any = {}
   significant = {max: 0, min: 0}
   foldChange = {max: 0, min: 0}
   _data = ""
-  titleOrder = ["Uniprot", "Experimental Data", "PSP"]
+  titleOrder = ["Uniprot", "Experimental Data", "PSP_PHOSPHO", "PLMD_UBI"]
   selectedUID: any[] = []
   df: IDataFrame = new DataFrame()
   form: FormGroup = this.fb.group({
@@ -30,6 +31,7 @@ export class HeatmapComponent implements OnInit, OnDestroy {
       "Phosphothreonine",
       "Phosphotyrosine"
     ]],
+    dbSelected: [this.dataService.databases.map(d => d.value)],
     pspSelected: ""
   })
   customRange: any = []
@@ -41,7 +43,8 @@ export class HeatmapComponent implements OnInit, OnDestroy {
   heatmapEnable: boolean = false
   expDataAcc: string = ""
   maxSeqLength = 0
-
+  availableDB: string[] = []
+  ptmSelected: any = {}
   @Input() set data(value: string)  {
     if (value) {
       this._data = value
@@ -82,41 +85,56 @@ export class HeatmapComponent implements OnInit, OnDestroy {
           }
         }
       }
-      if (this.psp.pspMap[this.uniprotEntry] || this.psp.pspMap[this.expDataAcc]) {
-        if (!this.dataService.pspIDMap[this._data]) {
-          this.dataService.pspIDMap[this._data] = {selected: this.uniprotEntry, associated: [this.uniprotEntry]}
-          if (this.psp.pspMap[accs[0]]) {
-            this.dataService.pspIDMap[this._data].selected = accs[0]
+      const dab: string[] = []
+      for (const db of this.form.value["dbSelected"]) {
+        if (this.web.accessDB(db)[this.uniprotEntry] || this.web.accessDB(db)[this.expDataAcc]) {
+          if (!this.dataService.dbIDMap[db]) {
+            this.dataService.dbIDMap[db] = {}
+            if (!dab.includes(db)) {
+              dab.push(db)
+            }
+          } else {
+            if (!dab.includes(db)) {
+              dab.push(db)
+            }
           }
-        }
-        this.form = this.fb.group({
-          modificationTypes: [[
-            "Phosphoserine",
-            "Phosphothreonine",
-            "Phosphotyrosine"
-          ]],
-          pspSelected: this.dataService.pspIDMap[this._data].selected
-        })
-        for (const acc of accs) {
-          if (this.psp.pspMap[acc]) {
-            if (!this.sequence[acc]) {
-              if (this.uniprot.fastaMap[acc]) {
-                this.sequence = this.uniprot.fastaMap[acc].slice()
-              } else {
-                if (!seqNeeded[acc]) {
-                  seqNeeded[acc] = this.uniprot.getUniprotFasta(acc)
+
+          if (!this.dataService.dbIDMap[db][this._data]) {
+            this.dataService.dbIDMap[db][this._data] = {selected: this.uniprotEntry, associated: [this.uniprotEntry]}
+            if (this.web.accessDB(db)[accs[0]]) {
+              this.dataService.dbIDMap[db][this._data].selected = accs[0]
+            }
+          }
+          for (const acc of accs) {
+            if (this.web.accessDB(db)[acc]) {
+              if (!this.sequence[acc]) {
+                if (this.uniprot.fastaMap[acc]) {
+                  this.sequence = this.uniprot.fastaMap[acc].slice()
+                } else {
+                  if (!seqNeeded[acc]) {
+                    seqNeeded[acc] = this.uniprot.getUniprotFasta(acc)
+                  }
                 }
               }
-            }
-            if (!this.dataService.pspIDMap[this._data].associated.includes(acc)) {
-              this.dataService.pspIDMap[this._data].associated.push(acc)
+              if (!this.dataService.dbIDMap[db][this._data].associated.includes(acc)) {
+                this.dataService.dbIDMap[db][this._data].associated.push(acc)
+              }
             }
           }
+        } else {
+
         }
-      } else {
-
       }
-
+      this.availableDB = dab
+      this.form = this.fb.group({
+        modificationTypes: [[
+          "Phosphoserine",
+          "Phosphothreonine",
+          "Phosphotyrosine"
+        ]],
+        dbSelected: [dab],
+        pspSelected: this.dataService.dbIDMap["PSP_PHOSPHO"][this._data].selected
+      })
       const mods: string[] = []
       for (const m of this.positions["Uniprot"]) {
         if (!(mods.includes(m.modType))) {
@@ -185,7 +203,6 @@ export class HeatmapComponent implements OnInit, OnDestroy {
                 if (data.body) {
                   // @ts-ignore
                   this.dataService.netphosMap[s] = this.dataService.parseNetphos(data.body["data"])
-                  console.log(this.dataService.netphosMap[s])
                 }
               })
               this.uniprot.fastaMap[s] = this.sequence[s].slice()
@@ -275,9 +292,15 @@ export class HeatmapComponent implements OnInit, OnDestroy {
   }
 
   drawHeatmap() {
-    if (this.dataService.pspIDMap[this._data]) {
-      this.positions["PSP"] = this.psp.pspMap[this.dataService.pspIDMap[this._data].selected]
+    for (const db of this.form.value["dbSelected"]) {
+      if (this.dataService.dbIDMap[db]) {
+        if (this.dataService.dbIDMap[db][this._data]) {
+          this.positions[db] = this.web.accessDB(db)[this.dataService.dbIDMap[db][this._data].selected]
+        }
+      }
+
     }
+
 
     const seqLength = this.maxSeqLength
     const z: any = {}
@@ -454,10 +477,20 @@ export class HeatmapComponent implements OnInit, OnDestroy {
     return seq
   }
   drawBarChart() {
-    if (this.dataService.pspIDMap[this._data]) {
-      this.positions["PSP"] = this.psp.pspMap[this.dataService.pspIDMap[this._data].selected]
-      this.accMap["PSP"] = this.dataService.pspIDMap[this._data].selected
+    for (const db of this.form.value["dbSelected"]) {
+      if (this.dataService.dbIDMap[db]) {
+        if (this.dataService.dbIDMap[db][this._data]) {
+          console.log(db)
+
+          this.positions[db] = this.web.accessDB(db)[this.dataService.dbIDMap[db][this._data].selected]
+          console.log(this.positions[db])
+          this.accMap[db] = this.dataService.dbIDMap[db][this._data].selected
+          console.log(this.positions)
+        }
+      }
+
     }
+    console.log(this.positions)
     const seqLength = this.maxSeqLength
     const z: any = {}
     const seq: any = {}
@@ -486,6 +519,7 @@ export class HeatmapComponent implements OnInit, OnDestroy {
       }
     }
     tempPosition["Uniprot"] = uniprotPosition
+    console.log(tempPosition)
     const alignedPos: any[] =[]
     const annotations: any = {}
     for (const u in tempPosition) {
@@ -578,9 +612,14 @@ export class HeatmapComponent implements OnInit, OnDestroy {
     }
 
     this.graphData2 = barData
+    console.log(z)
     for (const u in z) {
+      let title = u
+      if (this.dataService.databaseNameMap[u]) {
+        title = this.dataService.databaseNameMap[u]
+      }
       this.graphLayout2[u] = {
-        title: u,
+        title: title,
         xaxis: {
           showticklabels: false,
           type: 'category',
@@ -600,8 +639,13 @@ export class HeatmapComponent implements OnInit, OnDestroy {
         case "Uniprot":
           this.graphLayout2[u].title = this.graphLayout2[u].title + " " + this.uniprotEntry
           break
-        case "PSP":
-          this.graphLayout2[u].title = this.graphLayout2[u].title + " " + this.dataService.pspIDMap[this._data].selected
+        case "PSP_PHOSPHO":
+
+          this.graphLayout2[u].title = this.graphLayout2[u].title + " " + this.dataService.dbIDMap["PSP_PHOSPHO"][this._data].selected
+          break
+        case "PLMD_UBI":
+
+          this.graphLayout2[u].title = this.graphLayout2[u].title + " " + this.dataService.dbIDMap["PLMD_UBI"][this._data].selected
           break
         case "Experimental Data":
           this.graphLayout2[u].title = this.graphLayout2[u].title + " " + this._data
@@ -665,9 +709,9 @@ export class HeatmapComponent implements OnInit, OnDestroy {
   }
 
   draw() {
-    if (this.dataService.pspIDMap[this._data]) {
+/*    if (this.dataService.pspIDMap[this._data]) {
       this.dataService.pspIDMap[this._data].selected = this.form.value["pspSelected"]
-    }
+    }*/
     for (const s in this.sequence) {
       if (this.sequence[s].length > this.maxSeqLength) {
         this.maxSeqLength = this.sequence[s].length

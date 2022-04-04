@@ -21,8 +21,13 @@ export class HomeComponent implements OnInit {
   uniqueLink: string = ""
   unidSelection: string = ""
 
-  constructor(private dialog: NgbModal, private psp: PspService, private uniprot: UniprotService, public dataService: DataService, public settings: SettingsService, private web: WebService, private route: ActivatedRoute, private toast: ToastService) {
-    this.psp.getPSP()
+  constructor(private dialog: NgbModal, private uniprot: UniprotService, public dataService: DataService, public settings: SettingsService, private web: WebService, private route: ActivatedRoute, private toast: ToastService) {
+    if (this.settings.settings.enableDB.PSP_PHOSPHO) {
+      this.web.getDatabase("PSP_PHOSPHO")
+    }
+    if (this.settings.settings.enableDB.PLMD_UBI) {
+      this.web.getDatabase("PLMD_UBI")
+    }
     console.log(location)
     if (location.protocol === "https:" && location.hostname === "curtainptm.proteo.info") {
       toast.show("Initialization", "Error: The webpage requires the url protocol to be http instead of https")
@@ -104,7 +109,7 @@ export class HomeComponent implements OnInit {
     this.dataService.highlights = {}
     this.dataService.justSelected = ""
     this.dataService.clearSelections.next(true)
-    this.dataService.pspIDMap = {}
+    this.dataService.dbIDMap = {}
     this.dataService.highlightMap =  {}
     this.dataService.queryGeneNames = []
     this.dataService.finishedSelection.next(false)
@@ -121,7 +126,7 @@ export class HomeComponent implements OnInit {
       selections: this.dataService.queryProtein,
       selectionsMap: this.dataService.queryMap,
       highlights: this.dataService.highlights,
-      pspIDMap: this.dataService.pspIDMap,
+      dbIDMap: this.dataService.dbIDMap,
       highlightMap: this.dataService.highlightMap,
       queryGeneNames: this.dataService.queryGeneNames
     }
@@ -156,8 +161,14 @@ export class HomeComponent implements OnInit {
       this.dataService.highlights = object.highlights
     }
     if (object.pspIDMap) {
-      this.dataService.pspIDMap = object.pspIDMap
+      this.dataService.dbIDMap = {}
+      this.dataService.dbIDMap["PSP_PHOSPHO"] = object.pspIDMap
     }
+
+    if (object.dbIDMap) {
+      this.dataService.dbIDMap = object.dbIDMap
+    }
+
     if (object.highlightMap) {
       this.dataService.highlightMap = object.highlightMap
     }

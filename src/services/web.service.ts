@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {CurtainLink} from "../app/classes/curtain-link";
+import {PspService} from "./psp.service";
+import {PlmdService} from "./plmd.service";
 
 @Injectable({
   providedIn: 'root'
@@ -27,7 +29,7 @@ export class WebService {
     return value;
   }
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private psp: PspService, private plmd: PlmdService) { }
 
   putSettings(settings: any) {
     return this.http.put(this.links.proxyURL + "file_data", JSON.stringify(settings, this.replacer), {responseType: "text", observe: "response"})
@@ -39,5 +41,29 @@ export class WebService {
 
   postNetphos(id: string, seq: string) {
     return this.http.post(this.links.proxyURL + "netphos/predict", JSON.stringify({id: id, fasta: ">"+id+"\n"+ seq}), {responseType: "json", observe: "response"})
+  }
+
+  getDatabase(name: string) {
+    switch (name) {
+      case "PSP_PHOSPHO":
+        this.psp.getPSP()
+        break
+      case "PLMD_UBI":
+        this.plmd.getPLMD()
+        break
+      default:
+        break
+    }
+  }
+
+  accessDB(name: string) {
+    switch (name) {
+      case "PSP_PHOSPHO":
+        return this.psp.pspMap
+      case "PLMD_UBI":
+        return  this.plmd.plmdMap
+      default:
+        break
+    }
   }
 }

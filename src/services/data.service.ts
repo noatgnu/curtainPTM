@@ -11,6 +11,12 @@ import {NetphosKinasesComponent} from "../app/components/netphos-kinases/netphos
   providedIn: 'root'
 })
 export class DataService {
+  dbIDMap: any = {}
+  databases: any[] = [
+    {name:"PhosphoSite Plus (Phosphorylation)", value:"PSP_PHOSPHO", academic:true},
+    {name:"PLMD (Ubiquitylation)", value:"PLMD_UBI", academic:false}
+  ]
+  databaseNameMap: any = {}
   selectNScroll: BehaviorSubject<string> = new BehaviorSubject<string>("")
   finishedSelection: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false)
   highlightMap: any = {}
@@ -81,7 +87,11 @@ export class DataService {
   ]
   selectionNotifier: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false)
   comparisonChangeNotifier: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false)
-  constructor(private settings: SettingsService, private plotly: PlotlyService, private modal: NgbModal) { }
+  constructor(private settings: SettingsService, private plotly: PlotlyService, private modal: NgbModal) {
+    for (const db of this.databases) {
+      this.databaseNameMap[db.value] = db.name
+    }
+  }
 
   async downloadPlotlyExtra(id: string, format: string = "svg") {
     const graph = this.plotly.getInstanceByDivId(id);
