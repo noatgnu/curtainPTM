@@ -12,9 +12,12 @@ import {NetphosKinasesComponent} from "../app/components/netphos-kinases/netphos
 })
 export class DataService {
   dbIDMap: any = {}
+  remapedPositionKinase: any = {}
   databases: any[] = [
     {name:"PhosphoSite Plus (Phosphorylation)", value:"PSP_PHOSPHO", academic:true},
-    {name:"PLMD (Ubiquitylation)", value:"PLMD_UBI", academic:false}
+    {name:"PhosphoSite Plus (Ubiquitylation)", value:"PSP_UBI", academic:true},
+    {name:"PhosphoSite Plus (Acetylation)", value:"PSP_ACETYL", academic:true},
+    {name:"PLMD (Ubiquitylation)", value:"PLMD_UBI", academic:true}
   ]
   databaseNameMap: any = {}
   selectNScroll: BehaviorSubject<string> = new BehaviorSubject<string>("")

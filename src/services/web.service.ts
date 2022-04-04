@@ -60,6 +60,10 @@ export class WebService {
     switch (name) {
       case "PSP_PHOSPHO":
         return this.psp.pspMap
+      case "PSP_ACETYL":
+        return this.psp.acetylPSPMap
+      case "PSP_UBI":
+        return this.psp.ubiPSPMap
       case "PLMD_UBI":
         return  this.plmd.plmdMap
       default:

@@ -16,13 +16,14 @@ import {WebService} from "../../../services/web.service";
   styleUrls: ['./heatmap.component.css']
 })
 export class HeatmapComponent implements OnInit, OnDestroy {
+  alignedKinasePosition: any = {}
   dbPTMMap: any = {}
   accMap: any = {}
   opacityMap: any = {}
   significant = {max: 0, min: 0}
   foldChange = {max: 0, min: 0}
   _data = ""
-  titleOrder = ["Uniprot", "Experimental Data", "PSP_PHOSPHO", "PLMD_UBI"]
+  titleOrder = ["Uniprot", "Experimental Data", "PSP_PHOSPHO", "PLMD_UBI", "PSP_ACETYL", "PSP_UBI"]
   selectedUID: any[] = []
   df: IDataFrame = new DataFrame()
   form: FormGroup = this.fb.group({
@@ -45,6 +46,7 @@ export class HeatmapComponent implements OnInit, OnDestroy {
   maxSeqLength = 0
   availableDB: string[] = []
   ptmSelected: any = {}
+  experimentalAligned: any = {}
   @Input() set data(value: string)  {
     if (value) {
       this._data = value
@@ -224,7 +226,6 @@ export class HeatmapComponent implements OnInit, OnDestroy {
               if (data.body) {
                 // @ts-ignore
                 this.dataService.netphosMap[s] = this.dataService.parseNetphos(data.body["data"])
-                console.log(this.dataService.netphosMap[s])
               }
             })
           }
@@ -243,7 +244,6 @@ export class HeatmapComponent implements OnInit, OnDestroy {
               if (data.body) {
                 // @ts-ignore
                 this.dataService.netphosMap[s] = this.dataService.parseNetphos(data.body["data"])
-                console.log(this.dataService.netphosMap[s])
               }
             })
           }
@@ -417,7 +417,7 @@ export class HeatmapComponent implements OnInit, OnDestroy {
           tickvals: seq,
           visible: false
         },
-        height: temp.y.length * 100,
+        height: temp.y.length * 60,
         margin: {t: 25, b: 25, r: 200, l: 200},
         plot_bgcolor: "#f1f1f1"
       }
@@ -480,17 +480,11 @@ export class HeatmapComponent implements OnInit, OnDestroy {
     for (const db of this.form.value["dbSelected"]) {
       if (this.dataService.dbIDMap[db]) {
         if (this.dataService.dbIDMap[db][this._data]) {
-          console.log(db)
-
           this.positions[db] = this.web.accessDB(db)[this.dataService.dbIDMap[db][this._data].selected]
-          console.log(this.positions[db])
           this.accMap[db] = this.dataService.dbIDMap[db][this._data].selected
-          console.log(this.positions)
         }
       }
-
     }
-    console.log(this.positions)
     const seqLength = this.maxSeqLength
     const z: any = {}
     const seq: any = {}
@@ -519,7 +513,6 @@ export class HeatmapComponent implements OnInit, OnDestroy {
       }
     }
     tempPosition["Uniprot"] = uniprotPosition
-    console.log(tempPosition)
     const alignedPos: any[] =[]
     const annotations: any = {}
     for (const u in tempPosition) {
@@ -545,6 +538,7 @@ export class HeatmapComponent implements OnInit, OnDestroy {
           barData[u].marker.color.push('rgb(255,255,255)')
         } else {
           const currentPosition = i - emptyCount
+
           if (seq[u][i] !== "_") {
             let matchColor = 'rgba(172,238,227,0.3)'
             if (tempPosition[u][currentPosition]) {
@@ -567,39 +561,49 @@ export class HeatmapComponent implements OnInit, OnDestroy {
                     }
                   }
                 })
+                this.experimentalAligned[i] = currentPosition
               }
               if (this.selectedPosition !== undefined) {
                 if (currentPosition === this.selectedPosition) {
                   matchColor = 'rgba(78,222,38,0.8)'
                 }
               }
-
-
               barData[u].y.push(2)
               barData[u].text.push(seq[u][i] + "(" + (currentPosition + 1) + ":Modified)")
               barData[u].marker.color.push(matchColor)
+              if (this.psp.substrateKinaseMap[this.uniprotEntry]) {
+                if (this.psp.substrateKinaseMap[this.uniprotEntry][currentPosition]) {
+
+                  this.alignedKinasePosition[i] = this.psp.substrateKinaseMap[this.uniprotEntry][currentPosition]
+                }
+              }
             } else {
+
               barData[u].y.push(1)
               barData[u].text.push(seq[u][i] + "(" + (currentPosition + 1) + ")")
               barData[u].marker.color.push('rgba(231,217,189,0.8)')
             }
+
           } else {
             barData[u].y.push(1)
             barData[u].text.push("_")
             barData[u].marker.color.push('rgba(252,250,247,0.8)')
           }
         }
-
-
-
       }
     }
-    console.log(alignedPos)
     for (const i of alignedPos) {
       for (const u in tempPosition) {
         if (u !== "Experimental Data") {
           if (barData[u].y[i.pos] === 2) {
             barData[u].marker.color[i.pos] = i.color
+          }
+        } else {
+          if (!this.dataService.remapedPositionKinase[this._data]) {
+            this.dataService.remapedPositionKinase[this._data] = {}
+          }
+          if (this.alignedKinasePosition[i.pos]) {
+            this.dataService.remapedPositionKinase[this._data][this.experimentalAligned[i.pos]] = this.alignedKinasePosition[i.pos]
           }
         }
         if (barData[u].y[i.pos] === 2) {
@@ -610,9 +614,8 @@ export class HeatmapComponent implements OnInit, OnDestroy {
     for (const u in z) {
       barData[u].x = seq[u]
     }
-
+    console.log(this.dataService.remapedPositionKinase)
     this.graphData2 = barData
-    console.log(z)
     for (const u in z) {
       let title = u
       if (this.dataService.databaseNameMap[u]) {
@@ -632,7 +635,7 @@ export class HeatmapComponent implements OnInit, OnDestroy {
           range: [0,2],
           visible: false
         },
-        height: this.titleOrder.length * 100,
+        height: this.titleOrder.length * 25,
         margin: {t: 25, b: 25, r: 200, l: 200},
       }
       switch (u) {
