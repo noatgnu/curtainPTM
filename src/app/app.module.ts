@@ -47,7 +47,7 @@ PlotlyModule.plotlyjs = PlotlyJS;
     QuickSearchSelectedComponent,
     SequenceLogoPromptComponent,
     NetphosKinasesComponent,
-    ToastContainerComponent
+    ToastContainerComponent,
   ],
     imports: [
         BrowserModule,

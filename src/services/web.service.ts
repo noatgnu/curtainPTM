@@ -62,10 +62,18 @@ export class WebService {
         return this.psp.pspMap
       case "PSP_ACETYL":
         return this.psp.acetylPSPMap
+      case "PSP_SUMOY":
+        return this.psp.sumoylationPSPMap
+      case "PSP_METHYL":
+        return this.psp.methylationPSPMap
       case "PSP_UBI":
         return this.psp.ubiPSPMap
       case "PLMD_UBI":
-        return  this.plmd.plmdMap
+        return this.plmd.plmdMap
+      case "PLMD_METHYL":
+        return this.plmd.methylPLMDMap
+      case "PLMD_ACETYL":
+        return this.plmd.acetylPLMDMap
       default:
         break
     }

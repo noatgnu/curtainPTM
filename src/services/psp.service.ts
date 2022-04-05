@@ -11,6 +11,8 @@ export class PspService {
   ubiPSPMap: any = {}
   acetylPSPMap: any = {}
   substrateKinaseMap: any = {}
+  methylationPSPMap: any = {}
+  sumoylationPSPMap: any = {}
   constructor(private http: HttpClient) { }
 
   getPSP() {
@@ -68,6 +70,42 @@ export class PspService {
         }
       }
     })
+    this.http.get("assets/Methylation_PSP.tsv", {responseType: "text", observe: "body"}).subscribe(data => {
+      if (data) {
+        const lines = data.split("\n")
+        for (const line of lines) {
+          const row = line.split("\t")
+          const reg = /(\w)(\d+)/g
+          if (row.length === 3) {
+            if (!this.methylationPSPMap[row[0]]) {
+              this.methylationPSPMap[row[0]] = []
+            }
+            const ps = reg.exec(row[1])
+            if (ps) {
+              this.methylationPSPMap[row[0]].push({res: parseInt(ps[2])-1, aa: ps[1], window: row[2]})
+            }
+          }
+        }
+      }
+    })
+    this.http.get("assets/Sumoylation_PSP.tsv", {responseType: "text", observe: "body"}).subscribe(data => {
+      if (data) {
+        const lines = data.split("\n")
+        for (const line of lines) {
+          const row = line.split("\t")
+          const reg = /(\w)(\d+)/g
+          if (row.length === 3) {
+            if (!this.sumoylationPSPMap[row[0]]) {
+              this.sumoylationPSPMap[row[0]] = []
+            }
+            const ps = reg.exec(row[1])
+            if (ps) {
+              this.sumoylationPSPMap[row[0]].push({res: parseInt(ps[2])-1, aa: ps[1], window: row[2]})
+            }
+          }
+        }
+      }
+    })
     this.http.get("assets/Kinase_Substrate_PSP.tsv", {responseType: "text", observe: "body"}).subscribe(data => {
       if (data) {
         const lines = data.split("\n")
@@ -89,7 +127,6 @@ export class PspService {
           }
         }
       }
-      console.log(this.substrateKinaseMap)
     })
   }
 

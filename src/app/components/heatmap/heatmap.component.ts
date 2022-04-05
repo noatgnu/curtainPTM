@@ -23,7 +23,7 @@ export class HeatmapComponent implements OnInit, OnDestroy {
   significant = {max: 0, min: 0}
   foldChange = {max: 0, min: 0}
   _data = ""
-  titleOrder = ["Uniprot", "Experimental Data", "PSP_PHOSPHO", "PLMD_UBI", "PSP_ACETYL", "PSP_UBI"]
+  titleOrder = ["Uniprot", "Experimental Data", "PSP_PHOSPHO", "PLMD_UBI", "PSP_ACETYL", "PSP_UBI", "PSP_METHYL", "PSP_SUMOY"]
   selectedUID: any[] = []
   df: IDataFrame = new DataFrame()
   form: FormGroup = this.fb.group({
@@ -102,6 +102,8 @@ export class HeatmapComponent implements OnInit, OnDestroy {
           }
 
           if (!this.dataService.dbIDMap[db][this._data]) {
+            console.log(db)
+            console.log(this.web.accessDB(db)[accs[0]])
             this.dataService.dbIDMap[db][this._data] = {selected: this.uniprotEntry, associated: [this.uniprotEntry]}
             if (this.web.accessDB(db)[accs[0]]) {
               this.dataService.dbIDMap[db][this._data].selected = accs[0]
@@ -127,6 +129,12 @@ export class HeatmapComponent implements OnInit, OnDestroy {
 
         }
       }
+      const defaultDB = []
+      for (const d of dab) {
+        if (["PSP_PHOSPHO"].includes(d)) {
+          defaultDB.push(d)
+        }
+      }
       this.availableDB = dab
       this.form = this.fb.group({
         modificationTypes: [[
@@ -134,7 +142,7 @@ export class HeatmapComponent implements OnInit, OnDestroy {
           "Phosphothreonine",
           "Phosphotyrosine"
         ]],
-        dbSelected: [dab],
+        dbSelected: [defaultDB],
         pspSelected: this.dataService.dbIDMap["PSP_PHOSPHO"][this._data].selected
       })
       const mods: string[] = []
@@ -292,7 +300,7 @@ export class HeatmapComponent implements OnInit, OnDestroy {
   }
 
   drawHeatmap() {
-    for (const db of this.form.value["dbSelected"]) {
+    for (const db of this.availableDB) {
       if (this.dataService.dbIDMap[db]) {
         if (this.dataService.dbIDMap[db][this._data]) {
           this.positions[db] = this.web.accessDB(db)[this.dataService.dbIDMap[db][this._data].selected]
@@ -477,7 +485,7 @@ export class HeatmapComponent implements OnInit, OnDestroy {
     return seq
   }
   drawBarChart() {
-    for (const db of this.form.value["dbSelected"]) {
+    for (const db of this.availableDB) {
       if (this.dataService.dbIDMap[db]) {
         if (this.dataService.dbIDMap[db][this._data]) {
           this.positions[db] = this.web.accessDB(db)[this.dataService.dbIDMap[db][this._data].selected]

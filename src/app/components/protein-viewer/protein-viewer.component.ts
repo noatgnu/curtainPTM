@@ -97,7 +97,6 @@ export class ProteinViewerComponent implements OnInit, OnDestroy {
           }
         }
       }
-      console.log(this.residueMap)
     }
   }
 
