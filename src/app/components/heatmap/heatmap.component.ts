@@ -571,12 +571,14 @@ export class HeatmapComponent implements OnInit, OnDestroy {
               barData[u].y.push(2)
               barData[u].text.push(seq[u][i] + "(" + (currentPosition + 1) + ":Modified)")
               barData[u].marker.color.push(matchColor)
-              if (this.psp.substrateKinaseMap[this.uniprotEntry]) {
-                if (this.psp.substrateKinaseMap[this.uniprotEntry][currentPosition]) {
-
-                  this.alignedKinasePosition[i] = this.psp.substrateKinaseMap[this.uniprotEntry][currentPosition]
+              if (u === "PSP_PHOSPHO") {
+                if (this.psp.substrateKinaseMap[this.dataService.dbIDMap["PSP_PHOSPHO"][this._data].selected]) {
+                  if (this.psp.substrateKinaseMap[this.dataService.dbIDMap["PSP_PHOSPHO"][this._data].selected][currentPosition]) {
+                    this.alignedKinasePosition[i] = this.psp.substrateKinaseMap[this.dataService.dbIDMap["PSP_PHOSPHO"][this._data].selected][currentPosition]
+                  }
                 }
               }
+
             } else {
 
               barData[u].y.push(1)
@@ -614,8 +616,8 @@ export class HeatmapComponent implements OnInit, OnDestroy {
     for (const u in z) {
       barData[u].x = seq[u]
     }
-    console.log(this.dataService.remapedPositionKinase)
     this.graphData2 = barData
+    console.log(this.dataService.remapedPositionKinase[this._data])
     for (const u in z) {
       let title = u
       if (this.dataService.databaseNameMap[u]) {

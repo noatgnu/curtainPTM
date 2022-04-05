@@ -80,7 +80,7 @@ export class PspService {
             }
             const ps = reg.exec(row[9])
             if (ps) {
-              const site = parseInt(ps[2])
+              const site = parseInt(ps[2]) -1
               if (!this.substrateKinaseMap[row[6]][site]) {
                 this.substrateKinaseMap[row[6]][site] = []
               }

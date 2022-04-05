@@ -28,6 +28,7 @@
         <th scope="col" (click)="sortHeader(dataService.cols.significantCol)">Significant</th>
         <th scope="col">Residue</th>
         <th scope="col" (click)="sortHeader(dataService.cols.positionCol)">Position</th>
+        <th scope="col">Kinase</th>
         <th scope="col">Sequence Window</th>
         <th scope="col">Peptide Sequence</th>
         <th scope="col" (click)="sortHeader(dataService.cols.score)">Probability</th>
@@ -47,6 +48,13 @@
               {{residueMap[r[dataService.cols.positionCol]].site}}
             </td>
             <td>{{r[dataService.cols.positionCol]}}</td>
+            <td>
+              <ng-container *ngIf="settings.settings.academic && dataService.remapedPositionKinase[_data]">
+                <ng-container *ngIf="dataService.remapedPositionKinase[_data][r[dataService.cols.positionCol]-1]">
+                  <span>{{dataService.remapedPositionKinase[_data][r[dataService.cols.positionCol]-1].join(";")}}</span>
+                </ng-container>
+              </ng-container>
+            </td>
             <td>
               <span>{{r[dataService.cols.sequenceCol].slice(0, (r[dataService.cols.sequenceCol].length-1)/2)}}</span>
               <span class="text-danger"><b>{{r[dataService.cols.sequenceCol][(r[dataService.cols.sequenceCol].length-1)/2]}}</b></span>
@@ -82,6 +90,13 @@
               </td>
               <td>{{r[dataService.cols.positionCol]}}</td>
               <td>
+                <ng-container *ngIf="settings.settings.academic && dataService.remapedPositionKinase[_data]">
+                  <ng-container *ngIf="dataService.remapedPositionKinase[_data][r[dataService.cols.positionCol]-1]">
+                    <span>{{dataService.remapedPositionKinase[_data][r[dataService.cols.positionCol]-1].join(";")}}</span>
+                  </ng-container>
+                </ng-container>
+              </td>
+              <td>
                 <span>{{r[dataService.cols.sequenceCol].slice(0, (r[dataService.cols.sequenceCol].length-1)/2)}}</span>
                 <span class="text-danger"><b>{{r[dataService.cols.sequenceCol][(r[dataService.cols.sequenceCol].length-1)/2]}}</b></span>
                 <span>{{r[dataService.cols.sequenceCol].slice((r[dataService.cols.sequenceCol].length-1)/2+1, 31)}}</span>
@@ -115,6 +130,13 @@
                 {{residueMap[r[dataService.cols.positionCol]].site}}
               </td>
               <td>{{r[dataService.cols.positionCol]}}</td>
+              <td>
+                <ng-container *ngIf="settings.settings.academic && dataService.remapedPositionKinase[_data]">
+                  <ng-container *ngIf="dataService.remapedPositionKinase[_data][r[dataService.cols.positionCol]-1]">
+                    <span *ngFor="let k of dataService.remapedPositionKinase[_data][r[dataService.cols.positionCol]-1]">{{k.kinase}};</span>
+                  </ng-container>
+                </ng-container>
+              </td>
               <td>
                 <span>{{r[dataService.cols.sequenceCol].slice(0, (r[dataService.cols.sequenceCol].length-1)/2)}}</span>
                 <span class="text-danger"><b>{{r[dataService.cols.sequenceCol][(r[dataService.cols.sequenceCol].length-1)/2]}}</b></span>
