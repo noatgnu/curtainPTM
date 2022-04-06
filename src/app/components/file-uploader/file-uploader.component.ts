@@ -60,7 +60,7 @@ export class FileUploaderComponent implements OnInit {
           }
         }
         this.form = this.fb.group(f)
-        this.getUniProt()
+        this.getUniProt().then(r => {})
       }
     })
     this.uniprot.uniprotParseStatusObserver.subscribe(data => {
@@ -133,7 +133,7 @@ export class FileUploaderComponent implements OnInit {
     }
   }
 
-  getUniProt() {
+  async getUniProt() {
     this.dataService.finishedProcessing = false
     this.dataService.cols = this.form.value
     if (this.fetched) {
