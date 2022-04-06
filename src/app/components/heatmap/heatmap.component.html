@@ -33,7 +33,7 @@
     <div class="row">
       <ng-container *ngFor="let db of availableDB">
         <ng-container *ngIf="this.dataService.dbIDMap[db]">
-          <div class="form-group mr-5" *ngIf="this.dataService.dbIDMap[db][_data] && settings.settings.academic">
+          <div class="form-group mr-5" *ngIf="this.dataService.dbIDMap[db][_data] && settings.settings.academic && this.dataService.dbIDMap[db][_data].associated.length > 1">
             <label for="{{db}}{{_data}}">{{dataService.databaseNameMap[db]}} Isoform Selection</label>
             <select id="{{db}}{{_data}}" class="form-control" [(ngModel)]="this.dataService.dbIDMap[db][_data].selected">
               <option *ngFor="let m of this.dataService.dbIDMap[db][_data].associated" [value]="m">

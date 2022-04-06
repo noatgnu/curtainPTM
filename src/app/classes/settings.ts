@@ -13,5 +13,6 @@ export class Settings {
   enableDB: any = {
     PSP_PHOSPHO: true,
     PLMD_UBI: true,
+    CDB_CARBONYL: true
   }
 }

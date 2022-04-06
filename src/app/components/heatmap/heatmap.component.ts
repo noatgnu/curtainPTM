@@ -8,6 +8,7 @@ import {forkJoin, Observable, Subject, Subscription} from "rxjs";
 import {SettingsService} from "../../../services/settings.service";
 import {PspService} from "../../../services/psp.service";
 import {WebService} from "../../../services/web.service";
+import {GlyconnectService} from "../../../services/glyconnect.service";
 
 
 @Component({
@@ -47,6 +48,9 @@ export class HeatmapComponent implements OnInit, OnDestroy {
   availableDB: string[] = []
   ptmSelected: any = {}
   experimentalAligned: any = {}
+  dbUniprotAcc: any
+  dbExpAcc: any
+  glyconData: any[] = []
   @Input() set data(value: string)  {
     if (value) {
       this._data = value
@@ -54,7 +58,7 @@ export class HeatmapComponent implements OnInit, OnDestroy {
         if (this.observeChange === undefined) {
           this.observeChange = this.dataService.observableTriggerMap[this._data].subscribe((data:boolean) => {
             if (data) {
-              this.processData()
+              this.processData().then(r => {})
             }
           })
         } else {
@@ -62,16 +66,17 @@ export class HeatmapComponent implements OnInit, OnDestroy {
         }
 
       }
-      this.processData();
+      this.processData().then(r => {});
     }
   }
 
-  private processData() {
+  private async processData() {
     const d = this.uniprot.getUniprotFromPrimary(this._data)
 
     if (d) {
       this.sequence[d["Entry"]] = d["Sequence"]
       this.uniprotEntry = d["Entry"]
+      await this.web.getGlyco(this.uniprotEntry)
       this.accMap["Uniprot"] = this.uniprotEntry
       this.positions["Uniprot"] = d["Modified residue"]
       const seqNeeded: any = {}
@@ -89,7 +94,10 @@ export class HeatmapComponent implements OnInit, OnDestroy {
       }
       const dab: string[] = []
       for (const db of this.form.value["dbSelected"]) {
-        if (this.web.accessDB(db)[this.uniprotEntry] || this.web.accessDB(db)[this.expDataAcc]) {
+        let dbAccess = this.web.accessDB(db)
+        let dbUniprotAcc: any = dbAccess[this.uniprotEntry]
+        let dbExpAcc: any = dbAccess[this.expDataAcc]
+        if (dbUniprotAcc || dbExpAcc) {
           if (!this.dataService.dbIDMap[db]) {
             this.dataService.dbIDMap[db] = {}
             if (!dab.includes(db)) {
@@ -100,17 +108,14 @@ export class HeatmapComponent implements OnInit, OnDestroy {
               dab.push(db)
             }
           }
-
           if (!this.dataService.dbIDMap[db][this._data]) {
-            console.log(db)
-            console.log(this.web.accessDB(db)[accs[0]])
             this.dataService.dbIDMap[db][this._data] = {selected: this.uniprotEntry, associated: [this.uniprotEntry]}
-            if (this.web.accessDB(db)[accs[0]]) {
+            if (dbAccess[accs[0]]) {
               this.dataService.dbIDMap[db][this._data].selected = accs[0]
             }
           }
           for (const acc of accs) {
-            if (this.web.accessDB(db)[acc]) {
+            if (dbAccess[acc]) {
               if (!this.sequence[acc]) {
                 if (this.uniprot.fastaMap[acc]) {
                   this.sequence = this.uniprot.fastaMap[acc].slice()
@@ -128,6 +133,7 @@ export class HeatmapComponent implements OnInit, OnDestroy {
         } else {
 
         }
+
       }
       const defaultDB = []
       for (const d of dab) {
@@ -288,7 +294,7 @@ export class HeatmapComponent implements OnInit, OnDestroy {
     },
     annotations: []
   }
-  constructor(private psp: PspService, private uniprot: UniprotService, public dataService: DataService, private fb: FormBuilder, public plotly: PlotlyService, public settings: SettingsService, private web: WebService) {
+  constructor(private Glycon: GlyconnectService, private psp: PspService, private uniprot: UniprotService, public dataService: DataService, private fb: FormBuilder, public plotly: PlotlyService, public settings: SettingsService, private web: WebService) {
     this.dataService.selectionNotifier.subscribe(data => {
       if (data) {
         if (this.unidStack[this.dataService.justSelected]) {
@@ -299,11 +305,12 @@ export class HeatmapComponent implements OnInit, OnDestroy {
     })
   }
 
-  drawHeatmap() {
+  async drawHeatmap() {
     for (const db of this.availableDB) {
       if (this.dataService.dbIDMap[db]) {
         if (this.dataService.dbIDMap[db][this._data]) {
-          this.positions[db] = this.web.accessDB(db)[this.dataService.dbIDMap[db][this._data].selected]
+          const dbAccess = await this.web.accessDB(db)
+          this.positions[db] = dbAccess[this.dataService.dbIDMap[db][this._data].selected]
         }
       }
 
@@ -484,11 +491,12 @@ export class HeatmapComponent implements OnInit, OnDestroy {
     }
     return seq
   }
-  drawBarChart() {
+  async drawBarChart() {
     for (const db of this.availableDB) {
       if (this.dataService.dbIDMap[db]) {
         if (this.dataService.dbIDMap[db][this._data]) {
-          this.positions[db] = this.web.accessDB(db)[this.dataService.dbIDMap[db][this._data].selected]
+          const dbAccess = await this.web.accessDB(db)
+          this.positions[db] = dbAccess[this.dataService.dbIDMap[db][this._data].selected]
           this.accMap[db] = this.dataService.dbIDMap[db][this._data].selected
         }
       }

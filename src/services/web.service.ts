@@ -3,6 +3,8 @@ import {HttpClient} from "@angular/common/http";
 import {CurtainLink} from "../app/classes/curtain-link";
 import {PspService} from "./psp.service";
 import {PlmdService} from "./plmd.service";
+import {CarbonyldbService} from "./carbonyldb.service";
+import {GlyconnectService} from "./glyconnect.service";
 
 @Injectable({
   providedIn: 'root'
@@ -29,7 +31,7 @@ export class WebService {
     return value;
   }
 
-  constructor(private http: HttpClient, private psp: PspService, private plmd: PlmdService) { }
+  constructor(private glyconnect: GlyconnectService, private http: HttpClient, private psp: PspService, private plmd: PlmdService, private carbonyl: CarbonyldbService) { }
 
   putSettings(settings: any) {
     return this.http.put(this.links.proxyURL + "file_data", JSON.stringify(settings, this.replacer), {responseType: "text", observe: "response"})
@@ -50,6 +52,9 @@ export class WebService {
         break
       case "PLMD_UBI":
         this.plmd.getPLMD()
+        break
+      case "CDB_CARBONYL":
+        this.carbonyl.getCarbonylDB()
         break
       default:
         break
@@ -74,8 +79,50 @@ export class WebService {
         return this.plmd.methylPLMDMap
       case "PLMD_ACETYL":
         return this.plmd.acetylPLMDMap
+      case "CDB_CARBONYL":
+        return this.carbonyl.carbonylMap
+      case "GLYCONNECTN":
+        return this.glyconnect.glyconnectNMap
+      case "GLYCONNECTO":
+        return this.glyconnect.glyconnectOMap
       default:
         break
+    }
+  }
+
+  async getGlyco(acc: string) {
+    const result = await this.glyconnect.getGlyconnect(acc).toPromise()
+    // @ts-ignore
+    if (result["results"]) {
+      const tempStore: any = {}
+      // @ts-ignore
+      for (const r of result["results"]) {
+        if (r["site"]) {
+          const res = r["site"]["location"]-1
+          if (!tempStore[r["structure"]["glycan_type"]]) {
+            tempStore[r["structure"]["glycan_type"]] = {}
+          }
+          if (!tempStore[r["structure"]["glycan_type"]][res]) {
+            tempStore[r["structure"]["glycan_type"]][res] = {res: res, aa: "", description: r["structure"]["glycan_type"]}
+          }
+        }
+      }
+      if ("N-Linked" in tempStore) {
+        if (!this.accessDB("GLYCONNECTN")[acc]) {
+          this.accessDB("GLYCONNECTN")[acc] = []
+          for (const i in tempStore["N-Linked"]) {
+            this.accessDB("GLYCONNECTN")[acc].push(tempStore["N-Linked"][i])
+          }
+        }
+      }
+      if ("O-Linked" in tempStore) {
+        if (!this.accessDB("GLYCONNECTO")[acc]) {
+          this.accessDB("GLYCONNECTO")[acc] = []
+          for (const i in tempStore["O-Linked"]) {
+            this.accessDB("GLYCONNECTO")[acc].push(tempStore["O-Linked"][i])
+          }
+        }
+      }
     }
   }
 }

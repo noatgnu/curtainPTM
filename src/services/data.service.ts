@@ -21,7 +21,10 @@ export class DataService {
     {name:"PhosphoSite Plus (Sumoylation)", value:"PSP_SUMOY", academic:true},
     {name:"PLMD (Ubiquitylation)", value:"PLMD_UBI", academic:true},
     {name:"PLMD (Methylation)", value:"PLMD_METHYL", academic:true},
-    {name:"PLMD (Acetylation)", value:"PLMD_ACETYL", academic:true}
+    {name:"PLMD (Acetylation)", value:"PLMD_ACETYL", academic:true},
+    {name:"CarbonylDB (Carbonylation)", value:"CDB_CARBONYL", academic:true},
+    {name:"GLYCONNECT (N-Linked)", value:"GLYCONNECTN", academic:true},
+    {name:"GLYCONNECT (O-Linked)", value:"GLYCONNECTO", academic:true}
   ]
   databaseNameMap: any = {}
   selectNScroll: BehaviorSubject<string> = new BehaviorSubject<string>("")

@@ -11,6 +11,7 @@ import {AdvanceHighlightsComponent} from "../advance-highlights/advance-highligh
 import {SequenceLogoPromptComponent} from "../sequence-logo-prompt/sequence-logo-prompt.component";
 import {SequenceLogoComponent} from "../sequence-logo/sequence-logo.component";
 import {ToastService} from "../../../services/toast.service";
+import {GlyconnectService} from "../../../services/glyconnect.service";
 
 @Component({
   selector: 'app-home',
@@ -28,7 +29,10 @@ export class HomeComponent implements OnInit {
     if (this.settings.settings.enableDB.PLMD_UBI) {
       this.web.getDatabase("PLMD_UBI")
     }
-    console.log(location)
+    if (this.settings.settings.enableDB.CDB_CARBONYL) {
+      this.web.getDatabase("CDB_CARBONYL")
+    }
+
     if (location.protocol === "https:" && location.hostname === "curtainptm.proteo.info") {
       toast.show("Initialization", "Error: The webpage requires the url protocol to be http instead of https")
     }
