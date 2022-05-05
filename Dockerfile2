@@ -1,0 +1,30 @@
+FROM gcc:4.9
+LABEL maintainer="tphung001@dundee.ac.uk"
+
+ARG BUILD_DATE
+LABEL build-date=$BUILD_DATE
+
+WORKDIR /app
+RUN apt-get -y install git
+RUN apt-get -y install wget
+
+RUN git clone https://github.com/noatgnu/ConSurf.git
+RUN apt-get install autoconf g++ libexpat-dev libtool perl -y
+RUN echo| cpan force install Bio::Perl Config::IniFiles List::Util
+
+WORKDIR "/app/ConSurf/3rd party software"
+RUN ./rate4site_build.sh
+RUN ./cd-hit_build.sh
+RUN wget ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_sprot.fasta.gz
+RUN gunzip uniprot_sprot.fasta.gz
+RUN wget ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_trembl.fasta.gz
+RUN gunzip uniprot_trembl.fasta.gz
+WORKDIR "/app/ConSurf"
+RUN aclocal
+RUN automake --force-missing --add-missing
+RUN autoconf
+RUN ./configure
+RUN make
+RUN make install
+
+CMD ["bash"]
