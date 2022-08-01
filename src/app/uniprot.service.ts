@@ -127,10 +127,10 @@ export class UniprotService {
 
         r["Modified residue"] = modRes
       }
-      if (r["Domain[FT]"]) {
+      if (r["Domain [FT]"]) {
         let domains: any[] = []
         let l: number = 0;
-        for (const s of r["Domain[FT]"].split(/;/g)) {
+        for (const s of r["Domain [FT]"].split(/;/g)) {
           if (s !== "") {
             if (s.indexOf("DOMAIN") > -1) {
               domains.push({})
@@ -150,7 +150,7 @@ export class UniprotService {
             }
           }
         }
-        r["Domain[FT]"] = domains
+        r["Domain [FT]"] = domains
       }
       this.results.set(r["From"], r)
       this.results.set(r["Entry"], r)

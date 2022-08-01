@@ -33,8 +33,8 @@ export class DataBlockComponent implements OnInit {
       const uni: any = this.uniprot.getUniprotFromAcc(this.accessionID)
       if (uni) {
         this.uni = uni
-        if (this.uni["Gene names"] !== "") {
-          this.title = this.uni["Gene names"]
+        if (this.uni["Gene Names"] !== "") {
+          this.title = this.uni["Gene Names"]
           this.allSequences[this.uni["Entry"]] = this.uni["Sequence"]
           this.sourceMap["UniProt"] = this.uni["Entry"]
         }

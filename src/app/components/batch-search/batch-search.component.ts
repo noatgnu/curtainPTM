@@ -10,7 +10,7 @@ import {DataService} from "../../data.service";
 })
 export class BatchSearchComponent implements OnInit {
   data: string = ""
-  searchType: "Gene names"| "Primary IDs" = "Gene names"
+  searchType: "Gene Names"| "Primary IDs" = "Gene Names"
   title: string = ""
   builtInList: string[] = []
   params = {
