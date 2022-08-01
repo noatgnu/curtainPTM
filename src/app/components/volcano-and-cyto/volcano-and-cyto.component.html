@@ -1,0 +1,21 @@
+<div class="container mt-4" id="volcanoNcyto">
+  <ngb-accordion #acc="ngbAccordion" activeIds="volcano">
+    <ngb-panel title="Differential Analysis Volcano Plot" id="volcano">
+      <ng-template ngbPanelContent>
+        <app-volcano-plot [data]="data.currentDF" (selected)="handleVolcanoSelection($event)"></app-volcano-plot>
+      </ng-template>
+    </ngb-panel>
+  </ngb-accordion>
+</div>
+
+<!--
+<div class="container mt-4" *ngIf="data.selected.length >2 && data.fetchUniProt">
+  <ngb-accordion #acc="ngbAccordion">
+    <ngb-panel title="Selected Protein Interactions" id="selectedInteractions">
+      <ng-template ngbPanelContent>
+        <app-network-interactions [genes]="data.selected"></app-network-interactions>
+      </ng-template>
+    </ngb-panel>
+  </ngb-accordion>
+</div>
+-->

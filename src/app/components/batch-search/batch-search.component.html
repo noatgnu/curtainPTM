@@ -1,0 +1,87 @@
+<div class="modal-header">
+  <h3 class="modal-title">Protein Batch Search</h3>
+</div>
+<div class="modal-body">
+  <div class="row mb-4">
+    <div class="col">
+      <input type="text" placeholder="Title" class="form-control" [(ngModel)]="title">
+    </div>
+    <div class="col">
+      <div ngbDropdown class="d-inline-block">
+        <button type="button" class="btn btn-outline-primary" id="dropDownProteinList" ngbDropdownToggle>Built-in Protein Lists</button>
+        <div ngbDropdownMenu aria-labelledby="dropDownProteinList">
+          <button ngbDropdownItem *ngFor="let b of builtInList" (click)="updateTextArea(b)">
+            {{web.filters[b].name}}
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <select class="form-control" [(ngModel)]="searchType">
+        <option>
+          Gene names
+        </option>
+        <option>
+          Primary IDs
+        </option>
+      </select>
+    </div>
+  </div>
+  <textarea [disabled]="params.enableAdvanced" class="form-control mb-2" [(ngModel)]="data" rows="10"></textarea>
+  <hr>
+  <div class="row">
+    <div class="form-check">
+      <input type="checkbox" id="advancedBatch" class="form-check-input" [(ngModel)]="params.enableAdvanced">
+      <label for="advancedBatch" class="form-check-label">Enable search within fold change and significant values range</label>
+    </div>
+  </div>
+  <ng-container *ngIf="params.enableAdvanced">
+    <div class="row mt-2">
+      <div class="form-check">
+        <input type="checkbox" id="searchLeft" class="form-check-input" [(ngModel)]="params.searchLeft">
+        <label for="searchLeft" class="form-check-label">Enable search on the left side of the volcano plot</label>
+      </div>
+    </div>
+    <div class="row mt-2">
+      <div class="col">
+        <label for="minLeft">Minimum abs(log2FC) on the left side of the volcano plot</label>
+        <input id="minLeft" [(ngModel)]="params.minFCLeft"  type="number" class="form-control">
+      </div>
+      <div class="col">
+        <label for="maxLeft">Maximum abs(log2FC) on the left side of the volcano plot</label>
+        <input id="maxLeft" [(ngModel)]="params.maxFCLeft" type="number" class="form-control">
+      </div>
+    </div>
+    <div class="row mt-2">
+      <div class="form-check">
+        <input type="checkbox" id="searchRight" class="form-check-input" [(ngModel)]="params.searchRight">
+        <label for="searchRight" class="form-check-label">Enable search on the right side of the volcano plot</label>
+      </div>
+    </div>
+    <div class="row mt-2">
+      <div class="col">
+        <label for="minRight">Minimum abs(log2FC) on the right of the volcano plot</label>
+        <input id="minRight" [(ngModel)]="params.minFCRight" type="number" class="form-control">
+      </div>
+      <div class="col">
+        <label for="maxRight">Maximum abs(log2FC) on the right of the volcano plot</label>
+        <input id="maxRight" [(ngModel)]="params.maxFCRight" type="number" class="form-control">
+      </div>
+    </div>
+    <div class="row mt-2">
+      <div class="col">
+        <label for="minP">Minimum significant value</label>
+        <input [(ngModel)]="params.minP" id="minP" type="number" class="form-control">
+      </div>
+      <div class="col">
+        <label for="maxP">Max significant value</label>
+        <input [(ngModel)]="params.maxP" id="maxP" type="number" class="form-control">
+      </div>
+    </div>
+  </ng-container>
+
+</div>
+<div class="modal-footer">
+  <button class="btn btn-primary" (click)="handleSubmit()">Submit</button>
+  <button class="btn btn-danger" (click)="close()">Close</button>
+</div>

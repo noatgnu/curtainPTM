@@ -1,280 +1,194 @@
 import { Component, OnInit } from '@angular/core';
-import {UniprotService} from "../../../services/uniprot.service";
-import {ActivatedRoute, Event} from "@angular/router";
-import {DataService} from "../../../services/data.service";
-import {SettingsService} from "../../../services/settings.service";
-import {WebService} from "../../../services/web.service";
-import {fromCSV} from "data-forge";
-import {PspService} from "../../../services/psp.service";
-import {NgbModal, NgbModalRef} from "@ng-bootstrap/ng-bootstrap";
-import {AdvanceHighlightsComponent} from "../advance-highlights/advance-highlights.component";
-import {SequenceLogoPromptComponent} from "../sequence-logo-prompt/sequence-logo-prompt.component";
-import {SequenceLogoComponent} from "../sequence-logo/sequence-logo.component";
-import {ToastService} from "../../../services/toast.service";
-import {GlyconnectService} from "../../../services/glyconnect.service";
+import {ToastService} from "../../toast.service";
+import {DataFrame, fromCSV, IDataFrame, ISeries, Series} from "data-forge";
+import {DataService} from "../../data.service";
+import {UniprotService} from "../../uniprot.service";
+import {selectionData} from "../protein-selections/protein-selections.component";
+import {WebService} from "../../web.service";
+import {PtmService} from "../../ptm.service";
+import {ActivatedRoute} from "@angular/router";
+import {Differential} from "../../classes/differential";
+import {Raw} from "../../classes/raw";
+import {InputFile} from "../../classes/input-file";
+import {SettingsService} from "../../settings.service";
+import {Project} from "../../classes/project";
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css']
+  styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
+  finished: boolean = false
+  rawFiltered: IDataFrame = new DataFrame()
+  differentialFiltered:  ISeries<number, IDataFrame<number, any>> = new Series()
   uniqueLink: string = ""
-  unidSelection: string = ""
-
-  constructor(private dialog: NgbModal, private uniprot: UniprotService, public dataService: DataService, public settings: SettingsService, private web: WebService, private route: ActivatedRoute, private toast: ToastService) {
-    if (this.settings.settings.enableDB.PSP_PHOSPHO) {
-      this.web.getDatabase("PSP_PHOSPHO")
-    }
-    if (this.settings.settings.enableDB.PLMD_UBI) {
-      this.web.getDatabase("PLMD_UBI")
-    }
-    if (this.settings.settings.enableDB.CDB_CARBONYL) {
-      this.web.getDatabase("CDB_CARBONYL")
-    }
-
+  filterModel: string = ""
+  currentID: string = ""
+  constructor(public settings: SettingsService, private data: DataService, private route: ActivatedRoute, private toast: ToastService, private uniprot: UniprotService, private web: WebService, private ptm: PtmService) {
+    this.ptm.getDatabase("PSP_PHOSPHO")
+    this.ptm.getDatabase("PLMD_UBI")
+    this.ptm.getDatabase("CDB_CARBONYL")
     if (location.protocol === "https:" && location.hostname === "curtainptm.proteo.info") {
-      toast.show("Initialization", "Error: The webpage requires the url protocol to be http instead of https")
+      this.toast.show("Initialization", "Error: The webpage requires the url protocol to be http instead of https")
     }
-
     this.route.params.subscribe(params => {
       if (params) {
-        console.log(params)
         if (params["settings"]) {
-          this.web.postSettings(params["settings"], "").subscribe(data => {
-            if (data.body) {
-              const a = JSON.parse(<string>data.body, this.web.reviver)
-              this.restoreSettings(a)
+          this.toast.show("Initialization", "Fetching data from session " + params["settings"])
+          if (this.currentID !== params["settings"]) {
+            this.currentID = params["settings"]
+            this.web.postSettings(params["settings"], "").subscribe(data => {
+              console.log(data)
+              if (data.body) {
 
-            }
-          })
+                const a = JSON.parse(<string>data.body, this.web.reviver)
+                this.restoreSettings(a).then()
+              }
+            })
+          }
         }
-      }
-    })
-    // this.web.postSettings("bf1b14ee-dac3-48e3-89bd-93e672dd28e6", "").subscribe(data => {
-    //   if (data.body) {
-    //     const a = JSON.parse(<string>data.body, this.web.reviver)
-    //     this.restoreSettings(a)
-    //   }
-    // })
-    this.uniprot.uniprotParseStatusObserver.subscribe(data => {
-      if (data) {
-
       }
     })
   }
 
+  async restoreSettings(object: any) {
+    if (typeof object.settings === "string") {
+      object.settings = JSON.parse(object.settings)
+    }
+    if (/\t/.test(object.raw)) {
+      // @ts-ignore
+      this.data.raw = new InputFile(fromCSV(object.raw, {delimiter: "\t"}), "rawFile.txt", object.raw)
+    } else {
+      // @ts-ignore
+      this.data.raw = new InputFile(fromCSV(object.raw), "rawFile.txt", object.raw)
+    }
+    if (/\t/.test(object.processed)) {
+      // @ts-ignore
+      this.data.differential = new InputFile(fromCSV(object.processed, {delimiter: "\t"}), "processedFile.txt", object.processed)
+    } else {
+      this.data.differential = new InputFile(fromCSV(object.processed), "processedFile.txt", object.processed)
+    }
+    if (!object.settings.project) {
+      object.settings.project = new Project()
+    }
+    if (!object.settings.sampleOrder) {
+      object.settings.sampleOrder = {}
+    }
+    if (!object.settings.sampleVisible) {
+      object.settings.sampleVisible = {}
+    }
+    if (!object.settings.conditionOrder) {
+      object.settings.conditionOrder = []
+    }
+    if (object.settings.version) {
+      if (object.settings.version === 2) {
+
+        this.data.selected = object.selections
+        this.data.selectedMap = object.selectionsMap
+        this.data.selectOperationNames = object.selectionsName
+        this.data.differentialForm = new Differential()
+        this.data.differentialForm.restore(object.differentialForm)
+        this.data.rawForm = new Raw()
+        this.data.rawForm.restore(object.rawForm)
+        this.data.fetchUniProt = object.fetchUniProt
+        if (object.annotatedData) {
+          this.data.annotatedData = object.annotatedData
+        }
+        if (object.annotatedMap) {
+          this.data.annotatedMap = object.annotatedMap
+        }
+        if (object.dbIDMap) {
+          this.data.dbIDMap = object.dbIDMap
+        }
+      }
+    } else {
+      console.log(object)
+      if (object.selections) {
+        this.data.differentialForm.accession = object.cols.accessionCol
+        this.data.differentialForm.comparison = object.cols.comparisonCol
+        this.data.differentialForm.foldChange = object.cols.foldChangeCol
+        this.data.differentialForm.transformFC = object.cols.log2transform
+        this.data.differentialForm.transformSignificant = object.cols.log10transform
+        this.data.differentialForm.peptideSequence = object.cols.peptideSequenceCol
+        this.data.differentialForm.position = object.cols.positionCol
+        this.data.differentialForm.positionPeptide = object.cols.positionPeptideCol
+        this.data.differentialForm.primaryIDs = object.cols.primaryIDComparisonCol
+        this.data.rawForm.primaryIDs = object.cols.primaryIDRawCol
+        this.data.rawForm.samples = object.cols.rawValueCols
+        this.data.differentialForm.score = object.cols.score
+        this.data.differentialForm.sequence = object.cols.sequenceCol
+        this.data.differentialForm.significant = object.cols.significantCol
+        const selections = Object.keys(object.highlights)
+        const df = this.data.differential.df.where(r => selections.includes(r[this.data.differentialForm.primaryIDs])).bake()
+        for (const r of df) {
+          this.data.selected.push(r[this.data.differentialForm.primaryIDs])
+          if (!this.data.selectOperationNames.includes(r[this.data.differentialForm.accession])) {
+            this.data.selectOperationNames.push(r[this.data.differentialForm.accession])
+          }
+          if (!this.data.selectedMap[r[this.data.differentialForm.primaryIDs]]) {
+            this.data.selectedMap[r[this.data.differentialForm.primaryIDs]] = {}
+          }
+          this.data.selectedMap[r[this.data.differentialForm.primaryIDs]][r[this.data.differentialForm.accession]] = true
+        }
+      }
+    }
+    this.settings.settings = object.settings;
+    this.data.restoreTrigger.next(true)
+  }
 
   ngOnInit(): void {
   }
-  setComparison(value: string) {
-    if (value !== this.settings.settings.currentComparison) {
-      console.log(value)
-      this.settings.settings.currentComparison = value
-      this.clearSelections()
-    }
 
-  }
-  handleRes(e: any[], selectionTitle: string = "Selected") {
-    let acc = ""
-    for (const i of e) {
-      if (selectionTitle === "Selected") {
-        selectionTitle = i["Gene names"]
-      }
-      if (!(this.dataService.queryMap.has(i[this.dataService.cols.accessionCol]))) {
-        this.dataService.queryMap.set(i[this.dataService.cols.accessionCol], {})
-        this.dataService.queryProtein.push(i[this.dataService.cols.accessionCol])
-        this.dataService.queryGeneNames.push(i["Gene names"])
-      }
-      const d = this.dataService.queryMap.get(i[this.dataService.cols.accessionCol])
-      if (!(selectionTitle in d)) {
-        d[selectionTitle] = []
-      }
-      if (d) {
-        d[selectionTitle].push(i[this.dataService.cols.primaryIDComparisonCol])
-        this.dataService.queryMap.set(i[this.dataService.cols.accessionCol], d)
-      }
-      acc = i[this.dataService.cols.accessionCol]
-    }
-    this.dataService.selectionNotifier.next(true)
-    this.dataService.finishedSelection.next(true)
-    if (acc !== "") {
-      //let e = this.dataService.scrollToID(acc+"scrollid");
-      this.dataService.selectNScroll.next(acc)
-    }
-
-
-
-  }
-
-  clearSelections() {
-    this.dataService.queryProtein = []
-    this.dataService.queryMap = new Map<string, any>()
-    this.dataService.highlights = {}
-    this.dataService.justSelected = ""
-    this.dataService.clearSelections.next(true)
-    this.dataService.dbIDMap = {}
-    this.dataService.highlightMap =  {}
-    this.dataService.queryGeneNames = []
-    this.dataService.finishedSelection.next(false)
-  }
-
-
-  saveSession() {
-    const data: any = {
-      raw: this.dataService.rawDataFile.data.toCSV(),
-      cols: this.dataService.cols,
-      processed: this.dataService.dataFile.data.toCSV(),
-      settings: this.settings.settings,
-      password: "",
-      selections: this.dataService.queryProtein,
-      selectionsMap: this.dataService.queryMap,
-      highlights: this.dataService.highlights,
-      dbIDMap: this.dataService.dbIDMap,
-      highlightMap: this.dataService.highlightMap,
-      queryGeneNames: this.dataService.queryGeneNames
-    }
-    this.web.putSettings(data).subscribe(data => {
-      if (data.body) {
-        this.settings.currentID = data.body
-        this.uniqueLink = location.origin +"/#/" + this.settings.currentID
-      }
-    })
-  }
-
-  restoreSettings(object: any) {
-    for (const s of object.selections) {
-      this.dataService.queryProtein.push(s)
-    }
-    for (const s of this.dataService.queryProtein) {
-      this.dataService.queryMap.set(s, object.selectionsMap.get(s))
-    }
-    this.dataService.queryProtein = object.selections;
-    if (!object.settings.academic) {
-      object.settings.academic = true
-    }
-
-    this.settings.settings = object.settings;
-    this.dataService.cols = object.cols;
-    this.dataService.dataFile.data = fromCSV(object.processed)
-    this.dataService.rawDataFile.data = fromCSV(object.raw)
-    if (!object.settings.currentComparison) {
-      this.settings.settings.currentComparison = ""
-    }
-    if (object.highlights) {
-      this.dataService.highlights = object.highlights
-    }
-    if (object.pspIDMap) {
-      this.dataService.dbIDMap = {}
-      this.dataService.dbIDMap["PSP_PHOSPHO"] = object.pspIDMap
-    }
-
-    if (object.dbIDMap) {
-      this.dataService.dbIDMap = object.dbIDMap
-    }
-
-    if (object.highlightMap) {
-      this.dataService.highlightMap = object.highlightMap
-    }
-    if (object.queryGeneNames) {
-      this.dataService.queryGeneNames = object.queryGeneNames
-    }
-    this.dataService.restoreTrigger.next(true)
-  }
-
-  volcanoSelection(e: string) {
-    this.unidSelection = e
-    this.dataService.selectionService.next({data: this.unidSelection, type: "Primary IDs"})
-  }
-
-  openAdvancedHighlight() {
-    const dialogRef = this.dialog.open(AdvanceHighlightsComponent)
-    dialogRef.result.then((result) => {
-      if (result) {
-        this.dataService.highlightMap = {}
-        let rows = this.dataService.dataFile.data.where(row =>
-          (row[this.dataService.cols.significantCol] <= result["maxP"]) &&
-          (row[this.dataService.cols.significantCol] >= result["minP"]) &&
-          (row[this.dataService.cols.comparisonCol] === this.settings.settings.currentComparison)
-        ).bake()
-        switch (result["direction"]) {
-          case "both":
-            rows = rows.where(row => (Math.abs(row[this.dataService.cols.foldChangeCol]) <= result["maxfc"]) &&
-              (Math.abs(row[this.dataService.cols.foldChangeCol]) >= result["minfc"])).bake()
-            break
-          case "left":
-            rows = rows.where(row => (row[this.dataService.cols.foldChangeCol] >= -result["maxfc"]) &&
-              (row[this.dataService.cols.foldChangeCol] <= -result["minfc"])).bake()
-            break
-          case "right":
-            rows = rows.where(row => (row[this.dataService.cols.foldChangeCol] <= result["maxfc"]) &&
-              (row[this.dataService.cols.foldChangeCol] >= result["minfc"])).bake()
-            break
+  handleFinish(e: boolean) {
+    this.finished = e
+    if (this.finished) {
+      if (this.data.selected.length > 0) {
+        this.data.finishedProcessingData.next(e)
+        const differentialFiltered = this.data.currentDF.where(r => this.data.selected.includes(r[this.data.differentialForm.primaryIDs])).bake()
+        for (const s of differentialFiltered) {
+          this.addGeneToSelected(s);
         }
-
-        const proteins = rows.getSeries(this.dataService.cols.accessionCol).distinct().bake().toArray()
-        this.dataService.progressBarEvent.next({event: "Find proteins with fitting filter parameters", value: 1, maxValue: 3})
-        for (const r of rows) {
-          this.dataService.highlightMap[r[this.dataService.cols.primaryIDComparisonCol]] = true
+        for (const s of this.rawFiltered) {
+          this.addGeneToSelected(s);
         }
-        const rowP = this.dataService.dataFile.data.where(row => proteins.includes(row[this.dataService.cols.accessionCol])).bake()
-        this.dataService.progressBarEvent.next({event: "Find IDs from the selected proteins", value: 2, maxValue: 3})
-        for (const i of rowP) {
-          if (i[this.dataService.cols.primaryIDComparisonCol]) {
-            if (!(this.dataService.queryMap.has(i[this.dataService.cols.accessionCol]))) {
-              this.dataService.queryMap.set(i[this.dataService.cols.accessionCol], {})
-              this.dataService.queryProtein.push(i[this.dataService.cols.accessionCol])
-              this.dataService.queryGeneNames.push(i["Gene names"])
-            }
-            const d = this.dataService.queryMap.get(i[this.dataService.cols.accessionCol])
-            if (!(i["Gene names"] in d)) {
-              d[i["Gene names"]] = []
-            }
-            if (d) {
-              d[i["Gene names"]].push(i[this.dataService.cols.primaryIDComparisonCol])
-              this.dataService.queryMap.set(i[this.dataService.cols.accessionCol], d)
-            }
+        const differential = this.data.currentDF.where(r => this.data.selectedAccessions.includes(r[this.data.differentialForm.accession])).bake()
+        this.differentialFiltered = differential.groupBy(r => r[this.data.differentialForm.accession]).bake()
+      }
+    }
+  }
+
+  private addGeneToSelected(s: any) {
+    if (!this.data.selectedAccessions.includes(s[this.data.differentialForm.accession])) {
+      this.data.selectedAccessions.push(s[this.data.differentialForm.accession])
+      const uni = this.uniprot.getUniprotFromAcc(s[this.data.differentialForm.accession])
+      if (uni) {
+        if (uni["Gene Names"] !== "") {
+          if (!this.data.selectedGenes.includes(uni["Gene Names"])) {
+            this.data.selectedGenes.push(uni["Gene Names"])
           }
         }
-        this.dataService.progressBarEvent.next({event: "Processing completed!", value: 3, maxValue: 3})
-        this.dataService.finishedSelection.next(true)
       }
-    }, (reason) => {
-      if (reason) {
-        console.log(reason)
-      }
-    })
+    }
   }
 
-  openSequenceLogo() {
-    let data: string[] = []
-    const dialogRef = this.dialog.open(SequenceLogoPromptComponent)
-    dialogRef.dismissed.subscribe(result => {
-      let rows = this.dataService.dataFile.data.where(row =>
-        (row[this.dataService.cols.significantCol] <= result["maxP"]) &&
-        (row[this.dataService.cols.significantCol] >= result["minP"]) && (row[this.dataService.cols.score] >= result["minScore"]) &&
-        (row[this.dataService.cols.comparisonCol] === this.settings.settings.currentComparison)
-      ).bake()
-      switch (result["direction"]) {
-        case "both":
-          rows = rows.where(row => (Math.abs(row[this.dataService.cols.foldChangeCol]) <= result["maxfc"]) &&
-            (Math.abs(row[this.dataService.cols.foldChangeCol]) >= result["minfc"])).bake()
-          break
-        case "left":
-          rows = rows.where(row => (row[this.dataService.cols.foldChangeCol] >= -result["maxfc"]) &&
-            (row[this.dataService.cols.foldChangeCol] <= -result["minfc"])).bake()
-          break
-        case "right":
-          rows = rows.where(row => (row[this.dataService.cols.foldChangeCol] <= result["maxfc"]) &&
-            (row[this.dataService.cols.foldChangeCol] >= result["minfc"])).bake()
-          break
+  handleSearch(e: selectionData) {
+    this.data.selected = this.data.selected.concat(e.data)
+    if (!this.data.selectOperationNames.includes(e.title)) {
+      this.data.selectOperationNames.push(e.title)
+    }
+    const differentialFiltered = this.data.currentDF.where(r => e.data.includes(r[this.data.differentialForm.primaryIDs])).bake()
+    for (const s of differentialFiltered) {
+      if (!this.data.selectedMap[s[this.data.differentialForm.primaryIDs]]) {
+        this.data.selectedMap[s[this.data.differentialForm.primaryIDs]] = {}
       }
-      data = rows.getSeries(this.dataService.cols.sequenceCol).bake().toArray()
-      if (data.length > 0) {
-        const ref = this.dialog.open(SequenceLogoComponent, {size: "xl"})
-        ref.componentInstance.data = {window: data[0].length, data: data, id: "SequenceLogo"}
-      }
-    })
-
+      this.addGeneToSelected(s);
+      this.data.selectedMap[s[this.data.differentialForm.primaryIDs]][e.title] = true
+    }
+    const differential = this.data.currentDF.where(r => this.data.selectedAccessions.includes(r[this.data.differentialForm.accession])).bake()
+    const groups = differential.groupBy(r => r[this.data.differentialForm.accession]).bake()
+    this.differentialFiltered = groups
+    console.log(this.differentialFiltered)
+    this.data.selectionUpdateTrigger.next(true)
   }
 }

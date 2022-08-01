@@ -1,3 +1,5 @@
+import {Project} from "./project";
+
 export class Settings {
   fetchUniprot: boolean = true
   inputDataCols: any = {}
@@ -10,9 +12,12 @@ export class Settings {
   academic: boolean = true
   backGroundColorGrey: boolean = false
   currentComparison: string = ""
-  enableDB: any = {
-    PSP_PHOSPHO: true,
-    PLMD_UBI: true,
-    CDB_CARBONYL: true
-  }
+  version: number = 2
+  currentID: string = ""
+  fdrCurveText: string = ""
+  fdrCurveTextEnable: boolean = false
+  project: Project = new Project()
+  sampleOrder: any = {}
+  sampleVisible: any = {}
+  conditionOrder: string[] = []
 }

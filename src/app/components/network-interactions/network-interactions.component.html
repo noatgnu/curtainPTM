@@ -1,0 +1,177 @@
+<div class="card">
+  <div class="card-body">
+    <h5 class="card-title">Network Parameters</h5>
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">StringDB</h5>
+        <div class="row">
+          <div class="col">
+            <label for="stringNT">StringDB Network Type</label>
+            <select class="form-control" id="stringNT" [(ngModel)]="networkType">
+              <option value="functional">
+                Functional
+              </option>
+              <option value="physical">
+                Physical
+              </option>
+            </select>
+          </div>
+          <div class="col">
+            <label for="string">Required Combined Score (Max = 1)</label>
+            <input class="form-control" id="string" type="number" [(ngModel)]="requiredScore">
+          </div>
+          <div class="col">
+            <label for="stringT">Required T-Score Score (Max = 1)</label>
+            <input class="form-control" id="stringT" type="number" [(ngModel)]="otherScore.tscore">
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <label for="stringA">Required A-Score Score (Max = 1)</label>
+            <input class="form-control" id="stringA" type="number" [(ngModel)]="otherScore.ascore">
+          </div>
+          <div class="col">
+            <label for="stringD">Required D-Score Score (Max = 1)</label>
+            <input class="form-control" id="stringD" type="number" [(ngModel)]="otherScore.dscore">
+          </div>
+          <div class="col">
+            <label for="stringE">Required E-Score Score (Max = 1)</label>
+            <input class="form-control" id="stringE" type="number" [(ngModel)]="otherScore.escore">
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <label for="stringF">Required F-Score Score (Max = 1)</label>
+            <input class="form-control" id="stringF" type="number" [(ngModel)]="otherScore.fscore">
+          </div>
+          <div class="col">
+            <label for="stringN">Required N-Score Score (Max = 1)</label>
+            <input class="form-control" id="stringN" type="number" [(ngModel)]="otherScore.nscore">
+          </div>
+          <div class="col">
+            <label for="stringP">Required P-Score Score (Max = 1)</label>
+            <input class="form-control" id="stringP" type="number" [(ngModel)]="otherScore.pscore">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <label for="atlasScore">Interactome Required Score (Max = 1)</label>
+        <input class="form-control" id="atlasScore" type="number" [(ngModel)]="atlasScore">
+      </div>
+    </div>
+  </div>
+  <div class="card-footer">
+    <button type="button" class="btn btn-primary" (click)="getInteractions()">Redraw</button>
+  </div>
+</div>
+<div class="row">
+  <div class="col-4">
+    <table class="table table-bordered mt-2">
+      <thead>
+        <tr>
+          <th scope="col">
+            Color
+          </th>
+          <th scope="col">
+            Description
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td style="background-color: rgba(220,169,0,0.96)"></td>
+        <td>Fold change > 0</td>
+      </tr>
+      <tr>
+        <td style="background-color: rgba(220,0,59,0.96)"></td>
+        <td>Fold change < 0</td>
+      </tr>
+      <tr>
+        <td style="background-color: rgb(206,128,128)"></td>
+        <td>StringDB interaction</td>
+      </tr>
+      <tr>
+        <td style="background-color: rgb(73,73,101)"></td>
+        <td>Interactome Atlas interaction</td>
+      </tr>
+      </tbody>
+    </table>
+    <table class="table table-bordered table-striped mt-2" *ngIf="edgeDataViewer[edgeDataSource]">
+      <thead>
+      <tr>
+        <th scope="col">
+          Properties
+        </th>
+        <th scope="col">
+          Values
+        </th>
+      </tr>
+      </thead>
+      <tbody>
+      <ng-container *ngIf="edgeDataSource==='stringdb';else interactome">
+        <tr>
+          <td>Node A</td>
+          <td>{{edgeDataViewer[edgeDataSource]["preferredName_A"]}}</td>
+        </tr>
+        <tr>
+          <td>Node B</td>
+          <td>{{edgeDataViewer[edgeDataSource]["preferredName_B"]}}</td>
+        </tr>
+        <tr>
+          <td><span ngbTooltip="coexpression score (derived from similar pattern of mRNA expression measured by DNA arrays and similar technologies)">A-score</span></td>
+          <td>{{edgeDataViewer[edgeDataSource]["ascore"]}}</td>
+        </tr>
+        <tr>
+          <td><span ngbTooltip="database score (derived from curated data of various databases)">D-score</span></td>
+          <td>{{edgeDataViewer[edgeDataSource]["dscore"]}}</td>
+        </tr>
+        <tr>
+          <td><span ngbTooltip="experimental score (derived from experimental data, such as, affinity chromatography)">E-score</span></td>
+          <td>{{edgeDataViewer[edgeDataSource]["escore"]}}</td>
+        </tr>
+        <tr>
+          <td><span ngbTooltip="fusion score (derived from fused proteins in other species)">F-score</span></td>
+          <td>{{edgeDataViewer[edgeDataSource]["fscore"]}}</td>
+        </tr>
+        <tr>
+          <td><span ngbTooltip="neighborhood score, (computed from the inter-gene nucleotide count)">N-score</span></td>
+          <td>{{edgeDataViewer[edgeDataSource]["nscore"]}}</td>
+        </tr>
+        <tr>
+          <td><span ngbTooltip="cooccurence score of the phyletic profile (derived from similar absence/presence patterns of genes)">P-score</span></td>
+          <td>{{edgeDataViewer[edgeDataSource]["pscore"]}}</td>
+        </tr>
+        <tr>
+          <td><span ngbTooltip="textmining score (derived from the co-occurrence of gene/protein names in abstracts)">T-score</span></td>
+          <td>{{edgeDataViewer[edgeDataSource]["tscore"]}}</td>
+        </tr>
+        <tr>
+          <td><span ngbTooltip="combined score is computed by combining the probabilities from the different evidence channels and corrected for the probability of randomly observing an interaction">Score</span></td>
+          <td>{{edgeDataViewer[edgeDataSource]["score"]}}</td>
+        </tr>
+      </ng-container>
+      <ng-template #interactome>
+        <ng-container>
+          <tr>
+            <td>Node A</td>
+            <td>{{edgeDataViewer[edgeDataSource]["interactor_A"]["protein_gene_name"]}}</td>
+          </tr>
+          <tr>
+            <td>Node B</td>
+            <td>{{edgeDataViewer[edgeDataSource]["interactor_B"]["protein_gene_name"]}}</td>
+          </tr>
+          <tr>
+            <td>Score</td>
+            <td>{{edgeDataViewer[edgeDataSource]["score"]}}</td>
+          </tr>
+        </ng-container>
+      </ng-template>
+      </tbody>
+    </table>
+  </div>
+  <div class="col-8">
+    <app-cytoplot [drawData]="{data: nodes, stylesheet: styles, id:'networkInteractions'}" (clickedID)="handleSelect($event)"></app-cytoplot>
+  </div>
+</div>

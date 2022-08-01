@@ -1,0 +1,77 @@
+<div class="row">
+  <div class="col-3">
+    <div class="card border-primary">
+      <div class="card-body">
+        <h3 class="card-title">
+          <p class="text-success">{{title}}</p>
+        </h3>
+        <!--          <p>
+                    <b>Found in searches:</b> {{foundIn.join(";")}}<br>
+                  </p>-->
+        <p>
+          <b>Variant:</b>{{accessionID}}<br>
+        </p>
+        <ng-container *ngIf="dataService.fetchUniProt && uni">
+          <p>
+            <b>UniProt Accession:</b> {{uni["Entry"]}}<br>
+          </p>
+          <p>
+            <b>Protein names:</b> {{uni["Protein names"]}}<br>
+          </p>
+        </ng-container>
+        <!--<div class="form-check">
+          <input type="checkbox" [(ngModel)]="profileComparisonToggle" (change)="profileCompare()" class="form-check-input">
+          <label class="form-check-label">Include in profile comparison</label>
+        </div>
+        <div class="form-check">
+          <input type="checkbox" [(ngModel)]="annotateTrigger" (change)="annotate()" class="form-check-input">
+          <label class="form-check-label">Annotate on volcano plot</label>
+        </div>-->
+        <p>PTM identified:</p>
+        <ul>
+          <li *ngFor="let u of unidList">
+            <span (click)="scrollTop(u.id)"
+                  [ngClass]="{'badge bg-success': dataService.selectedMap[u.id]}">
+              {{u.position}} ({{u.residue}}) {{u.id}}
+            </span>
+          </li>
+        </ul>
+      </div>
+      <!--        <div class="card-footer">
+                <button class="btn btn-sm btn-primary" (click)="openAlphaFold()">AlphaFold Structure</button>
+              </div>-->
+      <div class="card-footer">
+        <button class="btn btn-sm btn-primary" (click)="scrollTop('')">Go to top</button>
+      </div>
+    </div>
+  </div>
+  <div class="col-9">
+    <div class="card border-dark">
+      <div class="card-body">
+        <ul ngbNav #nav="ngbNav" [(activeId)]="active" class="nav-tabs">
+          <li [ngbNavItem]="1" *ngIf="uni">
+            <a ngbNavLink>Protein Information</a>
+            <ng-template ngbNavContent>
+              <app-protein-information [data]="uni"></app-protein-information>
+            </ng-template>
+          </li>
+          <li [ngbNavItem]="2">
+            <a ngbNavLink>Raw Data Distribution</a>
+            <ng-template ngbNavContent>
+              <app-raw-data [data]="unidList" [toggle]="toggled"></app-raw-data>
+            </ng-template>
+          </li>
+          <li [ngbNavItem]="3">
+            <a ngbNavLink>PTM Position Viewer</a>
+            <ng-template ngbNavContent>
+              <div class="container-fluid">
+                <app-ptm-position-viewer [data]="{unidList: unidList, differential: _data, sequences: allSequences, accessionID: accessionID, sourceMap: sourceMap, aligned: aligned}"></app-ptm-position-viewer>
+              </div>
+            </ng-template>
+          </li>
+        </ul>
+        <div [ngbNavOutlet]="nav" class="mt-2"></div>
+      </div>
+    </div>
+  </div>
+</div>

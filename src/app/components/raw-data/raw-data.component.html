@@ -1,0 +1,95 @@
+<table class="table table-hover">
+  <thead>
+  <tr>
+    <th scope="col">
+      UID
+    </th>
+    <th scope="col">
+      Residue
+    </th>
+    <th scope="col">
+      Position in Protein
+    </th>
+    <th scope="col" (click)="sortHeader(dataService.differentialForm.foldChange)">
+      Fold Change
+    </th>
+    <th scope="col" (click)="sortHeader(dataService.differentialForm.significant)">
+      Significant
+    </th>
+    <th scope="col">
+      Sequence Window
+    </th>
+    <th scope="col" style="word-wrap: break-word;min-width: 160px;max-width: 160px;">
+      Peptide Sequence
+    </th>
+    <th scope="col">
+      Localization Score
+    </th>
+    <th scope="col">
+      Actions
+    </th>
+  </tr>
+  </thead>
+  <tbody>
+  <ng-container *ngFor="let d of differentialData">
+    <tr [ngClass]="{'table-success': dataService.selectedMap[d[dataService.differentialForm.primaryIDs]]}" id="{{d[dataService.differentialForm.primaryIDs]}}scrollID">
+      <td>
+        {{d[dataService.differentialForm.primaryIDs]}}
+      </td>
+      <td>
+        {{positionMap[d[dataService.differentialForm.primaryIDs]].residue}}
+      </td>
+      <td>
+        {{d[dataService.differentialForm.position]}}
+      </td>
+      <td>
+        {{d[dataService.differentialForm.foldChange]}}
+      </td>
+      <td>
+        {{d[dataService.differentialForm.significant]}}
+      </td>
+      <td style="word-wrap: break-word;min-width: 160px;max-width: 160px;">
+        <p *ngFor="let s of d[dataService.differentialForm.sequence].split(';')">
+          <span>{{s.slice(0, (s.length-1)/2)}}</span>
+          <span class="text-danger">{{s[(s.length-1)/2]}}</span>
+          <span>{{s.slice((s.length+1)/2, s.length)}}</span>
+          <br>
+        </p>
+      </td>
+      <td style="word-wrap: break-word;min-width: 160px;max-width: 160px;">
+        <span>{{d[dataService.differentialForm.peptideSequence].slice(0, d[dataService.differentialForm.positionPeptide]-1)}}</span>
+        <span class="text-danger">{{d[dataService.differentialForm.peptideSequence][d[dataService.differentialForm.positionPeptide]-1]}}</span>
+        <span>{{d[dataService.differentialForm.peptideSequence].slice(d[dataService.differentialForm.positionPeptide], d[dataService.differentialForm.peptideSequence].length)}}</span>
+      </td>
+      <td>
+        {{d[dataService.differentialForm.score] | number}}
+      </td>
+      <td>
+        <div ngbDropdown class="d-inline-block">
+          <button class="btn btn-sm btn-outline-primary ml-2" ngbDropdownToggle>A</button>
+          <div ngbDropdownMenu>
+            <button ngbDropdownItem (click)="viewBarChartToggle(d[dataService.differentialForm.primaryIDs])">Toggle Bar Charts</button>
+            <div class="form-check">
+              <input type="checkbox" [(ngModel)]="annotateMap[d[dataService.differentialForm.primaryIDs]]" class="form-check-input" id="toggleAnnotation{{d[dataService.differentialForm.primaryIDs]}}" (change)="annotate(d[dataService.differentialForm.primaryIDs])">
+              <label class="form-check-label" for="toggleAnnotation{{d[dataService.differentialForm.primaryIDs]}}">
+                Volcano plot annotation
+              </label>
+            </div>
+          </div>
+        </div>
+      </td>
+    </tr>
+    <tr *ngIf="barChartState[d[dataService.differentialForm.primaryIDs]]">
+      <td [colSpan]="8">
+        <div class="card border-warning">
+          <div class="card-body">
+            <app-bar-chart [data]="rawDataMap[d[dataService.differentialForm.primaryIDs]]"></app-bar-chart>
+          </div>
+        </div>
+      </td>
+    </tr>
+  </ng-container>
+
+  </tbody>
+</table>
+

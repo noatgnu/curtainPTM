@@ -1,0 +1,85 @@
+<div class="modal-header">
+  Sample Settings
+</div>
+<div class="modal-body">
+  <div class="row">
+    <div class="col-4">
+      <b>Sample Order</b>
+    </div>
+    <div class="col-3">
+      <button class="btn btn-sm btn-outline-primary" (click)="check(true)">Check All</button>
+    </div>
+    <div class="col-3">
+      <button class="btn btn-sm btn-outline-primary" (click)="check(false)">Uncheck All</button>
+    </div>
+  </div>
+
+  <ng-container *ngFor="let c of condition">
+    <div>
+      <div class="row mt-2">
+        <div class="col-4"></div>
+        <b>{{c}}</b>
+        <div class="col-1" style="padding-right: 2px">
+          <button class="btn btn-sm btn-outline-primary" (click)="moveUpCondition(c)">
+            ↑
+          </button>
+        </div>
+        <div class="col-1" style="padding-right: 2px">
+          <button class="btn btn-sm btn-outline-primary" (click)="moveDownCondition(c)">
+            ↓
+          </button>
+        </div>
+      </div>
+
+      <table class="table">
+        <thead>
+        <tr>
+          <th scope="col">
+            Sample name
+          </th>
+          <th scope="col">
+            Move
+          </th>
+          <th scope="col">
+            Visibility
+          </th>
+        </tr>
+        </thead>
+        <tbody>
+        <ng-container *ngFor="let s of samples[c]">
+          <tr>
+            <td>{{s}}</td>
+            <td>
+              <div class="row">
+                <div class="col">
+                  <button class="btn btn-sm btn-outline-primary" (click)="moveUp(s, c)">
+                    ↑
+                  </button>
+                </div>
+                <div class="col">
+                  <button class="btn btn-sm btn-outline-primary" (click)="moveDown(s, c)">
+                    ↓
+                  </button>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div class="form-check">
+                <input type="checkbox" class="form-check-input" [(ngModel)]="samplesVisible[s]">
+              </div>
+            </td>
+          </tr>
+        </ng-container>
+        </tbody>
+      </table>
+    </div>
+  </ng-container>
+</div>
+<div class="modal-footer">
+  <button class="btn btn-primary" (click)="submit()">
+    Submit
+  </button>
+  <button class="btn btn-secondary" (click)="modal.close()">
+    Close
+  </button>
+</div>

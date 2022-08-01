@@ -1,0 +1,109 @@
+<div class="container mb-4" *ngIf="settings.settings.project.title !== ''">
+  <ngb-accordion>
+    <ngb-panel title="{{settings.settings.project.title}}">
+      <ng-template ngbPanelContent>
+        <div class="container-fluid" id="projectDescription" #projectDescription>
+          <p class="display-6">{{settings.settings.project.title}}</p>
+          <b>Project Description</b> <br>
+          <quill-view [content]="settings.settings.project.projectDescription"></quill-view>
+          <ng-container>
+            <b>Organism</b> <br>
+            <ul>
+              <ng-container *ngFor="let o of settings.settings.project.organisms">
+                <li><span>{{o.name}}</span></li>
+              </ng-container>
+            </ul>
+
+          </ng-container>
+          <ng-container>
+            <b>Organism Parts</b><br>
+            <ul>
+              <ng-container *ngFor="let o of settings.settings.project.organismParts">
+                <li><span>{{o.name}}</span></li>
+              </ng-container>
+            </ul>
+
+          </ng-container>
+          <b>Sample Processing Protocol</b> <br>
+          <quill-view [content]="settings.settings.project.sampleProcessingProtocol"></quill-view>
+          <b>Data Processing Protocol</b> <br>
+          <quill-view [content]="settings.settings.project.dataProcessingProtocol"></quill-view>
+
+          <ng-container *ngIf="settings.settings.project.identifiedPTMStrings.length > 0">
+            <b>Identified PTMs</b> <br>
+            <ul>
+              <ng-container *ngFor="let s of settings.settings.project.identifiedPTMStrings">
+                <li>
+                <span class="text-danger">
+                {{s.name}}
+                </span>
+                </li>
+              </ng-container>
+            </ul>
+          </ng-container>
+          <ng-container>
+            <b>Sample Annotations</b>
+            <table class="table table-striped table-hover">
+              <thead>
+              <tr>
+                <th scope="col">
+                  Sample ID
+                </th>
+                <th scope="col">
+                  Sample Description
+                </th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr *ngFor="let a of data.rawForm.samples">
+                <td>{{a}}</td>
+                <td>{{settings.settings.project.sampleAnnotations[a]}}</td>
+              </tr>
+              </tbody>
+            </table>
+          </ng-container>
+          <div class="row">
+            <div class="col-6">
+              <div class="card" style="height: 100%">
+                <div class="card-body">
+                  <p class="display-6 card-title">Additional Information</p>
+                  <ul>
+                    <ng-container *ngFor="let a of settings.settings.project.instruments">
+                      <li>
+                        <b>{{a.cvLabel}}:</b> {{a.name}}
+                      </li>
+                    </ng-container>
+                    <ng-container *ngIf="settings.settings.project.hasLink">
+                      <li>
+                        <b>PRIDE Dataset FTP URL: </b> <a href="{{settings.settings.project._links.datasetFtpUrl.href}}" class="text-link">FTP Link</a>
+                      </li>
+                      <li>
+                        <b>PRIDE File URL: </b> <a href="{{settings.settings.project._links.files.href}}" class="text-link">File Link</a>
+                      </li>
+                      <li>
+                        <b>PRIDE Project Link: </b> <a href="{{settings.settings.project._links.self.href}}" class="text-link">Project Link</a>
+                      </li>
+                    </ng-container>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="card" style="height: 100%">
+                <div class="card-body">
+                  <p class="display-6 card-title">Affiliations</p>
+                  <ul>
+                    <li *ngFor="let a of settings.settings.project.affiliations">
+                      {{a.name}}
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-primary mt-2 mb-2" ngxPrint printSectionId="projectDescription" [useExistingCss]="true">Print Project Description</button>
+      </ng-template>
+    </ngb-panel>
+  </ngb-accordion>
+</div>

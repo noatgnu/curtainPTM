@@ -1,39 +1,11 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
-  <a class="navbar-brand" href="#">CurtainPTM</a>
-  <ng-container *ngIf="dataService.finishedProcessing">
-    <div ngbDropdown class="d-inline-block">
-      <button class="btn btn-outline-primary mr-2" id="comparisonSelection" ngbDropdownToggle>Comparison<span *ngIf="settings.settings.currentComparison !== ''">: {{settings.settings.currentComparison}}</span></button>
-      <div ngbDropdownMenu aria-labelledby="dropdownSession">
-        <button ngbDropdownItem *ngFor="let c of dataService.comparisons" (click)="setComparison(c)">{{c}}</button>
-      </div>
-    </div>
-    <app-quick-search (selected)="handleRes($event)"></app-quick-search>
-    <div ngbDropdown class="d-inline-block">
-      <button class="btn btn-outline-primary ml-2" id="dropdownAdvanced" ngbDropdownToggle>Advanced</button>
-      <div ngbDropdownMenu aria-labelledby="dropdownAdvanced">
-        <button ngbDropdownItem (click)="openAdvancedHighlight()">Advanced Search</button>
-        <button ngbDropdownItem (click)="openSequenceLogo()">Sequence Logo</button>
-      </div>
-    </div>
-    <div ngbDropdown class="d-inline-block">
-      <button class="btn btn-outline-primary ml-2" id="dropdownSession" ngbDropdownToggle>Session</button>
-      <div ngbDropdownMenu aria-labelledby="dropdownSession">
-        <button ngbDropdownItem (click)="saveSession()">Save Session</button>
-        <button ngbDropdownItem (click)="clearSelections()">Clear Selections</button>
-      </div>
-    </div>
-    <a *ngIf="uniqueLink !== ''" href="{{uniqueLink}}" class="ml-2 text-success">{{uniqueLink}}</a>
-  </ng-container>
-</nav>
-<div class="container">
-  <app-file-uploader></app-file-uploader>
-</div>
-
-<ng-container *ngIf="dataService.finishedProcessing">
-  <div class="container-fluid">
-    <app-volcano-plot [data]="dataService.dataFile.data" (selected)="volcanoSelection($event)"></app-volcano-plot>
-  </div>
-  <app-content></app-content>
+<app-navbar [finished]="finished"></app-navbar>
+<app-pride></app-pride>
+<app-file-form (finished)="handleFinish($event)"></app-file-form>
+<app-protein-selections (searchResult)="handleSearch($event)"></app-protein-selections>
+<ng-container *ngIf="finished">
+  <app-volcano-and-cyto (selected)="handleSearch($event)"></app-volcano-and-cyto>
 </ng-container>
 
-
+<ng-container *ngIf="differentialFiltered.count() > 0">
+  <app-data-viewer [data]="differentialFiltered"></app-data-viewer>
+</ng-container>

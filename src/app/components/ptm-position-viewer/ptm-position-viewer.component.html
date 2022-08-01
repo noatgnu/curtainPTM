@@ -1,0 +1,80 @@
+<div class="row">
+  <div class="col-3">
+    <label for="modTypes">Modification types for UniProt</label>
+    <select multiple id="modTypes" [(ngModel)]="selectedUniProt" class="form-control">
+      <option *ngFor="let m of uniMods" [value]="m">
+        {{m}}
+      </option>
+    </select>
+  </div>
+  <div class="col-3">
+    <label for="db">Select Databases</label>
+    <select multiple id="db" class="form-control" [(ngModel)]="dbSelected">
+      <ng-container *ngFor="let d of ptm.databases">
+        <option [value]="d.name" *ngIf="availableDB.includes(d.name)">
+          {{d.name}}
+        </option>
+      </ng-container>
+    </select>
+  </div>
+</div>
+
+<div class="row mt-2">
+  <ng-container *ngFor="let a of availableDB">
+    <div class="col-3" *ngIf="sourceMap[a]">
+      <label>{{a}}</label>
+      <select class="form-control" [(ngModel)]="sourceMap[a]">
+        <ng-container *ngFor="let o of accOptions[a]">
+          <option [value]="o">
+            {{o}}
+          </option>
+        </ng-container>
+      </select>
+    </div>
+  </ng-container>
+</div>
+
+<div class="row mt-2">
+  <div class="col-3">
+    <button class="btn btn-primary" (click)="reDraw()">Redraw Plot</button>
+  </div>
+</div>
+
+<div *ngFor="let g of graphData" class="row mt-2">
+  <plotly-plot divId="{{divIDMap[g.name]}}" (relayout)="updateBoundary($event)" [data]="[g]" [layout]="graphLayout[g.name]"
+               [style]="{'max-width': '1200px', 'width': '100%', 'height': '200px'}"
+               [updateOnLayoutChange]="true" [updateOnDataChange]="true"></plotly-plot>
+</div>
+
+<table class="table table-hover mt-2" *ngIf="alignedMap['Experimental Data']">
+  <thead>
+  <tr>
+    <th scope="col" style="word-wrap: break-word;min-width: 160px;max-width: 160px;">
+      Experimental Data Aligned Position (Original Position)
+    </th>
+    <th scope="col" *ngFor="let g of graphData">
+      {{g.name}}
+    </th>
+  </tr>
+  </thead>
+  <tbody>
+  <ng-container *ngFor="let d of alignedMap['Experimental Data']">
+    <tr [ngClass]="{'table-succes': dataService.selectedMap[d.id]}">
+      <td style="word-wrap: break-word;min-width: 160px;max-width: 160px;">
+        {{d.alignedPosition+1}} ({{d.actualPosition+1}})
+        <span class="badge bg-primary ml-2" (click)="openNetPhos(d.actualPosition+1)">NetPhos</span>
+      </td>
+      <td *ngFor="let g of graphData">
+        <span>{{g.x[d.alignedPosition].split(".")[0]}}</span>
+        <span *ngIf="alignedPosition[d.alignedPosition][g.name]">({{alignedPosition[d.alignedPosition][g.name].actualPosition+1}})</span>
+        <span *ngIf="g.name === 'PhosphoSite Plus (Phosphorylation)' && alignedPosition[d.alignedPosition][g.name]">
+          <ng-container *ngIf="alignedPosition[d.alignedPosition][g.name].kinases.length > 0">
+            <span placement="top" ngbTooltip="Kinase" class="badge bg-danger ml-2" *ngFor="let k of alignedPosition[d.alignedPosition][g.name].kinases" (click)="openKinaseInfo(k)">{{k.kinase}}</span>
+          </ng-container>
+        </span>
+      </td>
+    </tr>
+  </ng-container>
+
+  </tbody>
+</table>

@@ -1,0 +1,27 @@
+<div class="modal-header">
+  <h4 class="modal-title">Custom FDR Curve</h4>
+</div>
+<div class="modal-body">
+  <div class="row">
+    <div class="col">
+      <div class="form-check">
+        <input type="checkbox" class="form-check-input" [(ngModel)]="fdrCurveTextEnable">
+        <label class="form-check-label">Enable FDR-curve (Will disable normal cutoff annotations)</label>
+      </div>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="entryList" class="sr-only">Custom FDR Curve Data Table (require x and y columns)</label>
+    <textarea class="form-control" id="entryList" [(ngModel)]="settings.settings.fdrCurveText" rows="5" [disabled]="fdrCurveTextEnable===false"></textarea>
+  </div>
+</div>
+<div class="modal-footer">
+  <div class="row">
+    <div class="col">
+      <button type="button" class="btn btn-primary" (click)="updateFDRCurveText()">Submit</button>
+    </div>
+    <div class="col">
+      <button type="button" class="btn btn-secondary" (click)="closeModal()">Close</button>
+    </div>
+  </div>
+</div>

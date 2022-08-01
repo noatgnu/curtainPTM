@@ -1,0 +1,46 @@
+<div class="modal-header">
+  Volcano Plot Marker Color Selector
+</div>
+<div class="modal-body">
+  <table class="table">
+    <thead>
+    <tr>
+      <th scope="col">
+        Name
+      </th>
+      <th scope="col">
+        Color
+      </th>
+      <th scope="col">
+        Mark for remove
+      </th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let c of colorGroups">
+      <td>
+        <label for="{{c.group}}id" class="col-9">{{c.group}}</label>
+      </td>
+      <td>
+        <input id="{{c.group}}id" class="col-3" [(colorPicker)]="c.color" [style.background]="c.color">
+      </td>
+      <td>
+        <input type="checkbox" class="form-check-input" [(ngModel)]="c.remove">
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="modal-footer">
+  <div class="row">
+    <div class="col">
+      <button type="button" class="btn btn-primary" (click)="updateColorGroup()">Update Color</button>
+    </div>
+    <div class="col">
+      <button type="button" class="btn btn-secondary" (click)="closeModal()">Close</button>
+    </div>
+  </div>
+
+</div>
+

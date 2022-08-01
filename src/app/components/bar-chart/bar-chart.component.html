@@ -1,5 +1,108 @@
-<plotly-plot [data]="graphData" [layout]="graphLayout" [updateOnDataChange]="true" [updateOnLayoutChange]="true"></plotly-plot>
-
-<div class="mt-2" *ngIf="_average">
-  <plotly-plot [data]="graphData2" [layout]="graphLayout2" [updateOnDataChange]="true" [updateOnLayoutChange]="true"></plotly-plot>
+<div class="row mt-2 mb-2">
+  <div class="d-flex">
+    <div ngbDropdown class="d-inline-block">
+      <button class="btn btn-outline-primary ml-2" id="dropdownDownload{{_data[dataService.rawForm.primaryIDs]}}" ngbDropdownToggle>Download Plot</button>
+      <div ngbDropdownMenu>
+        <button ngbDropdownItem (click)="download('bar')">Download Bar Chart</button>
+        <button ngbDropdownItem (click)="download('average')">Download Average Bar Chart</button>
+        <button ngbDropdownItem (click)="download('violin')">Download Violin Plot</button>
+      </div>
+    </div>
+  </div>
 </div>
+<div class="card">
+  <div class="card-body">
+    <plotly-plot [divId]="_data[dataService.rawForm.primaryIDs]+'bar'" [data]="graphData" [layout]="graphLayout" [updateOnDataChange]="true" [updateOnLayoutChange]="true"></plotly-plot>
+  </div>
+</div>
+<div class="row mt-2">
+  <div class="col-6">
+    <div class="card">
+      <div class="card-body">
+        <plotly-plot [divId]="_data[dataService.rawForm.primaryIDs]+'average'" [data]="graphDataAverage" [layout]="graphLayoutAverage" [updateOnDataChange]="true" [updateOnLayoutChange]="true"></plotly-plot>
+        <div class="row">
+          <div class="col-6">
+            <select class="form-control" [(ngModel)]="barChartErrorType" (change)="drawAverageBarChart()">
+              <option value="Standard Error">Standard Error</option>
+              <option value="Standard Deviation">Standard Deviation</option>
+            </select>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <div class="col-6">
+    <div class="card">
+      <div class="card-body">
+        <plotly-plot [divId]="_data[dataService.rawForm.primaryIDs]+'violin'" [data]="graphDataViolin" [layout]="graphLayoutViolin" [updateOnDataChange]="true" [updateOnLayoutChange]="true"></plotly-plot>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="mt-2">
+  <ngb-accordion>
+    <ngb-panel title="Additional Individual Statistical Test">
+      <ng-template ngbPanelContent>
+        <div class="row">
+          <div class="col-3">
+            <label for="conditionA{{_data[dataService.rawForm.primaryIDs]}}">Condition A</label>
+            <select [(ngModel)]="conditionA" class="form-control" id="conditionA{{_data[dataService.rawForm.primaryIDs]}}">
+              <option [value]="c" *ngFor="let c of dataService.conditions">
+                {{c}}
+              </option>
+            </select>
+          </div>
+          <div class="col-3">
+            <label for="conditionB{{_data[dataService.rawForm.primaryIDs]}}">Condition B</label>
+            <select [(ngModel)]="conditionB" class="form-control" id="conditionB{{_data[dataService.rawForm.primaryIDs]}}">
+              <option [value]="c" *ngFor="let c of dataService.conditions">
+                {{c}}
+              </option>
+            </select>
+          </div>
+          <div class="col-3">
+            <label for="testType{{_data[dataService.rawForm.primaryIDs]}}">Test Type</label>
+            <select [(ngModel)]="testType" class="form-control" id="testType{{_data[dataService.rawForm.primaryIDs]}}">
+              <option [value]="d" *ngFor="let d of dataService.dataTestTypes">
+                {{d}}
+              </option>
+            </select>
+          </div>
+        </div>
+        <div class="row mt-2">
+          <div class="col-3">
+            <button class="btn btn-primary" (click)="performTest()">Perform Test</button>
+          </div>
+        </div>
+        <table *ngIf="conditionA !== '' && conditionB !== '' && comparisons.length > 0" class="mt-2 table table-striped table-bordered">
+          <thead>
+          <tr>
+            <th scope="col">
+              Condition A
+            </th>
+            <th scope="col">
+              Condition B
+            </th>
+            <th scope="col">
+              Score
+            </th>
+          </tr>
+          </thead>
+          <tbody>
+          <ng-container *ngFor="let c of comparisons">
+            <tr *ngIf="c.a === conditionA && c.b === conditionB">
+              <td>{{c.a}}</td>
+              <td>{{c.b}}</td>
+              <td>{{c.comparison.f | number}}</td>
+            </tr>
+          </ng-container>
+          </tbody>
+        </table>
+      </ng-template>
+    </ngb-panel>
+  </ngb-accordion>
+</div>
+
+

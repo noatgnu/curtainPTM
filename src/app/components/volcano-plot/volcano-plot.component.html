@@ -1,40 +1,53 @@
+
 <div class="row">
-  <div class="col-5 ml-2">
-    <form [formGroup]="form">
-      <div class="row">
-        <div class="col-3">
-          <div class="form-group">
-            <label for="significantCutoff">Significant Cut-off</label>
-            <input id="significantCutoff" type="number" class="form-control" formControlName="pvalueCutoff">
+  <div class="col-6">
+    <plotly-plot [divId]="'volcanoPlot'" [data]="graphData" [layout]="graphLayout" [updateOnDataChange]="true" [updateOnLayoutChange]="true" (plotlyClick)="selectData($event)" (selected)="selectData($event)"></plotly-plot>
+  </div>
+  <div class="col-6">
+    <div class="card">
+      <div class="card-body">
+        <div class="row">
+          <div class="col">
+            <label for="significant">
+              Significant Cutoff
+            </label>
+            <input id="significant" type="number" class="form-control" [(ngModel)]="settings.settings.pCutoff">
+          </div>
+          <div class="col">
+            <label for="foldchange">
+              Log2 Fold Change Cutoff
+            </label>
+            <input id="foldchange" type="number" class="form-control" [(ngModel)]="settings.settings.log2FCCutoff">
           </div>
         </div>
-        <div class="col-3">
-          <div class="form-group">
-            <label for="foldChangeCutoff">Fold Change Cut-off</label>
-            <input id="foldChangeCutoff" type="number" class="form-control" formControlName="fcCutoff">
+        <div class="row">
+          <div class="col">
+            <div class="form-check">
+              <input type="checkbox" id="backgroundGrey" class="form-check-input" [(ngModel)]="settings.settings.backGroundColorGrey">
+              <label class="form-check-label" for="backgroundGrey">Set Background Data Points Grey</label>
+            </div>
           </div>
         </div>
       </div>
-      <div class="row mb-2">
-        <div class="col-3">
-          <div class="form-check">
-            <input id="backgroundColor" type="checkbox" class="form-check-input" formControlName="setBackgroundDataColor">
-            <label class="form-check-label" for="backgroundColor">Set non-significant data grey color</label>
+      <div class="card-footer">
+        <div class="row">
+          <div class="col">
+            <div ngbDropdown class="d-inline-block">
+              <button type="button" class="btn btn-primary" id="volcanoAction" ngbDropdownToggle>
+                Volcano Plot Actions
+              </button>
+              <div ngbDropdownMenu aria-labelledby="volcanoAction">
+                <button ngbDropdownItem (click)="drawVolcano()">Redraw Plot</button>
+                <button ngbDropdownItem (click)="FDRCurveSettings()">Custom FDR Curve</button>
+                <button ngbDropdownItem (click)="openCustomColor()">Custom Legend Color</button>
+                <button ngbDropdownItem (click)="download()">Download Volcano Plot</button>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="col-7">
-          <app-volcano-color-groups [colorGroups]="colorGroups" *ngIf="form.value['setBackgroundDataColor'] === false" (colorChange)="updateColor($event)"></app-volcano-color-groups>
-        </div>
-
       </div>
+    </div>
+  </div>
 
-      <button class="btn btn-primary mt-2" (click)="drawVolcano()">Redraw volcano plot</button>
-      <button class="btn btn-success ml-2 mt-2" (click)="dataService.downloadPlotlyExtra('volcanoplot')">Download volcano plot</button>
-    </form>
-  </div>
-  <div class="col-5">
-    <plotly-plot [divId]="'volcanoplot'" [data]="graphData" [layout]="graphLayout" [updateOnDataChange]="true" (plotlyClick)="selectData($event)"></plotly-plot>
-  </div>
 
 </div>
-

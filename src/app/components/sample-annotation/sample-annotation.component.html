@@ -1,0 +1,84 @@
+<div class="modal-header">
+  <h3 class="modal-title">Project Annotation</h3>
+</div>
+<div class="modal-body">
+  <div class="form-group">
+    <label><b>PRIDE Accession ID</b></label>
+    <input type="text" class="form-control mb-1" [(ngModel)]="prideID">
+    <button class="btn btn-sm btn-primary" (click)="getPride()">Parse PRIDE Data</button>
+  </div>
+  <div class="form-group mb-2">
+    <label><b>Project Title</b></label>
+    <input type="text" class="form-control" [(ngModel)]="project.title">
+  </div>
+  <div class="form-group mb-2">
+    <label><b>Project Description</b></label>
+    <quill-editor [(ngModel)]="project.projectDescription"></quill-editor>
+  </div>
+  <div class="form-group mb-2">
+    <label><b>Organisms</b></label>
+    <input type="text" class="form-control mb-2" *ngFor="let o of project.organisms" [(ngModel)]="o.name">
+    <button class="btn btn-sm btn-outline-primary" (click)="addOrganism()">+</button>
+  </div>
+  <div class="form-group mb-2">
+    <label><b>Organism Parts</b></label>
+    <input type="text" class="form-control mb-2" *ngFor="let o of project.organismParts" [(ngModel)]="o.name">
+    <button class="btn btn-sm btn-outline-primary" (click)="addOrganismPart()">+</button>
+  </div>
+  <div class="form-group mb-2">
+    <label><b>Sample Processing Protocol</b></label>
+    <quill-editor [(ngModel)]="project.sampleProcessingProtocol"></quill-editor>
+  </div>
+  <div class="form-group mb-2">
+    <label><b>Data Processing Protocol</b></label>
+    <quill-editor [(ngModel)]="project.dataProcessingProtocol"></quill-editor>
+  </div>
+  <div class="form-group mb-2">
+    <label><b>Instruments</b></label>
+    <div class="row" *ngFor="let i of project.instruments">
+      <div class="col-4">
+        <input type="text" class="form-control mb-2" placeholder="Instrument Type" [(ngModel)]="i.cvLabel">
+      </div>
+      <div class="col-8">
+        <input type="text" class="form-control mb-2" placeholder="Instrument Name" [(ngModel)]="i.name">
+      </div>
+    </div>
+    <button class="btn btn-sm btn-outline-primary" (click)="addInstruments()">+</button>
+  </div>
+  <div class="form-group mb-2">
+    <label><b>Detected PTM</b></label>
+    <input type="text" class="form-control mb-2" *ngFor="let p of project.identifiedPTMStrings" [(ngModel)]="p.name">
+    <button class="btn btn-sm btn-outline-primary" (click)="addPTMs()">+</button>
+  </div>
+  <div class="form-group mb-2">
+    <label><b>Affiliations</b></label>
+    <input type="text" class="form-control mb-2" *ngFor="let a of project.affiliations" [(ngModel)]="a.name">
+    <button class="btn btn-sm btn-outline-primary" (click)="addAffiliations()">+</button>
+  </div>
+  <table class="table table-hover">
+    <thead>
+    <tr>
+      <th scope="col">
+        Sample
+      </th>
+      <th scope="col">
+        Annotation
+      </th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let s of samples">
+      <td>
+        {{s}}
+      </td>
+      <td>
+        <textarea class="form-control" [(ngModel)]="project.sampleAnnotations[s]" style="width: 100%"></textarea>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+<div class="modal-footer">
+  <button class="btn btn-success" (click)="modal.close(project)">Submit</button>
+  <button class="btn btn-danger" (click)="modal.dismiss()">Close</button>
+</div>
