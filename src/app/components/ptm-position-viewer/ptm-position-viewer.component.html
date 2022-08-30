@@ -38,7 +38,11 @@
   <div class="col-3">
     <button class="btn btn-primary" (click)="reDraw()">Redraw Plot</button>
   </div>
+  <div class="col-3">
+    <button class="btn btn-primary" (click)="downloadSVG()">Download as SVG</button>
+  </div>
 </div>
+
 
 <div *ngFor="let g of graphData" class="row mt-2">
   <plotly-plot divId="{{divIDMap[g.name]}}" (relayout)="updateBoundary($event)" [data]="[g]" [layout]="graphLayout[g.name]"

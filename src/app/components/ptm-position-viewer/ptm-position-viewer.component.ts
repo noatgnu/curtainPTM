@@ -65,23 +65,10 @@ export class PtmPositionViewerComponent implements OnInit {
   @Input() set data(value: any) {
     this._data = value
     this.accessionID = this._data.accessionID
-    if (this.dataService.dbIDMap[this.accessionID]) {
-      const a = Object.keys(this.dataService.dbIDMap[this.accessionID])
-      if (a.length > 0) {
-        for (const o of a) {
-          if (o !== "UniProt" && o !== "Experimental Data") {
-            this._dbSelected.push(o)
-          }
-        }
-        for (const d of this._dbSelected) {
-          this.accOptions[d] = Object.keys(this.ptm.accessDB(this.ptm.databaseNameMap[d])[this.uni["Entry"]])
-          this.sourceMap[d] = this.dataService.dbIDMap[this.accessionID][d]
-        }
-      }
-    } else {
-      this.dataService.dbIDMap[this.accessionID] = {}
-    }
     const uni = this.uniprot.getUniprotFromAcc(this.accessionID)
+    if (!(Object.keys(this.sourceMap).length > 0)) {
+      this.sourceMap = this._data.sourceMap
+    }
     if (uni) {
       this.uni = uni
       const mods: any = {}
@@ -103,9 +90,35 @@ export class PtmPositionViewerComponent implements OnInit {
       }
 
     }
+    if (this.dataService.dbIDMap[this.accessionID]) {
+      const a = Object.keys(this.dataService.dbIDMap[this.accessionID])
+      if (a.length > 0) {
+        for (const o of a) {
+          if (o !== "UniProt" && o !== "Experimental Data") {
+            this._dbSelected.push(o)
+          }
+        }
+        for (const d of this._dbSelected) {
+          const dbName = this.ptm.databaseNameMap[d]
+          const db = this.ptm.accessDB(dbName)
+          console.log(this.uni["Entry"])
+          console.log(db)
+          console.log(d)
+          console.log(this.sourceMap)
+          this.accOptions[d] = Object.keys(db[this.uni["Entry"]])
+          this.sourceMap[d] = this.dataService.dbIDMap[this.accessionID][d]
+          console.log(this.sourceMap)
+        }
+      }
+    } else {
+      this.dataService.dbIDMap[this.accessionID] = {}
+    }
+
+
     this.differential = this._data.differential
     this.sequences = this._data.sequences
-    this.sourceMap = this._data.sourceMap
+
+
     this.unidMap["Experimental Data"] = {}
     for (const u of this._data.unidList) {
       if (!this.unidMap["Experimental Data"][u.position-1]) {
@@ -113,6 +126,8 @@ export class PtmPositionViewerComponent implements OnInit {
       }
       this.unidMap["Experimental Data"][u.position-1].push(u)
     }
+
+    console.log(this.sourceMap)
     if (this._data.accessionID) {
       this.web.postNetphos(this._data.accessionID, this.sequences[this._data.accessionID]).subscribe(data => {
         if (data.body) {
@@ -335,8 +350,17 @@ export class PtmPositionViewerComponent implements OnInit {
       }
     })
     for (const d of this.dbSelected) {
-      const db = this.ptm.accessDB(this.ptm.databaseNameMap[d])
+
+      const dbName = this.ptm.databaseNameMap[d]
+      const db = this.ptm.accessDB(dbName)
+      console.log(d)
+      console.log(this.accOptions)
+      if (!this.accOptions[d]) {
+        this.accOptions[d] = Object.keys(db[this.uni["Entry"]])
+        this.sourceMap[d] = this.accOptions[d][0]
+      }
       this.unidMap[d] = {}
+      console.log(this.sourceMap)
       for (const m of db[this.uni["Entry"]][this.sourceMap[d]]) {
         this.unidMap[d][m.position] = m
       }
@@ -398,5 +422,11 @@ export class PtmPositionViewerComponent implements OnInit {
     console.log(kinase)
     const ref = this.modal.open(KinaseInfoComponent, {size: "xl"})
     ref.componentInstance.uni = this.kinases[kinase.acc]
+  }
+
+  downloadSVG(){
+    for (const g of this.graphData) {
+      this.web.downloadPlotlyImage("svg", this.divIDMap[g.name], this.divIDMap[g.name])
+    }
   }
 }

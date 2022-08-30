@@ -5,7 +5,7 @@ export class UniprotParser {
   baseURL: string = "https://rest.uniprot.org/idmapping/run"
   checkStatusURL: string = "https://rest.uniprot.org/idmapping/status/"
   format: string = "tsv"
-  columns: string = "accession,id,gene_names,protein_name,organism_name,organism_id,length,xref_refseq,go_id,go_p,go_c,go_f,cc_subcellular_location,ft_topo_dom,ft_carbohyd,mass,cc_mass_spectrometry,sequence,ft_var_seq,cc_alternative_products,cc_function,ft_domain,xref_string"
+  columns: string = "accession,id,gene_names,protein_name,organism_name,organism_id,length,xref_refseq,go_id,go_p,go_c,go_f,cc_subcellular_location,ft_topo_dom,ft_carbohyd,mass,cc_mass_spectrometry,sequence,ft_var_seq,cc_alternative_products,cc_function,ft_domain,xref_string,ft_mod_res"
   jobCollections: any[] = []
   pollInterval: any
   result: Subject<string> = new Subject<string>()
@@ -51,7 +51,7 @@ export class UniprotParser {
                 if (a) {
                   j.completed = true
                   const options: Map<string, string> = new Map<string, string>(
-                    [["format", this.format], ["size", "500"], ["fields", this.columns], ["includeIsoform", "true"]]
+                    [["format", this.format], ["size", "500"], ["fields", this.columns], ["includeIsoform", "false"]]
                   )
                   this.http.get(data.url + "/?" + this.toParamString(options), {
                     responseType: "text",

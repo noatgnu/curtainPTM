@@ -5,9 +5,7 @@
 /tmp
 /out-tsc
 /bazel-out
-/netphos
-/files
-/db
+
 # Node
 /node_modules
 npm-debug.log
@@ -42,4 +40,3 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
-dockerfiles/netphos-3.1.Linux.tar.Z

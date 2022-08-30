@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiURL: "http://www.conducto.me/"
+  apiURL: "http://curtain.omics.quest/"
 };

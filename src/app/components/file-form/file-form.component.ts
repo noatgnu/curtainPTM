@@ -194,6 +194,7 @@ export class FileFormComponent implements OnInit {
         this.uniprot.PrimeAPIUniProtParser(accList).then(r => {
           this.uniprot.uniprotParseStatus.subscribe(d => {
             if (d) {
+              console.log(this.uniprot.results.get("Q68EF6"))
               const allGenes: string[] = []
               for (const p of this.data.accessionList) {
                 const uni = this.uniprot.getUniprotFromAcc(p)

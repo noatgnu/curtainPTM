@@ -26,7 +26,11 @@ export class WebService {
     Golgi: {filename: "Golgi.txt", name: "Golgi Proteins"},
     Lysosome: {filename: "Lysosome.txt", name: "Lysosomal Proteins"},
     Glycosylation: {filename: "glyco.txt", name: "Glycosylation Proteins"},
-    Metabolism: {filename: "metabolism.txt", name: "Metabolism Pathway"}
+    Metabolism: {filename: "metabolism.txt", name: "Metabolism Pathway"},
+    Cathepsins: {filename: "cathepsins.txt", name: "Cathepsins"},
+    MacrophageLRRK2Inhibition: {filename: "macrophages.lrrk2.inhibition.txt", name: "LRRK2 inhibition in iPSC-derived macrophages"},
+    CiliaCore: {filename: "cilia.core.txt", name: "Core Cilia Proteins"},
+    CiliaExpanded: {filename: "cilia.expanded.txt", name: "Expanded Cilia Proteins"}
   }
   constructor(private http: HttpClient, private plotly: PlotlyService) { }
 

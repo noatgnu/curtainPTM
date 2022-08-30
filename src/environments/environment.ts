@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  apiURL: "http://www.conducto.me/"
+  apiURL: "http://curtain.omics.quest/"
 };
 
 /*

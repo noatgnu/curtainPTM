@@ -1,14 +1,17 @@
 {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "cli": {
-    "analytics": "29f32d44-41fc-4177-9f95-2af453de3c87"
+    "analytics": "972dbd92-d9a6-4e67-8e42-6196675182a7"
   },
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "curtainPTM": {
+    "curtainPTM2": {
       "projectType": "application",
       "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        },
         "@schematics/angular:application": {
           "strict": true
         }
@@ -25,13 +28,13 @@
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
             "assets": [
               "src/favicon.ico",
               "src/assets"
             ],
             "styles": [
-              "node_modules/bootstrap/dist/css/bootstrap.min.css",
-              "src/styles.css"
+              "src/styles.scss"
             ],
             "scripts": []
           },
@@ -57,27 +60,6 @@
               ],
               "outputHashing": "all"
             },
-            "docker": {
-              "budgets": [
-                {
-                  "type": "initial",
-                  "maximumWarning": "500kb",
-                  "maximumError": "6mb"
-                },
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "2kb",
-                  "maximumError": "4kb"
-                }
-              ],
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.docker.ts"
-                }
-              ],
-              "outputHashing": "all"
-            },
             "development": {
               "buildOptimizer": false,
               "optimization": false,
@@ -93,13 +75,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "curtainPTM:build:production"
-            },
-            "docker": {
-              "browserTarget": "curtainPTM:build:docker"
+              "browserTarget": "curtainPTM2:build:production"
             },
             "development": {
-              "browserTarget": "curtainPTM:build:development"
+              "browserTarget": "curtainPTM2:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -107,7 +86,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "curtainPTM:build"
+            "browserTarget": "curtainPTM2:build"
           }
         },
         "test": {
@@ -117,12 +96,13 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.spec.json",
             "karmaConfig": "karma.conf.js",
+            "inlineStyleLanguage": "scss",
             "assets": [
               "src/favicon.ico",
               "src/assets"
             ],
             "styles": [
-              "src/styles.css"
+              "src/styles.scss"
             ],
             "scripts": []
           }
