@@ -1,5 +1,5 @@
 {
-  "name": "curtain-ptm2",
+  "name": "curtain-ptm",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
@@ -31,7 +31,6 @@
     "jstat": "^1.9.5",
     "logojs-react": "^2.1.1",
     "ngx-color-picker": "^12.0.1",
-    "ngx-contextmenu": "^6.0.0",
     "ngx-print": "^1.2.1",
     "ngx-quill": "^16.2.1",
     "plotly.js-dist-min": "^2.11.1",

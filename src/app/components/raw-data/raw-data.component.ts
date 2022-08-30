@@ -1,7 +1,7 @@
 import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {DataFrame, IDataFrame} from "data-forge";
 import {DataService} from "../../data.service";
-import {ContextMenuComponent} from "ngx-contextmenu";
+//import {ContextMenuComponent} from "ngx-contextmenu";
 
 @Component({
   selector: 'app-raw-data',
@@ -15,8 +15,8 @@ export class RawDataComponent implements OnInit {
   differentialData: IDataFrame = new DataFrame()
   barChartState: any = {}
   rawDataMap: any = {}
-  @ViewChild(ContextMenuComponent)
-  public basicMenu!: ContextMenuComponent;
+  //@ViewChild(ContextMenuComponent)
+  //public basicMenu!: ContextMenuComponent;
   @Input() set data(value: any[]) {
     this._data = value
     this._data.forEach(u => {

@@ -27,7 +27,7 @@ import {ProteinInformationComponent} from "./components/protein-information/prot
 import {ProteinDomainPlotComponent} from "./components/protein-domain-plot/protein-domain-plot.component";
 import { RawDataComponent } from './components/raw-data/raw-data.component';
 import {BarChartComponent} from "./components/bar-chart/bar-chart.component";
-import {ContextMenuModule, ContextMenuService} from "ngx-contextmenu";
+//import {ContextMenuModule, ContextMenuService} from "ngx-contextmenu";
 import { PtmPositionViewerComponent } from './components/ptm-position-viewer/ptm-position-viewer.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import {NetphosKinasesComponent} from "./components/netphos-kinases/netphos-kinases.component";
@@ -75,11 +75,13 @@ PlotlyModule.plotlyjs = PlotlyJS;
     HttpClientModule,
     PlotlyModule,
     ColorPickerModule,
-    ContextMenuModule,
+    //ContextMenuModule,
     NgxPrintModule,
     QuillModule.forRoot(),
   ],
-  providers: [HttpClient, ContextMenuService],
+  providers: [HttpClient,
+    //ContextMenuService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
