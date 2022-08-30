@@ -1,1 +1,2 @@
-<plotly-plot [data]="data" [layout]="layout" [updateOnDataChange]="true"></plotly-plot>
+<plotly-plot [divId]="geneName+'domain'" [data]="data" [layout]="layout" [updateOnDataChange]="true"></plotly-plot>
+<button class="btn btn-sm btn-primary" (click)="downloadSVG()">Download as SVG</button>

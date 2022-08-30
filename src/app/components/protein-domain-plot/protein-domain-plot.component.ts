@@ -1,4 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
+import {WebService} from "../../web.service";
 
 @Component({
   selector: 'app-protein-domain-plot',
@@ -7,6 +8,7 @@ import {Component, Input, OnInit} from '@angular/core';
 })
 export class ProteinDomainPlotComponent implements OnInit {
   _data: any[] = []
+  geneName = ""
   @Input() set data(value: any) {
     let last = 1
     const waterfallPlot: any = {
@@ -23,6 +25,7 @@ export class ProteinDomainPlotComponent implements OnInit {
       base: 1
     }
     console.log(value)
+    this.geneName = value["Gene Names"]
     for (const d of value["Domain [FT]"]) {
       if (d.start-1 > last) {
         waterfallPlot.measure.push("relative")
@@ -66,7 +69,7 @@ export class ProteinDomainPlotComponent implements OnInit {
     },
     yaxis: {
       type: "category"
-    },
+    }, width: 1000,
     xaxis: {
       type: "linear",
       showgrid: false,
@@ -75,11 +78,15 @@ export class ProteinDomainPlotComponent implements OnInit {
       autotick: true,
       ticks: '',
       showticklabels: false
-    }, margin: {t: 25, b: 25, r: 125, l: 125},
+    }, margin: {t: 25, b: 25, r: 125, l: 175},
     showlegend: false
   }
-  constructor() { }
+  constructor(private web: WebService) { }
 
   ngOnInit(): void {
+  }
+
+  downloadSVG() {
+    this.web.downloadPlotlyImage("svg", "domain", this.geneName+"domain")
   }
 }
