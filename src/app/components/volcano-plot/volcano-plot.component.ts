@@ -38,7 +38,9 @@ export class VolcanoPlotComponent implements OnInit {
 
   @Input() set data(value: IDataFrame) {
     this._data = value
+    console.log(value)
     if (this._data.count()) {
+      console.log(this._data.getSeries(this.dataService.differentialForm.significant).bake())
       this.drawVolcano();
     }
   }
@@ -181,6 +183,7 @@ export class VolcanoPlotComponent implements OnInit {
         temp[group].text.push(text)
       }
     }
+    console.log(temp)
     const graphData: any[] = []
     for (const t in temp) {
       if (temp[t].x.length > 0) {
