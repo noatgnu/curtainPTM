@@ -83,7 +83,7 @@
       <td [colSpan]="8">
         <div class="card border-warning">
           <div class="card-body">
-            <app-bar-chart [data]="rawDataMap[d[dataService.differentialForm.primaryIDs]]"></app-bar-chart>
+            <app-bar-chart [data]="{raw: rawDataMap[d[dataService.differentialForm.primaryIDs]], position: positionMap[d[dataService.differentialForm.primaryIDs]]}"></app-bar-chart>
           </div>
         </div>
       </td>

@@ -131,6 +131,7 @@ export class PtmPositionViewerComponent implements OnInit {
     if (this._data.accessionID) {
       this.web.postNetphos(this._data.accessionID, this.sequences[this._data.accessionID]).subscribe(data => {
         if (data.body) {
+          console.log(data.body)
           // @ts-ignore
           this.netPhosMap = this.parseNetphos(data.body["data"])
         }

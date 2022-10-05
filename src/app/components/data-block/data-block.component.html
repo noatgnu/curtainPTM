@@ -32,7 +32,7 @@
           <li *ngFor="let u of unidList">
             <span (click)="scrollTop(u.id)"
                   [ngClass]="{'badge bg-success': dataService.selectedMap[u.id]}">
-              {{u.position}} ({{u.residue}}) {{u.id}}
+              {{u.residue}}{{u.position}} {{u.id}}
             </span>
           </li>
         </ul>
