@@ -32,7 +32,7 @@
                   </option>
                 </select>
               </div>
-              <div class="col-3">
+              <div class="col-3" *ngIf="data.fetchUniProt === false">
                 <label for="geneNames">Select Gene Names</label>
                 <select class="form-select" id="geneNames" aria-label="Select Gene Names" [(ngModel)]="data.differentialForm.geneNames">
                   <option *ngFor="let c of data.differential.df.getColumnNames()" [value]="c">
