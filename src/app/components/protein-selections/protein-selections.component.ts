@@ -26,25 +26,33 @@ export class ProteinSelectionsComponent implements OnInit {
   openBatchSearch() {
     const ref = this.modal.open(BatchSearchComponent)
     ref.closed.subscribe(data => {
+      console.log(data)
       let result: string[] = []
+
       for (const d in data.data) {
-        let res = this.parseData(data, d, true);
-        if (res.length === 0) {
-          for (const dd of data.data[d]) {
-            res = this.parseData(data, dd, false)
-            if (res.length > 0) {
-              for (const a of res) {
-                if (!result.includes(a)) {
-                  result.push(a)
+        if (data.searchType === "Primary IDs") {
+          for (const m of data.data[d]) {
+            result.push(m)
+          }
+        } else {
+          let res = this.parseData(data, d, true);
+          if (res.length === 0) {
+            for (const dd of data.data[d]) {
+              res = this.parseData(data, dd, false)
+              if (res.length > 0) {
+                for (const a of res) {
+                  if (!result.includes(a)) {
+                    result.push(a)
+                  }
                 }
               }
             }
           }
-        }
-        if (res.length > 0) {
-          for (const a of res) {
-            if (!result.includes(a)) {
-              result.push(a)
+          if (res.length > 0) {
+            for (const a of res) {
+              if (!result.includes(a)) {
+                result.push(a)
+              }
             }
           }
         }
