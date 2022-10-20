@@ -32,6 +32,13 @@ export class HomeComponent implements OnInit {
     if (location.protocol === "https:" && location.hostname === "curtainptm.proteo.info") {
       this.toast.show("Initialization", "Error: The webpage requires the url protocol to be http instead of https")
     }
+    this.data.dataClear.asObservable().subscribe(data => {
+      if (data) {
+        this.rawFiltered = new DataFrame()
+        this.differentialFiltered = new Series()
+      }
+    })
+
     this.route.params.subscribe(params => {
       if (params) {
         if (params["settings"]) {
@@ -177,6 +184,7 @@ export class HomeComponent implements OnInit {
     if (!this.data.selectOperationNames.includes(e.title)) {
       this.data.selectOperationNames.push(e.title)
     }
+    console.log(e)
     const differentialFiltered = this.data.currentDF.where(r => e.data.includes(r[this.data.differentialForm.primaryIDs])).bake()
     for (const s of differentialFiltered) {
       if (!this.data.selectedMap[s[this.data.differentialForm.primaryIDs]]) {
