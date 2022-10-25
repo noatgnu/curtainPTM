@@ -12,6 +12,8 @@ export class SampleOrderAndHideComponent implements OnInit {
   samples: any = {}
   samplesVisible: any = {}
   condition: string[] = []
+
+  colorMap: any = {}
   constructor(public dataService: DataService, public modal: NgbActiveModal, private settings: SettingsService) {
     for (const s in dataService.sampleMap) {
       const condition = dataService.sampleMap[s].condition
@@ -25,6 +27,13 @@ export class SampleOrderAndHideComponent implements OnInit {
       this.samples[condition].push(s)
     }
     this.condition = this.settings.settings.conditionOrder.slice()
+    for (const c of this.condition) {
+      if (this.settings.settings.barchartColorMap[c]) {
+        this.colorMap[c] = this.settings.settings.barchartColorMap[c].slice()
+      } else {
+        this.colorMap[c] = this.dataService.colorMap[c].slice()
+      }
+    }
   }
 
   ngOnInit(): void {
@@ -58,6 +67,9 @@ export class SampleOrderAndHideComponent implements OnInit {
     for (const c of this.condition) {
       for (const s of this.settings.settings.sampleOrder[c]) {
         sampleMap[s] = this.dataService.sampleMap[s]
+      }
+      if (this.colorMap[c] !== this.dataService.colorMap[c]) {
+        this.settings.settings.barchartColorMap[c] = this.colorMap[c].slice()
       }
     }
     this.dataService.sampleMap = sampleMap

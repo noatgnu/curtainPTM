@@ -76,6 +76,14 @@ export class HomeComponent implements OnInit {
     } else {
       this.data.differential = new InputFile(fromCSV(object.processed), "processedFile.txt", object.processed)
     }
+
+    if (!object.settings.barchartColorMap) {
+      object.settings.barchartColorMap = {}
+    }
+    if (!object.settings.volcanoAxis) {
+      object.settings.volcanoAxis = {minX: null, maxX: null, minY: null, maxY: null}
+    }
+
     if (!object.settings.project) {
       object.settings.project = new Project()
     }

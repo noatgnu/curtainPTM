@@ -20,7 +20,7 @@ export class VolcanoPlotComponent implements OnInit {
   nameToID: any = {}
   graphData: any[] = []
   graphLayout: any = {
-    height: 700, width: "100%", xaxis: {title: "Log2FC"},
+    height: 700, width: 700, xaxis: {title: "Log2FC"},
     yaxis: {title: "-log10(p-value)"},
     annotations: [],
     showlegend: true, legend: {
@@ -109,7 +109,19 @@ export class VolcanoPlotComponent implements OnInit {
     this.layoutMaxMin.yMin = this.dataService.minMax.pMin
     this.layoutMaxMin.yMax = this.dataService.minMax.pMax
     this.graphLayout.xaxis.range = [this.layoutMaxMin.xMin - 0.5, this.layoutMaxMin.xMax + 0.5]
+    if (this.settings.settings.volcanoAxis.minX) {
+      this.graphLayout.xaxis.range[0] = this.settings.settings.volcanoAxis.minX
+    }
+    if (this.settings.settings.volcanoAxis.maxX) {
+      this.graphLayout.xaxis.range[1] = this.settings.settings.volcanoAxis.maxX
+    }
     this.graphLayout.yaxis.range = [0, this.layoutMaxMin.yMax - this.layoutMaxMin.yMin / 2]
+    if (this.settings.settings.volcanoAxis.minY) {
+      this.graphLayout.yaxis.range[0] = this.settings.settings.volcanoAxis.minY
+    }
+    if (this.settings.settings.volcanoAxis.maxY) {
+      this.graphLayout.yaxis.range[1] = this.settings.settings.volcanoAxis.maxY
+    }
     temp["Background"] = {
       x:[],
       y:[],
@@ -276,10 +288,18 @@ export class VolcanoPlotComponent implements OnInit {
         }
       })
 
+      let x0 = this.layoutMaxMin.xMin - 1
+      if (this.settings.settings.volcanoAxis.minX) {
+        x0 = this.settings.settings.volcanoAxis.minX - 1
+      }
+      let x1 = this.layoutMaxMin.xMax + 1
+      if (this.settings.settings.volcanoAxis.maxX) {
+        x1 = this.settings.settings.volcanoAxis.maxX + 1
+      }
       cutOff.push({
         type: "line",
-        x0: this.layoutMaxMin.xMin - 1,
-        x1: this.layoutMaxMin.xMax + 1,
+        x0: x0,
+        x1: x1,
         y0: -Math.log10(this.settings.settings.pCutoff),
         y1: -Math.log10(this.settings.settings.pCutoff),
         line: {

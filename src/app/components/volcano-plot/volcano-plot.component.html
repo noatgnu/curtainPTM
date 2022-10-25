@@ -1,9 +1,9 @@
 
 <div class="row">
-  <div class="col-6">
+  <div class="col-7">
     <plotly-plot [divId]="'volcanoPlot'" [data]="graphData" [layout]="graphLayout" [updateOnDataChange]="true" [updateOnLayoutChange]="true" (plotlyClick)="selectData($event)" (selected)="selectData($event)"></plotly-plot>
   </div>
-  <div class="col-6">
+  <div class="col-5">
     <div class="card">
       <div class="card-body">
         <div class="row">
@@ -18,6 +18,34 @@
               Log2 Fold Change Cutoff
             </label>
             <input id="foldchange" type="number" class="form-control" [(ngModel)]="settings.settings.log2FCCutoff">
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <label for="maxX">
+              Max X axis
+            </label>
+            <input id="maxX" type="number" class="form-control" [(ngModel)]="settings.settings.volcanoAxis.maxX">
+          </div>
+          <div class="col">
+            <label for="minX">
+              Min X axis
+            </label>
+            <input id="minX" type="number" class="form-control" [(ngModel)]="settings.settings.volcanoAxis.minX">
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <label for="maxY">
+              Max Y axis
+            </label>
+            <input id="maxY" type="number" class="form-control" [(ngModel)]="settings.settings.volcanoAxis.maxY">
+          </div>
+          <div class="col">
+            <label for="minY">
+              Min Y axis
+            </label>
+            <input id="minY" type="number" class="form-control" [(ngModel)]="settings.settings.volcanoAxis.minY">
           </div>
         </div>
         <div class="row">
