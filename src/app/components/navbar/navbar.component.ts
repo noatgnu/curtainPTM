@@ -56,6 +56,8 @@ export class NavbarComponent implements OnInit {
     this.data.selectedMap = {}
     this.data.selectOperationNames = []
     this.settings.settings.colorMap = {}
+    this.settings.settings.textAnnotation = {}
+    this.data.annotatedData = {}
     this.data.dataClear.next(true)
   }
 

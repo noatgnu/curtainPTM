@@ -46,9 +46,7 @@ export class HomeComponent implements OnInit {
           if (this.currentID !== params["settings"]) {
             this.currentID = params["settings"]
             this.web.postSettings(params["settings"], "").subscribe(data => {
-              console.log(data)
               if (data.body) {
-
                 const a = JSON.parse(<string>data.body, this.web.reviver)
                 this.restoreSettings(a).then()
               }
@@ -76,7 +74,9 @@ export class HomeComponent implements OnInit {
     } else {
       this.data.differential = new InputFile(fromCSV(object.processed), "processedFile.txt", object.processed)
     }
-
+    if (!object.settings.textAnnotation) {
+      object.settings.textAnnotation = {}
+    }
     if (!object.settings.barchartColorMap) {
       object.settings.barchartColorMap = {}
     }

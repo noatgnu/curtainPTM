@@ -8,6 +8,9 @@ import {FdrCurveComponent} from "../fdr-curve/fdr-curve.component";
 import {VolcanoColorsComponent} from "../volcano-colors/volcano-colors.component";
 import {selectionData} from "../protein-selections/protein-selections.component";
 import {WebService} from "../../web.service";
+import {
+  VolcanoPlotTextAnnotationComponent
+} from "../volcano-plot-text-annotation/volcano-plot-text-annotation.component";
 
 @Component({
   selector: 'app-volcano-plot',
@@ -312,7 +315,11 @@ export class VolcanoPlotComponent implements OnInit {
       this.graphLayout.shapes = cutOff
     }
     this.graphData = graphData.reverse()
-    this.removeAnnotatedDataPoints([])
+    this.graphLayout.annotations = []
+    for (const i in this.settings.settings.textAnnotation) {
+      this.annotated[this.settings.settings.textAnnotation[i].title] = this.settings.settings.textAnnotation[i].data
+      this.graphLayout.annotations.push(this.settings.settings.textAnnotation[i].data)
+    }
   }
 
   constructor(private web: WebService, private dataService: DataService, private uniprot: UniprotService, public settings: SettingsService, private modal: NgbModal) {
@@ -393,9 +400,23 @@ export class VolcanoPlotComponent implements OnInit {
           y: a[this.dataService.differentialForm.significant],
           text: "<b>"+title+"</b>",
           showarrow: true,
-          arrowhead: 0.5,
+          arrowhead: 1,
+          arrowsize: 1,
+          arrowwidth: 1,
+          ax: -20,
+          ay: -20,
           font: {
-            size: 15
+            size: 15,
+            color: "#000000"
+          }
+        }
+        if (title in this.settings.settings.textAnnotation) {
+
+        } else {
+          this.settings.settings.textAnnotation[title] = {
+            primary_id: a[this.dataService.differentialForm.primaryIDs],
+            data: ann,
+            title: title
           }
         }
         annotations.push(ann)
@@ -430,5 +451,18 @@ export class VolcanoPlotComponent implements OnInit {
 
   download() {
     this.web.downloadPlotlyImage('svg', 'volcano', 'volcanoPlot')
+  }
+
+  openTextEditor() {
+    const ref = this.modal.open(VolcanoPlotTextAnnotationComponent, {size: "xl"})
+    ref.closed.subscribe(data => {
+      this.graphLayout.annotations = []
+      this.annotated = {}
+      for (const a of data) {
+        this.settings.settings.textAnnotation[a.title] = a
+        this.annotated[a.title] = a.data
+        this.graphLayout.annotations.push(this.annotated[a.title])
+      }
+    })
   }
 }

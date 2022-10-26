@@ -1,6 +1,7 @@
 import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {DataFrame, IDataFrame} from "data-forge";
 import {DataService} from "../../data.service";
+import {SettingsService} from "../../settings.service";
 //import {ContextMenuComponent} from "ngx-contextmenu";
 
 @Component({
@@ -24,6 +25,12 @@ export class RawDataComponent implements OnInit {
       this.positionMap[u.id] = u
       this.barChartState[u.id] = false
       this.annotateMap[u.id] = false
+      for (const i in this.settings.settings.textAnnotation) {
+        if (this.settings.settings.textAnnotation[i].primary_id === u.id) {
+          this.annotateMap[u.id] = true
+          break
+        }
+      }
     })
     this.differentialData = this.dataService.currentDF.where(r => this.unidList.includes(r[this.dataService.differentialForm.primaryIDs])).bake()
     const rawData = this.dataService.raw.df.where(r => this.unidList.includes(r[this.dataService.rawForm.primaryIDs])).bake()
@@ -43,7 +50,7 @@ export class RawDataComponent implements OnInit {
     return this._data
   }
   annotateMap: any = {}
-  constructor(public dataService: DataService) { }
+  constructor(public dataService: DataService, private settings: SettingsService) { }
 
   ngOnInit(): void {
   }
@@ -67,7 +74,6 @@ export class RawDataComponent implements OnInit {
   }
 
   annotate(uid: string) {
-    console.log(uid)
     let remove = false
     if (!this.annotateMap[uid]) {
       remove = true

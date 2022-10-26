@@ -22,4 +22,5 @@ export class Settings {
   conditionOrder: string[] = []
   volcanoAxis: any = {minX: null, maxX: null, minY: null, maxY: null}
   barchartColorMap: any = {}
+  textAnnotation: any = {}
 }

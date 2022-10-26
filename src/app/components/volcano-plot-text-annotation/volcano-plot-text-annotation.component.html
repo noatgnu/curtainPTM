@@ -1,0 +1,73 @@
+<div class="modal-header">
+  Volcano Text Annotation Editor
+</div>
+<div class="modal-body">
+  <table class="table table-borderless">
+    <thead>
+    <tr>
+      <th scope="col">
+        Name
+      </th>
+      <th scope="col">
+        Text
+      </th>
+      <th scope="col">
+        Font Size
+      </th>
+      <th scope="col">
+        Arrow Head
+      </th>
+      <th scope="col">
+        Arrow Size
+      </th>
+      <th scope="col">
+        Arrow Width
+      </th>
+      <th scope="col">
+        Anchor X
+      </th>
+      <th scope="col">
+        Anchor Y
+      </th>
+      <th scope="col">
+        Text Color
+      </th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let a of annotationText">
+      <td>
+        {{a.title}}
+      </td>
+      <td>
+        <input type="text" [(ngModel)]="a.data.text">
+      </td>
+      <td>
+        <input class="col-12" type="number" [(ngModel)]="a.data.font.size">
+      </td>
+      <td>
+        <input class="col-12" [max]="8" [min]="0" type="number" [(ngModel)]="a.data.arrowhead">
+      </td>
+      <td>
+        <input class="col-12" [min]="0.3" type="number" [(ngModel)]="a.data.arrowsize">
+      </td>
+      <td>
+        <input class="col-12" [min]="0.1" type="number" [(ngModel)]="a.data.arrowwidth">
+      </td>
+      <td>
+        <input class="col-12" type="number" [(ngModel)]="a.data.ax">
+      </td>
+      <td>
+        <input class="col-12" type="number" [(ngModel)]="a.data.ay">
+      </td>
+      <td>
+        <input class="col-12" [(colorPicker)]="a.data.font.color" [style.background]="a.data.font.color">
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+<div class="modal-footer">
+  <button class="btn btn-primary" (click)="modal.close(annotationText)">Submit</button>
+  <button class="btn btn-danger" (click)="modal.dismiss()">Close</button>
+</div>

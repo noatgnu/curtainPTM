@@ -37,6 +37,7 @@ import {QuillModule} from "ngx-quill";
 import {SampleAnnotationComponent} from "./components/sample-annotation/sample-annotation.component";
 import {PrideComponent} from "./components/pride/pride.component";
 import { SampleOrderAndHideComponent } from './components/sample-order-and-hide/sample-order-and-hide.component';
+import { VolcanoPlotTextAnnotationComponent } from './components/volcano-plot-text-annotation/volcano-plot-text-annotation.component';
 PlotlyModule.plotlyjs = PlotlyJS;
 @NgModule({
   declarations: [
@@ -65,7 +66,8 @@ PlotlyModule.plotlyjs = PlotlyJS;
     KinaseInfoComponent,
     SampleAnnotationComponent,
     PrideComponent,
-    SampleOrderAndHideComponent
+    SampleOrderAndHideComponent,
+    VolcanoPlotTextAnnotationComponent
   ],
   imports: [
     BrowserModule,
