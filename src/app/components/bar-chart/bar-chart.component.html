@@ -47,6 +47,14 @@
       <ng-template ngbPanelContent>
         <div class="row">
           <div class="col-3">
+            <label for="condition{{_data[dataService.rawForm.primaryIDs]}}">Select conditions</label>
+            <select multiple [(ngModel)]="selectedConditions" class="form-control" id="condition{{_data[dataService.rawForm.primaryIDs]}}">
+              <option [value]="c" *ngFor="let c of dataService.conditions">
+                {{c}}
+              </option>
+            </select>
+          </div>
+          <!--<div class="col-3">
             <label for="conditionA{{_data[dataService.rawForm.primaryIDs]}}">Condition A</label>
             <select [(ngModel)]="conditionA" class="form-control" id="conditionA{{_data[dataService.rawForm.primaryIDs]}}">
               <option [value]="c" *ngFor="let c of dataService.conditions">
@@ -61,7 +69,7 @@
                 {{c}}
               </option>
             </select>
-          </div>
+          </div>-->
           <div class="col-3">
             <label for="testType{{_data[dataService.rawForm.primaryIDs]}}">Test Type</label>
             <select [(ngModel)]="testType" class="form-control" id="testType{{_data[dataService.rawForm.primaryIDs]}}">
@@ -76,14 +84,11 @@
             <button class="btn btn-primary" (click)="performTest()">Perform Test</button>
           </div>
         </div>
-        <table *ngIf="conditionA !== '' && conditionB !== '' && comparisons.length > 0" class="mt-2 table table-striped table-bordered">
+        <table *ngIf="selectedConditions.length > 0 && comparisons.length > 0" class="mt-2 table table-striped table-bordered">
           <thead>
           <tr>
             <th scope="col">
-              Condition A
-            </th>
-            <th scope="col">
-              Condition B
+              Conditions
             </th>
             <th scope="col">
               Score
@@ -92,9 +97,8 @@
           </thead>
           <tbody>
           <ng-container *ngFor="let c of comparisons">
-            <tr *ngIf="c.a === conditionA && c.b === conditionB">
-              <td>{{c.a}}</td>
-              <td>{{c.b}}</td>
+            <tr>
+              <td>{{c.conditions.join(",")}}</td>
               <td>{{c.comparison.f | number}}</td>
             </tr>
           </ng-container>
