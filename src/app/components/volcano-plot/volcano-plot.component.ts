@@ -28,6 +28,12 @@ export class VolcanoPlotComponent implements OnInit {
     annotations: [],
     showlegend: true, legend: {
       orientation: 'h'
+    },
+    title: {
+      text: this.settings.settings.volcanoPlotTitle,
+      font: {
+        size: 24
+      },
     }
   }
 
@@ -51,6 +57,7 @@ export class VolcanoPlotComponent implements OnInit {
   breakColor: boolean = false
 
   drawVolcano() {
+    this.graphLayout.title.text = this.settings.settings.volcanoPlotTitle
     let currentColors: string[] = []
     if (this.settings.settings.colorMap) {
       currentColors = Object.values(this.settings.settings.colorMap)

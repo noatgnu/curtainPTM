@@ -23,4 +23,5 @@ export class Settings {
   volcanoAxis: any = {minX: null, maxX: null, minY: null, maxY: null}
   barchartColorMap: any = {}
   textAnnotation: any = {}
+  volcanoPlotTitle: string = ""
 }
