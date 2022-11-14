@@ -6,6 +6,7 @@ import {SettingsService} from "../../settings.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {SampleAnnotationComponent} from "../sample-annotation/sample-annotation.component";
 import {SampleOrderAndHideComponent} from "../sample-order-and-hide/sample-order-and-hide.component";
+import {DataFrame, IDataFrame} from "data-forge";
 
 @Component({
   selector: 'app-navbar',
