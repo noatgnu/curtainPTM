@@ -71,7 +71,6 @@ export class FileFormComponent implements OnInit {
     if (this.data.differentialForm.comparisonSelect === "" || this.data.differentialForm.comparisonSelect === undefined) {
       this.data.differentialForm.comparisonSelect = this.data.differential.df.first()[this.data.differentialForm.comparison]
     }
-    console.log(this.data.differentialForm.comparisonSelect)
     const totalSampleNumber = this.data.rawForm.samples.length
     let sampleNumber = 0
     const conditions: string[] = []

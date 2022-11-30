@@ -54,6 +54,7 @@ export class NavbarComponent implements OnInit {
   clearSelections() {
     this.data.selected = []
     this.data.selectedGenes = []
+    this.data.selectedAccessions = []
     this.data.selectedMap = {}
     this.data.selectOperationNames = []
     this.settings.settings.colorMap = {}

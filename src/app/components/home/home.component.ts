@@ -34,6 +34,7 @@ export class HomeComponent implements OnInit {
     }
     this.data.dataClear.asObservable().subscribe(data => {
       if (data) {
+        console.log(this.rawFiltered)
         this.rawFiltered = new DataFrame()
         this.differentialFiltered = new Series()
       }
@@ -162,6 +163,7 @@ export class HomeComponent implements OnInit {
     this.finished = e
     if (this.finished) {
       if (this.data.selected.length > 0) {
+        console.log(this.data.selected)
         this.data.finishedProcessingData.next(e)
         const differentialFiltered = this.data.currentDF.where(r => this.data.selected.includes(r[this.data.differentialForm.primaryIDs])).bake()
         for (const s of differentialFiltered) {
