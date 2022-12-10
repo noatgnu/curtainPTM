@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiURL: "https://curtain.muttsu.xyz/"
+  apiURL: "https://celsus.muttsu.xyz/"
 };
