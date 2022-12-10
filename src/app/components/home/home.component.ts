@@ -43,10 +43,15 @@ export class HomeComponent implements OnInit {
     this.route.params.subscribe(params => {
       if (params) {
         if (params["settings"]) {
+          const settings = params["settings"].split("&")
+          let token: string = ""
+          if (settings.length > 1) {
+            token = settings[1]
+          }
           this.toast.show("Initialization", "Fetching data from session " + params["settings"])
-          if (this.currentID !== params["settings"]) {
-            this.currentID = params["settings"]
-            this.web.postSettings(params["settings"], "").subscribe(data => {
+          if (this.currentID !== settings[0]) {
+            this.currentID = settings[0]
+            this.web.postSettings(settings[0], token).subscribe(data => {
               if (data.body) {
                 const a = JSON.parse(<string>data.body, this.web.reviver)
                 this.restoreSettings(a).then()

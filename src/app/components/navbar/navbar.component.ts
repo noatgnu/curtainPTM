@@ -43,9 +43,9 @@ export class NavbarComponent implements OnInit {
       annotatedData: this.data.annotatedData,
       annotatedMap: this.data.annotatedMap
     }
-    this.web.putSettings(data).subscribe(data => {
+    this.web.putSettings(data).subscribe((data:any) => {
       if (data.body) {
-        this.settings.currentID = data.body
+        this.settings.currentID = data.body.link_id
         this.uniqueLink = location.origin +"/#/" + this.settings.currentID
       }
     })

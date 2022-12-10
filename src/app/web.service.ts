@@ -83,11 +83,14 @@ export class WebService {
   }
 
   putSettings(settings: any) {
-    return this.http.put(this.links.proxyURL + "file_data", JSON.stringify(settings, this.replacer), {responseType: "text", observe: "response"})
+    let form = new FormData()
+    form.append("file", new Blob([JSON.stringify(settings, this.replacer)], {type: 'text/json'}), "curtainptm-settings.json")
+    form.append("enable", "true")
+    return this.http.post(this.links.proxyURL + "curtain/", form, {responseType: "json", observe: "response"})
   }
 
-  postSettings(id: string, password: string) {
-    return this.http.post(this.links.proxyURL +"file_data", JSON.stringify({id: id, password: password}), {responseType: "text", observe: "response"})
+  postSettings(id: string, token: string) {
+    return this.http.get(this.links.proxyURL +`curtain/${id}/download/token=${token}/`, {responseType: "text", observe: "response"})
   }
 
   downloadFile(fileName: string, fileContent: string) {
