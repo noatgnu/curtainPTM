@@ -29,9 +29,9 @@ export class HomeComponent implements OnInit {
     this.ptm.getDatabase("PSP_PHOSPHO")
     this.ptm.getDatabase("PLMD_UBI")
     this.ptm.getDatabase("CDB_CARBONYL")
-    if (location.protocol === "https:" && location.hostname === "curtainptm.proteo.info") {
-      this.toast.show("Initialization", "Error: The webpage requires the url protocol to be http instead of https")
-    }
+    // if (location.protocol === "https:" && location.hostname === "curtainptm.proteo.info") {
+    //   this.toast.show("Initialization", "Error: The webpage requires the url protocol to be http instead of https")
+    // }
     this.data.dataClear.asObservable().subscribe(data => {
       if (data) {
         console.log(this.rawFiltered)
