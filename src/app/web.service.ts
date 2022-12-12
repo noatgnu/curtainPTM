@@ -112,7 +112,7 @@ export class WebService {
   }
 
   postNetphos(id: string, seq: string) {
-    return this.http.post(this.links.proxyURL + "netphos/predict", JSON.stringify({id: id, fasta: ">"+id+"\n"+ seq}), {responseType: "json", observe: "response"})
+    return this.http.post(this.links.proxyURL + "netphos/", JSON.stringify({id: id, fasta: ">"+id+"\n"+ seq}), {responseType: "json", observe: "response"})
   }
 
   getKinase(id: string) {

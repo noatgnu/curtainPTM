@@ -35,6 +35,7 @@ export class UniprotParser {
         subset = data.slice(i)
       }
       const jobId = await this.postJob(subset)
+      await new Promise(resolve => setTimeout(resolve, 2000))
       this.jobCollections.push({jobId: jobId, completed: false, started: false})
     }
   }
