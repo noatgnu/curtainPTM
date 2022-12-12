@@ -9,7 +9,7 @@ import { ToastContainerComponent } from './components/toast-container/toast-cont
 import { FileFormComponent } from './components/file-form/file-form.component';
 import {FileInputWidgetComponent} from "./components/file-input-widget/file-input-widget.component";
 import {FormsModule} from "@angular/forms";
-import {HttpClient, HttpClientModule} from "@angular/common/http";
+import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from "@angular/common/http";
 import {VolcanoColorsComponent} from "./components/volcano-colors/volcano-colors.component";
 import {VolcanoPlotComponent} from "./components/volcano-plot/volcano-plot.component";
 import {BatchSearchComponent} from "./components/batch-search/batch-search.component";
@@ -38,6 +38,7 @@ import {SampleAnnotationComponent} from "./components/sample-annotation/sample-a
 import {PrideComponent} from "./components/pride/pride.component";
 import { SampleOrderAndHideComponent } from './components/sample-order-and-hide/sample-order-and-hide.component';
 import { VolcanoPlotTextAnnotationComponent } from './components/volcano-plot-text-annotation/volcano-plot-text-annotation.component';
+import {TokenInterceptor} from "./token.interceptor";
 PlotlyModule.plotlyjs = PlotlyJS;
 @NgModule({
   declarations: [
@@ -82,6 +83,7 @@ PlotlyModule.plotlyjs = PlotlyJS;
     QuillModule.forRoot(),
   ],
   providers: [HttpClient,
+    { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true }
     //ContextMenuService
   ],
   bootstrap: [AppComponent]
