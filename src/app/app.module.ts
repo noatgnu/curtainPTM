@@ -8,7 +8,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ToastContainerComponent } from './components/toast-container/toast-container.component';
 import { FileFormComponent } from './components/file-form/file-form.component';
 import {FileInputWidgetComponent} from "./components/file-input-widget/file-input-widget.component";
-import {FormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from "@angular/common/http";
 import {VolcanoColorsComponent} from "./components/volcano-colors/volcano-colors.component";
 import {VolcanoPlotComponent} from "./components/volcano-plot/volcano-plot.component";
@@ -39,6 +39,8 @@ import {PrideComponent} from "./components/pride/pride.component";
 import { SampleOrderAndHideComponent } from './components/sample-order-and-hide/sample-order-and-hide.component';
 import { VolcanoPlotTextAnnotationComponent } from './components/volcano-plot-text-annotation/volcano-plot-text-annotation.component';
 import {TokenInterceptor} from "./token.interceptor";
+import { LoginModalComponent } from './components/login-modal/login-modal.component';
+import { SessionSettingsComponent } from './components/session-settings/session-settings.component';
 PlotlyModule.plotlyjs = PlotlyJS;
 @NgModule({
   declarations: [
@@ -68,7 +70,9 @@ PlotlyModule.plotlyjs = PlotlyJS;
     SampleAnnotationComponent,
     PrideComponent,
     SampleOrderAndHideComponent,
-    VolcanoPlotTextAnnotationComponent
+    VolcanoPlotTextAnnotationComponent,
+    LoginModalComponent,
+    SessionSettingsComponent
   ],
   imports: [
     BrowserModule,
@@ -81,6 +85,7 @@ PlotlyModule.plotlyjs = PlotlyJS;
     //ContextMenuModule,
     NgxPrintModule,
     QuillModule.forRoot(),
+    ReactiveFormsModule,
   ],
   providers: [HttpClient,
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true }

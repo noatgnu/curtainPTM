@@ -12,6 +12,8 @@ import {Raw} from "../../classes/raw";
 import {InputFile} from "../../classes/input-file";
 import {SettingsService} from "../../settings.service";
 import {Project} from "../../classes/project";
+import {LoginModalComponent} from "../login-modal/login-modal.component";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: 'app-home',
@@ -25,7 +27,7 @@ export class HomeComponent implements OnInit {
   uniqueLink: string = ""
   filterModel: string = ""
   currentID: string = ""
-  constructor(public settings: SettingsService, private data: DataService, private route: ActivatedRoute, private toast: ToastService, private uniprot: UniprotService, private web: WebService, private ptm: PtmService) {
+  constructor(private modal: NgbModal, public settings: SettingsService, private data: DataService, private route: ActivatedRoute, private toast: ToastService, private uniprot: UniprotService, private web: WebService, private ptm: PtmService) {
     this.ptm.getDatabase("PSP_PHOSPHO")
     this.ptm.getDatabase("PLMD_UBI")
     this.ptm.getDatabase("CDB_CARBONYL")
@@ -42,7 +44,7 @@ export class HomeComponent implements OnInit {
 
     this.route.params.subscribe(params => {
       if (params) {
-        if (params["settings"]) {
+        if (params["settings"] && params["settings"].length > 0) {
           const settings = params["settings"].split("&")
           let token: string = ""
           if (settings.length > 1) {
@@ -56,6 +58,13 @@ export class HomeComponent implements OnInit {
                 const a = JSON.parse(<string>data.body, this.web.reviver)
                 this.restoreSettings(a).then()
               }
+            },error => {
+              const login = this.openLoginModal()
+              login.componentInstance.loginStatus.asObservable().subscribe((data:boolean) => {
+                if (data) {
+                  location.reload()
+                }
+              })
             })
           }
         }
@@ -63,6 +72,10 @@ export class HomeComponent implements OnInit {
     })
   }
 
+  openLoginModal() {
+    const ref = this.modal.open(LoginModalComponent)
+    return ref
+  }
   async restoreSettings(object: any) {
     if (typeof object.settings === "string") {
       object.settings = JSON.parse(object.settings)

@@ -86,6 +86,10 @@ export class AccountsService {
   private _lastRefreshTokenUpdateTime = new Date()
 
   constructor(private http: HttpClient) {
+
+  }
+
+  reload() {
     if (localStorage.getItem("lastTokenUpdateTime")) {
       this._lastTokenUpdateTime = new Date(parseInt(localStorage.getItem("lastTokenUpdateTime") as string))
     }
@@ -114,6 +118,8 @@ export class AccountsService {
             this._user_staff = true
           }
         }
+        this.loggedIn = true
+        console.log("Logged in")
       }
     }
   }
@@ -122,14 +128,12 @@ export class AccountsService {
     let headers = new HttpHeaders()
     headers = headers.set("Accept", "application/json")
     headers = headers.set("withCredentials", "true")
-
     return this.http.post(this.host + "token/", {username, password}, {responseType: "json", observe: "body", headers})
   }
 
   refresh() {
     let headers = new HttpHeaders()
     headers = headers.set("Accept", "application/json")
-    console.log(this._refreshToken)
     return this.http.post(this.host + "token/refresh/", {"refresh": this._refreshToken}, {responseType: "json", observe: "body", headers})
   }
 
@@ -146,20 +150,24 @@ export class AccountsService {
   }
 
   removeLocalStorage() {
-    localStorage.removeItem("lastTokenUpdateTime")
-    localStorage.removeItem("lastRefreshTokenUpdateTime")
-    localStorage.removeItem("accessToken")
-    localStorage.removeItem("refreshToken")
+    localStorage.clear()
+    console.log("Storage data cleared.")
+    //localStorage.removeItem("lastTokenUpdateTime")
+    //localStorage.removeItem("lastRefreshTokenUpdateTime")
+    //localStorage.removeItem("accessToken")
+    //localStorage.removeItem("refreshToken")
+    //localStorage.removeItem("userId")
   }
 
   checkRefreshTokenExpiry() {
     this._lastRefreshTokenUpdateTime = new Date(parseInt(localStorage.getItem("lastRefreshTokenUpdateTime") as string))
     const currentTime = new Date()
     const diffTime = Math.floor(currentTime.getTime() - this._lastRefreshTokenUpdateTime.getTime())/1000/60/60
+    console.log(diffTime)
     if (diffTime > 24) {
-      return false
-    } else {
       return true
+    } else {
+      return false
     }
   }
 }

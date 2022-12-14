@@ -7,6 +7,9 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {SampleAnnotationComponent} from "../sample-annotation/sample-annotation.component";
 import {SampleOrderAndHideComponent} from "../sample-order-and-hide/sample-order-and-hide.component";
 import {DataFrame, IDataFrame} from "data-forge";
+import {AccountsService} from "../../accounts.service";
+import {LoginModalComponent} from "../login-modal/login-modal.component";
+import {SessionSettingsComponent} from "../session-settings/session-settings.component";
 
 @Component({
   selector: 'app-navbar',
@@ -22,7 +25,8 @@ export class NavbarComponent implements OnInit {
     public data: DataService,
     private scroll: ScrollService,
     private settings: SettingsService,
-    private modal: NgbModal) { }
+    private modal: NgbModal,
+    public accounts: AccountsService) { }
 
   ngOnInit(): void {
   }
@@ -95,5 +99,15 @@ export class NavbarComponent implements OnInit {
   }
   openSampleSettings() {
     const ref = this.modal.open(SampleOrderAndHideComponent)
+  }
+
+  openLoginModal() {
+    const ref = this.modal.open(LoginModalComponent)
+    return ref
+  }
+
+  openSessionSettings() {
+    const ref = this.modal.open(SessionSettingsComponent)
+    ref.componentInstance.currentID = this.settings.currentID
   }
 }

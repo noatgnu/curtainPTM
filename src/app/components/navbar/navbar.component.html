@@ -1,42 +1,49 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top d-lex flex-wrap">
   <div class="container-fluid">
     <b style="padding-left: 4px" class="text-dark"><a class="navbar-brand" href="#">CurtainPTM 2.0</a></b>
-    <ng-container *ngIf="finished">
-      <a *ngIf="uniqueLink !== ''" href="{{uniqueLink}}" class="ml-2 text-success">{{uniqueLink}}</a>
-      <div class="d-flex">
-        <div class="p-2">
-          <div ngbDropdown class="d-inline-block">
-            <button class="btn btn-outline-primary ml-2" id="dropdownSession" ngbDropdownToggle>Session</button>
-            <div ngbDropdownMenu aria-labelledby="dropdownSession">
+    <a *ngIf="uniqueLink !== ''" href="{{uniqueLink}}" class="ml-2 text-success">{{uniqueLink}}</a>
+    <div class="d-flex">
+      <div class="p-2">
+        <div ngbDropdown class="d-inline-block">
+          <button class="btn btn-outline-primary ml-2" id="dropdownSession" ngbDropdownToggle>Session</button>
+          <div ngbDropdownMenu aria-labelledby="dropdownSession">
+            <ng-container *ngIf="finished">
               <button ngbDropdownItem (click)="saveSession()">Save Session</button>
               <button ngbDropdownItem (click)="clearSelections()">Clear Selections</button>
               <button ngbDropdownItem (click)="web.downloadFile('different.txt', data.differential.originalFile)">Download Differential Analysis File</button>
               <button ngbDropdownItem (click)="web.downloadFile('raw.txt', data.raw.originalFile)">Download Raw File</button>
               <button ngbDropdownItem (click)="openAnnotation()">Project Annotation</button>
               <button ngbDropdownItem (click)="openSampleSettings()">Sample Order and Visibility</button>
-            </div>
+            </ng-container>
+            <button ngbDropdownItem (click)="openLoginModal()" *ngIf="accounts.loggedIn===false">
+              Account Login
+            </button>
+            <button ngbDropdownItem (click)="openSessionSettings()" [disabled]="accounts.loggedIn===false">
+              Session Settings
+            </button>
           </div>
         </div>
-        <div class="p-2">
-          <input class="form-control" type="text" placeholder="Quick Navigation of Selected Data" width="300" [ngbTypeahead]="data.searchLimited" [(ngModel)]="filterModel">
-        </div>
-        <div class="p-2">
-          <select class="form-control" [(ngModel)]="data.searchType">
-            <option value="Gene Names">
-              Gene Names
-            </option>
-            <option value="Accession IDs">
-              Accession IDs
-            </option>
-            <option value="Primary IDs">
-              Primary IDs
-            </option>
-          </select>
-        </div>
-        <div class="p-2">
-          <button class="btn btn-primary" (click)="scrollTo()">Go to</button>
-        </div>
       </div>
-    </ng-container>
+      <div class="p-2">
+        <input class="form-control" type="text" placeholder="Quick Navigation of Selected Data" width="300" [ngbTypeahead]="data.searchLimited" [(ngModel)]="filterModel">
+      </div>
+      <div class="p-2">
+        <select class="form-control" [(ngModel)]="data.searchType">
+          <option value="Gene Names">
+            Gene Names
+          </option>
+          <option value="Accession IDs">
+            Accession IDs
+          </option>
+          <option value="Primary IDs">
+            Primary IDs
+          </option>
+        </select>
+      </div>
+      <div class="p-2">
+        <button class="btn btn-primary" (click)="scrollTo()">Go to</button>
+      </div>
+    </div>
+
   </div>
 </nav>
