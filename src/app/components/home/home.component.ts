@@ -14,6 +14,7 @@ import {SettingsService} from "../../settings.service";
 import {Project} from "../../classes/project";
 import {LoginModalComponent} from "../login-modal/login-modal.component";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {AccountsService} from "../../accounts.service";
 
 @Component({
   selector: 'app-home',
@@ -27,7 +28,8 @@ export class HomeComponent implements OnInit {
   uniqueLink: string = ""
   filterModel: string = ""
   currentID: string = ""
-  constructor(private modal: NgbModal, public settings: SettingsService, private data: DataService, private route: ActivatedRoute, private toast: ToastService, private uniprot: UniprotService, private web: WebService, private ptm: PtmService) {
+  constructor(private accounts: AccountsService, private modal: NgbModal, public settings: SettingsService, private data: DataService, private route: ActivatedRoute, private toast: ToastService, private uniprot: UniprotService, private web: WebService, private ptm: PtmService) {
+    this.accounts.reload()
     this.ptm.getDatabase("PSP_PHOSPHO")
     this.ptm.getDatabase("PLMD_UBI")
     this.ptm.getDatabase("CDB_CARBONYL")

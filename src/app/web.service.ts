@@ -85,7 +85,7 @@ export class WebService {
   putSettings(settings: any) {
     let form = new FormData()
     form.append("file", new Blob([JSON.stringify(settings, this.replacer)], {type: 'text/json'}), "curtainptm-settings.json")
-    form.append("enable", "true")
+    form.append("enable", "True")
     return this.http.post(this.links.proxyURL + "curtain/", form, {responseType: "json", observe: "response"})
   }
 
@@ -134,18 +134,18 @@ export class WebService {
     return this.http.post(this.links.proxyURL + "user/", {})
   }
 
-  generateTemporarySession(link_id: string) {
-    return this.http.post(this.links.proxyURL + `curtain/${link_id}/generate_token/`, {}, {responseType: "json", observe: "body"})
+  generateTemporarySession(link_id: string, lifetime: number) {
+    return this.http.post(this.links.proxyURL + `curtain/${link_id}/generate_token/`, {lifetime}, {responseType: "json", observe: "body"})
   }
 
   updateSession(sessionData: any, link_id: string) {
-    let headers = new HttpHeaders()
-    headers = headers.set("Content-Type", "application/json")
-    let payload: any = {}
-    for (const i in sessionData) {
-      payload[i] = sessionData[i]
+    let payload = new FormData()
+    if ("file" in sessionData) {
+      payload.append("file", new Blob([JSON.stringify(sessionData["file"], this.replacer)], {type: 'text/json'}), "curtain-settings.json")
     }
-    return this.http.patch(this.links.proxyURL + `curtain/${link_id}/`, payload, {responseType: "json", observe: "body", headers})
+    payload.append("enable", "True")
+
+    return this.http.patch(this.links.proxyURL + `curtain/${link_id}/`, payload, {responseType: "json", observe: "body"})
   }
 
   getSessionSettings(link_id: string) {

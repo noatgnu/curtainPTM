@@ -1,1 +1,31 @@
-<p>session-settings works!</p>
+<div class="modal-header">
+  <h5>Session Settings</h5>
+</div>
+<div class="modal-body">
+  <form [formGroup]="form">
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" formControlName="enable" id="sessionEnable">
+      <label class="form-check-label" for="sessionEnable">Enable Session For Public</label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" formControlName="update_content" id="updateContent">
+      <label class="form-check-label" for="updateContent">Update Session Content</label>
+    </div>
+
+    <ng-container *ngIf="form.value['enable']===false">
+      <hr>
+      <button class="btn btn-sm btn-primary" (click)="generateTemporarySession()">
+        Generate Temporary Session
+      </button>
+      <div class="input-group mt-2" style="width: 400px">
+        <input type="number" min="1" formControlName="temporary_link_lifetime" class="form-control" id="temporary_lifetime">
+        <label class="input-group-text" for="temporary_lifetime">Link Lifetime (days)</label>
+      </div>
+      <textarea rows="5" disabled [ngModel]="temporaryLink" class="form-control mt-2" readonly></textarea>
+    </ng-container>
+  </form>
+
+</div>
+<div class="modal-footer">
+  <button class="btn btn-primary" (click)="submit()">Update</button>
+</div>
