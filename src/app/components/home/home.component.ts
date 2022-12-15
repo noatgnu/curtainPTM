@@ -51,6 +51,9 @@ export class HomeComponent implements OnInit {
           let token: string = ""
           if (settings.length > 1) {
             token = settings[1]
+            this.data.tempLink = true
+          } else {
+            this.data.tempLink = false
           }
           this.toast.show("Initialization", "Fetching data from session " + params["settings"])
           if (this.currentID !== settings[0]) {

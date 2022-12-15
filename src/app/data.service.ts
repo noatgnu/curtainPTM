@@ -11,6 +11,7 @@ import {UniprotService} from "./uniprot.service";
   providedIn: 'root'
 })
 export class DataService {
+  tempLink: boolean = false
   dataClear: Subject<boolean> = new Subject()
   finishedProcessingData: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false)
   selectionUpdateTrigger: Subject<boolean> = new Subject<boolean>()
