@@ -18,7 +18,7 @@
             <button ngbDropdownItem (click)="openLoginModal()" *ngIf="accounts.loggedIn===false">
               Account Login
             </button>
-            <button ngbDropdownItem (click)="openSessionSettings()" [disabled]="accounts.loggedIn===false||accounts.is_owner===false">
+            <button ngbDropdownItem (click)="openSessionSettings()" [disabled]="!accounts.getSessionPermission()">
               Session Settings
             </button>
           </div>

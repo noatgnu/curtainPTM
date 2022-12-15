@@ -180,4 +180,13 @@ export class AccountsService {
       return false
     }
   }
+
+  getSessionPermission(): boolean {
+    if (this.user_staff) {
+      return true
+    } else if (this.is_owner) {
+      return true
+    }
+    return false
+  }
 }
