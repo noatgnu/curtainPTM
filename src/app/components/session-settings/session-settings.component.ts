@@ -13,9 +13,13 @@ import {SettingsService} from "../../settings.service";
 export class SessionSettingsComponent implements OnInit {
 
   private _currretID: string = ""
+  owners: any[] = []
   @Input() set currentID(value: string) {
     this._currretID = value
     this.web.getSessionSettings(this.currentID).subscribe((data: any) => {
+      this.web.getOwners(this.currentID).subscribe((data:any) => {
+        this.owners = data["owners"]
+      })
       for (const i in data) {
         if (i in this.form.value) {
           this.form.controls[i].setValue(data[i])
@@ -30,6 +34,7 @@ export class SessionSettingsComponent implements OnInit {
     enable: [true,],
     update_content: [false,],
     temporary_link_lifetime: [1,],
+    additionalOwner: ["",]
   })
   temporaryLink: string = ""
   constructor(private fb: FormBuilder, private web: WebService, private modal: NgbActiveModal, private data: DataService, private settings: SettingsService ) {
@@ -70,5 +75,17 @@ export class SessionSettingsComponent implements OnInit {
       this.modal.dismiss()
     })
   }
+  addOwner() {
+    if (this.form.value["additionalOwer"] !== "") {
+      this.web.addOwner(this.currentID, this.form.value["additionalOwner"]).subscribe((resp)=> {
+        if (resp.status === 204) {
+          this.web.getOwners(this.currentID).subscribe((data:any) => {
+            this.owners = data["owners"]
+          })
+        } else {
 
+        }
+      })
+    }
+  }
 }

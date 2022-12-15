@@ -11,7 +11,17 @@
       <input class="form-check-input" type="checkbox" formControlName="update_content" id="updateContent">
       <label class="form-check-label" for="updateContent">Update Session Content</label>
     </div>
+    <ul *ngIf="owners.length>0">Owners:
+      <li *ngFor="let o of owners">
+        {{o.username}}
+      </li>
+    </ul>
 
+    <div class="form-group">
+      <label for="addOwner">Adding Owner</label>
+      <input type="text" id="addOwner" formControlName="additionalOwner" class="form-control">
+    </div>
+    <button class="btn btn-sm btn-primary mt-1" (click)="addOwner()">Add</button>
     <ng-container *ngIf="form.value['enable']===false">
       <hr>
       <button class="btn btn-sm btn-primary" (click)="generateTemporarySession()">

@@ -160,4 +160,13 @@ export class WebService {
   getOwnership(link_id: string) {
     return this.http.get(this.links.proxyURL + `curtain/${link_id}/get_ownership/`,{responseType: "json", observe: "body"})
   }
+  getOwners(link_id:string) {
+    return this.http.get(this.links.proxyURL + `curtain/${link_id}/get_owners/`,{responseType: "json", observe: "body"})
+  }
+
+  addOwner(link_id:string, username:string) {
+    let payload = new FormData()
+    payload.append("username", username)
+    return this.http.patch(this.links.proxyURL + `curtain/${link_id}/add_owner/`,payload,{observe: "response"})
+  }
 }
