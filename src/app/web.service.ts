@@ -143,12 +143,21 @@ export class WebService {
     if ("file" in sessionData) {
       payload.append("file", new Blob([JSON.stringify(sessionData["file"], this.replacer)], {type: 'text/json'}), "curtain-settings.json")
     }
-    payload.append("enable", "True")
+    if (sessionData["enable"]) {
+      payload.append("enable", "True")
+    } else {
+      payload.append("enable", "False")
+    }
+
 
     return this.http.patch(this.links.proxyURL + `curtain/${link_id}/`, payload, {responseType: "json", observe: "body"})
   }
 
   getSessionSettings(link_id: string) {
     return this.http.get(this.links.proxyURL + `curtain/${link_id}/`,{responseType: "json", observe: "body"})
+  }
+
+  getOwnership(link_id: string) {
+    return this.http.get(this.links.proxyURL + `curtain/${link_id}/get_ownership/`,{responseType: "json", observe: "body"})
   }
 }

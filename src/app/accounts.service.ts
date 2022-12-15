@@ -6,6 +6,16 @@ import {environment} from "../environments/environment";
   providedIn: 'root'
 })
 export class AccountsService {
+  get is_owner(): boolean {
+    return this._is_owner;
+  }
+
+  set is_owner(value: boolean) {
+    this._is_owner = value;
+  }
+
+  private _is_owner: boolean = false
+
   get user_id(): number {
     return this._user_id;
   }

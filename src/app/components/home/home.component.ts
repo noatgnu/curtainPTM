@@ -68,6 +68,15 @@ export class HomeComponent implements OnInit {
                 }
               })
             })
+            this.web.getOwnership(settings[0]).subscribe((data:any) => {
+              if (data.ownership) {
+                this.accounts.is_owner = true
+              } else {
+                this.accounts.is_owner = false
+              }
+            }, error => {
+              this.accounts.is_owner = false
+            })
           }
         }
       }

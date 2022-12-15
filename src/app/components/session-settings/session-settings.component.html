@@ -21,10 +21,10 @@
         <input type="number" min="1" formControlName="temporary_link_lifetime" class="form-control" id="temporary_lifetime">
         <label class="input-group-text" for="temporary_lifetime">Link Lifetime (days)</label>
       </div>
-      <textarea rows="5" disabled [ngModel]="temporaryLink" class="form-control mt-2" readonly></textarea>
+
     </ng-container>
   </form>
-
+  <textarea rows="5" disabled [ngModel]="temporaryLink" class="form-control mt-2" readonly *ngIf="temporaryLink!==''"></textarea>
 </div>
 <div class="modal-footer">
   <button class="btn btn-primary" (click)="submit()">Update</button>
