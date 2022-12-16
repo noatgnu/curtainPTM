@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {CurtainLink} from "./classes/curtain-link";
-import {HttpClient, HttpHeaders} from "@angular/common/http";
+import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {PlotlyService} from "angular-plotly.js";
 import {GlyconnectService} from "./glyconnect.service";
 import {PspService} from "./psp.service";
@@ -168,5 +168,10 @@ export class WebService {
     let payload = new FormData()
     payload.append("username", username)
     return this.http.patch(this.links.proxyURL + `curtain/${link_id}/add_owner/`,payload,{observe: "response"})
+  }
+  getCurtainLinks(username: string) {
+    let params = new HttpParams()
+    params = params.set("username", username)
+    return this.http.get(this.links.proxyURL + "curtain/", {responseType: "json", observe: "body", params})
   }
 }

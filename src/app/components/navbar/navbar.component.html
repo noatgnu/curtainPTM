@@ -21,9 +21,14 @@
             <button ngbDropdownItem (click)="openSessionSettings()" [disabled]="!accounts.getSessionPermission()">
               Session Settings
             </button>
-            <button ngbDropdownItem (click)="accounts.logout()" *ngIf="accounts.loggedIn">
-              Logout
-            </button>
+            <ng-container *ngIf="accounts.loggedIn">
+              <button ngbDropdownItem (click)="openAccountModal()">
+                Account
+              </button>
+              <button ngbDropdownItem (click)="accounts.logout()">
+                Logout
+              </button>
+            </ng-container>
           </div>
         </div>
       </div>

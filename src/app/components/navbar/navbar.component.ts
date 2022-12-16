@@ -10,6 +10,7 @@ import {DataFrame, IDataFrame} from "data-forge";
 import {AccountsService} from "../../accounts.service";
 import {LoginModalComponent} from "../login-modal/login-modal.component";
 import {SessionSettingsComponent} from "../session-settings/session-settings.component";
+import {AccountsComponent} from "../accounts/accounts.component";
 
 @Component({
   selector: 'app-navbar',
@@ -109,5 +110,9 @@ export class NavbarComponent implements OnInit {
   openSessionSettings() {
     const ref = this.modal.open(SessionSettingsComponent)
     ref.componentInstance.currentID = this.settings.currentID
+  }
+
+  openAccountModal() {
+    const ref = this.modal.open(AccountsComponent)
   }
 }

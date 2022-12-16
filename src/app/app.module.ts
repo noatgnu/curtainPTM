@@ -41,6 +41,7 @@ import { VolcanoPlotTextAnnotationComponent } from './components/volcano-plot-te
 import {TokenInterceptor} from "./token.interceptor";
 import { LoginModalComponent } from './components/login-modal/login-modal.component';
 import { SessionSettingsComponent } from './components/session-settings/session-settings.component';
+import { AccountsComponent } from './components/accounts/accounts.component';
 PlotlyModule.plotlyjs = PlotlyJS;
 @NgModule({
   declarations: [
@@ -72,7 +73,8 @@ PlotlyModule.plotlyjs = PlotlyJS;
     SampleOrderAndHideComponent,
     VolcanoPlotTextAnnotationComponent,
     LoginModalComponent,
-    SessionSettingsComponent
+    SessionSettingsComponent,
+    AccountsComponent
   ],
   imports: [
     BrowserModule,
