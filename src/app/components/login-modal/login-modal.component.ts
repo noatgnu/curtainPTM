@@ -4,6 +4,7 @@ import {Subject} from "rxjs";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {AccountsService} from "../../accounts.service";
 import {WebService} from "../../web.service";
+import {ToastService} from "../../toast.service";
 
 @Component({
   selector: 'app-login-modal',
@@ -18,7 +19,7 @@ export class LoginModalComponent implements OnInit {
   })
 
   loginStatus: Subject<boolean> = new Subject<boolean>()
-  constructor(private modal: NgbActiveModal, private fb: FormBuilder, private accounts: AccountsService, private web: WebService) { }
+  constructor(private modal: NgbActiveModal, private fb: FormBuilder, private accounts: AccountsService, private web: WebService, private toast: ToastService) { }
 
   ngOnInit(): void {
   }
@@ -39,6 +40,9 @@ export class LoginModalComponent implements OnInit {
           this.loginStatus.next(true)
           this.modal.dismiss()
         })
+        this.toast.show("Login Information","Login Successful.")
+      }, error =>{
+        this.toast.show("Login Error", "Incorrect Login Credential.")
       })
     }
 

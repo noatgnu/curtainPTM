@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {environment} from "../environments/environment";
+import {ToastService} from "./toast.service";
 
 @Injectable({
   providedIn: 'root'
@@ -95,7 +96,7 @@ export class AccountsService {
   private _lastTokenUpdateTime = new Date()
   private _lastRefreshTokenUpdateTime = new Date()
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private toast: ToastService) {
 
   }
 
@@ -156,6 +157,7 @@ export class AccountsService {
     this._accessToken = ""
     this._refreshToken = ""
     this._loggedIn = false
+    this.toast.show("Login Information", "Logout Successful.")
     return this.http.post(this.host + "logout/", {refresh_token}, {responseType: "json", observe: "body", headers})
   }
 
@@ -175,6 +177,7 @@ export class AccountsService {
     const diffTime = Math.floor(currentTime.getTime() - this._lastRefreshTokenUpdateTime.getTime())/1000/60/60
     console.log(diffTime)
     if (diffTime > 24) {
+      this.toast.show("Credential Error", "Login Expired")
       return true
     } else {
       return false

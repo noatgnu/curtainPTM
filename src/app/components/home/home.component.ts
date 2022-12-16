@@ -64,6 +64,7 @@ export class HomeComponent implements OnInit {
                 this.restoreSettings(a).then()
               }
             },error => {
+              this.toast.show("Credential Error", "Login Information Required")
               const login = this.openLoginModal()
               login.componentInstance.loginStatus.asObservable().subscribe((data:boolean) => {
                 if (data) {
