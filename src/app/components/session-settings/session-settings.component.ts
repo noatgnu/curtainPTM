@@ -17,6 +17,7 @@ export class SessionSettingsComponent implements OnInit {
   @Input() set currentID(value: string) {
     this._currretID = value
     this.web.getSessionSettings(this.currentID).subscribe((data: any) => {
+      this.data.session = data
       this.web.getOwners(this.currentID).subscribe((data:any) => {
         this.owners = data["owners"]
       })
