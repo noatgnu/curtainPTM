@@ -6,7 +6,7 @@ import {
   HttpInterceptor, HttpErrorResponse
 } from '@angular/common/http';
 import {catchError, concatMap, delay, Observable, of, retryWhen, switchMap, throwError} from 'rxjs';
-import {AccountsService} from "./accounts.service";
+import {AccountsService} from "./accounts/accounts.service";
 
 @Injectable()
 export class TokenInterceptor implements HttpInterceptor {

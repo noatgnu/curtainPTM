@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import {AccountsService} from "../../accounts.service";
 import {WebService} from "../../web.service";
+import {AccountsService} from "../accounts.service";
 
 @Component({
   selector: 'app-accounts',
@@ -8,7 +8,6 @@ import {WebService} from "../../web.service";
   styleUrls: ['./accounts.component.scss']
 })
 export class AccountsComponent implements OnInit {
-
   data: any = {}
   constructor(private web: WebService, private accounts: AccountsService) {
     this.web.getCurtainLinks(this.accounts.user_name).subscribe((data: any) => {

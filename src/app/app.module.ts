@@ -39,9 +39,9 @@ import {PrideComponent} from "./components/pride/pride.component";
 import { SampleOrderAndHideComponent } from './components/sample-order-and-hide/sample-order-and-hide.component';
 import { VolcanoPlotTextAnnotationComponent } from './components/volcano-plot-text-annotation/volcano-plot-text-annotation.component';
 import {TokenInterceptor} from "./token.interceptor";
-import { LoginModalComponent } from './components/login-modal/login-modal.component';
+import { LoginModalComponent } from './accounts/login-modal/login-modal.component';
 import { SessionSettingsComponent } from './components/session-settings/session-settings.component';
-import { AccountsComponent } from './components/accounts/accounts.component';
+import {AccountsModule} from "./accounts/accounts.module";
 PlotlyModule.plotlyjs = PlotlyJS;
 @NgModule({
   declarations: [
@@ -73,8 +73,7 @@ PlotlyModule.plotlyjs = PlotlyJS;
     SampleOrderAndHideComponent,
     VolcanoPlotTextAnnotationComponent,
     LoginModalComponent,
-    SessionSettingsComponent,
-    AccountsComponent
+    SessionSettingsComponent
   ],
   imports: [
     BrowserModule,
@@ -88,6 +87,7 @@ PlotlyModule.plotlyjs = PlotlyJS;
     NgxPrintModule,
     QuillModule.forRoot(),
     ReactiveFormsModule,
+    AccountsModule
   ],
   providers: [HttpClient,
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true }

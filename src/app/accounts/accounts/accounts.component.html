@@ -1,0 +1,34 @@
+<div class="modal-header">
+  <h5>Account Information</h5>
+</div>
+<div class="modal-body">
+  <table class="table table-striped">
+    <thead>
+    <tr>
+      <th scope="col">
+        Unique ID
+      </th>
+      <th scope="col">
+        Description
+      </th>
+      <th scope="col">
+        Created
+      </th>
+    </tr>
+
+    </thead>
+    <tbody>
+    <tr *ngFor="let d of data.results">
+      <td>
+        {{d.link_id}}
+      </td>
+      <td>
+        {{d.description}}
+      </td>
+      <td>
+        {{d.created}}
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>

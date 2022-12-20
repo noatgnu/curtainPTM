@@ -12,9 +12,9 @@ import {Raw} from "../../classes/raw";
 import {InputFile} from "../../classes/input-file";
 import {SettingsService} from "../../settings.service";
 import {Project} from "../../classes/project";
-import {LoginModalComponent} from "../login-modal/login-modal.component";
+import {LoginModalComponent} from "../../accounts/login-modal/login-modal.component";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {AccountsService} from "../../accounts.service";
+import {AccountsService} from "../../accounts/accounts.service";
 
 @Component({
   selector: 'app-home',

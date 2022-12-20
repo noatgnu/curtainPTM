@@ -7,10 +7,10 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {SampleAnnotationComponent} from "../sample-annotation/sample-annotation.component";
 import {SampleOrderAndHideComponent} from "../sample-order-and-hide/sample-order-and-hide.component";
 import {DataFrame, IDataFrame} from "data-forge";
-import {AccountsService} from "../../accounts.service";
-import {LoginModalComponent} from "../login-modal/login-modal.component";
+import {AccountsService} from "../../accounts/accounts.service";
+import {LoginModalComponent} from "../../accounts/login-modal/login-modal.component";
 import {SessionSettingsComponent} from "../session-settings/session-settings.component";
-import {AccountsComponent} from "../accounts/accounts.component";
+import {AccountsComponent} from "../../accounts/accounts/accounts.component";
 
 @Component({
   selector: 'app-navbar',
