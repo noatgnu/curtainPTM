@@ -28,7 +28,7 @@ import {environment} from "../../environments/environment";
       useValue: {
         autoLogin: false,
         providers: [
-          {
+          /*{
             id: GoogleLoginProvider.PROVIDER_ID,
             provider: new GoogleLoginProvider(
               environment.google
@@ -37,7 +37,7 @@ import {environment} from "../../environments/environment";
           {
             id: FacebookLoginProvider.PROVIDER_ID,
             provider: new FacebookLoginProvider('clientId')
-          }
+          }*/
         ],
         onError: (err) => {
           console.error(err);

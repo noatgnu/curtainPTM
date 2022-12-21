@@ -1,5 +1,5 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
-import {FormBuilder, Validators} from "@angular/forms";
+import {UntypedFormBuilder, Validators} from "@angular/forms";
 import {AccountsService} from "../accounts.service";
 import {WebService} from "../../web.service";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
@@ -22,7 +22,7 @@ export class LoginModalComponent implements OnInit {
   })
 
   loginStatus: Subject<boolean> = new Subject<boolean>()
-  constructor(private authService: SocialAuthService, private modal: NgbActiveModal, private fb: FormBuilder, private accounts: AccountsService, private web: WebService, private toast: ToastService) {
+  constructor(private authService: SocialAuthService, private modal: NgbActiveModal, private fb: UntypedFormBuilder, private accounts: AccountsService, private web: WebService, private toast: ToastService) {
     this.authService.authState.subscribe((user)=> {
       this.accounts.postGoogleData(user).subscribe(data=> {
         this.processLogin(data)

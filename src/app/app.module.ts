@@ -72,7 +72,6 @@ PlotlyModule.plotlyjs = PlotlyJS;
     PrideComponent,
     SampleOrderAndHideComponent,
     VolcanoPlotTextAnnotationComponent,
-    LoginModalComponent,
     SessionSettingsComponent
   ],
   imports: [

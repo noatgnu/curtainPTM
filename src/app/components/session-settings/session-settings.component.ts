@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {FormBuilder} from "@angular/forms";
+import {UntypedFormBuilder} from "@angular/forms";
 import {WebService} from "../../web.service";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {DataService} from "../../data.service";
@@ -38,7 +38,7 @@ export class SessionSettingsComponent implements OnInit {
     additionalOwner: ["",]
   })
   temporaryLink: string = ""
-  constructor(private fb: FormBuilder, private web: WebService, private modal: NgbActiveModal, private data: DataService, private settings: SettingsService ) {
+  constructor(private fb: UntypedFormBuilder, private web: WebService, private modal: NgbActiveModal, private data: DataService, private settings: SettingsService ) {
 
   }
 

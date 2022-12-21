@@ -157,18 +157,19 @@ export class AccountsService {
     this._accessToken = ""
     this._refreshToken = ""
     this._loggedIn = false
+    this._is_owner = false
     this.toast.show("Login Information", "Logout Successful.")
     return this.http.post(this.host + "logout/", {refresh_token}, {responseType: "json", observe: "body", headers})
   }
 
   removeLocalStorage() {
-    localStorage.clear()
+    localStorage.removeItem("lastTokenUpdateTime")
+    localStorage.removeItem("lastRefreshTokenUpdateTime")
+    localStorage.removeItem("accessToken")
+    localStorage.removeItem("refreshToken")
+    localStorage.removeItem("userName")
+    localStorage.removeItem("userId")
     console.log("Storage data cleared.")
-    //localStorage.removeItem("lastTokenUpdateTime")
-    //localStorage.removeItem("lastRefreshTokenUpdateTime")
-    //localStorage.removeItem("accessToken")
-    //localStorage.removeItem("refreshToken")
-    //localStorage.removeItem("userId")
   }
 
   checkRefreshTokenExpiry() {
@@ -197,5 +198,33 @@ export class AccountsService {
     let headers = new HttpHeaders()
     headers = headers.set("content-type", "application/json")
     return this.http.post(this.host + "rest-auth/google/", JSON.stringify({"auth_token": data.idToken}), {responseType: "json", observe: "body", headers})
+  }
+
+  postORCIDCode(data: string) {
+    let headers = new HttpHeaders()
+    headers = headers.set("content-type", "application/json")
+    return this.http.post(this.host + "rest-auth/orcid/", JSON.stringify({"auth_token": data, "redirect_uri": window.location.origin+"/"}), {responseType: "json", observe: "body", headers})
+  }
+
+  ORCIDLogin(data: string) {
+    this.postORCIDCode(data).subscribe((data:any) => {
+      this.accessToken = data.access
+      this.refreshToken = data.refresh
+      this.loggedIn = true
+      this.lastTokenUpdateTime = new Date()
+      this.lastRefreshTokenUpdateTime = new Date()
+      this.getUserData().subscribe((data: any) => {
+        this.user_id = data.id
+        this.user_name = data.username
+        this.user_staff = data.is_staff
+        this.toast.show("Login Information","Login Successful.")
+      }, error =>{
+        this.toast.show("Login Error", "Incorrect Login Credential.")
+      })
+    })
+  }
+
+  getUserData() {
+    return this.http.post(this.host + "user/", {})
   }
 }
