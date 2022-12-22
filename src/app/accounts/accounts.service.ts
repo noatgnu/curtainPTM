@@ -218,6 +218,10 @@ export class AccountsService {
         this.user_name = data.username
         this.user_staff = data.is_staff
         this.toast.show("Login Information","Login Successful.")
+        const url = localStorage.getItem("urlAfterLogin")
+        if (url) {
+          window.location.assign(url)
+        }
       }, error =>{
         this.toast.show("Login Error", "Incorrect Login Credential.")
       })

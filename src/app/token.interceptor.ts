@@ -55,6 +55,9 @@ export class TokenInterceptor implements HttpInterceptor {
         console.log("logged out")
       } else if (err instanceof HttpErrorResponse && !request.url.endsWith("/token/")) {
         if (err.status === 401) {
+          if (request.url.endsWith("get_ownership/")) {
+            return throwError(err)
+          }
           return this.handle401Error(request, next)
         }
       }

@@ -61,9 +61,7 @@ export class LoginModalComponent implements OnInit {
   }
 
   clickOrcid() {
-    if (this.orcidWidget) {
-      this.orcidWidget.nativeElement.click()
-    }
-
+    localStorage.setItem("urlAfterLogin", document.URL)
+    console.log(localStorage)
   }
 }
