@@ -2,33 +2,44 @@
   <h5>Account Information</h5>
 </div>
 <div class="modal-body">
-  <table class="table table-striped">
-    <thead>
-    <tr>
-      <th scope="col">
-        Unique ID
-      </th>
-      <th scope="col">
-        Description
-      </th>
-      <th scope="col">
-        Created
-      </th>
-    </tr>
+  <form [formGroup]="form" (submit)="submit()">
+    <div class="form-group">
+      <label for="session-search">Search Session Description</label>
+      <input type="text" formControlName="sessionDescription" id="session-search" class="form-control">
+    </div>
+    <button class="btn btn-primary mt-1 mb-1" type="submit">Search</button>
+  </form>
+  <ng-container *ngIf="totalItems > 0">
+    <ngb-pagination [collectionSize]="totalItems" [(page)]="currentPage" [maxSize]="5" [boundaryLinks]="true" class="mt-2" (pageChange)="submit($event)"></ngb-pagination>
+    <table class="table table-striped">
+      <thead>
+      <tr>
+        <th scope="col">
+          Unique ID
+        </th>
+        <th scope="col">
+          Description
+        </th>
+        <th scope="col">
+          Created
+        </th>
+      </tr>
 
-    </thead>
-    <tbody>
-    <tr *ngFor="let d of data.results">
-      <td>
-        {{d.link_id}}
-      </td>
-      <td>
-        {{d.description}}
-      </td>
-      <td>
-        {{d.created}}
-      </td>
-    </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+      <tr *ngFor="let d of data.results">
+        <td>
+          {{d.link_id}}
+        </td>
+        <td>
+          {{d.description}}
+        </td>
+        <td>
+          {{d.created}}
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </ng-container>
+
 </div>

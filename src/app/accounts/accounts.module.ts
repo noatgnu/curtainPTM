@@ -9,6 +9,7 @@ import {AccountsComponent} from "./accounts/accounts.component";
 import {LoginModalComponent} from "./login-modal/login-modal.component";
 import {ReactiveFormsModule} from "@angular/forms";
 import {environment} from "../../environments/environment";
+import {NgbPaginationModule} from "@ng-bootstrap/ng-bootstrap";
 
 
 @NgModule({
@@ -16,12 +17,13 @@ import {environment} from "../../environments/environment";
     AccountsComponent,
     LoginModalComponent
   ],
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    SocialLoginModule,
+    imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        SocialLoginModule,
+        NgbPaginationModule,
 
-  ],
+    ],
   providers: [
     {
       provide: 'SocialAuthServiceConfig',

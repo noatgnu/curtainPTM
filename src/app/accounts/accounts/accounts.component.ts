@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {WebService} from "../../web.service";
 import {AccountsService} from "../accounts.service";
+import {FormBuilder} from "@angular/forms";
 
 @Component({
   selector: 'app-accounts',
@@ -9,12 +10,21 @@ import {AccountsService} from "../accounts.service";
 })
 export class AccountsComponent implements OnInit {
   data: any = {}
-  constructor(private web: WebService, private accounts: AccountsService) {
-    this.web.getCurtainLinks(this.accounts.user_name).subscribe((data: any) => {
+  form = this.fb.group({
+    sessionDescription: ["",]
+  })
+  currentPage: number = 1
+  totalItems: number = 0
+  pageNumber: number = 0
+  constructor(private web: WebService, private accounts: AccountsService, private fb: FormBuilder) {
+    // @ts-ignore
+    this.web.getCurtainLinks(this.accounts.user_name, this.form.value["sessionDescription"]).subscribe((data: any) => {
       data.results = data.results.map((a:any) => {
         a.created = new Date(a.created)
         return a
       })
+      this.totalItems = data.count
+      this.pageNumber = this.totalItems/20
       this.data = data
     })
   }
@@ -22,4 +32,16 @@ export class AccountsComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  submit(page: number = 0) {
+    // @ts-ignore
+    this.web.getCurtainLinks(this.accounts.user_name, this.form.value["sessionDescription"], page*20).subscribe((data: any) => {
+      data.results = data.results.map((a:any) => {
+        a.created = new Date(a.created)
+        return a
+      })
+      this.totalItems = data.count
+      this.pageNumber = this.totalItems/20
+      this.data = data
+    })
+  }
 }

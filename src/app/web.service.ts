@@ -169,9 +169,12 @@ export class WebService {
     payload.append("username", username)
     return this.http.patch(this.links.proxyURL + `curtain/${link_id}/add_owner/`,payload,{observe: "response"})
   }
-  getCurtainLinks(username: string) {
+  getCurtainLinks(username: string, sessionDescription: string = "", offset: number = 0) {
     let params = new HttpParams()
     params = params.set("username", username)
+    params = params.set("description", sessionDescription)
+    params = params.set("ordering", "-created")
+    params = params.set("offset", `${offset}`)
     return this.http.get(this.links.proxyURL + "curtain/", {responseType: "json", observe: "body", params})
   }
 }
