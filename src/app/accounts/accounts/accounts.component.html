@@ -2,6 +2,9 @@
   <h5>Account Information</h5>
 </div>
 <div class="modal-body">
+  <p>
+    <b>Username: {{accounts.user_name}}</b><br>
+  </p>
   <form [formGroup]="form" (submit)="submit()">
     <div class="form-group">
       <label for="session-search">Search Session Description</label>
@@ -15,7 +18,7 @@
       <thead>
       <tr>
         <th scope="col">
-          Unique ID
+          Link
         </th>
         <th scope="col">
           Description
@@ -29,7 +32,7 @@
       <tbody>
       <tr *ngFor="let d of data.results">
         <td>
-          {{d.link_id}}
+          <a href="{{base}}/#/{{d.link_id}}" target="_blank">{{d.id}}</a>
         </td>
         <td>
           {{d.description}}

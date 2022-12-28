@@ -81,13 +81,19 @@ export class WebService {
       {responseType: "json", observe: "body"}
     )
   }
-
-  putSettings(settings: any) {
+  putSettings(settings: any, enable: boolean = true, description: string = "") {
     let form = new FormData()
     form.append("file", new Blob([JSON.stringify(settings, this.replacer)], {type: 'text/json'}), "curtainptm-settings.json")
-    form.append("enable", "True")
+    if (enable) {
+      form.append("enable", "True")
+    } else {
+      form.append("enable", "False")
+    }
+    form.append("description", description)
+    form.append("curtain_type", "PTM")
     return this.http.post(this.links.proxyURL + "curtain/", form, {responseType: "json", observe: "response"})
   }
+
 
   postSettings(id: string, token: string) {
     return this.http.get(this.links.proxyURL +`curtain/${id}/download/token=${token}/`, {responseType: "text", observe: "response"})
@@ -175,6 +181,7 @@ export class WebService {
     params = params.set("description", sessionDescription)
     params = params.set("ordering", "-created")
     params = params.set("offset", `${offset}`)
+    params = params.set("curtain_type", "PTM")
     return this.http.get(this.links.proxyURL + "curtain/", {responseType: "json", observe: "body", params})
   }
 }
