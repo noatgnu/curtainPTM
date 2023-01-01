@@ -21,26 +21,37 @@
           Link
         </th>
         <th scope="col">
-          Description
+          Created
         </th>
         <th scope="col">
-          Created
+          Actions
         </th>
       </tr>
 
       </thead>
       <tbody>
-      <tr *ngFor="let d of data.results">
-        <td>
-          <a href="{{base}}/#/{{d.link_id}}" target="_blank">{{d.id}}</a>
-        </td>
-        <td>
-          {{d.description}}
-        </td>
-        <td>
-          {{d.created}}
-        </td>
-      </tr>
+      <ng-container *ngFor="let d of data.results">
+        <tr>
+          <td>
+            <a href="{{base}}/#/{{d.link_id}}" target="_blank">{{d.link_id}}</a>
+          </td>
+          <td>
+            {{d.created}}
+          </td>
+          <td>
+            <button class="btn btn-sm btn-outline-primary" style="margin-right: 2px" (click)="viewDescription(d.link_id)">Description</button>
+            <button class="btn btn-sm btn-outline-danger" *ngIf="accounts.can_delete" (click)="deleteLink(d.link_id)">Rm</button>
+          </td>
+        </tr>
+        <tr *ngIf="descriptionTrigger[d.link_id]" class="table-light">
+          <td [colSpan]="3">
+            <b>Description</b>
+            <div [innerHTML]="d.description"></div>
+          </td>
+        </tr>
+        <tr></tr>
+      </ng-container>
+
       </tbody>
     </table>
   </ng-container>
