@@ -16,7 +16,7 @@ RUN apt-get -y install nginx
 RUN git clone https://github.com/noatgnu/curtainPTM.git
 WORKDIR /app/curtainPTM
 RUN sed -i -r "s|https://celsus.muttsu.xyz/|${API_HOST}|" ./src/environments/environment.prod.ts
-RUN sed -i -r "s|APP-5RXLC3W1MS2MOW0F|${API_HOST}|" ./src/environments/environment.prod.ts
+RUN sed -i -r "s|APP-5RXLC3W1MS2MOW0F|${ORCID_APPID}|" ./src/environments/environment.prod.ts
 RUN npm -g config set user root
 RUN npm install --quiet --no-progress -g @angular/cli@14
 RUN npm install
