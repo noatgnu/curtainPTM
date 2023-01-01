@@ -20,7 +20,6 @@ RUN sed -i -r "s|APP-5RXLC3W1MS2MOW0F|${ORCID_APPID}|" ./src/environments/enviro
 RUN npm -g config set user root
 RUN npm install --quiet --no-progress -g @angular/cli@14
 RUN npm install
-RUN npm install
 RUN node_modules/.bin/ng build
 
 FROM nginx:latest
