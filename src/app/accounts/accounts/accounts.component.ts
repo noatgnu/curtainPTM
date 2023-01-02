@@ -32,6 +32,7 @@ export class AccountsComponent implements OnInit {
       this.pageNumber = this.totalItems/20
       this.data = data
     })
+    this.accounts.getUser()
   }
 
   ngOnInit(): void {
@@ -56,6 +57,7 @@ export class AccountsComponent implements OnInit {
   deleteLink(link_id: string) {
     this.accounts.deleteCurtainLink(link_id).subscribe((res) => {
       this.submit(this.currentPage)
+      this.accounts.getUser()
     })
   }
 

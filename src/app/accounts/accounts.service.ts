@@ -7,6 +7,34 @@ import {ToastService} from "../toast.service";
   providedIn: 'root'
 })
 export class AccountsService {
+  get limit_exceed(): boolean {
+    return this._limit_exceed;
+  }
+
+  set limit_exceed(value: boolean) {
+    this._limit_exceed = value;
+  }
+  get total_curtain(): number {
+    return this._total_curtain;
+  }
+
+  set total_curtain(value: number) {
+    this._total_curtain = value;
+  }
+  get curtain_link_limit(): number {
+    return this._curtain_link_limit;
+  }
+
+  set curtain_link_limit(value: number) {
+    this._curtain_link_limit = value;
+  }
+  get can_delete(): boolean {
+    return this._can_delete;
+  }
+
+  set can_delete(value: boolean) {
+    this._can_delete = value;
+  }
   get is_owner(): boolean {
     return this._is_owner;
   }
@@ -16,13 +44,7 @@ export class AccountsService {
   }
 
   private _is_owner: boolean = false
-  get can_delete(): boolean {
-    return this._can_delete;
-  }
 
-  set can_delete(value: boolean) {
-    this._can_delete = value;
-  }
   get user_id(): number {
     return this._user_id;
   }
@@ -52,7 +74,9 @@ export class AccountsService {
   get loggedIn(): boolean {
     return this._loggedIn;
   }
-
+  private _limit_exceed: boolean = false
+  private _total_curtain: number = 0
+  private _curtain_link_limit: number = 0
   private _can_delete: boolean = false
   private _user_id: number = 0
   private _user_name: string = ""
@@ -136,24 +160,29 @@ export class AccountsService {
             this._user_staff = true
           }
         }
-
         this.loggedIn = true
-        this.getUserData().subscribe((data: any) => {
-          this.user_id = data.id
-          this.user_name = data.username
-          this.user_staff = data.is_staff
-          this.can_delete = data.can_delete
-          this.toast.show("Login Information","Login Successful.")
-          const url = localStorage.getItem("urlAfterLogin")
-          if (url) {
-            window.location.assign(url)
-          }
-        }, error =>{
-          this.toast.show("Login Error", "Incorrect Login Credential.")
-        })
-        console.log("Logged in")
+        this.getUser();
       }
     }
+  }
+
+  getUser(reNavigate: boolean = false) {
+    this.getUserData().subscribe((data: any) => {
+      this.user_id = data.id
+      this.user_name = data.username
+      this.user_staff = data.is_staff
+      this.can_delete = data.can_delete
+      this.curtain_link_limit = data.curtain_link_limit
+      this.total_curtain = data.total_curtain
+      this.limit_exceed = data.curtain_link_limit_exceed
+      this.toast.show("Login Information", "User information updated.")
+      const url = localStorage.getItem("urlAfterLogin")
+      if (url && reNavigate) {
+        window.location.assign(url)
+      }
+    }, error => {
+      this.toast.show("Login Error", "Incorrect Login Credential.")
+    })
   }
 
   login(username: string, password: string) {
@@ -179,6 +208,7 @@ export class AccountsService {
     this._refreshToken = ""
     this._loggedIn = false
     this._is_owner = false
+    this._user_staff = false
     this.toast.show("Login Information", "Logout Successful.")
     return this.http.post(this.host + "logout/", {refresh_token}, {responseType: "json", observe: "body", headers})
   }
@@ -190,6 +220,7 @@ export class AccountsService {
     localStorage.removeItem("refreshToken")
     localStorage.removeItem("userName")
     localStorage.removeItem("userId")
+    localStorage.removeItem("userStaff")
     console.log("Storage data cleared.")
   }
 
@@ -234,19 +265,7 @@ export class AccountsService {
       this.loggedIn = true
       this.lastTokenUpdateTime = new Date()
       this.lastRefreshTokenUpdateTime = new Date()
-      this.getUserData().subscribe((data: any) => {
-        this.user_id = data.id
-        this.user_name = data.username
-        this.user_staff = data.is_staff
-        this.can_delete = data.can_delete
-        this.toast.show("Login Information","Login Successful.")
-        const url = localStorage.getItem("urlAfterLogin")
-        if (url) {
-          window.location.assign(url)
-        }
-      }, error =>{
-        this.toast.show("Login Error", "Incorrect Login Credential.")
-      })
+      this.getUser(true)
     })
   }
 

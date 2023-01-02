@@ -3,7 +3,9 @@
 </div>
 <div class="modal-body">
   <p>
-    <b>Username: {{accounts.user_name}}</b><br>
+    <b>Username: </b>{{accounts.user_name}}<br>
+    <b>Curtain Link Limits: </b><span *ngIf="accounts.curtain_link_limit === 0">infinite</span><span *ngIf="accounts.curtain_link_limit > 0">{{accounts.curtain_link_limit}}</span> <span class="text-danger" *ngIf="accounts.limit_exceed">- Limit Exceed</span> <br>
+    <b>Total Curtain Sessions: </b> {{accounts.total_curtain}}
   </p>
   <form [formGroup]="form" (submit)="submit()">
     <div class="form-group">

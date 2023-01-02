@@ -11,6 +11,7 @@ import {AccountsService} from "../../accounts/accounts.service";
 import {LoginModalComponent} from "../../accounts/login-modal/login-modal.component";
 import {SessionSettingsComponent} from "../session-settings/session-settings.component";
 import {AccountsComponent} from "../../accounts/accounts/accounts.component";
+import {ToastService} from "../../toast.service";
 
 @Component({
   selector: 'app-navbar',
@@ -27,33 +28,40 @@ export class NavbarComponent implements OnInit {
     private scroll: ScrollService,
     private settings: SettingsService,
     private modal: NgbModal,
-    public accounts: AccountsService) { }
+    public accounts: AccountsService, private toast: ToastService) { }
 
   ngOnInit(): void {
   }
 
   saveSession() {
-    const data: any = {
-      raw: this.data.raw.originalFile,
-      rawForm: this.data.rawForm,
-      differentialForm: this.data.differentialForm,
-      processed: this.data.differential.originalFile,
-      settings: this.settings.settings,
-      password: "",
-      selections: this.data.selected,
-      selectionsMap: this.data.selectedMap,
-      selectionsName: this.data.selectOperationNames,
-      dbIDMap: this.data.dbIDMap,
-      fetchUniProt: this.data.fetchUniProt,
-      annotatedData: this.data.annotatedData,
-      annotatedMap: this.data.annotatedMap
-    }
-    this.web.putSettings(data, !this.accounts.loggedIn, data.settings.description).subscribe((data:any) => {
-      if (data.body) {
-        this.settings.currentID = data.body.link_id
-        this.uniqueLink = location.origin +"/#/" + this.settings.currentID
+    if (!this.accounts.limit_exceed) {
+      const data: any = {
+        raw: this.data.raw.originalFile,
+        rawForm: this.data.rawForm,
+        differentialForm: this.data.differentialForm,
+        processed: this.data.differential.originalFile,
+        settings: this.settings.settings,
+        password: "",
+        selections: this.data.selected,
+        selectionsMap: this.data.selectedMap,
+        selectionsName: this.data.selectOperationNames,
+        dbIDMap: this.data.dbIDMap,
+        fetchUniProt: this.data.fetchUniProt,
+        annotatedData: this.data.annotatedData,
+        annotatedMap: this.data.annotatedMap
       }
-    })
+      this.web.putSettings(data, !this.accounts.loggedIn, data.settings.description).subscribe((data:any) => {
+        if (data.body) {
+          this.settings.currentID = data.body.link_id
+          this.uniqueLink = location.origin +"/#/" + this.settings.currentID
+        }
+      }, err => {
+        this.toast.show("User information", "Curtain link cannot be saved")
+      })
+    } else {
+      this.toast.show("User information", "Curtain link limit exceed")
+    }
+
   }
 
   clearSelections() {
