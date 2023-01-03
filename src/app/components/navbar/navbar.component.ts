@@ -34,34 +34,46 @@ export class NavbarComponent implements OnInit {
   }
 
   saveSession() {
-    if (!this.accounts.limit_exceed) {
-      const data: any = {
-        raw: this.data.raw.originalFile,
-        rawForm: this.data.rawForm,
-        differentialForm: this.data.differentialForm,
-        processed: this.data.differential.originalFile,
-        settings: this.settings.settings,
-        password: "",
-        selections: this.data.selected,
-        selectionsMap: this.data.selectedMap,
-        selectionsName: this.data.selectOperationNames,
-        dbIDMap: this.data.dbIDMap,
-        fetchUniProt: this.data.fetchUniProt,
-        annotatedData: this.data.annotatedData,
-        annotatedMap: this.data.annotatedMap
+    if (!this.accounts.loggedIn) {
+      if (this.web.siteProperties.non_user_post) {
+        this.saving();
+      } else {
+        this.toast.show("User information", "Please login before saving data session")
       }
-      this.web.putSettings(data, !this.accounts.loggedIn, data.settings.description).subscribe((data:any) => {
-        if (data.body) {
-          this.settings.currentID = data.body.link_id
-          this.uniqueLink = location.origin +"/#/" + this.settings.currentID
-        }
-      }, err => {
-        this.toast.show("User information", "Curtain link cannot be saved")
-      })
     } else {
-      this.toast.show("User information", "Curtain link limit exceed")
+      if (!this.accounts.limit_exceed ) {
+        this.saving();
+      } else {
+        this.toast.show("User information", "Curtain link limit exceed")
+      }
     }
 
+  }
+
+  private saving() {
+    const data: any = {
+      raw: this.data.raw.originalFile,
+      rawForm: this.data.rawForm,
+      differentialForm: this.data.differentialForm,
+      processed: this.data.differential.originalFile,
+      settings: this.settings.settings,
+      password: "",
+      selections: this.data.selected,
+      selectionsMap: this.data.selectedMap,
+      selectionsName: this.data.selectOperationNames,
+      dbIDMap: this.data.dbIDMap,
+      fetchUniProt: this.data.fetchUniProt,
+      annotatedData: this.data.annotatedData,
+      annotatedMap: this.data.annotatedMap
+    }
+    this.web.putSettings(data, !this.accounts.loggedIn, data.settings.description).subscribe((data: any) => {
+      if (data.body) {
+        this.settings.currentID = data.body.link_id
+        this.uniqueLink = location.origin + "/#/" + this.settings.currentID
+      }
+    }, err => {
+      this.toast.show("User information", "Curtain link cannot be saved")
+    })
   }
 
   clearSelections() {

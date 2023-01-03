@@ -29,6 +29,7 @@ export class HomeComponent implements OnInit {
   filterModel: string = ""
   currentID: string = ""
   constructor(private accounts: AccountsService, private modal: NgbModal, public settings: SettingsService, private data: DataService, private route: ActivatedRoute, private toast: ToastService, private uniprot: UniprotService, private web: WebService, private ptm: PtmService) {
+    this.web.getSiteProperties()
     this.accounts.reload()
     this.ptm.getDatabase("PSP_PHOSPHO")
     this.ptm.getDatabase("PLMD_UBI")
