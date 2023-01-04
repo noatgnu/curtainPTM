@@ -22,7 +22,7 @@ export class InteractomeAtlasService {
       search_term_array.push("search_term_array%5B%5D="+g)
     }
 
-    const res = await this.http.get("http://www.interactome-atlas.org/search_results_interactions?"+ this.web.toParamString(options) + "&" + search_term_array.join("&"), {responseType:"json", observe: "body"}).toPromise()
+    const res = await this.http.get("https://www.interactome-atlas.org/search_results_interactions?"+ this.web.toParamString(options) + "&" + search_term_array.join("&"), {responseType:"json", observe: "body"}).toPromise()
     return JSON.parse(<string>res)
   }
 }
