@@ -73,6 +73,7 @@ export class SessionSettingsComponent implements OnInit {
       }
     }
     this.web.updateSession(payload, this.currentID).subscribe(data => {
+      this.data.session = data
       this.modal.dismiss()
     })
   }
