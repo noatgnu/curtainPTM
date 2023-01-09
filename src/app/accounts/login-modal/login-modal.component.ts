@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {UntypedFormBuilder, Validators} from "@angular/forms";
 import {AccountsService} from "../accounts.service";
 import {WebService} from "../../web.service";
@@ -13,7 +13,7 @@ import {environment} from "../../../environments/environment";
   templateUrl: './login-modal.component.html',
   styleUrls: ['./login-modal.component.scss']
 })
-export class LoginModalComponent implements OnInit {
+export class LoginModalComponent implements OnInit, OnDestroy {
   @ViewChild('orcidWidget') orcidWidget: ElementRef|undefined
   orcid: string = environment.orcid
   form = this.fb.group({
@@ -22,6 +22,7 @@ export class LoginModalComponent implements OnInit {
   })
 
   loginStatus: Subject<boolean> = new Subject<boolean>()
+  loginWatcher: number|undefined
   constructor(private authService: SocialAuthService, private modal: NgbActiveModal, private fb: UntypedFormBuilder, private accounts: AccountsService, private web: WebService, private toast: ToastService) {
     this.authService.authState.subscribe((user)=> {
       this.accounts.postGoogleData(user).subscribe(data=> {
@@ -62,6 +63,21 @@ export class LoginModalComponent implements OnInit {
 
   clickOrcid() {
     localStorage.setItem("urlAfterLogin", document.URL)
-    console.log(localStorage)
+    localStorage.setItem("urlAfterLogin", document.URL)
+    this.loginWatcher = setInterval(()=> {
+      if (localStorage.getItem("accessToken")) {
+        this.accounts.reload()
+        this.modal.dismiss()
+        clearInterval(this.loginWatcher)
+
+      }
+    }, 1000)
+  }
+
+  ngOnDestroy() {
+    if (this.loginWatcher) {
+      clearInterval(this.loginWatcher)
+    }
+
   }
 }
