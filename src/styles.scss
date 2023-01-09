@@ -2,7 +2,9 @@
 @import '~bootstrap/scss/bootstrap';
 @import '~quill/dist/quill.snow.css';
 body {
-  padding-top: 70px;
+  padding-top: 80px;
+  padding-bottom: 40px;
+  min-width: 768px;
 }
 
 
