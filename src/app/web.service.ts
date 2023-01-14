@@ -121,7 +121,9 @@ export class WebService {
   }
 
   postNetphos(id: string, seq: string) {
-    return this.http.post(this.links.proxyURL + "netphos/", JSON.stringify({id: id, fasta: ">"+id+"\n"+ seq}), {responseType: "json", observe: "response"})
+    let headers = new HttpHeaders()
+    headers = headers.append("content-type", "application/json")
+    return this.http.post(this.links.proxyURL + "netphos/", JSON.stringify({id: id, fasta: ">"+id+"\n"+ seq}), {responseType: "json", observe: "response", headers})
   }
 
   getKinase(id: string) {
