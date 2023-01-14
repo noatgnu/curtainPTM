@@ -19,6 +19,7 @@
     <table class="table table-striped">
       <thead>
       <tr>
+        <th scope="col"></th>
         <th scope="col">
           Link
         </th>
@@ -35,6 +36,9 @@
       <ng-container *ngFor="let d of data.results">
         <tr>
           <td>
+            <input type="checkbox" class="form-control" [(ngModel)]="selectedLinks[d.link_id]" (click)="addOrRemoveFromSelected(d.link_id)">
+          </td>
+          <td>
             <a href="{{base}}/#/{{d.link_id}}" target="_blank">{{d.link_id}}</a>
           </td>
           <td>
@@ -46,7 +50,7 @@
           </td>
         </tr>
         <tr *ngIf="descriptionTrigger[d.link_id]" class="table-light">
-          <td [colSpan]="3">
+          <td [colSpan]="4">
             <b>Description</b>
             <div [innerHTML]="d.description"></div>
           </td>

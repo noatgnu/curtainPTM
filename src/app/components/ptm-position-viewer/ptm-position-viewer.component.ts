@@ -11,6 +11,8 @@ import {WebService} from "../../web.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {NetphosKinasesComponent} from "../netphos-kinases/netphos-kinases.component";
 import {KinaseInfoComponent} from "../kinase-info/kinase-info.component";
+import {KinaseLibraryService} from "../../kinase-library.service";
+import {KinaseLibraryModalComponent} from "../kinase-library-modal/kinase-library-modal.component";
 
 @Component({
   selector: 'app-ptm-position-viewer',
@@ -40,6 +42,8 @@ export class PtmPositionViewerComponent implements OnInit {
   currentLayout: any = {}
   netPhosMap: any = {}
   kinases: any = {}
+  kinaseLibrary: any = {}
+  kinaseLibraryOpenStatus: any = {}
   set dbSelected(value: string[]) {
     for (let d of this._dbSelected) {
       if (!value.includes(d)) {
@@ -64,12 +68,14 @@ export class PtmPositionViewerComponent implements OnInit {
   availableDB: string[] = []
   @Input() set data(value: any) {
     this._data = value
+    console.log(value)
     this.accessionID = this._data.accessionID
     const uni = this.uniprot.getUniprotFromAcc(this.accessionID)
     if (!(Object.keys(this.sourceMap).length > 0)) {
       this.sourceMap = this._data.sourceMap
     }
     if (uni) {
+      this.getKinaseLibrary()
       this.uni = uni
       const mods: any = {}
       this.uni["Modified residue"].forEach((m: any) => {
@@ -101,10 +107,6 @@ export class PtmPositionViewerComponent implements OnInit {
         for (const d of this._dbSelected) {
           const dbName = this.ptm.databaseNameMap[d]
           const db = this.ptm.accessDB(dbName)
-          console.log(this.uni["Entry"])
-          console.log(db)
-          console.log(d)
-          console.log(this.sourceMap)
           this.accOptions[d] = Object.keys(db[this.uni["Entry"]])
           this.sourceMap[d] = this.dataService.dbIDMap[this.accessionID][d]
           console.log(this.sourceMap)
@@ -145,7 +147,7 @@ export class PtmPositionViewerComponent implements OnInit {
     }
 
   }
-  constructor(private modal: NgbModal, private web: WebService, public psp: PspService, private uniprot: UniprotService, private msa: BiomsaService, public ptm: PtmService, private plot: PlotlyService, public dataService: DataService) {
+  constructor(private kinaseLib: KinaseLibraryService, private modal: NgbModal, private web: WebService, public psp: PspService, private uniprot: UniprotService, private msa: BiomsaService, public ptm: PtmService, private plot: PlotlyService, public dataService: DataService) {
 
   }
 
@@ -429,5 +431,31 @@ export class PtmPositionViewerComponent implements OnInit {
     for (const g of this.graphData) {
       this.web.downloadPlotlyImage("svg", this.divIDMap[g.name], this.divIDMap[g.name])
     }
+  }
+
+  getKinaseLibrary() {
+    this.kinaseLib.get_kinase(this._data.accessionID).subscribe((data:any) => {
+      for (const i of data.results) {
+        const result: any[] = []
+        for (const k in i.data) {
+          i.data[k]["kinase"] = k
+          result.push(i.data[k])
+        }
+        i.data = result.sort((a:any,b:any) => {
+          return b.percentile - a.percentile
+        })
+        this.kinaseLibrary[i.position.toString()] = i
+        this.kinaseLibraryOpenStatus[i.position.toString()] = false
+      }
+    })
+  }
+
+  toggleKinaseLibraryOpenStatus(position: number) {
+    const ref = this.modal.open(KinaseLibraryModalComponent, {scrollable: true})
+    ref.componentInstance.data = this.kinaseLibrary[position.toString()]
+    const site = this.sequences[this._data.accessionID][position-1]
+    const prefix = this.sequences[this._data.accessionID].slice(position-11, position-1)
+    const suffix = this.sequences[this._data.accessionID].slice(position, position+10)
+    ref.componentInstance.sequenceWindow = prefix + site.toLowerCase() + "*" + suffix
   }
 }

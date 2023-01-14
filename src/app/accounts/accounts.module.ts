@@ -7,7 +7,7 @@ import {
 } from '@abacritt/angularx-social-login';
 import {AccountsComponent} from "./accounts/accounts.component";
 import {LoginModalComponent} from "./login-modal/login-modal.component";
-import {ReactiveFormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {environment} from "../../environments/environment";
 import {NgbPaginationModule} from "@ng-bootstrap/ng-bootstrap";
 
@@ -22,6 +22,7 @@ import {NgbPaginationModule} from "@ng-bootstrap/ng-bootstrap";
         ReactiveFormsModule,
         SocialLoginModule,
         NgbPaginationModule,
+        FormsModule,
 
     ],
   providers: [

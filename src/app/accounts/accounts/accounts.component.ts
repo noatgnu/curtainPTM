@@ -18,12 +18,14 @@ export class AccountsComponent implements OnInit {
   pageNumber: number = 0
   base = window.location.origin
   descriptionTrigger: any = {}
+  selectedLinks: any = {}
   constructor(private web: WebService, public accounts: AccountsService, private fb: FormBuilder) {
     // @ts-ignore
     this.web.getCurtainLinks(this.accounts.user_name, this.form.value["sessionDescription"]).subscribe((data: any) => {
       data.results = data.results.map((a:any) => {
         if (!(a.link_id in this.descriptionTrigger)) {
           this.descriptionTrigger[a.link_id] = false
+          this.selectedLinks[a.link_id] = false
         }
         a.created = new Date(a.created)
         return a
@@ -44,6 +46,7 @@ export class AccountsComponent implements OnInit {
       data.results = data.results.map((a:any) => {
         if (!(a.link_id in this.descriptionTrigger)) {
           this.descriptionTrigger[a.link_id] = false
+          this.selectedLinks[a.link_id] = false
         }
         a.created = new Date(a.created)
         return a
@@ -63,5 +66,13 @@ export class AccountsComponent implements OnInit {
 
   viewDescription(link_id: string) {
     this.descriptionTrigger[link_id] = !this.descriptionTrigger[link_id]
+  }
+
+  addOrRemoveFromSelected(link: string) {
+    if (link in this.selectedLinks) {
+      this.selectedLinks[link] = !this.selectedLinks[link]
+    } else {
+      this.selectedLinks[link] = false
+    }
   }
 }

@@ -1,0 +1,35 @@
+<div class="modal-header">
+  Kinase Library
+</div>
+<div class="modal-body">
+  <p>
+    <b>Kinase Library Web-link:</b> <a href="https://kinase-library.phosphosite.org/site?s={{sequenceWindow}}&pp=false&scp=true" target="_blank">{{sequenceWindow}}</a>
+  </p>
+  <div>
+    <table class="table table-striped">
+      <thead>
+      <tr>
+        <th scope="col">
+          Kinase
+        </th>
+        <th scope="col">
+          Percentile
+        </th>
+        <th scope="col">
+          Rank
+        </th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let i of data.data">
+        <td>{{i.kinase}}</td>
+        <td>{{i.percentile}}</td>
+        <td>{{i.rank}}</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<div class="modal-footer">
+  <button class="btn btn-primary" (click)="modal.dismiss()">Close</button>
+</div>
