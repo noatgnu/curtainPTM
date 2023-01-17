@@ -61,7 +61,7 @@ export class DataBlockComponent implements OnInit {
       unidList.push({position: r[this.dataService.differentialForm.position], residue: this.allSequences[this.accessionID][r[this.dataService.differentialForm.position]-1], id: r[this.dataService.differentialForm.primaryIDs], score: r[this.dataService.differentialForm.score]})
     }
     this.unidList = unidList
-
+    console.log(unidList)
   }
   accessionID: string = ""
   constructor(public dataService: DataService, private uniprot: UniprotService, private scroll: ScrollService) { }
