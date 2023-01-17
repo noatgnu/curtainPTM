@@ -131,16 +131,17 @@ export class PtmPositionViewerComponent implements OnInit {
 
     console.log(this.sourceMap)
     if (this._data.accessionID) {
-      this.web.postNetphos(this.unidMap["Experimental Data"], this.sequences[this.unidMap["Experimental Data"]]).subscribe(data => {
-        if (data.body) {
-          console.log(data.body)
-          // @ts-ignore
-          this.netPhosMap = this.parseNetphos(data.body["data"])
-        }
-      })
+
       this.aligned = this._data.aligned
       this.ptm.getGlyco(this.uni["Entry"]).then()
       this.align().then(r => {
+        this.web.postNetphos(this.unidMap["Experimental Data"], this.sequences[this.unidMap["Experimental Data"]]).subscribe(data => {
+          if (data.body) {
+            console.log(data.body)
+            // @ts-ignore
+            this.netPhosMap = this.parseNetphos(data.body["data"])
+          }
+        })
         this.gatherMods()
         this.drawHeatmap()
       })
@@ -343,7 +344,7 @@ export class PtmPositionViewerComponent implements OnInit {
         this.sequences[seqLabels[i]] = msa[i]
       }
     }
-
+    console.log(this.sequences)
   }
 
   gatherMods() {
