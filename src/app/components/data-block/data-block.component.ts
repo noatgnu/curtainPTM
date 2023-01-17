@@ -57,8 +57,16 @@ export class DataBlockComponent implements OnInit {
       this.allSequences[this.accessionID] = this.uni["Sequence"]
     }
     const unidList: any[] = []
+    console.log(this.allSequences)
     for (const r of this._data) {
-      unidList.push({position: r[this.dataService.differentialForm.position], residue: this.allSequences[this.accessionID][r[this.dataService.differentialForm.position]-1], id: r[this.dataService.differentialForm.primaryIDs], score: r[this.dataService.differentialForm.score]})
+      console.log(r)
+      console.log(this.allSequences[this.accessionID][r[this.dataService.differentialForm.position]-1])
+      unidList.push({
+        position: r[this.dataService.differentialForm.position],
+        residue: this.allSequences[this.accessionID][r[this.dataService.differentialForm.position]-1],
+        id: r[this.dataService.differentialForm.primaryIDs],
+        score: r[this.dataService.differentialForm.score]
+      })
     }
     this.unidList = unidList
     console.log(unidList)
