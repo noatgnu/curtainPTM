@@ -135,7 +135,7 @@ export class PtmPositionViewerComponent implements OnInit {
       this.aligned = this._data.aligned
       this.ptm.getGlyco(this.uni["Entry"]).then()
       this.align().then(r => {
-        this.web.postNetphos(this.unidMap["Experimental Data"], this.sequences[this.unidMap["Experimental Data"]]).subscribe(data => {
+        this.web.postNetphos(this.sourceMap["Experimental Data"], this.sequences[this.sourceMap["Experimental Data"]]).subscribe(data => {
           if (data.body) {
             console.log(data.body)
             // @ts-ignore
