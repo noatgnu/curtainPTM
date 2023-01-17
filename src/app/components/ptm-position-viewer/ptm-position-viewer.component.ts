@@ -417,6 +417,9 @@ export class PtmPositionViewerComponent implements OnInit {
 
   openNetPhos(position: number) {
     const ref = this.modal.open(NetphosKinasesComponent)
+    console.log(position)
+    console.log(this.netPhosMap)
+
     ref.componentInstance.data = this.netPhosMap[position]
   }
 
