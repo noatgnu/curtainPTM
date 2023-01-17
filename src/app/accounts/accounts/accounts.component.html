@@ -27,7 +27,25 @@
           Created
         </th>
         <th scope="col">
-          Actions
+          Public
+        </th>
+        <th scope="col">
+          <div ngbDropdown class="d-inline-block">
+            <button class="btn btn-outline-primary ml-2" id="accountSelectedLinksAction" ngbDropdownToggle>Actions</button>
+            <div ngbDropdownMenu>
+              <div class="px-4 py-3">
+                <div class="mb-3">
+                  <label for="addMultipleOwner">Add Owner</label>
+                  <input type="text" placeholder="to add" id="addMultipleOwner" class="form-control" #allowner>
+                  <button class="btn btn-sm btn-primary mt-2" (click)="addOwnerToSelectedLinks(allowner.value)">Submit</button>
+                </div>
+              </div>
+              <button ngbDropdownItem (click)="removeSelectedLinks()">Remove Selected</button>
+              <button ngbDropdownItem (click)="changePublicitySelectedLinks(true)">Set Selected Public</button>
+              <button ngbDropdownItem (click)="changePublicitySelectedLinks(false)">Set Selected Private</button>
+            </div>
+          </div>
+
         </th>
       </tr>
 
@@ -45,12 +63,20 @@
             {{d.created}}
           </td>
           <td>
+            <p *ngIf="d.enable">{{d.enable}}</p>
+          </td>
+          <td>
             <button class="btn btn-sm btn-outline-primary" style="margin-right: 2px" (click)="viewDescription(d.link_id)">Description</button>
             <button class="btn btn-sm btn-outline-danger" *ngIf="accounts.can_delete" (click)="deleteLink(d.link_id)">Rm</button>
           </td>
         </tr>
         <tr *ngIf="descriptionTrigger[d.link_id]" class="table-light">
-          <td [colSpan]="4">
+          <td [colSpan]="3">
+            <ul>
+              <b>Owners:</b>
+              <li *ngFor="let o of d.owners">{{o.username}}</li>
+            </ul>
+
             <b>Description</b>
             <div [innerHTML]="d.description"></div>
           </td>
