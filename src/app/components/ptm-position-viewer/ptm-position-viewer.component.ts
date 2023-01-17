@@ -203,7 +203,7 @@ export class PtmPositionViewerComponent implements OnInit {
         }
       }
     }
-
+    console.log(this.alignedMap)
     const kinaseAcc: string[] = []
     const accs: string[] = []
     for (const t in this.alignedMap) {
@@ -245,6 +245,7 @@ export class PtmPositionViewerComponent implements OnInit {
       })
     }
     this.graphData = Object.values(temp)
+    console.log(this.graphData)
   }
 
   private composeGraphData(t: string, temp: any, gapCount: any, foundColor: string = 'rgba(154, 220, 255, 0.75)') {
