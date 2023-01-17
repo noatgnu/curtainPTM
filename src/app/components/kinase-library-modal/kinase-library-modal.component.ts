@@ -9,7 +9,9 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 export class KinaseLibraryModalComponent implements OnInit {
   private _data: any = {data: []}
   @Input() set data (value: any) {
-    this._data = value
+    if (value) {
+      this._data = value
+    }
   }
 
   get data(): any {
