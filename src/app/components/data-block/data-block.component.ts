@@ -47,6 +47,7 @@ export class DataBlockComponent implements OnInit {
     return this._data
   }
   async getSequence() {
+    console.log(this.accessionID)
     if (this.accessionID !== this.uni["Entry"]) {
       const res = await this.uniprot.getUniprotFasta(this.accessionID).toPromise()
       if (res) {
