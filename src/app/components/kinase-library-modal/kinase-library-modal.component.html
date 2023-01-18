@@ -32,7 +32,29 @@
 </div>
 
 <ng-template #nodata>
-  <p>No data was found in Kinase Library database. You can use the link above instead.</p>
+  <p>No data was found in Kinase Library database. You can use the link above instead or use the database which utilize Kinase Library website API for prediction of kinase.</p>
+  <table class="table table-striped" *ngIf="directData.length > 0" >
+    <thead>
+    <tr>
+      <th scope="col">
+        Kinase
+      </th>
+      <th scope="col">
+        Score
+      </th>
+      <th scope="col">
+        Rank
+      </th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let i of directData">
+      <td>{{i.geneName}}</td>
+      <td>{{i.score}}</td>
+      <td>{{i.scoreRank}}</td>
+    </tr>
+    </tbody>
+  </table>
 </ng-template>
 <div class="modal-footer">
   <button class="btn btn-primary" (click)="modal.dismiss()">Close</button>

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {CurtainLink} from "./classes/curtain-link";
-import {HttpClient, HttpParams} from "@angular/common/http";
+import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 
 @Injectable({
   providedIn: 'root'
@@ -23,4 +23,9 @@ export class KinaseLibraryService {
     return this.http.get(this.links.proxyURL + "kinase_library/", {responseType: "json", observe: "body", params})
   }
 
+  getKinaseLibrary(sequence: string) {
+    let headers = new HttpHeaders()
+    headers = headers.append("accept", "application/json")
+    return this.http.get(`https://kinase-library.phosphosite.org/api/scorer/score-site/${sequence}/`, {responseType: "json", observe: "body", headers})
+  }
 }

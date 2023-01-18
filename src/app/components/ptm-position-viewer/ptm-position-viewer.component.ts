@@ -456,11 +456,20 @@ export class PtmPositionViewerComponent implements OnInit {
   }
 
   toggleKinaseLibraryOpenStatus(position: number) {
+
     const ref = this.modal.open(KinaseLibraryModalComponent, {scrollable: true})
-    ref.componentInstance.data = this.kinaseLibrary[position.toString()]
     const site = this.sequences[this._data.accessionID][position-1]
     const prefix = this.sequences[this._data.accessionID].slice(position-11, position-1)
     const suffix = this.sequences[this._data.accessionID].slice(position, position+10)
     ref.componentInstance.sequenceWindow = prefix + site.toLowerCase() + "*" + suffix
+    if (this.kinaseLibrary[position.toString()]) {
+      ref.componentInstance.data = this.kinaseLibrary[position.toString()]
+    } else {
+      this.kinaseLib.getKinaseLibrary(ref.componentInstance.sequenceWindow).subscribe((data:any) => {
+        ref.componentInstance.directData = data["scores"]
+      })
+    }
+
+
   }
 }

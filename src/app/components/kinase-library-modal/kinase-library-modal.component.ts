@@ -1,5 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
+import {WebService} from "../../web.service";
+import {KinaseLibraryService} from "../../kinase-library.service";
 
 @Component({
   selector: 'app-kinase-library-modal',
@@ -14,6 +16,17 @@ export class KinaseLibraryModalComponent implements OnInit {
     }
   }
 
+  private _directData: any[] = []
+
+  @Input() set directData(value: any[]) {
+    this._directData = value.sort((a, b) => {
+      return b.scoreRank - a.scoreRank
+    })
+  }
+
+  get directData(): any[] {
+    return this._directData
+  }
   get data(): any {
     return this._data
   }
@@ -25,7 +38,7 @@ export class KinaseLibraryModalComponent implements OnInit {
     return this._sequenceWindow
   }
 
-  constructor(public modal: NgbActiveModal) { }
+  constructor(public modal: NgbActiveModal, private kinaseLibrary: KinaseLibraryService) { }
 
   ngOnInit(): void {
   }
