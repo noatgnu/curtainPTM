@@ -24,8 +24,6 @@ export class KinaseLibraryService {
   }
 
   getKinaseLibrary(sequence: string) {
-    let headers = new HttpHeaders()
-    headers = headers.append("accept", "application/json")
-    return this.http.get(`https://kinase-library.phosphosite.org/api/scorer/score-site/${sequence}/`, {responseType: "json", observe: "body", headers})
+    return this.http.get(this.links.proxyURL +  `kinase_library_proxy/?sequence=${sequence}`, {responseType: "json", observe: "body"})
   }
 }

@@ -13,6 +13,7 @@ import {NetphosKinasesComponent} from "../netphos-kinases/netphos-kinases.compon
 import {KinaseInfoComponent} from "../kinase-info/kinase-info.component";
 import {KinaseLibraryService} from "../../kinase-library.service";
 import {KinaseLibraryModalComponent} from "../kinase-library-modal/kinase-library-modal.component";
+import {sequence} from "@angular/animations";
 
 @Component({
   selector: 'app-ptm-position-viewer',
@@ -458,9 +459,10 @@ export class PtmPositionViewerComponent implements OnInit {
   toggleKinaseLibraryOpenStatus(position: number) {
 
     const ref = this.modal.open(KinaseLibraryModalComponent, {scrollable: true})
-    const site = this.sequences[this._data.accessionID][position-1]
-    const prefix = this.sequences[this._data.accessionID].slice(position-11, position-1)
-    const suffix = this.sequences[this._data.accessionID].slice(position, position+10)
+    const sequence = this.sequences[this._data.accessionID].replace("-", "")
+    const site = sequence[position-1]
+    const prefix = sequence.slice(position-11, position-1)
+    const suffix = sequence.slice(position, position+10)
     ref.componentInstance.sequenceWindow = prefix + site.toLowerCase() + "*" + suffix
     if (this.kinaseLibrary[position.toString()]) {
       ref.componentInstance.data = this.kinaseLibrary[position.toString()]
