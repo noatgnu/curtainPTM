@@ -24,7 +24,7 @@
           Link
         </th>
         <th scope="col">
-          Created
+          Description
         </th>
         <th scope="col">
           Public or Private
@@ -60,7 +60,8 @@
             <a href="{{base}}/#/{{d.link_id}}" target="_blank">{{d.link_id}}</a>
           </td>
           <td>
-            {{d.created}}
+<!--            {{d.created}}-->
+            <div [innerHTML]="d.description"></div>
           </td>
           <td>
             <p *ngIf="d.enable">Public</p>
@@ -77,9 +78,6 @@
               <b>Owners:</b>
               <li *ngFor="let o of d.owners">{{o.username}}</li>
             </ul>
-
-            <b>Description</b>
-            <div [innerHTML]="d.description"></div>
           </td>
         </tr>
         <tr></tr>
