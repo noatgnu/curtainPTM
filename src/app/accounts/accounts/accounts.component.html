@@ -27,7 +27,7 @@
           Created
         </th>
         <th scope="col">
-          Public
+          Public or Private
         </th>
         <th scope="col">
           <div ngbDropdown class="d-inline-block">
@@ -63,7 +63,8 @@
             {{d.created}}
           </td>
           <td>
-            <p *ngIf="d.enable">{{d.enable}}</p>
+            <p *ngIf="d.enable">Public</p>
+            <p *ngIf="!d.enable">Private</p>
           </td>
           <td>
             <button class="btn btn-sm btn-outline-primary" style="margin-right: 2px" (click)="viewDescription(d.link_id)">Description</button>

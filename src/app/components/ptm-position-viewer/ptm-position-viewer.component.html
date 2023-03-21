@@ -66,7 +66,7 @@
     <tr [ngClass]="{'table-success': dataService.selectedMap[d.id]}">
       <td style="word-wrap: break-word;min-width: 160px;max-width: 160px;">
         {{d.alignedPosition+1}} ({{d.actualPosition+1}})
-        <span class="badge bg-primary ml-2" (click)="openNetPhos(d.actualPosition+1)">NetPhos</span>
+<!--        <span class="badge bg-primary ml-2" (click)="openNetPhos(d.actualPosition+1)">NetPhos</span>-->
         <span class="badge bg-danger" style="margin-left: 2px" (click)="toggleKinaseLibraryOpenStatus(d.actualPosition+1)">Kinase Library</span>
 
       </td>
