@@ -213,7 +213,7 @@ export class FileFormComponent implements OnInit {
         }
       }
       if (accList.length > 0) {
-        this.uniprot.PrimeAPIUniProtParser(accList).then(r => {
+        this.uniprot.UniprotParserJS(accList).then(r => {
           this.uniprot.uniprotParseStatus.subscribe(d => {
             if (d) {
               console.log(this.uniprot.results.get("Q68EF6"))

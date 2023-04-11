@@ -235,7 +235,7 @@ export class PtmPositionViewerComponent implements OnInit {
       }
     }
     if (kinaseAcc.length > 0) {
-      this.uniprot.PrimeAPIUniProtParser(kinaseAcc).then(r => {
+      this.uniprot.UniprotParserJS(kinaseAcc).then(r => {
         this.uniprot.uniprotParseStatus.subscribe(d => {
           if (d) {
             for (const k of accs) {
