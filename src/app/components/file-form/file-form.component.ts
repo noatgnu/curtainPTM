@@ -189,6 +189,8 @@ export class FileFormComponent implements OnInit {
     this.uniprot.geneNameToPrimary = {}
     if (this.data.fetchUniProt) {
       const accList: string[] = []
+      this.data.dataMap = new Map<string, string>()
+      this.data.genesMap = {}
       for (const r of this.data.currentDF) {
         const a = r[this.data.differentialForm.accession]
         this.data.dataMap.set(a, r[this.data.differentialForm.accession])
