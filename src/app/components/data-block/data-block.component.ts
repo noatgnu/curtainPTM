@@ -30,7 +30,7 @@ export class DataBlockComponent implements OnInit {
       this.accessionID = first[this.dataService.differentialForm.accession]
       this.title = this.accessionID
       this.sourceMap["Experimental Data"] = this.accessionID
-      const uni: any = this.uniprot.getUniprotFromAcc(this.accessionID)
+      const uni = this.uniprot.getUniprotFromAcc(this.accessionID)
       if (uni) {
         this.uni = uni
         if (this.uni["Gene Names"] !== "") {

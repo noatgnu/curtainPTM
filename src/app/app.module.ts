@@ -38,7 +38,6 @@ import {SampleAnnotationComponent} from "./components/sample-annotation/sample-a
 import {PrideComponent} from "./components/pride/pride.component";
 import { SampleOrderAndHideComponent } from './components/sample-order-and-hide/sample-order-and-hide.component';
 import { VolcanoPlotTextAnnotationComponent } from './components/volcano-plot-text-annotation/volcano-plot-text-annotation.component';
-import {TokenInterceptor} from "./token.interceptor";
 import { LoginModalComponent } from './accounts/login-modal/login-modal.component';
 import { SessionSettingsComponent } from './components/session-settings/session-settings.component';
 import {AccountsModule} from "./accounts/accounts.module";
@@ -91,7 +90,6 @@ PlotlyModule.plotlyjs = PlotlyJS;
     AccountsModule
   ],
   providers: [HttpClient,
-    { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true }
     //ContextMenuService
   ],
   bootstrap: [AppComponent]

@@ -205,7 +205,7 @@ export class FileFormComponent implements OnInit {
           this.data.accessionToPrimaryIDs[accession[1]][r[this.data.differentialForm.primaryIDs]] = true
           this.uniprot.accMap.set(r[this.data.differentialForm.primaryIDs], accession[1])
 
-          if (!this.uniprot.results.has(accession[1])) {
+          if (!this.uniprot.dataMap.has(accession[1])) {
             if (!accList.includes(accession[1])) {
               accList.push(accession[1])
             }
@@ -214,46 +214,12 @@ export class FileFormComponent implements OnInit {
       }
       if (accList.length > 0) {
         this.uniprot.UniprotParserJS(accList).then(r => {
-          this.uniprot.uniprotParseStatus.subscribe(d => {
-            if (d) {
-              console.log(this.uniprot.results.get("Q68EF6"))
-              const allGenes: string[] = []
-              for (const p of this.data.accessionList) {
-                const uni = this.uniprot.getUniprotFromAcc(p)
-                if (uni) {
-                  if (uni["Gene Names"]) {
-                    if (uni["Gene Names"] !== "") {
-                      if (!allGenes.includes(uni["Gene Names"])) {
-                        allGenes.push(uni["Gene Names"])
-                        if (!this.data.genesMap[uni["Gene Names"]])  {
-                          this.data.genesMap[uni["Gene Names"]] = {}
-                          this.data.genesMap[uni["Gene Names"]][uni["Gene Names"]] = true
-                        }
-                        for (const n of uni["Gene Names"].split(";")) {
-                          if (!this.data.genesMap[n]) {
-                            this.data.genesMap[n] = {}
-                          }
-                          this.data.genesMap[n][uni["Gene Names"]] = true
-                        }
-                        if (!this.uniprot.geneNameToPrimary[uni["Gene Names"]]) {
-                          this.uniprot.geneNameToPrimary[uni["Gene Names"]] = {}
-                        }
-                        if (this.data.accessionToPrimaryIDs[uni["Entry"]]) {
-                          for (const e in this.data.accessionToPrimaryIDs[uni["Entry"]]) {
-                            this.uniprot.geneNameToPrimary[uni["Gene Names"]][e] = true
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-              this.data.allGenes = allGenes
+          this.createUniprotDatabase().then((allGenes)=> {
+            this.data.allGenes = allGenes
 
-              this.finished.emit(true)
-              this.updateProgressBar(100, "Finished")
-            }
-          })
+            this.finished.emit(true)
+            this.updateProgressBar(100, "Finished")
+          });
         })
       } else {
         this.finished.emit(true)
@@ -288,6 +254,41 @@ export class FileFormComponent implements OnInit {
       this.finished.emit(true)
       this.updateProgressBar(100, "Finished")
     }
+  }
+
+  private async createUniprotDatabase() {
+    const allGenes: string[] = []
+    for (const p of this.data.accessionList) {
+      const uni: any = this.uniprot.getUniprotFromAcc(p)
+      if (uni) {
+        if (uni["Gene Names"]) {
+          if (uni["Gene Names"] !== "") {
+            if (!allGenes.includes(uni["Gene Names"])) {
+              allGenes.push(uni["Gene Names"])
+              if (!this.data.genesMap[uni["Gene Names"]]) {
+                this.data.genesMap[uni["Gene Names"]] = {}
+                this.data.genesMap[uni["Gene Names"]][uni["Gene Names"]] = true
+              }
+              for (const n of uni["Gene Names"].split(";")) {
+                if (!this.data.genesMap[n]) {
+                  this.data.genesMap[n] = {}
+                }
+                this.data.genesMap[n][uni["Gene Names"]] = true
+              }
+              if (!this.uniprot.geneNameToPrimary[uni["Gene Names"]]) {
+                this.uniprot.geneNameToPrimary[uni["Gene Names"]] = {}
+              }
+              if (this.data.accessionToPrimaryIDs[uni["Entry"]]) {
+                for (const e in this.data.accessionToPrimaryIDs[uni["Entry"]]) {
+                  this.uniprot.geneNameToPrimary[uni["Gene Names"]][e] = true
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    return allGenes
   }
 
   parseSequence() {

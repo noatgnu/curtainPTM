@@ -134,89 +134,10 @@ export class WebService {
     return this.http.get("https://rest.uniprot.org/uniprotkb/"+acc+".json", {headers: {accept: "application/json"}, responseType: "json", observe: "body"})
   }
 
-  getPrideData(accession: string) {
-    return this.http.get("https://www.ebi.ac.uk/pride/ws/archive/v2/projects/"+accession, {
-      responseType: "json",
-      observe: "body", headers: {
-        "accept": "application/json"
-      }})
-  }
-  getUserData() {
-    return this.http.post(this.links.proxyURL + "user/", {})
-  }
+
 
   generateTemporarySession(link_id: string, lifetime: number) {
     return this.http.post(this.links.proxyURL + `curtain/${link_id}/generate_token/`, {lifetime}, {responseType: "json", observe: "body"})
   }
 
-  updateSession(sessionData: any, link_id: string) {
-    let payload = new FormData()
-    if ("file" in sessionData) {
-      payload.append("file", new Blob([JSON.stringify(sessionData["file"], this.replacer)], {type: 'text/json'}), "curtain-settings.json")
-      payload.append("description", sessionData["file"]["settings"]["description"])
-    }
-    if (sessionData["enable"]) {
-      payload.append("enable", "True")
-
-    } else {
-      payload.append("enable", "False")
-    }
-
-
-    return this.http.patch(this.links.proxyURL + `curtain/${link_id}/`, payload, {responseType: "json", observe: "body"})
-  }
-
-  getSessionSettings(link_id: string) {
-    return this.http.get(this.links.proxyURL + `curtain/${link_id}/`,{responseType: "json", observe: "body"})
-  }
-
-  getOwnership(link_id: string) {
-    return this.http.get(this.links.proxyURL + `curtain/${link_id}/get_ownership/`,{responseType: "json", observe: "body"})
-  }
-  getOwners(link_id:string) {
-    return this.http.get(this.links.proxyURL + `curtain/${link_id}/get_owners/`,{responseType: "json", observe: "body"})
-  }
-
-  addOwner(link_id:string, username:string) {
-    let payload = new FormData()
-    payload.append("username", username)
-    return this.http.patch(this.links.proxyURL + `curtain/${link_id}/add_owner/`,payload,{observe: "response"})
-  }
-  getCurtainLinks(username: string, sessionDescription: string = "", offset: number = 0) {
-    let params = new HttpParams()
-    params = params.set("username", username)
-    params = params.set("description", sessionDescription)
-    params = params.set("ordering", "-created")
-    params = params.set("offset", `${offset}`)
-    params = params.set("curtain_type", "PTM")
-    return this.http.get(this.links.proxyURL + "curtain/", {responseType: "json", observe: "body", params})
-  }
-
-  getSiteProperties() {
-    this.http.get(this.links.proxyURL + "site-properties/", {responseType: "json", observe: "body"}).subscribe((data:any)=> {
-      this.siteProperties = data
-    })
-  }
-
-
-  saveDataFilterList(name: string, data: string) {
-    return this.http.post(this.links.proxyURL + "data_filter_list/",{name, data}, {responseType: "json", observe: "body"})
-  }
-
-  getDataFilterList(categoryName: string = "") {
-    let params = new HttpParams()
-    if (categoryName != "") {
-      params = params.set("name", categoryName)
-    }
-    params = params.set("limit", `${99999999}`)
-    return this.http.get(this.links.proxyURL + "data_filter_list/", {responseType:"json", observe:"body", params})
-  }
-
-  getDataFilterListByID(id: number) {
-    return this.http.get(this.links.proxyURL + "data_filter_list/"+id+"/", {responseType:"json", observe:"body"})
-  }
-
-  deleteDataFilterListByID(id: number) {
-    return this.http.delete(this.links.proxyURL + "data_filter_list/"+id+"/", {responseType:"json", observe:"body"})
-  }
 }

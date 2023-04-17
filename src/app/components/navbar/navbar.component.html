@@ -6,8 +6,10 @@
       <div class="p-2">
         <div ngbDropdown class="d-inline-block">
           <button class="btn btn-outline-primary ml-2" id="dropdownSession" ngbDropdownToggle>Session
-            <span *ngIf="!data.session.enable" class="badge bg-danger">private</span>
-            <span *ngIf="data.session.enable" class="badge bg-primary">public</span>
+            <ng-container *ngIf="data.session !== undefined">
+              <span *ngIf="!data.session.enable" class="badge bg-danger">private</span>
+              <span *ngIf="data.session.enable" class="badge bg-primary">public</span>
+            </ng-container>
           </button>
           <div ngbDropdownMenu aria-labelledby="dropdownSession">
             <ng-container *ngIf="finished">
@@ -18,13 +20,13 @@
               <button ngbDropdownItem (click)="openAnnotation()">Project Annotation</button>
               <button ngbDropdownItem (click)="openSampleSettings()">Sample Order and Visibility</button>
             </ng-container>
-            <button ngbDropdownItem (click)="openLoginModal()" *ngIf="accounts.loggedIn===false">
+            <button ngbDropdownItem (click)="openLoginModal()" *ngIf="accounts.curtainAPI.user.loginStatus===false">
               Account Login
             </button>
             <button ngbDropdownItem (click)="openSessionSettings()" [disabled]="!accounts.getSessionPermission()">
               Session Settings
             </button>
-            <ng-container *ngIf="accounts.loggedIn">
+            <ng-container *ngIf="accounts.curtainAPI.user.loginStatus">
               <button ngbDropdownItem (click)="openAccountModal()">
                 Account
               </button>

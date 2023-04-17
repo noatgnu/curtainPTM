@@ -71,10 +71,10 @@ export class PtmPositionViewerComponent implements OnInit {
     this._data = value
     console.log(value)
     this.accessionID = this._data.accessionID
-    const uni = this.uniprot.getUniprotFromAcc(this.accessionID)
     if (!(Object.keys(this.sourceMap).length > 0)) {
       this.sourceMap = this._data.sourceMap
     }
+    const uni = this.uniprot.getUniprotFromAcc(this.accessionID)
     if (uni) {
       this.getKinaseLibrary()
       this.uni = uni
@@ -95,7 +95,6 @@ export class PtmPositionViewerComponent implements OnInit {
           }
         }
       }
-
     }
     if (this.dataService.dbIDMap[this.accessionID]) {
       const a = Object.keys(this.dataService.dbIDMap[this.accessionID])
@@ -129,8 +128,6 @@ export class PtmPositionViewerComponent implements OnInit {
       }
       this.unidMap["Experimental Data"][u.position-1].push(u)
     }
-
-    console.log(this.sourceMap)
     if (this._data.accessionID) {
 
       this.aligned = this._data.aligned
@@ -144,10 +141,9 @@ export class PtmPositionViewerComponent implements OnInit {
           }
         })
         this.gatherMods()
-        this.drawHeatmap()
+        this.drawHeatmap().then()
       })
     }
-
   }
   constructor(private kinaseLib: KinaseLibraryService, private modal: NgbModal, private web: WebService, public psp: PspService, private uniprot: UniprotService, private msa: BiomsaService, public ptm: PtmService, private plot: PlotlyService, public dataService: DataService) {
 
@@ -156,7 +152,7 @@ export class PtmPositionViewerComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  drawHeatmap() {
+  async drawHeatmap() {
     const temp: any = {}
     const gapCount: any = {}
     const labels: string[] = Object.keys(this.sourceMap)
@@ -204,7 +200,6 @@ export class PtmPositionViewerComponent implements OnInit {
         }
       }
     }
-    console.log(this.alignedMap)
     const kinaseAcc: string[] = []
     const accs: string[] = []
     for (const t in this.alignedMap) {
@@ -218,7 +213,7 @@ export class PtmPositionViewerComponent implements OnInit {
         if (t === "PhosphoSite Plus (Phosphorylation)") {
           this.alignedPosition[a.alignedPosition][t]["kinases"] = this.getKinase(a.actualPosition)
           for (const k of this.alignedPosition[a.alignedPosition][t]["kinases"]) {
-            const uni = this.uniprot.getUniprotFromAcc(k.acc)
+            const uni: any = this.uniprot.getUniprotFromAcc(k.acc)
             const accession = this.uniprot.Re.exec(k.acc)
             if (accession) {
               if (!uni) {
@@ -235,18 +230,12 @@ export class PtmPositionViewerComponent implements OnInit {
       }
     }
     if (kinaseAcc.length > 0) {
-      this.uniprot.UniprotParserJS(kinaseAcc).then(r => {
-        this.uniprot.uniprotParseStatus.subscribe(d => {
-          if (d) {
-            for (const k of accs) {
-              this.kinases[k] = this.uniprot.getUniprotFromAcc(k)
-            }
-          }
-        })
-      })
+      await this.uniprot.UniprotParserJS(kinaseAcc)
+      for (const k of accs) {
+        this.kinases[k] = this.uniprot.getUniprotFromAcc(k)
+      }
     }
     this.graphData = Object.values(temp)
-    console.log(this.graphData)
   }
 
   private composeGraphData(t: string, temp: any, gapCount: any, foundColor: string = 'rgba(154, 220, 255, 0.75)') {
@@ -316,7 +305,7 @@ export class PtmPositionViewerComponent implements OnInit {
     //     }
     //   }
     // }
-    this.drawHeatmap()
+    this.drawHeatmap().then()
   }
 
   async align() {
@@ -376,7 +365,7 @@ export class PtmPositionViewerComponent implements OnInit {
   reDraw() {
     this.align().then(r => {
       this.gatherMods()
-      this.drawHeatmap()
+      this.drawHeatmap().then()
     })
   }
 

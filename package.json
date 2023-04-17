@@ -26,6 +26,7 @@
     "angular-plotly.js": "^4.0.4",
     "biomsa": "^0.2.4",
     "bootstrap": "^5.1.3",
+    "curtain-web-api": "^1.0.5",
     "cytoscape": "^3.21.1",
     "data-forge": "^1.9.5",
     "jstat": "^1.9.5",
@@ -47,6 +48,7 @@
     "@types/cytoscape": "^3.19.4",
     "@types/jasmine": "~3.10.0",
     "@types/node": "^12.11.1",
+    "@types/pouchdb": "^6.4.0",
     "@types/quill": "^1.3.10",
     "jasmine-core": "~4.0.0",
     "karma": "~6.3.0",
@@ -54,6 +56,7 @@
     "karma-coverage": "~2.1.0",
     "karma-jasmine": "~4.0.0",
     "karma-jasmine-html-reporter": "~1.7.0",
+    "pouchdb": "^8.0.1",
     "typescript": "~4.6.2"
   }
 }

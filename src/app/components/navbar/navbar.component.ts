@@ -34,17 +34,17 @@ export class NavbarComponent implements OnInit {
   }
 
   saveSession() {
-    if (!this.accounts.loggedIn) {
+    if (!this.accounts.curtainAPI.user.loginStatus) {
       if (this.web.siteProperties.non_user_post) {
         this.saving();
       } else {
-        this.toast.show("User information", "Please login before saving data session")
+        this.toast.show("User information", "Please login before saving data session").then()
       }
     } else {
-      if (!this.accounts.limit_exceed ) {
+      if (!this.accounts.curtainAPI.user.curtainLinkLimitExceeded ) {
         this.saving();
       } else {
-        this.toast.show("User information", "Curtain link limit exceed")
+        this.toast.show("User information", "Curtain link limit exceed").then()
       }
     }
 
@@ -66,13 +66,13 @@ export class NavbarComponent implements OnInit {
       annotatedData: this.data.annotatedData,
       annotatedMap: this.data.annotatedMap
     }
-    this.web.putSettings(data, !this.accounts.loggedIn, data.settings.description).subscribe((data: any) => {
-      if (data.body) {
-        this.settings.currentID = data.body.link_id
+    this.accounts.curtainAPI.putSettings(data, !this.accounts.curtainAPI.user.loginStatus, data.settings.description).then((data: any) => {
+      if (data.data) {
+        this.settings.currentID = data.data.link_id
         this.uniqueLink = location.origin + "/#/" + this.settings.currentID
       }
     }, err => {
-      this.toast.show("User information", "Curtain link cannot be saved")
+      this.toast.show("User information", "Curtain link cannot be saved").then()
     })
   }
 

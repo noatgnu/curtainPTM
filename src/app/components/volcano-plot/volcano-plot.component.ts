@@ -154,7 +154,7 @@ export class VolcanoPlotComponent implements OnInit {
       const accID = r[this.dataService.differentialForm.accession]
       let text = primaryID
       if (this.dataService.fetchUniProt) {
-        const r = this.uniprot.getUniprotFromAcc(accID)
+        const r: any = this.uniprot.getUniprotFromAcc(accID)
         if (r) {
           geneNames = r["Gene Names"]
         }
@@ -337,15 +337,17 @@ export class VolcanoPlotComponent implements OnInit {
       }
     })
     this.dataService.annotationService.asObservable().subscribe(data => {
-      console.log(data)
       if (data) {
         if (data.remove) {
-          this.removeAnnotatedDataPoints([data.id])
+          this.removeAnnotatedDataPoints([data.id]).then( () => {
+              this.dataService.annotatedData = this.annotated
+          }
+          )
         } else {
-          this.annotateDataPoints([data.id])
+          this.annotateDataPoints([data.id]).then(() => {
+            this.dataService.annotatedData = this.annotated
+          })
         }
-        console.log(this.annotated)
-        this.dataService.annotatedData = this.annotated
       }
     })
   }
@@ -388,12 +390,12 @@ export class VolcanoPlotComponent implements OnInit {
     this.modal.open(VolcanoColorsComponent)
   }
 
-  annotateDataPoints(data: string[]) {
+  async annotateDataPoints(data: string[]) {
     const annotations: any[] = []
     const annotatedData = this.dataService.currentDF.where(r => data.includes(r[this.dataService.differentialForm.primaryIDs])).bake()
     for (const a of annotatedData) {
       let title = a[this.dataService.differentialForm.primaryIDs]
-      const uni = this.uniprot.getUniprotFromAcc(a[this.dataService.differentialForm.primaryIDs])
+      const uni: any = this.uniprot.getUniprotFromAcc(a[this.dataService.differentialForm.primaryIDs])
       if (uni) {
         if (uni["Gene Names"] !== "") {
           title = uni["Gene Names"] + "(" + title + ")"
@@ -439,11 +441,11 @@ export class VolcanoPlotComponent implements OnInit {
     console.log(this.annotated)
   }
 
-  removeAnnotatedDataPoints(data: string[]) {
+  async removeAnnotatedDataPoints(data: string[]) {
     const annotatedData = this.dataService.currentDF.where(r => data.includes(r[this.dataService.differentialForm.primaryIDs])).bake()
     for (const d of annotatedData) {
       let title = d[this.dataService.differentialForm.primaryIDs]
-      const uni = this.uniprot.getUniprotFromAcc(d[this.dataService.differentialForm.primaryIDs])
+      const uni:any = this.uniprot.getUniprotFromAcc(d[this.dataService.differentialForm.primaryIDs])
       if (uni) {
         if (uni["Gene Names"] !== "") {
           title = uni["Gene Names"] + "(" + title + ")"

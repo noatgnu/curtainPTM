@@ -3,9 +3,9 @@
 </div>
 <div class="modal-body">
   <p>
-    <b>Username: </b>{{accounts.user_name}}<br>
-    <b>Curtain Link Limits: </b><span *ngIf="accounts.curtain_link_limit === 0">infinite</span><span *ngIf="accounts.curtain_link_limit > 0">{{accounts.curtain_link_limit}}</span> <span class="text-danger" *ngIf="accounts.limit_exceed">- Limit Exceed</span> <br>
-    <b>Total Curtain Sessions: </b> {{accounts.total_curtain}}
+    <b>Username: </b>{{accounts.curtainAPI.user.username}}<br>
+    <b>Curtain Link Limits: </b><span *ngIf="accounts.curtainAPI.user.curtainLinkLimit === 0">infinite</span><span *ngIf="accounts.curtainAPI.user.curtainLinkLimit > 0">{{accounts.curtainAPI.user.curtainLinkLimit}}</span> <span class="text-danger" *ngIf="accounts.curtainAPI.user.curtainLinkLimitExceeded">- Limit Exceed</span> <br>
+    <b>Total Curtain Sessions: </b> {{accounts.curtainAPI.user.totalCurtain}}
   </p>
   <form [formGroup]="form" (submit)="submit()">
     <div class="form-group">
@@ -54,13 +54,13 @@
       <ng-container *ngFor="let d of data.results">
         <tr>
           <td>
-            <input type="checkbox" class="form-control" [(ngModel)]="selectedLinks[d.link_id]" (click)="addOrRemoveFromSelected(d.link_id)">
+            <input type="checkbox" class="form-check-input" [(ngModel)]="selectedLinks[d.link_id]" (click)="addOrRemoveFromSelected(d.link_id)">
           </td>
           <td>
             <a href="{{base}}/#/{{d.link_id}}" target="_blank">{{d.link_id}}</a>
           </td>
           <td>
-<!--            {{d.created}}-->
+            <!--            {{d.created}}-->
             <div [innerHTML]="d.description"></div>
           </td>
           <td>
@@ -68,8 +68,8 @@
             <p *ngIf="!d.enable">Private</p>
           </td>
           <td>
-            <button class="btn btn-sm btn-outline-primary" style="margin-right: 2px" (click)="viewDescription(d.link_id)">Description</button>
-            <button class="btn btn-sm btn-outline-danger" *ngIf="accounts.can_delete" (click)="deleteLink(d.link_id)">Rm</button>
+            <button class="btn btn-sm btn-outline-primary" style="margin-right: 2px" (click)="viewDescription(d.link_id)">Details</button>
+            <button class="btn btn-sm btn-outline-danger" *ngIf="accounts.curtainAPI.user.canDelete" (click)="deleteLink(d.link_id)">Rm</button>
           </td>
         </tr>
         <tr *ngIf="descriptionTrigger[d.link_id]" class="table-light">

@@ -4,6 +4,7 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {SettingsService} from "../../settings.service";
 import {WebService} from "../../web.service";
 import {Project} from "../../classes/project";
+import {getPrideData} from "curtain-web-api";
 
 @Component({
   selector: 'app-sample-annotation',
@@ -35,14 +36,13 @@ export class SampleAnnotationComponent implements OnInit {
   }
 
   getPride() {
-    this.web.getPrideData(this.prideID).subscribe(data => {
-      console.log(data)
-      for (const i in data) {
+    getPrideData(this.prideID).then(data => {
+      for (const i in data.data) {
         switch (i) {
           case "affiliations":
             const affiliations = []
             // @ts-ignore
-            for (const v of data[i]) {
+            for (const v of data.data[i]) {
               affiliations.push({name: v})
             }
             // @ts-ignore
@@ -50,14 +50,14 @@ export class SampleAnnotationComponent implements OnInit {
             break
           case "_links":
             // @ts-ignore
-            this.project[i] = data[i]
+            this.project[i] = data.data[i]
             if (Object.keys(this.project[i]).length>0) {
               this.project.hasLink = true
             }
             break
           default:
             // @ts-ignore
-            this.project[i] = data[i]
+            this.project[i] = data.data[i]
             break
         }
       }

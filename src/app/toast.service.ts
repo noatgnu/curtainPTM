@@ -7,7 +7,7 @@ export class ToastService {
   toasts: any[] = []
   constructor() { }
 
-  show(header: string, body: string) {
+  async show(header: string, body: string) {
     this.toasts.push({header, body})
   }
 

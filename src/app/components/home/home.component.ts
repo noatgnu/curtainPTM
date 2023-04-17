@@ -29,71 +29,83 @@ export class HomeComponent implements OnInit {
   filterModel: string = ""
   currentID: string = ""
   constructor(private accounts: AccountsService, private modal: NgbModal, public settings: SettingsService, private data: DataService, private route: ActivatedRoute, private toast: ToastService, private uniprot: UniprotService, private web: WebService, private ptm: PtmService) {
-    this.web.getSiteProperties()
-    this.accounts.reload()
-    this.ptm.getDatabase("PSP_PHOSPHO")
-    this.ptm.getDatabase("PLMD_UBI")
-    this.ptm.getDatabase("CDB_CARBONYL")
+
+
     // if (location.protocol === "https:" && location.hostname === "curtainptm.proteo.info") {
     //   this.toast.show("Initialization", "Error: The webpage requires the url protocol to be http instead of https")
     // }
-    this.data.dataClear.asObservable().subscribe(data => {
-      if (data) {
-        console.log(this.rawFiltered)
-        this.rawFiltered = new DataFrame()
-        this.differentialFiltered = new Series()
-      }
-    })
 
-    this.route.params.subscribe(params => {
-      if (params) {
-        if (params["settings"] && params["settings"].length > 0) {
-          const settings = params["settings"].split("&")
-          let token: string = ""
-          if (settings.length > 1) {
-            token = settings[1]
-            this.data.tempLink = true
-          } else {
-            this.data.tempLink = false
-          }
-          this.toast.show("Initialization", "Fetching data from session " + params["settings"])
-          if (this.currentID !== settings[0]) {
-            this.currentID = settings[0]
-            this.web.getSessionSettings(settings[0]).subscribe((d:any)=>{
-              this.data.session = d
-            })
-            this.web.postSettings(settings[0], token).subscribe(data => {
-              if (data.body) {
-                const a = JSON.parse(<string>data.body, this.web.reviver)
-                this.restoreSettings(a).then(result => {
-                  this.web.getSessionSettings(settings[0]).subscribe((d:any)=>{
-                    this.data.session = d
-                    this.settings.settings.currentID = d.link_id
-                  })
+    this.initialize().then(() => {
+      this.ptm.getDatabase("PSP_PHOSPHO")
+      this.ptm.getDatabase("PLMD_UBI")
+      this.ptm.getDatabase("CDB_CARBONYL")
+      this.data.dataClear.asObservable().subscribe(data => {
+        if (data) {
+          console.log(this.rawFiltered)
+          this.rawFiltered = new DataFrame()
+          this.differentialFiltered = new Series()
+        }
+      })
+
+      this.route.params.subscribe(params => {
+        if (params) {
+          if (params["settings"] && params["settings"].length > 0) {
+            const settings = params["settings"].split("&")
+            let token: string = ""
+            if (settings.length > 1) {
+              token = settings[1]
+              this.data.tempLink = true
+            } else {
+              this.data.tempLink = false
+            }
+            this.toast.show("Initialization", "Fetching data from session " + params["settings"]).then()
+            if (this.currentID !== settings[0]) {
+              this.currentID = settings[0]
+              this.accounts.curtainAPI.getSessionSettings(settings[0]).then((d:any)=> {
+                this.data.session = d.data
+                this.accounts.curtainAPI.postSettings(settings[0], token).then((data:any) => {
+                  if (data.data) {
+                    this.restoreSettings(data.data).then(result => {
+                      this.accounts.curtainAPI.getSessionSettings(settings[0]).then((d:any)=> {
+                        this.data.session = d.data
+                        this.settings.settings.currentID = d.data.link_id
+                      })
+                    })
+                    this.accounts.curtainAPI.getOwnership(settings[0]).then((data:any) => {
+                      if (data.ownership) {
+                        this.accounts.isOwner = true
+                      } else {
+                        this.accounts.isOwner = false
+                      }
+                    }).catch(error => {
+                      this.accounts.isOwner = false
+                    })
+                  }
+                }).catch(error => {
+                  if (error.status === 400) {
+                    this.toast.show("Credential Error", "Login Information Required").then()
+                    const login = this.openLoginModal()
+                    login.componentInstance.loginStatus.asObservable().subscribe((data:boolean) => {
+                      if (data) {
+                        location.reload()
+                      }
+                    })
+                  }
                 })
-              }
-            },error => {
-              this.toast.show("Credential Error", "Login Information Required")
-              const login = this.openLoginModal()
-              login.componentInstance.loginStatus.asObservable().subscribe((data:boolean) => {
-                if (data) {
-                  location.reload()
-                }
               })
-            })
-            this.web.getOwnership(settings[0]).subscribe((data:any) => {
-              if (data.ownership) {
-                this.accounts.is_owner = true
-              } else {
-                this.accounts.is_owner = false
-              }
-            }, error => {
-              this.accounts.is_owner = false
-            })
+            }
           }
         }
-      }
+      })
     })
+
+
+
+  }
+
+  async initialize() {
+    await this.accounts.curtainAPI.getSiteProperties()
+    await this.accounts.curtainAPI.user.loadFromDB()
   }
 
   openLoginModal() {
@@ -205,25 +217,29 @@ export class HomeComponent implements OnInit {
     this.finished = e
     if (this.finished) {
       if (this.data.selected.length > 0) {
-        console.log(this.data.selected)
         this.data.finishedProcessingData.next(e)
-        const differentialFiltered = this.data.currentDF.where(r => this.data.selected.includes(r[this.data.differentialForm.primaryIDs])).bake()
-        for (const s of differentialFiltered) {
-          this.addGeneToSelected(s);
-        }
-        for (const s of this.rawFiltered) {
-          this.addGeneToSelected(s);
-        }
-        const differential = this.data.currentDF.where(r => this.data.selectedAccessions.includes(r[this.data.differentialForm.accession])).bake()
-        this.differentialFiltered = differential.groupBy(r => r[this.data.differentialForm.accession]).bake()
+        this.updateSelections().then(() => {
+          const differential = this.data.currentDF.where(r => this.data.selectedAccessions.includes(r[this.data.differentialForm.accession])).bake()
+          this.differentialFiltered = differential.groupBy(r => r[this.data.differentialForm.accession]).bake()
+        });
       }
     }
   }
 
-  private addGeneToSelected(s: any) {
+  private async updateSelections() {
+    const differentialFiltered = this.data.currentDF.where(r => this.data.selected.includes(r[this.data.differentialForm.primaryIDs])).bake()
+    for (const s of differentialFiltered) {
+      await this.addGeneToSelected(s);
+    }
+    for (const s of this.rawFiltered) {
+      await this.addGeneToSelected(s);
+    }
+  }
+
+  private async addGeneToSelected(s: any) {
     if (!this.data.selectedAccessions.includes(s[this.data.differentialForm.accession])) {
       this.data.selectedAccessions.push(s[this.data.differentialForm.accession])
-      const uni = this.uniprot.getUniprotFromAcc(s[this.data.differentialForm.accession])
+      const uni: any = this.uniprot.getUniprotFromAcc(s[this.data.differentialForm.accession])
       if (uni) {
         if (uni["Gene Names"] !== "") {
           if (!this.data.selectedGenes.includes(uni["Gene Names"])) {
@@ -239,19 +255,22 @@ export class HomeComponent implements OnInit {
     if (!this.data.selectOperationNames.includes(e.title)) {
       this.data.selectOperationNames.push(e.title)
     }
-    console.log(e)
     const differentialFiltered = this.data.currentDF.where(r => e.data.includes(r[this.data.differentialForm.primaryIDs])).bake()
+    this.updateSearchDifferential(differentialFiltered, e).then(() => {
+      const differential = this.data.currentDF.where(r => this.data.selectedAccessions.includes(r[this.data.differentialForm.accession])).bake()
+      const groups = differential.groupBy(r => r[this.data.differentialForm.accession]).bake()
+      this.differentialFiltered = groups
+      this.data.selectionUpdateTrigger.next(true)
+    });
+  }
+
+  private async updateSearchDifferential(differentialFiltered: IDataFrame<number, any>, e: selectionData) {
     for (const s of differentialFiltered) {
       if (!this.data.selectedMap[s[this.data.differentialForm.primaryIDs]]) {
         this.data.selectedMap[s[this.data.differentialForm.primaryIDs]] = {}
       }
-      this.addGeneToSelected(s);
+      await this.addGeneToSelected(s);
       this.data.selectedMap[s[this.data.differentialForm.primaryIDs]][e.title] = true
     }
-    const differential = this.data.currentDF.where(r => this.data.selectedAccessions.includes(r[this.data.differentialForm.accession])).bake()
-    const groups = differential.groupBy(r => r[this.data.differentialForm.accession]).bake()
-    this.differentialFiltered = groups
-    console.log(this.differentialFiltered)
-    this.data.selectionUpdateTrigger.next(true)
   }
 }

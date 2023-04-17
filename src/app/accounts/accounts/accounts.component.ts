@@ -23,20 +23,10 @@ export class AccountsComponent implements OnInit {
   selectedCount: number = 0
   constructor(private web: WebService, public accounts: AccountsService, private fb: FormBuilder) {
     // @ts-ignore
-    this.web.getCurtainLinks(this.accounts.user_name, this.form.value["sessionDescription"]).subscribe((data: any) => {
-      data.results = data.results.map((a:any) => {
-        if (!(a.link_id in this.descriptionTrigger)) {
-          this.descriptionTrigger[a.link_id] = false
-          this.selectedLinks[a.link_id] = false
-        }
-        a.created = new Date(a.created)
-        return a
-      })
-      this.totalItems = data.count
-      this.pageNumber = this.totalItems/20
-      this.data = data
+    this.accounts.curtainAPI.getCurtainLinks(this.accounts.curtainAPI.user.username, this.form.value["sessionDescription"]).then((data: any) => {
+      this.updateShowingLink(data)
     })
-    this.accounts.getUser()
+    this.accounts.getUser().then()
   }
 
   ngOnInit(): void {
@@ -44,25 +34,29 @@ export class AccountsComponent implements OnInit {
 
   submit(page: number = 0) {
     // @ts-ignore
-    this.web.getCurtainLinks(this.accounts.user_name, this.form.value["sessionDescription"], page*20).subscribe((data: any) => {
-      data.results = data.results.map((a:any) => {
-        if (!(a.link_id in this.descriptionTrigger)) {
-          this.descriptionTrigger[a.link_id] = false
-          this.selectedLinks[a.link_id] = false
-        }
-        a.created = new Date(a.created)
-        return a
-      })
-      this.totalItems = data.count
-      this.pageNumber = this.totalItems/20
-      this.data = data
+    this.accounts.curtainAPI.getCurtainLinks(this.accounts.curtainAPI.user.username, this.form.value["sessionDescription"], page*20).then((data: any) => {
+      this.updateShowingLink(data);
     })
   }
 
+  private updateShowingLink(data: any) {
+    data.data.results = data.data.results.map((a: any) => {
+      if (!(a.link_id in this.descriptionTrigger)) {
+        this.descriptionTrigger[a.link_id] = false
+        this.selectedLinks[a.link_id] = false
+      }
+      a.created = new Date(a.created)
+      return a
+    })
+    this.totalItems = data.data.count
+    this.pageNumber = this.totalItems / 20
+    this.data = data.data
+  }
+
   deleteLink(link_id: string) {
-    this.accounts.deleteCurtainLink(link_id).subscribe((res) => {
+    this.accounts.deleteCurtainLink(link_id).then((res) => {
       this.submit(this.currentPage)
-      this.accounts.getUser()
+      this.accounts.getUser().then((res) => {})
     })
   }
 
@@ -83,104 +77,53 @@ export class AccountsComponent implements OnInit {
     }
   }
 
-  addOwnerToSelectedLinks(owner: string) {
-    const actions: Observable<any>[] = []
-
+  async addOwnerToLinks(owner: string) {
     for (const i in this.selectedLinks) {
       if (this.selectedLinks[i] === true) {
         console.log(`Adding ${owner} to ${i}`)
-        actions.push(this.web.addOwner(i, owner))
+        await this.accounts.curtainAPI.addOwner(i, owner)
       }
     }
-    actions[0].subscribe((data) => {
-      if (actions.length > 1) {
-        forkJoin(actions.slice(1)).subscribe(data => {
-          // @ts-ignore
-          this.web.getCurtainLinks(this.accounts.user_name, this.form.value["sessionDescription"]).subscribe((data: any) => {
-            data.results = data.results.map((a:any) => {
-              if (!(a.link_id in this.descriptionTrigger)) {
-                this.descriptionTrigger[a.link_id] = false
-                this.selectedLinks[a.link_id] = false
-              }
-              a.created = new Date(a.created)
-              return a
-            })
-            this.totalItems = data.count
-            this.pageNumber = this.totalItems/20
-            this.data = data
-          })
-          this.accounts.getUser()
-        })
-      } else {
-        // @ts-ignore
-        this.web.getCurtainLinks(this.accounts.user_name, this.form.value["sessionDescription"]).subscribe((data: any) => {
-          data.results = data.results.map((a:any) => {
-            if (!(a.link_id in this.descriptionTrigger)) {
-              this.descriptionTrigger[a.link_id] = false
-              this.selectedLinks[a.link_id] = false
-            }
-            a.created = new Date(a.created)
-            return a
-          })
-          this.totalItems = data.count
-          this.pageNumber = this.totalItems/20
-          this.data = data
-        })
-        this.accounts.getUser()
+    // @ts-ignore
+    const data: any = await this.accounts.curtainAPI.getCurtainLinks(this.accounts.curtainAPI.user.username, this.form.value["sessionDescription"])
+    this.updateShowingLink(data);
+    await this.accounts.getUser()
+
+  }
+
+  addOwnerToSelectedLinks(owner: string) {
+    this.addOwnerToLinks(owner).then()
+  }
+
+  async removeLinks() {
+    for (const i in this.selectedLinks) {
+      if (this.selectedLinks[i] === true) {
+        await this.accounts.deleteCurtainLink(i)
       }
-    })
+    }
+
+    // @ts-ignore
+    const data: any = this.accounts.curtainAPI.getCurtainLinks(this.accounts.curtainAPI.user.username, this.form.value["sessionDescription"])
+    this.updateShowingLink(data);
+    await this.accounts.getUser()
   }
 
   removeSelectedLinks() {
-    const actions: Observable<any>[] = []
-    for (const i in this.selectedLinks) {
-      if (this.selectedLinks[i] === true) {
-        actions.push(this.accounts.deleteCurtainLink(i))
-      }
-    }
-    forkJoin(actions).subscribe(data => {
-      // @ts-ignore
-      this.web.getCurtainLinks(this.accounts.user_name, this.form.value["sessionDescription"]).subscribe((data: any) => {
-        data.results = data.results.map((a:any) => {
-          if (!(a.link_id in this.descriptionTrigger)) {
-            this.descriptionTrigger[a.link_id] = false
-            this.selectedLinks[a.link_id] = false
-          }
-          a.created = new Date(a.created)
-          return a
-        })
-        this.totalItems = data.count
-        this.pageNumber = this.totalItems/20
-        this.data = data
-      })
-      this.accounts.getUser()
-    })
+    this.removeLinks().then()
   }
 
-  changePublicitySelectedLinks(status: boolean) {
-    const actions: Observable<any>[] = []
+  async changePublicity(status: boolean) {
     for (const i in this.selectedLinks) {
       if (this.selectedLinks[i] === true) {
-        actions.push(this.web.updateSession({enable: status}, i))
+        await this.accounts.curtainAPI.updateSession({enable: status}, i)
       }
     }
-
-    forkJoin(actions).subscribe(data => {
-      // @ts-ignore
-      this.web.getCurtainLinks(this.accounts.user_name, this.form.value["sessionDescription"]).subscribe((data: any) => {
-        data.results = data.results.map((a:any) => {
-          if (!(a.link_id in this.descriptionTrigger)) {
-            this.descriptionTrigger[a.link_id] = false
-            this.selectedLinks[a.link_id] = false
-          }
-          a.created = new Date(a.created)
-          return a
-        })
-        this.totalItems = data.count
-        this.pageNumber = this.totalItems/20
-        this.data = data
-      })
-      this.accounts.getUser()
-    })
+    // @ts-ignore
+    const data: any = this.accounts.curtainAPI.getCurtainLinks(this.accounts.curtainAPI.user.username, this.form.value["sessionDescription"])
+    this.updateShowingLink(data);
+    await this.accounts.getUser()
+  }
+  changePublicitySelectedLinks(status: boolean) {
+    this.changePublicity(status).then()
   }
 }

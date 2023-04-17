@@ -31,40 +31,32 @@ export class LoginModalComponent implements OnInit, OnDestroy {
 
   login() {
     if (this.form.valid) {
-      this.accounts.login(this.form.value["username"], this.form.value["password"]).subscribe((data: any) => {
+      this.accounts.login(this.form.value["username"], this.form.value["password"]).then((data: any) => {
         this.processLogin(data)
       })
     }
   }
 
   processLogin(data: any) {
-    this.accounts.accessToken = data.access
-    this.accounts.refreshToken = data.refresh
-    this.accounts.loggedIn = true
-    this.accounts.lastTokenUpdateTime = new Date()
-    this.accounts.lastRefreshTokenUpdateTime = new Date()
-    this.web.getUserData().subscribe((data: any) => {
-      this.accounts.user_id = data.id
-      this.accounts.user_name = data.username
-      this.accounts.user_staff = data.is_staff
+    this.accounts.curtainAPI.getUserInfo().then((data: any) => {
       this.form.reset()
       this.loginStatus.next(true)
       this.modal.dismiss()
-      this.toast.show("Login Information","Login Successful.")
+      this.toast.show("Login Information","Login Successful.").then()
     }, error =>{
-      this.toast.show("Login Error", "Incorrect Login Credential.")
+      this.toast.show("Login Error", "Incorrect Login Credential.").then()
     })
   }
 
+
   clickOrcid() {
     localStorage.setItem("urlAfterLogin", document.URL)
-    localStorage.setItem("urlAfterLogin", document.URL)
     this.loginWatcher = setInterval(()=> {
-      if (localStorage.getItem("accessToken")) {
-        this.accounts.reload()
-        this.modal.dismiss()
-        clearInterval(this.loginWatcher)
-
+      if (this.accounts.curtainAPI.user.access_token) {
+        this.accounts.reload().then(() => {
+          this.modal.dismiss()
+          clearInterval(this.loginWatcher)
+        })
       }
     }, 1000)
   }

@@ -117,9 +117,13 @@ export class NetworkInteractionsComponent implements OnInit {
   geneMap: any = {}
   @Input() set genes(value: string[]) {
     const genes: string[] = []
-    console.log(value)
+    this.processGenes(value, genes).then();
+
+  }
+
+  private async processGenes(value: string[], genes: string[]) {
     for (const v of value) {
-      const uni = this.uniprot.getUniprotFromAcc(v)
+      const uni: any = this.uniprot.getUniprotFromAcc(v)
       if (uni) {
         if (uni["Gene Names"] !== "") {
           genes.push(uni["Gene Names"])
@@ -130,7 +134,7 @@ export class NetworkInteractionsComponent implements OnInit {
       const _genes: string[] = []
       for (const v of genes) {
         const g = v.split(";")[0]
-        if (g!=="") {
+        if (g !== "") {
           if (!_genes.includes(g)) {
             _genes.push(g)
             this.geneMap[g] = v
@@ -141,11 +145,11 @@ export class NetworkInteractionsComponent implements OnInit {
       this._genes = _genes
 
       if (this._genes.length > 2) {
-        this.getInteractions().then()
+        await this.getInteractions()
       }
     }
-
   }
+
   constructor(private scroll: ScrollService, private data: DataService, private dbString: DbStringService, private interac: InteractomeAtlasService, private uniprot: UniprotService) { }
 
   ngOnInit(): void {
