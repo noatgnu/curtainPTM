@@ -56,7 +56,7 @@ export class FileFormComponent implements OnInit {
     if (data > 0) {
       return Math.log2(data)
     } else if (data < 0) {
-      return Math.log2(Math.abs(data))
+      return -Math.log2(Math.abs(data))
     } else {
       return 0
     }

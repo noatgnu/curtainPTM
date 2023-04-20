@@ -448,7 +448,7 @@ export class PtmPositionViewerComponent implements OnInit {
   toggleKinaseLibraryOpenStatus(position: number) {
 
     const ref = this.modal.open(KinaseLibraryModalComponent, {scrollable: true})
-    const sequence = this.sequences[this._data.accessionID].replace("-", "")
+    const sequence = this.sequences[this.sourceMap["Experimental Data"]].replace("-", "")
     const site = sequence[position-1]
     const prefix = sequence.slice(position-11, position-1)
     const suffix = sequence.slice(position, position+10)
