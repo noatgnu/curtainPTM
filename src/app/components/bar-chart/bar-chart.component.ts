@@ -23,6 +23,11 @@ export class BarChartComponent implements OnInit {
   conditions: string[] = []
   testType: string = "ANOVA"
 
+  config: any = {
+    modeBarButtonsToRemove: ["toImage"]
+  }
+
+
   barChartErrorType: string = "Standard Error"
 
   @Input() set data(value: any) {
@@ -61,7 +66,8 @@ export class BarChartComponent implements OnInit {
     },
     annotations: [],
     shapes: [],
-    margin: {r: 50, l: 50, b: 100, t: 100}
+    margin: {r: 50, l: 50, b: 100, t: 100},
+
   }
 
   graphDataAverage: any[] = []

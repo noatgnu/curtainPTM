@@ -36,7 +36,9 @@ export class VolcanoPlotComponent implements OnInit {
       },
     }
   }
-
+  config: any = {
+    modeBarButtonsToRemove: ["toImage"]
+  }
   layoutMaxMin: any = {
     xMin: 0, xMax: 0, yMin: 0, yMax: 0
   }

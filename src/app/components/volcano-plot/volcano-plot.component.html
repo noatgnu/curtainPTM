@@ -1,7 +1,7 @@
 
 <div class="row">
   <div class="col-7">
-    <plotly-plot [divId]="'volcanoPlot'" [data]="graphData" [layout]="graphLayout" [updateOnDataChange]="true" [updateOnLayoutChange]="true" (plotlyClick)="selectData($event)" (selected)="selectData($event)"></plotly-plot>
+    <plotly-plot [config]="config" [divId]="'volcanoPlot'" [data]="graphData" [layout]="graphLayout" [updateOnDataChange]="true" [updateOnLayoutChange]="true" (plotlyClick)="selectData($event)" (selected)="selectData($event)"></plotly-plot>
   </div>
   <div class="col-5">
     <div class="card">
