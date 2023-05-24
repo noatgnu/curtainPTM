@@ -73,9 +73,9 @@ export class DataService {
     const ylog = -Math.log10(this.settings.settings.pCutoff)
     const groups: string[] = []
     if (ylog > y) {
-      groups.push("P-value < " + this.settings.settings.pCutoff)
+      groups.push("P-value > " + this.settings.settings.pCutoff)
     } else {
-      groups.push("P-value >= " + this.settings.settings.pCutoff)
+      groups.push("P-value <= " + this.settings.settings.pCutoff)
     }
 
     if (Math.abs(x) > this.settings.settings.log2FCCutoff) {
