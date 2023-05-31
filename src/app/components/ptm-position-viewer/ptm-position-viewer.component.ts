@@ -287,7 +287,7 @@ export class PtmPositionViewerComponent implements OnInit {
                       ay: 0,
                       font: {
                         size: 10,
-                        color: 'rgb(133,0,0)'
+                        color: 'rgb(217,4,4)'
                       }
                     })
                   }
