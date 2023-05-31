@@ -24,4 +24,5 @@ export class Settings {
   barchartColorMap: any = {}
   textAnnotation: any = {}
   volcanoPlotTitle: string = ""
+  visible: any = {}
 }

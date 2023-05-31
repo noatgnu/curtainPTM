@@ -4,6 +4,7 @@ import {DataService} from "../../data.service";
 import {UniprotService} from "../../uniprot.service";
 import {BiomsaService} from "../../biomsa.service";
 import {ScrollService} from "../../scroll.service";
+import {SettingsService} from "../../settings.service";
 
 @Component({
   selector: 'app-data-block',
@@ -65,14 +66,16 @@ export class DataBlockComponent implements OnInit {
         position: r[this.dataService.differentialForm.position],
         residue: this.allSequences[this.accessionID][r[this.dataService.differentialForm.position]-1],
         id: r[this.dataService.differentialForm.primaryIDs],
-        score: r[this.dataService.differentialForm.score]
+        score: r[this.dataService.differentialForm.score],
+        significant: (r[this.dataService.differentialForm.significant] >= -Math.log10(this.settingsService.settings.pCutoff)) &&
+          (Math.abs(r[this.dataService.differentialForm.foldChange]) > this.settingsService.settings.log2FCCutoff),
       })
     }
     this.unidList = unidList
     console.log(unidList)
   }
   accessionID: string = ""
-  constructor(public dataService: DataService, private uniprot: UniprotService, private scroll: ScrollService) { }
+  constructor(public dataService: DataService, private uniprot: UniprotService, private scroll: ScrollService, private settingsService: SettingsService) { }
 
   ngOnInit(): void {
   }

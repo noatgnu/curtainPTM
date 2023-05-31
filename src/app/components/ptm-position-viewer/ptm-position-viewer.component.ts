@@ -31,7 +31,7 @@ export class PtmPositionViewerComponent implements OnInit {
   aligned: boolean = false
   divIDMap: any = {}
   order: string[] = ["Experimental Data", "UniProt"]
-
+  significantAnnotation: any = {}
   graphLayout: any = {}
   graphData: any[] = []
   customRange: any = {}
@@ -61,7 +61,7 @@ export class PtmPositionViewerComponent implements OnInit {
       }
     }
   }
-
+  significantPos: number[] = []
   get dbSelected(): string[] {
     return this._dbSelected
   }
@@ -127,6 +127,9 @@ export class PtmPositionViewerComponent implements OnInit {
         this.unidMap["Experimental Data"][u.position-1] = []
       }
       this.unidMap["Experimental Data"][u.position-1].push(u)
+      if (u.significant) {
+        this.significantPos.push(u.position-1)
+      }
     }
     if (this._data.accessionID) {
 
@@ -156,6 +159,7 @@ export class PtmPositionViewerComponent implements OnInit {
     const temp: any = {}
     const gapCount: any = {}
     const labels: string[] = Object.keys(this.sourceMap)
+    this.significantAnnotation = []
     for (let i = 0; i < labels.length; i++) {
       this.dataService.dbIDMap[this.accessionID][labels[i]] = this.sourceMap[labels[i]]
       this.currentLayout[labels[i]] = [0,0]
@@ -168,7 +172,7 @@ export class PtmPositionViewerComponent implements OnInit {
           visible: false,
         }, yaxis : {
           showticklabels: false,
-          range: [0,1],
+          range: [0,1.3],
           visible: false,
           fixedrange: true
         }, title: labels[i] + " <b>"  + this.sourceMap[labels[i]] + "</b>",
@@ -188,7 +192,10 @@ export class PtmPositionViewerComponent implements OnInit {
       }
       gapCount[labels[i]] = 0
     }
-    const modified = this.composeGraphData("Experimental Data", temp, gapCount, 'rgba(209, 140, 224,1)')
+    const modified = this.composeGraphData("Experimental Data", temp, gapCount,
+      'rgb(236,96,99)'
+    )
+
     this.alignedMap["Experimental Data"] = modified
     for (const t of labels) {
       if (t !== "Experimental Data") {
@@ -196,6 +203,7 @@ export class PtmPositionViewerComponent implements OnInit {
         for (const m of modified) {
           if (temp[t].marker.color[m.alignedPosition].startsWith('rgba(154, 220, 255')) {
             temp[t].marker.color[m.alignedPosition] = temp[t].marker.color[m.alignedPosition].replace('rgba(154, 220, 255', 'rgba(209, 140, 224')
+            temp["Experimental Data"].marker.color[m.alignedPosition] = 'rgba(209, 140, 224,1)'
           }
         }
       }
@@ -263,6 +271,27 @@ export class PtmPositionViewerComponent implements OnInit {
               if (u.id) {
                 mod["id"] = u.id
                 color = 'rgba(154, 220, 255' + u.score + ')'
+                if (!this.significantAnnotation[t]) {
+                  this.significantAnnotation[t] = []
+                }
+                if (actualPosition && t==="Experimental Data") {
+                  const result = this.significantPos.find((p: number) => p === actualPosition)
+                  if (result) {
+                    this.significantAnnotation[t].push({
+                      x: mod.alignedPosition,
+                      y: 1.25,
+                      text: "*",
+                      showarrow: false,
+                      arrowhead: 2,
+                      ax: 0,
+                      ay: 0,
+                      font: {
+                        size: 10,
+                        color: 'rgb(133,0,0)'
+                      }
+                    })
+                  }
+                }
                 if (this.dataService.selectedMap[u.id]) {
                   color = 'rgba(0,220,4,' + u.score +')'
                   match = true
@@ -284,6 +313,9 @@ export class PtmPositionViewerComponent implements OnInit {
       }
       temp[t].y.push(val)
       temp[t].marker.color.push(color)
+    }
+    if (this.significantAnnotation[t]) {
+      this.graphLayout[t].annotations = this.significantAnnotation[t]
     }
     if (this.customRange.length > 0) {
       this.graphLayout[t].xaxis.range = this.customRange

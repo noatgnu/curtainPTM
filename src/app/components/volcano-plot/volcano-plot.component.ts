@@ -59,6 +59,9 @@ export class VolcanoPlotComponent implements OnInit {
   breakColor: boolean = false
 
   drawVolcano() {
+    if (!this.settings.settings.visible) {
+      this.settings.settings.visible = {}
+    }
     this.graphLayout.title.text = this.settings.settings.volcanoPlotTitle
     let currentColors: string[] = []
     if (this.settings.settings.colorMap) {
@@ -107,7 +110,8 @@ export class VolcanoPlotComponent implements OnInit {
         mode: "markers",
         name: s,
         marker: {
-          color: this.settings.settings.colorMap[s]
+          color: this.settings.settings.colorMap[s],
+          size: 10
         }
       }
 
@@ -146,6 +150,7 @@ export class VolcanoPlotComponent implements OnInit {
       temp["Background"]["marker"] = {
         color: "#a4a2a2",
         opacity: 0.3,
+        size: 10
       }
     }
     for (const r of this._data) {
@@ -198,6 +203,7 @@ export class VolcanoPlotComponent implements OnInit {
             mode: "markers",
             marker: {
               color: this.settings.settings.colorMap[group],
+              size: 10
             },
             name: group
           }
@@ -211,7 +217,14 @@ export class VolcanoPlotComponent implements OnInit {
     const graphData: any[] = []
     for (const t in temp) {
       if (temp[t].x.length > 0) {
-        graphData.push(temp[t])
+        if (temp[t].x.length > 0) {
+          if (this.settings.settings.visible[t]) {
+            temp[t].visible = this.settings.settings.visible[t]
+          } else {
+            temp[t].visible = true
+          }
+          graphData.push(temp[t])
+        }
       }
     }
     if (fdrCurve.count() > 0) {
@@ -475,5 +488,13 @@ export class VolcanoPlotComponent implements OnInit {
         this.graphLayout.annotations.push(this.annotated[a.title])
       }
     })
+  }
+
+  legendClickHandler(event: any) {
+    if (event.event.srcElement.__data__[0].trace.visible === "legendonly") {
+      this.settings.settings.visible[event.event.srcElement.__data__[0].trace.name] = true
+    } else {
+      this.settings.settings.visible[event.event.srcElement.__data__[0].trace.name] = "legendonly"
+    }
   }
 }
