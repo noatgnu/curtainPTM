@@ -68,6 +68,13 @@ export class FileFormComponent implements OnInit {
   }
 
   processFiles() {
+    if (!this.data.differentialForm.comparison || this.data.differentialForm.comparison === "" || this.data.differentialForm.comparison === "CurtainSetComparison") {
+      this.data.differentialForm.comparison = "CurtainSetComparison"
+      this.data.differentialForm.comparisonSelect = "1"
+
+      this.data.differential.df = this.data.differential.df.withSeries("CurtainSetComparison", new Series(Array(this.data.differential.df.count()).fill("1"))).bake()
+    }
+
     if (this.data.differentialForm.comparisonSelect === "" || this.data.differentialForm.comparisonSelect === undefined) {
       this.data.differentialForm.comparisonSelect = this.data.differential.df.first()[this.data.differentialForm.comparison]
     }

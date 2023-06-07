@@ -11,6 +11,7 @@ import {WebService} from "../../web.service";
 import {
   VolcanoPlotTextAnnotationComponent
 } from "../volcano-plot-text-annotation/volcano-plot-text-annotation.component";
+import {WebLogoComponent} from "../web-logo/web-logo.component";
 
 @Component({
   selector: 'app-volcano-plot',
@@ -496,5 +497,10 @@ export class VolcanoPlotComponent implements OnInit {
     } else {
       this.settings.settings.visible[event.event.srcElement.__data__[0].trace.name] = "legendonly"
     }
+  }
+
+  openWebLogo() {
+    const ref = this.modal.open(WebLogoComponent, {size: "lg"})
+    ref.componentInstance.data = this.dataService.currentDF.where(r => r[this.dataService.differentialForm.primaryIDs] in this.dataService.selectedMap).bake()
   }
 }

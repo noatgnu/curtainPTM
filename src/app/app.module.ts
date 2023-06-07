@@ -42,6 +42,7 @@ import { LoginModalComponent } from './accounts/login-modal/login-modal.componen
 import { SessionSettingsComponent } from './components/session-settings/session-settings.component';
 import {AccountsModule} from "./accounts/accounts.module";
 import { KinaseLibraryModalComponent } from './components/kinase-library-modal/kinase-library-modal.component';
+import { WebLogoComponent } from './components/web-logo/web-logo.component';
 PlotlyModule.plotlyjs = PlotlyJS;
 @NgModule({
   declarations: [
@@ -73,7 +74,8 @@ PlotlyModule.plotlyjs = PlotlyJS;
     SampleOrderAndHideComponent,
     VolcanoPlotTextAnnotationComponent,
     SessionSettingsComponent,
-    KinaseLibraryModalComponent
+    KinaseLibraryModalComponent,
+    WebLogoComponent
   ],
   imports: [
     BrowserModule,

@@ -1,12 +1,11 @@
-import { Component } from '@angular/core';
+import {AfterViewInit, Component} from '@angular/core';
 import {AccountsService} from "./accounts/accounts.service";
-
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements AfterViewInit {
   title = 'CurtainPTM';
 
   constructor(private accounts: AccountsService) {
@@ -15,5 +14,10 @@ export class AppComponent {
       const code = path.split("=")
       this.accounts.ORCIDLogin(code[1])
     }
+
+  }
+
+  ngAfterViewInit(): void {
+
   }
 }

@@ -54,7 +54,7 @@ export class DataService {
   searchType: string = "Gene Names"
   page: number = 0
   dbIDMap: any = {}
-  defaultColorList = [
+  /*defaultColorList = [
     '#1f77b4',
     '#ff7f0e',
     '#2ca02c',
@@ -64,7 +64,18 @@ export class DataService {
     '#e377c2',
     '#7f7f7f',
     '#bcbd22',
-    '#17becf']
+    '#17becf']*/
+  defaultColorList = [
+    "#fd7f6f",
+    "#7eb0d5",
+    "#b2e061",
+    "#bd7ebe",
+    "#ffb55a",
+    "#ffee65",
+    "#beb9db",
+    "#fdcce5",
+    "#8bd3c7"
+  ]
   redrawTrigger: Subject<boolean> = new Subject()
   colorMap: any = {}
   constructor(private settings: SettingsService, private uniprot: UniprotService) { }
