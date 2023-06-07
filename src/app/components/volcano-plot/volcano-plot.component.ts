@@ -24,8 +24,8 @@ export class VolcanoPlotComponent implements OnInit {
   nameToID: any = {}
   graphData: any[] = []
   graphLayout: any = {
-    height: 700, width: 700, xaxis: {title: "Log2FC"},
-    yaxis: {title: "-log10(p-value)"},
+    height: 700, width: 700, xaxis: {title: "<b>Log2FC</b>"},
+    yaxis: {title: "<b>-log10(p-value)</b>"},
     annotations: [],
     showlegend: true, legend: {
       orientation: 'h'

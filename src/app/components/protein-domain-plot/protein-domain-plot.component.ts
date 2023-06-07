@@ -62,14 +62,23 @@ export class ProteinDomainPlotComponent implements OnInit {
   get data(): any[] {
     return this._data
   }
-
+  config: any = {
+    //modeBarButtonsToRemove: ["toImage"]
+    toImageButtonOptions: {
+      format: 'svg',
+      filename: "protein-domain-plot",
+      height: 400,
+      width: 1000,
+      scale: 1
+    }
+  }
   layout: any = {
     title: {
       text: "Protein Domains"
     },
     yaxis: {
       type: "category"
-    }, width: 1000,
+    },  width: 1000, height: 400,
     xaxis: {
       type: "linear",
       showgrid: false,

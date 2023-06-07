@@ -3,3 +3,33 @@
   <br>
 </p>
 <app-protein-domain-plot [data]="_data"></app-protein-domain-plot>
+<div class="mt-2">
+  <table class="table table-bordered" *ngIf="_data['Domain [FT]'].length > 0">
+    <thead>
+    <tr>
+      <th scope="col">
+        Start
+      </th>
+      <th scope="col">
+        End
+      </th>
+      <th scope="col">
+        Domain name
+      </th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let d of _data['Domain [FT]']">
+      <td>
+        {{d.start}}
+      </td>
+      <td>
+        {{d.end}}
+      </td>
+      <td>
+        {{d.name}}
+      </td>
+    </tr>
+  </table>
+</div>
+
