@@ -1,0 +1,119 @@
+<div class="modal-header">
+  <h5 class="modal-title">
+    Default Color Palette Customization
+  </h5>
+</div>
+<div class="modal-body">
+  <div class="d-flex justify-content-center">
+    <div class="p-2">
+      <table class="table table-borderless">
+        <thead>
+        <tr style="height: 50px">
+          <th scope="col">
+            Current Palette
+            <br>
+          </th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let c of currentColor">
+          <td>
+            <input disabled class="form-control" [style.background-color]="c">
+          </td>
+        </tr>
+        </tbody>
+      </table>
+      <div class="mt-2">
+        <button  class="btn btn-sm btn-primary" (click)="openCustomPalette('current')">Customize Palette</button>
+      </div>
+    </div>
+    <div class="p-2">
+      <table class="table table-borderless">
+        <thead>
+        <tr style="height: 50px">
+          <th scope="col">
+            <label for="colorPalette">Select a built-in palette</label>
+          </th>
+          <th scope="col">
+            <form [formGroup]="form">
+              <div class="form-group">
+                <select id="colorPalette" class="form-control-sm" formControlName="colorPalette">
+                  <option [value]="''"></option>
+                  <option *ngFor="let o of colorPaletteList" [value]="o">{{o}}</option>
+                </select>
+              </div>
+            </form>
+          </th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let c of selectedColor">
+          <td>
+            <input disabled class="form-control" [style.background-color]="c">
+          </td>
+          <td></td>
+        </tr>
+        </tbody>
+      </table>
+      <div class="mt-2" *ngIf="selectedColor.length > 0">
+        <button class="btn btn-sm btn-primary" (click)="openCustomPalette(form.value['colorPalette'])">Customize Palette</button>
+      </div>
+
+    </div>
+    <div class="p-2" *ngIf="customPalette.length>0">
+      <table class="table table-borderless">
+        <thead>
+        <tr style="height: 50px">
+          <th scope="col">
+            Custom Palette
+            <br>
+          </th>
+          <th scope="col"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let c of customPalette; let ind = index">
+          <td>
+            <input [(colorPicker)]="customPalette[ind]" class="form-control" [style.background-color]="c">
+          </td>
+          <td><button class="btn btn-sm btn-primary" (click)="removeCustomColor(ind)">-</button></td>
+        </tr>
+        <tr>
+          <td>
+            <button class="btn btn-sm btn-primary" (click)="addCustomColor()">+</button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+      <div class="mt-2">
+        <button class="btn btn-sm btn-primary" (click)="clearCustomPalette()">Clear Palette</button>
+      </div>
+    </div>
+  </div>
+  <div class="mt-2">
+    <textarea class="form-control" #config></textarea>
+    <div class="d-flex">
+      <div class="p-2">
+        <button class="btn btn-sm btn-primary" (click)="parseConfig(config.value)">Parse Custom Palette Config</button>
+      </div>
+      <div class="p-2">
+        <button class="btn btn-sm btn-primary" (click)="copyColorListToClipboard()">Copy Current Palette</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+<div class="modal-footer">
+  <form [formGroup]="form">
+    <div class="form-check">
+      <input type="checkbox" id="resetBarChartColor" class="form-check-input" formControlName="resetBarChartColor">
+      <label class="form-check-label" for="resetBarChartColor">
+        Reset Bar Chart Color
+      </label>
+    </div>
+  </form>
+  <button class="btn btn-primary" (click)="updateColor()">Update Color Palette</button>
+  <button class="btn btn-danger" (click)="close()" type="button">
+    Close
+  </button>
+</div>

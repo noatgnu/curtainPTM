@@ -100,10 +100,10 @@ export class FileFormComponent implements OnInit {
       const condition = condition_replicate.slice(0, condition_replicate.length-1).join(".")
       if (!conditions.includes(condition)) {
         conditions.push(condition)
-        if (colorPosition >= this.data.defaultColorList.length) {
+        if (colorPosition >= this.settings.settings.defaultColorList.length) {
           colorPosition = 0
         }
-        colorMap[condition] = this.data.defaultColorList[colorPosition]
+        colorMap[condition] = this.settings.settings.defaultColorList[colorPosition]
         colorPosition ++
       }
       if (!this.settings.settings.sampleOrder[condition]) {

@@ -129,6 +129,10 @@ export class HomeComponent implements OnInit {
     } else {
       this.data.differential = new InputFile(fromCSV(object.processed), "processedFile.txt", object.processed)
     }
+
+    if (!object.settings.defaultColorList) {
+      object.settings.defaultColorList = this.data.palette["pastel"].slice()
+    }
     if (!object.settings.volcanoPlotTitle) {
       object.settings.volcanoPlotTitle = ""
     }

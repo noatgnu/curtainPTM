@@ -38,7 +38,14 @@ export class VolcanoPlotComponent implements OnInit {
     }
   }
   config: any = {
-    modeBarButtonsToRemove: ["toImage"]
+    //modeBarButtonsToRemove: ["toImage"]
+    toImageButtonOptions: {
+      format: 'svg',
+      filename: this.graphLayout.title.text,
+      height: this.graphLayout.height,
+      width: this.graphLayout.width,
+      scale: 1
+    }
   }
   layoutMaxMin: any = {
     xMin: 0, xMax: 0, yMin: 0, yMax: 0
@@ -83,13 +90,13 @@ export class VolcanoPlotComponent implements OnInit {
       if (!this.settings.settings.colorMap[s]) {
         while (true) {
           if (this.breakColor) {
-            this.settings.settings.colorMap[s] = this.dataService.defaultColorList[currentPosition]
+            this.settings.settings.colorMap[s] = this.settings.settings.defaultColorList[currentPosition]
             break
           }
-          if (currentColors.indexOf(this.dataService.defaultColorList[currentPosition]) !== -1) {
+          if (currentColors.indexOf(this.settings.settings.defaultColorList[currentPosition]) !== -1) {
             currentPosition ++
-          } else if (currentPosition !== this.dataService.defaultColorList.length) {
-            this.settings.settings.colorMap[s] = this.dataService.defaultColorList[currentPosition]
+          } else if (currentPosition !== this.settings.settings.defaultColorList.length) {
+            this.settings.settings.colorMap[s] = this.settings.settings.defaultColorList[currentPosition]
             break
           } else {
             this.breakColor = true
@@ -98,7 +105,7 @@ export class VolcanoPlotComponent implements OnInit {
         }
 
         currentPosition ++
-        if (currentPosition === this.dataService.defaultColorList.length) {
+        if (currentPosition === this.settings.settings.defaultColorList.length) {
           currentPosition = 0
         }
       }
@@ -189,9 +196,9 @@ export class VolcanoPlotComponent implements OnInit {
         const group = this.dataService.significantGroup(x, y)
         if (!temp[group]) {
           if (!this.settings.settings.colorMap[group]) {
-            this.settings.settings.colorMap[group] = this.dataService.defaultColorList[currentPosition]
+            this.settings.settings.colorMap[group] = this.settings.settings.defaultColorList[currentPosition]
             currentPosition ++
-            if (currentPosition === this.dataService.defaultColorList.length) {
+            if (currentPosition === this.settings.settings.defaultColorList.length) {
               currentPosition = 0
             }
           }

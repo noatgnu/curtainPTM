@@ -19,6 +19,9 @@
               <button ngbDropdownItem (click)="web.downloadFile('raw.txt', data.raw.originalFile)">Download Raw File</button>
               <button ngbDropdownItem (click)="openAnnotation()">Project Annotation</button>
               <button ngbDropdownItem (click)="openSampleSettings()">Sample Order and Visibility</button>
+              <button ngbDropdownItem (click)="openColorPaletteModal()">
+                Customize Color Palette
+              </button>
             </ng-container>
             <button ngbDropdownItem (click)="openLoginModal()" *ngIf="accounts.curtainAPI.user.loginStatus===false">
               Account Login

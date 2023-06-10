@@ -12,6 +12,7 @@ import {LoginModalComponent} from "../../accounts/login-modal/login-modal.compon
 import {SessionSettingsComponent} from "../session-settings/session-settings.component";
 import {AccountsComponent} from "../../accounts/accounts/accounts.component";
 import {ToastService} from "../../toast.service";
+import {DefaultColorPaletteComponent} from "../default-color-palette/default-color-palette.component";
 
 @Component({
   selector: 'app-navbar',
@@ -134,5 +135,9 @@ export class NavbarComponent implements OnInit {
 
   openAccountModal() {
     const ref = this.modal.open(AccountsComponent)
+  }
+  openColorPaletteModal() {
+    const ref = this.modal.open(DefaultColorPaletteComponent, {size: "xl", scrollable: true})
+
   }
 }

@@ -35,6 +35,55 @@ export class DataService {
     "ANOVA",
     //"TTest"
   ]
+  palette: any = {
+    "pastel": [
+      "#fd7f6f",
+      "#7eb0d5",
+      "#b2e061",
+      "#bd7ebe",
+      "#ffb55a",
+      "#ffee65",
+      "#beb9db",
+      "#fdcce5",
+      "#8bd3c7"
+    ], "retro": [
+      "#ea5545",
+      "#f46a9b",
+      "#ef9b20",
+      "#edbf33",
+      "#ede15b",
+      "#bdcf32",
+      "#87bc45",
+      "#27aeef",
+      "#b33dc6"
+    ],
+    "solid": [
+      '#1f77b4',
+      '#ff7f0e',
+      '#2ca02c',
+      '#d62728',
+      '#9467bd',
+      '#8c564b',
+      '#e377c2',
+      '#7f7f7f',
+      '#bcbd22',
+      '#17becf'
+    ],
+    "gradient": [
+      "#ff0000",
+      "#ff3300",
+      "#ff6600",
+      "#ff9900",
+      "#ffcc00",
+      "#ffff00",
+      "#ccff00",
+      "#99ff00",
+      "#66ff00",
+      "#33ff00",
+      "#00ff00"
+    ]
+  }
+
   currentDF: IDataFrame = new DataFrame()
   accessionToPrimaryIDs: any = {}
   primaryIDsList: string[] = []
