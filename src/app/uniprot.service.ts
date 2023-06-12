@@ -67,6 +67,15 @@ export class UniprotService {
         }
         r["Subcellular location [CC]"] = subLoc
       }
+      const isoforms: string[] = []
+      if (r["Alternative products (isoforms)"]) {
+        for (const iso of r["Alternative products (isoforms)"].split(/[; ]/g)) {
+          if (iso.startsWith("IsoId=")) {
+            isoforms.push(iso.slice(6))
+          }
+        }
+        r["Alternative products (isoforms)"] = isoforms
+      }
       if (r["Modified residue"]) {
         const mods = r["Modified residue"].split("; ")
         let modRes: any[] = []

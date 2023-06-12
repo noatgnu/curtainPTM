@@ -9,7 +9,7 @@
                     <b>Found in searches:</b> {{foundIn.join(";")}}<br>
                   </p>-->
         <p>
-          <b>Variant:</b>{{accessionID}}<br>
+          <b>Variant: <span class="badge bg-danger" (click)="openVariantSelectionModal()">{{sourceMap["Experimental Data"]}}<br></span></b>
         </p>
         <ng-container *ngIf="dataService.fetchUniProt && uni">
           <p>

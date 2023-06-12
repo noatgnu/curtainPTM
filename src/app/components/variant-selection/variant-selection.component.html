@@ -1,0 +1,20 @@
+<div class="modal-header">
+  <h5 class="modal-title">Variant Assignment</h5>
+</div>
+<div class="modal-body">
+  <form [formGroup]="form">
+    <div class="form-group">
+      <label for="isoforms">Isoforms</label>
+      <select id="isoforms" formControlName="isoforms" class="form-control">
+        <option *ngFor="let i of data" [value]="i">{{i}}</option>
+      </select>
+    </div>
+    <hr>
+    <textarea placeholder="Custom protein sequence" class="form-control" formControlName="sequence"></textarea>
+  </form>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-primary" (click)="returnToDefault()">Remove assignment</button>
+  <button type="button" class="btn btn-primary" (click)="updateSelection()">Set assignment</button>
+  <button type="button" class="btn btn-secondary" (click)="close()">Cancel</button>
+</div>

@@ -133,6 +133,12 @@ export class HomeComponent implements OnInit {
     if (!object.settings.defaultColorList) {
       object.settings.defaultColorList = this.data.palette["pastel"].slice()
     }
+    if (!object.settings.variantCorrection) {
+      object.settings.variantCorrection = {}
+    }
+    if (!object.settings.customSequences) {
+      object.settings.customSequences = {}
+    }
     if (!object.settings.volcanoPlotTitle) {
       object.settings.volcanoPlotTitle = ""
     }

@@ -36,4 +36,6 @@ export class Settings {
     "#fdcce5",
     "#8bd3c7",
   ]
+  variantCorrection: any = {}
+  customSequences: any = {}
 }
