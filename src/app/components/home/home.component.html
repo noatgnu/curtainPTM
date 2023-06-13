@@ -1,4 +1,4 @@
-<app-navbar [finished]="finished"></app-navbar>
+<app-navbar [finished]="finished" (updateSelection)="handleFinish($event)"></app-navbar>
 <app-pride></app-pride>
 <app-file-form (finished)="handleFinish($event)"></app-file-form>
 <app-protein-selections (searchResult)="handleSearch($event)"></app-protein-selections>

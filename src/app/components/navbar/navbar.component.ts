@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {WebService} from "../../web.service";
 import {DataService} from "../../data.service";
 import {ScrollService} from "../../scroll.service";
@@ -13,6 +13,7 @@ import {SessionSettingsComponent} from "../session-settings/session-settings.com
 import {AccountsComponent} from "../../accounts/accounts/accounts.component";
 import {ToastService} from "../../toast.service";
 import {DefaultColorPaletteComponent} from "../default-color-palette/default-color-palette.component";
+import {DataSelectionManagementComponent} from "../data-selection-management/data-selection-management.component";
 
 @Component({
   selector: 'app-navbar',
@@ -22,6 +23,7 @@ import {DefaultColorPaletteComponent} from "../default-color-palette/default-col
 export class NavbarComponent implements OnInit {
   @Input() finished: boolean = false
   @Input() uniqueLink: string = ""
+  @Output() updateSelection: EventEmitter<boolean> = new EventEmitter<boolean>()
   filterModel: string = ""
   constructor(
     public web: WebService,
@@ -139,5 +141,21 @@ export class NavbarComponent implements OnInit {
   openColorPaletteModal() {
     const ref = this.modal.open(DefaultColorPaletteComponent, {size: "xl", scrollable: true})
 
+  }
+
+  selectionManagementModal() {
+    const ref = this.modal.open(DataSelectionManagementComponent, {scrollable: true})
+    ref.closed.subscribe(data => {
+      if (data) {
+        this.data.selectedAccessions = []
+        this.data.selectedGenes = []
+        if (this.data.selected.length > 0) {
+          this.updateSelection.next(true)
+        } else {
+          this.clearSelections()
+        }
+
+      }
+    })
   }
 }

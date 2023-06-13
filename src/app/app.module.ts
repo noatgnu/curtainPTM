@@ -45,6 +45,8 @@ import { KinaseLibraryModalComponent } from './components/kinase-library-modal/k
 import { WebLogoComponent } from './components/web-logo/web-logo.component';
 import { DefaultColorPaletteComponent } from './components/default-color-palette/default-color-palette.component';
 import { VariantSelectionComponent } from './components/variant-selection/variant-selection.component';
+import { SessionExpiredModalComponent } from './components/session-expired-modal/session-expired-modal.component';
+import { DataSelectionManagementComponent } from './components/data-selection-management/data-selection-management.component';
 PlotlyModule.plotlyjs = PlotlyJS;
 @NgModule({
   declarations: [
@@ -79,7 +81,9 @@ PlotlyModule.plotlyjs = PlotlyJS;
     KinaseLibraryModalComponent,
     WebLogoComponent,
     DefaultColorPaletteComponent,
-    VariantSelectionComponent
+    VariantSelectionComponent,
+    SessionExpiredModalComponent,
+    DataSelectionManagementComponent
   ],
   imports: [
     BrowserModule,

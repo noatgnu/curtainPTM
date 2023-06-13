@@ -22,6 +22,9 @@
               <button ngbDropdownItem (click)="openColorPaletteModal()">
                 Customize Color Palette
               </button>
+              <button ngbDropdownItem (click)="selectionManagementModal()">
+                Data Selection Management
+              </button>
             </ng-container>
             <button ngbDropdownItem (click)="openLoginModal()" *ngIf="accounts.curtainAPI.user.loginStatus===false">
               Account Login

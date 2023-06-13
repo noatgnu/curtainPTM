@@ -2,7 +2,9 @@ import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {environment} from "../../environments/environment";
 import {ToastService} from "../toast.service";
-import {CurtainWebAPI} from "curtain-web-api";
+import {CurtainWebAPI, User} from "curtain-web-api";
+import {SessionExpiredModalComponent} from "../components/session-expired-modal/session-expired-modal.component";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 
 @Injectable({
   providedIn: 'root'
@@ -13,8 +15,54 @@ export class AccountsService {
 
   isOwner: boolean = false
 
-  constructor(private http: HttpClient, private toast: ToastService) {
+  constructor(private http: HttpClient, private toast: ToastService, private modal: NgbModal) {
+    this.curtainAPI.axiosInstance.interceptors.request.use((config) => {
+      if (config.url) {
+        if (this.curtainAPI.checkIfRefreshTokenExpired() && this.curtainAPI.user.loginStatus) {
+          const ref = this.modal.open(SessionExpiredModalComponent, {backdrop: 'static'})
+          this.curtainAPI.user = new User()
+          this.curtainAPI.user.loginStatus = false
+        }
+        if (
+          //config.url === this.refereshURL ||
+          config.url === this.curtainAPI.logoutURL ||
+          config.url === this.curtainAPI.userInfoURL ||
+          config.url.startsWith(this.curtainAPI.baseURL + "curtain/") ||
+          config.url.startsWith(this.curtainAPI.baseURL + "data_filter_list/")) {
+          if (this.curtainAPI.user.loginStatus) {
+            config.headers["Authorization"] = "Bearer " + this.curtainAPI.user.access_token;
+          }
+        }
+      }
 
+      return config;
+    }, (error) => {
+      return Promise.reject(error);
+    });
+    this.curtainAPI.axiosInstance.interceptors.response.use((response) => {
+      return response
+    } , (error) => {
+      if (error.response.status === 401) {
+        if (error.config.url !== this.curtainAPI.refereshURL &&
+          error.config.url !== this.curtainAPI.loginURL &&
+          error.config.url !== this.curtainAPI.orcidLoginURL) {
+          if (!this.curtainAPI.checkIfRefreshTokenExpired() && this.curtainAPI.user.loginStatus) {
+            console.log("refreshing token")
+            if (!this.curtainAPI.isRefreshing) {
+              return this.refresh().then((response) => {
+                this.curtainAPI.isRefreshing = false;
+                return this.curtainAPI.axiosInstance.request(error.config);
+              }).catch((error) => {
+                this.curtainAPI.isRefreshing = false;
+                this.curtainAPI.user = new User();
+                return error;
+              });
+            }
+          }
+        }
+      }
+      return Promise.reject(error);
+    });
   }
 
   reload() {

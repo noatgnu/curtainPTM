@@ -107,8 +107,12 @@ export class DataBlockComponent implements OnInit {
     ref.componentInstance.data = this.uni["Alternative products (isoforms)"]
     ref.closed.subscribe((result) => {
       if (result.returnToDefault) {
-        delete this.settingsService.settings.variantCorrection[this.accessionID]
-        delete this.settingsService.settings.customSequences[this.accessionID]
+        if (this.settingsService.settings.variantCorrection[this.accessionID]) {
+          delete this.settingsService.settings.variantCorrection[this.accessionID]
+        }
+        if (this.settingsService.settings.customSequences[this.accessionID]) {
+          delete this.settingsService.settings.customSequences[this.accessionID]
+        }
         this.sourceMap["Experimental Data"] = this.accessionID.slice()
       } else {
         if (result.sequence && result.sequence !== "") {
@@ -119,8 +123,6 @@ export class DataBlockComponent implements OnInit {
           this.sourceMap["Experimental Data"] = result.isoforms.slice()
         }
       }
-
-
       this.getSequence().then()
     })
   }
