@@ -69,7 +69,7 @@ export class DataService {
       '#bcbd22',
       '#17becf'
     ],
-    "gradient": [
+    "gradient_red_to_green": [
       "#ff0000",
       "#ff3300",
       "#ff6600",
@@ -81,6 +81,48 @@ export class DataService {
       "#66ff00",
       "#33ff00",
       "#00ff00"
+    ],
+    "Tol_bright": [
+      '#EE6677',
+      '#228833',
+      '#4477AA',
+      '#CCBB44',
+      '#66CCEE',
+      '#AA3377',
+      '#BBBBBB'
+    ],
+    "Tol_muted": [
+      '#88CCEE',
+      '#44AA99',
+      '#117733',
+      '#332288',
+      '#DDCC77',
+      '#999933',
+      '#CC6677',
+      '#882255',
+      '#AA4499',
+      '#DDDDDD'
+    ],
+    "Tol_light": [
+      '#BBCC33',
+      '#AAAA00',
+      '#77AADD',
+      '#EE8866',
+      '#EEDD88',
+      '#FFAABB',
+      '#99DDFF',
+      '#44BB99',
+      '#DDDDDD'
+    ],
+    "Okabe_Ito": [
+      "#E69F00",
+      "#56B4E9",
+      "#009E73",
+      "#F0E442",
+      "#0072B2",
+      "#D55E00",
+      "#CC79A7",
+      "#000000"
     ]
   }
 

@@ -62,7 +62,7 @@ export class BatchSearchComponent implements OnInit {
   handleSubmit() {
     const result: any = {}
     for (const r of this.data.split("\n")) {
-      const a = r.trim()
+      const a = r.trim().toUpperCase()
       if (a !== "") {
         const e = a.split(";")
         if (!result[a]) {
