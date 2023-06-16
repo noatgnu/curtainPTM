@@ -19,9 +19,11 @@ export class AccountsService {
     this.curtainAPI.axiosInstance.interceptors.request.use((config) => {
       if (config.url) {
         if (this.curtainAPI.checkIfRefreshTokenExpired() && this.curtainAPI.user.loginStatus) {
-          const ref = this.modal.open(SessionExpiredModalComponent, {backdrop: 'static'})
-          this.curtainAPI.user = new User()
           this.curtainAPI.user.loginStatus = false
+          this.curtainAPI.user.clearDB().then((data: any) => {
+            this.curtainAPI.user = new User()
+          })
+          const ref = this.modal.open(SessionExpiredModalComponent, {backdrop: 'static'})
         }
         if (
           //config.url === this.refereshURL ||

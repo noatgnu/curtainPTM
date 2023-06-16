@@ -126,4 +126,5 @@ export class DataBlockComponent implements OnInit {
       this.getSequence().then()
     })
   }
+
 }

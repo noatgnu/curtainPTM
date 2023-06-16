@@ -38,4 +38,5 @@ export class Settings {
   ]
   variantCorrection: any = {}
   customSequences: any = {}
+  scatterPlotMarkerSize: number = 10
 }

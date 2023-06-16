@@ -133,6 +133,10 @@ export class HomeComponent implements OnInit {
     if (!object.settings.defaultColorList) {
       object.settings.defaultColorList = this.data.palette["pastel"].slice()
     }
+
+    if (!object.settings.scatterPlotMarkerSize) {
+      object.settings.scatterPlotMarkerSize = 10
+    }
     if (!object.settings.variantCorrection) {
       object.settings.variantCorrection = {}
     }

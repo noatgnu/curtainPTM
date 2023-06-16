@@ -2,7 +2,7 @@
   Volcano Text Annotation Editor
 </div>
 <div class="modal-body">
-  <table class="table table-borderless">
+  <!--<table class="table table-borderless">
     <thead>
     <tr>
       <th scope="col">
@@ -65,9 +65,79 @@
       </td>
     </tr>
     </tbody>
-  </table>
+  </table>-->
+  <ng-container *ngFor="let f of forms">
+    <form [formGroup]="f">
+      <h5>{{f.value["annotationID"]}}</h5>
+      <div class="d-flex">
+        <div class="p-2">
+          <div class="form-check">
+            <input class="form-check-input" formControlName="showannotation" type="checkbox">
+            <label class="form-check-label">Show Annotation</label>
+          </div>
+        </div>
+        <div class="p-2">
+          <div class="form-check">
+            <input class="form-check-input" formControlName="showarrow" type="checkbox">
+            <label class="form-check-label">Show Arrow</label>
+          </div>
+        </div>
+      </div>
+      <div class="d-flex">
+        <div class="p-2">
+          <div class="form-group">
+            <label>Arrow Head Type</label>
+            <input type="number" class="form-control" formControlName="arrowhead">
+          </div>
+        </div>
+        <div class="p-2">
+          <div class="form-group">
+            <label>Arrow Size</label>
+            <input type="number" class="form-control" formControlName="arrowsize">
+          </div>
+        </div>
+        <div class="p-2">
+          <div class="form-group">
+            <label>Arrow Width</label>
+            <input type="number" class="form-control" formControlName="arrowwidth">
+          </div>
+        </div>
+        <div class="p-2">
+          <div class="form-group">
+            <label>X axis offset</label>
+            <input type="number" class="form-control" formControlName="ax">
+          </div>
+        </div>
+        <div class="p-2">
+          <div class="form-group">
+            <label>Y axis offset</label>
+            <input type="number" class="form-control" formControlName="ay">
+          </div>
+        </div>
+      </div>
+      <div class="d-flex">
+        <div class="p-2">
+          <div class="form-group">
+            <label>Font Size</label>
+            <input type="number" class="form-control" formControlName="fontsize">
+          </div>
+        </div>
+        <div class="p-2">
+          <div class="form-group">
+            <label>Font Color</label>
+            <input (colorPickerChange)="updateColor($event, f.value['annotationID'])" formControlName="fontcolor" [(colorPicker)]="colorMap[f.value['annotationID']]" class="form-control" [style.background-color]="colorMap[f.value['annotationID']]">
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Annotation Text</label>
+        <textarea class="form-control" formControlName="text"></textarea>
+      </div>
+    </form>
+    <hr>
+  </ng-container>
 </div>
 <div class="modal-footer">
-  <button class="btn btn-primary" (click)="modal.close(annotationText)">Submit</button>
+  <button class="btn btn-primary" (click)="modal.close(forms)">Submit</button>
   <button class="btn btn-danger" (click)="modal.dismiss()">Close</button>
 </div>

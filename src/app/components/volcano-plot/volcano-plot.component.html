@@ -6,54 +6,58 @@
   <div class="col-5">
     <div class="card">
       <div class="card-body">
-        <div class="row">
-          <div class="col">
+        <div class="d-flex">
+          <div class="p-2">
             <label for="significant">
               Significant Cutoff
             </label>
             <input id="significant" type="number" class="form-control" [(ngModel)]="settings.settings.pCutoff">
           </div>
-          <div class="col">
+          <div class="p-2">
             <label for="foldchange">
               Log2 Fold Change Cutoff
             </label>
             <input id="foldchange" type="number" class="form-control" [(ngModel)]="settings.settings.log2FCCutoff">
           </div>
         </div>
-        <div class="row">
-          <div class="col">
+        <div class="d-flex">
+          <div class="p-2">
             <label for="maxX">
               Max X axis
             </label>
             <input id="maxX" type="number" class="form-control" [(ngModel)]="settings.settings.volcanoAxis.maxX">
           </div>
-          <div class="col">
+          <div class="p-2">
             <label for="minX">
               Min X axis
             </label>
             <input id="minX" type="number" class="form-control" [(ngModel)]="settings.settings.volcanoAxis.minX">
           </div>
         </div>
-        <div class="row">
-          <div class="col">
+        <div class="d-flex">
+          <div class="p-2">
             <label for="maxY">
               Max Y axis
             </label>
             <input id="maxY" type="number" class="form-control" [(ngModel)]="settings.settings.volcanoAxis.maxY">
           </div>
-          <div class="col">
+          <div class="p-2">
             <label for="minY">
               Min Y axis
             </label>
             <input id="minY" type="number" class="form-control" [(ngModel)]="settings.settings.volcanoAxis.minY">
           </div>
         </div>
-        <div class="row">
-          <div class="col">
+        <div class="d-flex">
+          <div class="p-2">
             <label for="plotTitle">
               Plot Title
             </label>
             <input id="plotTitle" type="text" class="form-control" [(ngModel)]="settings.settings.volcanoPlotTitle">
+          </div>
+          <div class="p-2">
+            <label for="markerSize">Marker Size</label>
+            <input id="markerSize" type="number" class="form-control" [(ngModel)]="markerSize">
           </div>
         </div>
         <div class="row">
