@@ -4,17 +4,47 @@
   </h5>
 </div>
 <div class="modal-body">
-  <form *ngFor="let s of selectOperationNames" [formGroup]="selectionForms[s]">
-    <div class="form-group">
-      <label>Selection title</label>
-      <input type="text" class="form-control" formControlName="title">
+  <div *ngFor="let s of selectOperationNames">
+    <form [formGroup]="selectionForms[s]">
+      <div class="form-group">
+        <label>Selection title</label>
+        <input type="text" class="form-control" formControlName="title">
+      </div>
+      <div class="form-check">
+        <input type="checkbox" class="form-check-input" formControlName="markForDeletion">
+        <label class="form-check-label">Remove</label>
+      </div>
+
+    </form>
+    <button class="btn btn-sm btn-outline-info" (click)="selectionToggle[s] = !selectionToggle[s]">Edit Selection</button>
+    <div *ngIf="selectionToggle[s] === true && primaryIDForms[s]">
+      <div class="card border-dark mt-2">
+        <div class="card-body">
+          <div *ngFor="let primaryID of selectionMap[s]; let ind = index">
+            <div>
+              <b>{{primaryID}} <span *ngIf="geneNameMap[primaryID]">[{{geneNameMap[primaryID]}}]</span></b>
+            </div>
+            <form *ngIf="primaryIDForms[s][primaryID]" [formGroup]="primaryIDForms[s][primaryID]">
+              <div class="d-flex">
+                <div class="p-2">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" formControlName="annotate">
+                    <label class="form-check-label">Annotate on volcano plot</label>
+                  </div>
+                </div>
+                <div class="p-2">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" formControlName="remove">
+                    <label class="form-check-label">Remove from selection</label>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="form-check">
-      <input type="checkbox" class="form-check-input" formControlName="markForDeletion">
-      <label class="form-check-label">Remove</label>
-    </div>
-    <hr>
-  </form>
+  </div>
 </div>
 <div class="modal-footer">
   <button type="button" class="btn btn-primary" (click)="save()">Save</button>

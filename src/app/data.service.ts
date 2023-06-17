@@ -18,6 +18,7 @@ export class DataService {
   selectionUpdateTrigger: Subject<boolean> = new Subject<boolean>()
   restoreTrigger: Subject<boolean> = new Subject<boolean>()
   annotationService: Subject<any> = new Subject<any>()
+  batchAnnotateAnnoucement: Subject<any> = new Subject<any>()
   raw: InputFile = new InputFile()
   rawForm: Raw = new Raw()
   differential: InputFile = new InputFile()

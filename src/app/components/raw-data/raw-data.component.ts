@@ -50,7 +50,15 @@ export class RawDataComponent implements OnInit {
     return this._data
   }
   annotateMap: any = {}
-  constructor(public dataService: DataService, private settings: SettingsService) { }
+  constructor(public dataService: DataService, private settings: SettingsService) {
+    this.dataService.batchAnnotateAnnoucement.subscribe((data: any) => {
+      for (const i of data.id) {
+        if (i in this.annotateMap) {
+          this.annotateMap[i] = !data.remove
+        }
+      }
+    })
+  }
 
   ngOnInit(): void {
   }
