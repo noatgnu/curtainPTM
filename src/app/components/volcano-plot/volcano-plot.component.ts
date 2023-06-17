@@ -381,14 +381,27 @@ export class VolcanoPlotComponent implements OnInit {
     this.dataService.annotationService.asObservable().subscribe(data => {
       if (data) {
         if (data.remove) {
-          this.removeAnnotatedDataPoints([data.id]).then( () => {
-              this.settings.settings.textAnnotation = this.annotated
+          if (typeof data.id === "string") {
+            this.removeAnnotatedDataPoints([data.id]).then(() => {
+              this.dataService.annotatedData = this.annotated
+            })
+          } else {
+            this.removeAnnotatedDataPoints(data.id).then(() => {
+              this.dataService.annotatedData = this.annotated
+            })
           }
-          )
+
         } else {
-          this.annotateDataPoints([data.id]).then(() => {
-            this.settings.settings.textAnnotation = this.annotated
-          })
+          if (typeof data.id === "string") {
+            this.annotateDataPoints([data.id]).then(() => {
+              this.dataService.annotatedData = this.annotated
+            })
+          } else {
+            this.annotateDataPoints(data.id).then(() => {
+              this.dataService.annotatedData = this.annotated
+            })
+          }
+
         }
       }
     })
