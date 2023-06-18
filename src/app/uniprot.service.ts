@@ -3,8 +3,7 @@ import {HttpClient} from "@angular/common/http";
 import {WebService} from "./web.service";
 import {fromCSV} from "data-forge";
 import {BehaviorSubject, Subject} from "rxjs";
-import {UniprotParser} from "./classes/uniprot-parser";
-import {Parser} from "uniprotparserjs";
+import {Parser, Accession} from "uniprotparserjs";
 import {UniprotDb} from "./classes/uniprot-db";
 
 @Injectable({
@@ -166,5 +165,32 @@ export class UniprotService {
       }
     }
     return seq
+  }
+
+  *parseMultiFasta(data: string) {
+    const multiFastaMap = new Map<string, string>()
+    const lines = data.split("\n")
+    let seq: string = ""
+    let id: string = ""
+    for (const line of lines) {
+      if (!line.startsWith(">")) {
+        seq = seq + line
+      } else {
+        if (id !== "") {
+          yield {id: id.slice(), seq: seq.slice()}
+        }
+
+        id = line.slice(1)
+        const acc = new Accession(id, true)
+        if (acc.acc !== "" && acc.acc !== null && acc.acc !== undefined) {
+          id = acc.toString()
+        }
+        seq = ""
+
+      }
+    }
+    if (id !== "") {
+      yield {id: id.slice(), seq: seq.slice()}
+    }
   }
 }

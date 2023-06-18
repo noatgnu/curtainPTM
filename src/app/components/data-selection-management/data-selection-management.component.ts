@@ -4,6 +4,8 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {SettingsService} from "../../settings.service";
 import {DataService} from "../../data.service";
 import {UniprotService} from "../../uniprot.service";
+import {InputFile} from "../../classes/input-file";
+import {fromCSV} from "data-forge";
 
 @Component({
   selector: 'app-data-selection-management',
@@ -137,6 +139,22 @@ export class DataSelectionManagementComponent implements OnInit {
 
   close() {
     this.modal.dismiss()
+  }
+  handleFile(e: Event) {
+    if (e.target) {
+      const target = e.target as HTMLInputElement;
+      if (target.files) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const loadedFile = reader.result;
+          for (const {id, seq} of this.uniprot.parseMultiFasta(<string>loadedFile)) {
+            this.settings.settings.customSequences[id] = seq
+          }
+          this.data.updateVariantCorrection.next(true)
+        }
+        reader.readAsText(target.files[0]);
+      }
+    }
   }
 
 }

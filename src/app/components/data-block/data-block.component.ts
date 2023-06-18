@@ -87,7 +87,17 @@ export class DataBlockComponent implements OnInit {
     console.log(unidList)
   }
   accessionID: string = ""
-  constructor(private modal: NgbModal, public dataService: DataService, private uniprot: UniprotService, private scroll: ScrollService, private settingsService: SettingsService) { }
+  constructor(private modal: NgbModal, public dataService: DataService, private uniprot: UniprotService, private scroll: ScrollService, private settingsService: SettingsService) {
+    this.dataService.updateVariantCorrection.asObservable().subscribe((value) => {
+      if (value) {
+        if (this.settingsService.settings.variantCorrection[this.accessionID]) {
+          this.sourceMap["Experimental Data"] = `${this.accessionID} (custom)`
+          this.getSequence().then()
+        }
+
+      }
+    })
+  }
 
   ngOnInit(): void {
   }
