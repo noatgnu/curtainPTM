@@ -13,7 +13,7 @@ import {fromCSV} from "data-forge";
   styleUrls: ['./data-selection-management.component.scss']
 })
 export class DataSelectionManagementComponent implements OnInit {
-
+  fastaFileName: string = ""
   selectionForms: {[key: string]: FormGroup} = {}
   selectionMap: {[key: string]: string[]} = {}
   selectOperationNames: string[] = []
@@ -145,6 +145,7 @@ export class DataSelectionManagementComponent implements OnInit {
       const target = e.target as HTMLInputElement;
       if (target.files) {
         const reader = new FileReader();
+        this.fastaFileName = target.files[0].name
         reader.onload = (event) => {
           const loadedFile = reader.result;
           for (const {id, seq} of this.uniprot.parseMultiFasta(<string>loadedFile)) {
