@@ -7,14 +7,29 @@
       <input type="text" placeholder="Title" class="form-control" [(ngModel)]="title">
     </div>
     <div class="col">
-      <div ngbDropdown class="d-inline-block">
+      <form [formGroup]="form">
+        <input id="typeahead-basic"
+               [resultTemplate]="rt"
+               [inputFormatter]="formatter"
+               placeholder="Protein/Category search"
+               [class.is-invalid]="searchFailed"
+               type="text" class="form-control"
+               formControlName="searchTerm"
+               (focus)="focusCapture.next($any($event).target.value)"
+               (click)="clickCapture.next($any($event).target.value)"
+               [ngbTypeahead]="search"
+               (selectItem)="selectDataList($event)"
+               #instance="ngbTypeahead"
+        />
+      </form>
+      <!--<div ngbDropdown class="d-inline-block">
         <button type="button" class="btn btn-outline-primary" id="dropDownProteinList" ngbDropdownToggle>Built-in Protein Lists</button>
         <div ngbDropdownMenu aria-labelledby="dropDownProteinList">
           <button ngbDropdownItem *ngFor="let b of filterList" (click)="updateTextArea(b.id)">
             {{b.name}}
           </button>
         </div>
-      </div>
+      </div>-->
     </div>
     <div class="col">
       <select class="form-control" [(ngModel)]="searchType">
@@ -93,3 +108,6 @@
   <button class="btn btn-primary" (click)="handleSubmit()">Submit</button>
   <button class="btn btn-danger" (click)="close()">Close</button>
 </div>
+<ng-template #rt let-r="result" let-t="term">
+  <ngb-highlight [result]="r.data" [term]="t"></ngb-highlight>
+</ng-template>
