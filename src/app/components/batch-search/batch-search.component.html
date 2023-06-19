@@ -109,5 +109,10 @@
   <button class="btn btn-danger" (click)="close()">Close</button>
 </div>
 <ng-template #rt let-r="result" let-t="term">
-  <ngb-highlight [result]="r.data" [term]="t"></ngb-highlight>
+  <div *ngIf="r.default" style="color: #850000">
+    <ngb-highlight [result]="r.name" [term]="t"></ngb-highlight><span> </span><ngb-highlight *ngIf="r.data !== ''" [result]="r.data" [term]="t"></ngb-highlight>
+  </div>
+  <div *ngIf="!r.default" style="color: #9933ff">
+    <ngb-highlight [result]="r.name" [term]="t"></ngb-highlight><span> </span><ngb-highlight *ngIf="r.data !== ''" [result]="r.data" [term]="t"></ngb-highlight>
+  </div>
 </ng-template>

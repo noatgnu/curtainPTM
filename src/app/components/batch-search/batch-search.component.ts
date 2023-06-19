@@ -78,7 +78,7 @@ export class BatchSearchComponent implements OnInit {
       tap(() => this.searching = true),
       tap(() => this.searchFailed = false),
       switchMap(term => {
-        return from(this.accounts.curtainAPI.getDataFilterList(term, term, 20)).pipe(
+        return from(this.accounts.curtainAPI.getDataFilterList(term, term, 30)).pipe(
           tap(() => this.searchFailed = false),
           map((data: any) => {
             const res = data.data.results.map((a: any) => {
@@ -90,9 +90,9 @@ export class BatchSearchComponent implements OnInit {
             })
             const searchOutput = res.map((a: any) => {
               if (a.data.length > 0) {
-                return {id: a.id, name: a.name, data:`${a.name} ...${a.data[0]}...`}
+                return {id: a.id, name: a.name, data:`...${a.data[0]}...`, default: a.default}
               } else {
-                return {id: a.id, name: a.name, data:`${a.name}`}
+                return {id: a.id, name: a.name, data:``, default: a.default}
               }
             })
             return searchOutput
@@ -162,7 +162,7 @@ export class BatchSearchComponent implements OnInit {
 
   saveDataFilterList() {
     this.accounts.curtainAPI.saveDataFilterList(this.title, this.data).then((data:any) => {
-      this.getAllList()
+      //this.getAllList()
       this.data = data.data.data
       this.title = data.data.name
       this.canDelete = !data.data.default
@@ -175,7 +175,7 @@ export class BatchSearchComponent implements OnInit {
       this.title = ""
       this.data = ""
       this.currentID = -1
-      this.getAllList()
+      //this.getAllList()
     })
   }
 
