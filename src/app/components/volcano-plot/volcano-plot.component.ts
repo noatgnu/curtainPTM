@@ -515,7 +515,7 @@ export class VolcanoPlotComponent implements OnInit {
   }
 
   openTextEditor() {
-    const ref = this.modal.open(VolcanoPlotTextAnnotationComponent, {size: "xl"})
+    const ref = this.modal.open(VolcanoPlotTextAnnotationComponent, {size: "xl", scrollable: true})
     ref.closed.subscribe(data => {
       this.graphLayout.annotations = []
       this.annotated = {}
