@@ -1,5 +1,8 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {IDataFrame, ISeries, Series} from "data-forge";
+import {DataFrame, IDataFrame, ISeries, Series} from "data-forge";
+import {FormBuilder} from "@angular/forms";
+import {DataService} from "../../data.service";
+import {debounceTime, distinctUntilChanged} from "rxjs";
 
 @Component({
   selector: 'app-data-viewer',
@@ -8,14 +11,56 @@ import {IDataFrame, ISeries, Series} from "data-forge";
 })
 export class DataViewerComponent implements OnInit {
   _data: ISeries<number, IDataFrame<number, any>> = new Series()
+
+  form = this.fb.group({
+    filterTerm: [""],
+    filterType: ["Gene Names"],
+  })
+
   @Input() set data(value: ISeries<number, IDataFrame<number, any>>) {
     this._data = value
+    this.displaySeries = value
   }
 
   get data(): ISeries<number, IDataFrame<number, any>> {
     return this._data
   }
-  constructor() { }
+
+  displaySeries: ISeries<number, IDataFrame<number, any>> = new Series()
+  constructor(private fb: FormBuilder, private dataService: DataService) {
+    this.form.controls["filterTerm"].valueChanges.pipe(debounceTime(200), distinctUntilChanged()).subscribe((value) => {
+      let primaryIds: string[] = []
+      if (value){
+        if (value.length > 2) {
+          switch (this.form.controls["filterType"].value) {
+            case "Gene Names":
+              const genes = this.dataService.selectedGenes.filter((gene: string) => gene.toLowerCase().includes(value.toLowerCase()))
+              genes.forEach((gene: string) => {
+                primaryIds.push(this.dataService.getPrimaryFromGeneNames(gene)[0])
+              })
+              break
+            case "Primary IDs":
+              primaryIds = this.dataService.selected.filter((primaryID: string) => primaryID.toLowerCase().includes(value.toLowerCase()))
+              break
+          }
+          if (value === "") {
+            this.displaySeries = this._data
+          } else if (primaryIds.length > 0) {
+            this.displaySeries = this._data.where((df: IDataFrame<number, any>) => {
+              return df.getSeries(this.dataService.rawForm.primaryIDs).any((primaryID: string) => {
+                return primaryIds.includes(primaryID)
+              })
+            })
+          } else {
+            this.displaySeries = new Series()
+          }
+        }
+      } else {
+        this.displaySeries = this._data
+      }
+
+    })
+  }
 
   ngOnInit(): void {
   }

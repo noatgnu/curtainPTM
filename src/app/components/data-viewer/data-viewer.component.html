@@ -1,5 +1,24 @@
 <div class="container-fluid mt-4">
-  <ng-container *ngFor="let d of data">
+  <form [formGroup]="form">
+    <div class="d-flex">
+      <div class="p-2">
+        <input type="search" class="form-control" formControlName="filterTerm" placeholder="Filter selected results">
+      </div>
+      <div class="p-2">
+        <div class="form-group">
+          <select formControlName="filterType" class="form-control">
+            <option value="Gene Names">
+              Gene Names
+            </option>
+            <option value="Primary IDs">
+              Primary IDs
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </form>
+  <ng-container *ngFor="let d of displaySeries">
     <hr>
     <app-data-block [data]="d"></app-data-block>
   </ng-container>
