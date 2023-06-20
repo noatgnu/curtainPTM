@@ -24,7 +24,7 @@ export class ProteinSelectionsComponent implements OnInit {
 
 
   openBatchSearch() {
-    const ref = this.modal.open(BatchSearchComponent)
+    const ref = this.modal.open(BatchSearchComponent, {size: "lg"})
     ref.closed.subscribe(data => {
       console.log(data)
       let result: string[] = []

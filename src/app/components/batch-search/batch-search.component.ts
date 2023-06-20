@@ -86,16 +86,15 @@ export class BatchSearchComponent implements OnInit {
               const pFound = pList.filter((p: string) => {
                 return p.toUpperCase().includes(term.toUpperCase());
               })
-              return {name: a.name, id: a.id, data: pFound}
+              return {name: a.name, id: a.id, data: pFound, default: a.default}
             })
-            const searchOutput = res.map((a: any) => {
+            return res.map((a: any) => {
               if (a.data.length > 0) {
                 return {id: a.id, name: a.name, data:`...${a.data[0]}...`, default: a.default}
               } else {
                 return {id: a.id, name: a.name, data:``, default: a.default}
               }
             })
-            return searchOutput
           }),
           catchError(() => {
             this.searchFailed = true;

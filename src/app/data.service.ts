@@ -145,7 +145,8 @@ export class DataService {
   selectedMap: any = {}
   selectOperationNames: string[] = []
   searchType: string = "Gene Names"
-  page: number = 0
+  page: number = 1
+  pageSize: number = 5
   dbIDMap: any = {}
   /*defaultColorList = [
     '#1f77b4',

@@ -27,7 +27,7 @@ export class DataViewerComponent implements OnInit {
   }
 
   displaySeries: ISeries<number, IDataFrame<number, any>> = new Series()
-  constructor(private fb: FormBuilder, private dataService: DataService) {
+  constructor(private fb: FormBuilder, public dataService: DataService) {
     this.form.controls["filterTerm"].valueChanges.pipe(debounceTime(200), distinctUntilChanged()).subscribe((value) => {
       let primaryIds: string[] = []
       if (value){
@@ -47,10 +47,11 @@ export class DataViewerComponent implements OnInit {
             this.displaySeries = this._data
           } else if (primaryIds.length > 0) {
             this.displaySeries = this._data.where((df: IDataFrame<number, any>) => {
-              return df.getSeries(this.dataService.rawForm.primaryIDs).any((primaryID: string) => {
+              const s = df.getSeries(this.dataService.differentialForm.primaryIDs).bake()
+              return s.bake().any((primaryID: string) => {
                 return primaryIds.includes(primaryID)
               })
-            })
+            }).bake()
           } else {
             this.displaySeries = new Series()
           }
