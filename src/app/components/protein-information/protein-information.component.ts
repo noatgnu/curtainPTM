@@ -12,6 +12,7 @@ export class ProteinInformationComponent implements OnInit {
   pharmaUse: string[] = []
   @Input() set data(value: any) {
     this._data = value
+    console.log(this._data)
     if (this._data["Involvement in disease"] && this._data["Involvement in disease"].length > 0) {
       this.diseases = this._data["Involvement in disease"].split(';').map((x: string) => x.replace(/DISEASE:/g, "").trim())
     }
