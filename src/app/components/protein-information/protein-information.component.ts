@@ -13,10 +13,10 @@ export class ProteinInformationComponent implements OnInit {
   @Input() set data(value: any) {
     this._data = value
     console.log(this._data)
-    if (this._data["Involvement in disease"] && this._data["Involvement in disease"].length > 0) {
+    if (this._data["Involvement in disease"] && this._data["Involvement in disease"] !== "") {
       this.diseases = this._data["Involvement in disease"].split(';').map((x: string) => x.replace(/DISEASE:/g, "").trim())
     }
-    if (this._data["Pharmaceutical use"] && this._data["Pharmaceutical use"].length > 0) {
+    if (this._data["Pharmaceutical use"] && this._data["Pharmaceutical use"] !== "") {
       this.pharmaUse = this._data["Pharmaceutical use"].split(';').map((x: string) => x.replace(/PHARMACEUTICAL:/g, "").trim())
     }
   }
