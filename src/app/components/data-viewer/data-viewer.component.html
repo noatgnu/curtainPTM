@@ -1,23 +1,34 @@
+<hr>
 <div class="container-fluid mt-4">
-  <form [formGroup]="form">
-    <div class="d-flex">
-      <div class="p-2">
-        <input type="search" class="form-control" formControlName="filterTerm" placeholder="Filter selected results">
-      </div>
-      <div class="p-2">
-        <div class="form-group">
-          <select formControlName="filterType" class="form-control">
-            <option value="Gene Names">
-              Gene Names
-            </option>
-            <option value="Primary IDs">
-              Primary IDs
-            </option>
-          </select>
+  <div class="container">
+    <form [formGroup]="form" class="mb-2">
+      <div class="d-flex">
+        <div class="p-2">
+          <input type="search" class="form-control" formControlName="filterTerm" placeholder="Filter selected results">
+        </div>
+        <div class="p-2">
+          <div class="form-group">
+            <select formControlName="filterType" class="form-control">
+              <option value="Gene Names">
+                Gene Names
+              </option>
+              <option value="Primary IDs">
+                Primary IDs
+              </option>
+            </select>
+          </div>
         </div>
       </div>
+    </form>
+    <div class="card bg-warning">
+      <div class="card-body">
+        <p>
+          Quick filter of the selected results. This will not affect the search results. Any search term longer than 2 charaters will trigger the filter task. Clear the search field to reset the display data to default.
+        </p>
+      </div>
     </div>
-  </form>
+  </div>
+
 
   <div *ngIf="displaySeries.count() > 0; else noData">
     <ngb-pagination [(page)]="dataService.page" [boundaryLinks]="true" [maxSize]="10" [rotate]="true" [pageSize]="dataService.pageSize" [collectionSize]="displaySeries.count()"></ngb-pagination>
