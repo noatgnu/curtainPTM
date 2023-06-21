@@ -4,7 +4,7 @@
     <a *ngIf="uniqueLink !== ''" href="{{uniqueLink}}" class="ml-2 text-success">{{uniqueLink}}</a>
     <div class="d-flex">
       <div class="p-2">
-        <div ngbDropdown class="d-inline-block">
+        <div display="dynamic" ngbDropdown class="d-inline-block">
           <button class="btn btn-outline-primary ml-2" id="dropdownSession" ngbDropdownToggle>Session
             <ng-container *ngIf="data.session !== undefined">
               <span *ngIf="!data.session.enable" class="badge bg-danger">private</span>
