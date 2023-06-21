@@ -356,6 +356,7 @@ export class VolcanoPlotComponent implements OnInit {
     }
     this.graphData = graphData.reverse()
     this.graphLayout.annotations = []
+    console.log(this.settings.settings.textAnnotation)
     for (const i in this.settings.settings.textAnnotation) {
       if (this.settings.settings.textAnnotation[i].showannotation === true) {
         this.annotated[this.settings.settings.textAnnotation[i].title] = this.settings.settings.textAnnotation[i].data
@@ -363,6 +364,7 @@ export class VolcanoPlotComponent implements OnInit {
       }
 
     }
+    console.log(this.graphLayout.annotations)
   }
 
   constructor(private web: WebService, private dataService: DataService, private uniprot: UniprotService, public settings: SettingsService, private modal: NgbModal) {
@@ -505,6 +507,7 @@ export class VolcanoPlotComponent implements OnInit {
       }
       if (this.annotated[title]) {
         delete this.annotated[title]
+        delete this.settings.settings.textAnnotation[title]
       }
     }
     this.graphLayout.annotations = Object.values(this.annotated)
