@@ -18,6 +18,10 @@
           <p>
             <b>Protein names:</b> {{uni["Protein names"]}}<br>
           </p>
+          <ul *ngIf="uni['Subcellular location [CC]']">
+            <b>Subcellular location:</b>
+            <li *ngFor="let subCell of uni['Subcellular location [CC]']">{{subCell}}</li>
+          </ul>
         </ng-container>
         <!--<div class="form-check">
           <input type="checkbox" [(ngModel)]="profileComparisonToggle" (change)="profileCompare()" class="form-check-input">

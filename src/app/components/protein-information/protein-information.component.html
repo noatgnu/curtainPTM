@@ -33,3 +33,39 @@
   </table>
 </div>
 
+<ngb-accordion *ngIf="diseases.length > 0 || pharmaUse.length > 0 || _data['Mutagenesis'].length">
+  <ngb-panel title="Diseases" *ngIf="diseases.length > 0">
+    <ng-template ngbPanelContent>
+      <div *ngIf="diseases.length > 0">
+        <ul>
+          <li *ngFor="let d of diseases">
+            {{d}}
+          </li>
+        </ul>
+      </div>
+    </ng-template>
+  </ngb-panel>
+  <ngb-panel title="Pharmaceutical use" *ngIf="pharmaUse.length > 0">
+    <ng-template ngbPanelContent>
+      <div *ngIf="pharmaUse.length > 0">
+        <ul>
+          <li *ngFor="let d of pharmaUse">
+            {{d}}
+          </li>
+        </ul>
+      </div>
+    </ng-template>
+  </ngb-panel>
+  <ngb-panel title="Mutagenesis" *ngIf="_data['Mutagenesis'].length > 0">
+    <ng-template ngbPanelContent>
+      <div *ngIf="_data['Mutagenesis'].length > 0">
+        <ul>
+          <li *ngFor="let d of _data['Mutagenesis']">
+            <b class="text-danger">{{d.position}}</b> - {{d.note}}
+          </li>
+        </ul>
+      </div>
+    </ng-template>
+  </ngb-panel>
+</ngb-accordion>
+
