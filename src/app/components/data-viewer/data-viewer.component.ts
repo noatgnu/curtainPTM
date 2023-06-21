@@ -17,6 +17,7 @@ export class DataViewerComponent implements OnInit {
     filterType: ["Gene Names"],
   })
 
+
   @Input() set data(value: ISeries<number, IDataFrame<number, any>>) {
     this._data = value
     this.displaySeries = value

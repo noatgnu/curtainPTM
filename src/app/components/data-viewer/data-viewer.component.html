@@ -4,7 +4,7 @@
   <form [formGroup]="form" class="mb-2">
     <div class="d-flex">
       <div class="p-2">
-        <input type="search" class="form-control" formControlName="filterTerm" placeholder="Filter selected results">
+        <input #searchForm type="search" class="form-control" formControlName="filterTerm" placeholder="Filter selected results">
       </div>
       <div class="p-2">
         <div class="form-group">
@@ -20,13 +20,13 @@
       </div>
     </div>
   </form>
-  <div class="card bg-warning">
+<!--  <div class="card bg-warning" [hidden]="searchForm">
     <div class="card-body">
       <p>
         Quick filter of the selected results. This will not affect the search results. Any search term longer than 2 characters will trigger the filter task. Clear the search field to reset the display data to default.
       </p>
     </div>
-  </div>
+  </div>-->
   <hr>
 
 
