@@ -70,21 +70,29 @@ export class DataBlockComponent implements OnInit {
       }
     }
 
-
     const unidList: any[] = []
-    console.log(this.allSequences)
     for (const r of this._data) {
-      unidList.push({
-        position: r[this.dataService.differentialForm.position],
-        residue: this.allSequences[this.accessionID][r[this.dataService.differentialForm.position]-1],
+      let items = {
+        position: "",
+        residue: "",
         id: r[this.dataService.differentialForm.primaryIDs],
-        score: r[this.dataService.differentialForm.score],
+        score: "",
         significant: (r[this.dataService.differentialForm.significant] >= -Math.log10(this.settingsService.settings.pCutoff)) &&
           (Math.abs(r[this.dataService.differentialForm.foldChange]) > this.settingsService.settings.log2FCCutoff),
-      })
+      };
+
+      if (this.dataService.differentialForm.position !== "" && this.dataService.differentialForm.position !== undefined) {
+        items["position"] = r[this.dataService.differentialForm.position]
+        items["residue"] = this.allSequences[this.accessionID][r[this.dataService.differentialForm.position]-1]
+      }
+      if (this.dataService.differentialForm.score !== "" && this.dataService.differentialForm.score !== undefined) {
+        items["score"] = r[this.dataService.differentialForm.score]
+      }
+
+      unidList.push(items)
+
     }
     this.unidList = unidList
-    console.log(unidList)
   }
   accessionID: string = ""
   constructor(private modal: NgbModal, public dataService: DataService, private uniprot: UniprotService, private scroll: ScrollService, private settingsService: SettingsService) {

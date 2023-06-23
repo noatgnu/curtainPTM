@@ -3,6 +3,7 @@ import {DataFrame, IDataFrame, ISeries, Series} from "data-forge";
 import {FormBuilder} from "@angular/forms";
 import {DataService} from "../../data.service";
 import {debounceTime, distinctUntilChanged} from "rxjs";
+import {UniprotService} from "../../uniprot.service";
 
 @Component({
   selector: 'app-data-viewer',
@@ -28,7 +29,7 @@ export class DataViewerComponent implements OnInit {
   }
 
   displaySeries: ISeries<number, IDataFrame<number, any>> = new Series()
-  constructor(private fb: FormBuilder, public dataService: DataService) {
+  constructor(private fb: FormBuilder, public dataService: DataService, private uniprot: UniprotService) {
     this.form.controls["filterTerm"].valueChanges.pipe(debounceTime(200), distinctUntilChanged()).subscribe((value) => {
       let primaryIds: string[] = []
       if (value){
@@ -42,6 +43,17 @@ export class DataViewerComponent implements OnInit {
               break
             case "Primary IDs":
               primaryIds = this.dataService.selected.filter((primaryID: string) => primaryID.toLowerCase().includes(value.toLowerCase()))
+              break
+            case "Diseases":
+              this._data.forEach((df: IDataFrame<number, any>) => {
+                const acc = df.getSeries(this.dataService.differentialForm.accession).bake().toArray()[0]
+                const uni = this.uniprot.getUniprotFromAcc(acc)
+                if (uni["Involvement in disease"]) {
+                  if (uni["Involvement in disease"].toLowerCase().includes(value.toLowerCase())) {
+                    primaryIds.push(df.getSeries(this.dataService.differentialForm.primaryIDs).bake().toArray()[0])
+                  }
+                }
+              })
               break
           }
           if (value === "") {

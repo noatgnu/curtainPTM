@@ -65,7 +65,7 @@
               <app-raw-data [data]="unidList" [toggle]="toggled"></app-raw-data>
             </ng-template>
           </li>
-          <li [ngbNavItem]="3">
+          <li [ngbNavItem]="3" *ngIf="dataService.differentialForm.position !== '' && dataService.differentialForm.position !== null && dataService.differentialForm.position !== undefined">
             <a ngbNavLink>PTM Position Viewer</a>
             <ng-template ngbNavContent>
               <div class="container-fluid">
