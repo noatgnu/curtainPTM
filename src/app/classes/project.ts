@@ -9,6 +9,13 @@ export class Project {
   organismParts: any[] = [
     {name: ""}
   ]
+  cellTypes: any[] = [
+    {name: ""}
+  ]
+  diseases: any[] = [
+    {name: ""}
+  ]
+
   sampleProcessingProtocol: string = ""
   dataProcessingProtocol: string = ""
   identifiedPTMStrings: any[] = [{
@@ -18,11 +25,32 @@ export class Project {
   instruments: any[] = [
     {cvLabel: "MS", name: ""}
   ]
-  publicationDate: any = {}
+
+  msMethods: any[] = [
+    {name: ""}
+  ]
+
+  projectTags: any[] = [
+    {name: ""}
+  ]
+
+  quantificationMethods: any[] = [
+    {name: ""}
+  ]
+
+  species: any[] = [
+    {name: ""}
+  ]
+
   sampleAnnotations: any = {}
   _links: any = {datasetFtpUrl: {href: ""}, files: {href: ""}, self: {href: ""}}
   affiliations: any[] = [{
     name: ""
   }]
   hasLink: boolean = false
+  authors: any[] = []
+  accession: string = ""
+  softwares: any[] = [
+    {name: ""}
+  ]
 }

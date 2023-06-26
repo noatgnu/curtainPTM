@@ -84,3 +84,8 @@
 
   </tbody>
 </table>
+
+<p *ngIf="showPSPLink">
+  PhosphoSitePlus link for <a href="https://www.phosphosite.org/uniprotAccAction?id={{uni['Entry']}}">{{uni["Entry"]}}</a>
+</p>
+

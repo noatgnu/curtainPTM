@@ -158,6 +158,15 @@ export class HomeComponent implements OnInit {
 
     if (!object.settings.project) {
       object.settings.project = new Project()
+    } else {
+      const p = new Project()
+      for (const key in object.settings.project) {
+        if (object.settings.project.hasOwnProperty(key)) {
+          // @ts-ignore
+          p[key] = object.settings.project[key]
+        }
+      }
+      object.settings.project = p
     }
     if (!object.settings.sampleOrder) {
       object.settings.sampleOrder = {}

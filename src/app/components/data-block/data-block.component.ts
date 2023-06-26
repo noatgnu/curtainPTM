@@ -25,7 +25,7 @@ export class DataBlockComponent implements OnInit {
   sourceMap: any = {}
 
   toggled: string = ""
-
+  error: string = ""
   @Input() set data(value: IDataFrame) {
     this._data = value.orderBy(r => r[this.dataService.differentialForm.position]).bake()
     if (this._data.count() > 0) {
@@ -50,20 +50,35 @@ export class DataBlockComponent implements OnInit {
     return this._data
   }
   async getSequence() {
+    this.error = ""
     if (this.settingsService.settings.customSequences[this.accessionID] && this.settingsService.settings.customSequences[this.accessionID] !== "") {
       this.allSequences[this.sourceMap["Experimental Data"]] = this.settingsService.settings.customSequences[this.accessionID].slice()
     } else {
       if (this.settingsService.settings.variantCorrection[this.accessionID]) {
-        const res = await this.uniprot.getUniprotFasta(this.settingsService.settings.variantCorrection[this.accessionID]).toPromise()
-        if (res) {
-          this.allSequences[this.sourceMap["Experimental Data"]] = this.uniprot.parseFasta(res)
+        try {
+          const res = await this.uniprot.getUniprotFasta(this.settingsService.settings.variantCorrection[this.accessionID]).toPromise()
+          console.log("Getting corrected sequence for " + this.accessionID + " from " + this.settingsService.settings.variantCorrection[this.accessionID])
+          if (res) {
+            this.allSequences[this.sourceMap["Experimental Data"]] = this.uniprot.parseFasta(res)
+          }
+        } catch (e) {
+          console.log("Error getting corrected sequence for " + this.accessionID + " from " + this.settingsService.settings.variantCorrection[this.accessionID])
+          this.error = "Error getting corrected sequence for " + this.accessionID + " from " + this.settingsService.settings.variantCorrection[this.accessionID]
         }
+
       } else {
         if (this.accessionID !== this.uni["Entry"]) {
-          const res = await this.uniprot.getUniprotFasta(this.accessionID).toPromise()
-          if (res) {
-            this.allSequences[this.accessionID] = this.uniprot.parseFasta(res)
+          try {
+            console.log("Getting sequence for " + this.accessionID + " from UniProt")
+            const res = await this.uniprot.getUniprotFasta(this.accessionID).toPromise()
+            if (res) {
+              this.allSequences[this.accessionID] = this.uniprot.parseFasta(res)
+            }
+          } catch (e) {
+            console.log("Error getting sequence for " + this.accessionID + " from UniProt")
+            this.error = "Error getting sequence for " + this.accessionID + " from UniProt"
           }
+
         } else {
           this.allSequences[this.accessionID] = this.uni["Sequence"]
         }
@@ -83,7 +98,11 @@ export class DataBlockComponent implements OnInit {
 
       if (this.dataService.differentialForm.position !== "" && this.dataService.differentialForm.position !== undefined) {
         items["position"] = r[this.dataService.differentialForm.position]
-        items["residue"] = this.allSequences[this.accessionID][r[this.dataService.differentialForm.position]-1]
+        if (this.settingsService.settings.variantCorrection[this.accessionID]){
+          items["residue"] = this.allSequences[this.settingsService.settings.variantCorrection[this.accessionID]][r[this.dataService.differentialForm.position]-1]
+        } else {
+          items["residue"] = this.allSequences[this.accessionID][r[this.dataService.differentialForm.position]-1]
+        }
       }
       if (this.dataService.differentialForm.score !== "" && this.dataService.differentialForm.score !== undefined) {
         items["score"] = r[this.dataService.differentialForm.score]

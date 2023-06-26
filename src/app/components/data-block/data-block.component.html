@@ -62,7 +62,10 @@
           <li [ngbNavItem]="2">
             <a ngbNavLink>Raw Data Distribution</a>
             <ng-template ngbNavContent>
-              <app-raw-data [data]="unidList" [toggle]="toggled"></app-raw-data>
+              <app-raw-data [data]="unidList" [toggle]="toggled" *ngIf="error.length == 0"></app-raw-data>
+              <div *ngIf="error.length > 0">
+                <p class="text-danger">Error: {{error}}</p>
+              </div>
             </ng-template>
           </li>
           <li [ngbNavItem]="3" *ngIf="dataService.differentialForm.position !== '' && dataService.differentialForm.position !== null && dataService.differentialForm.position !== undefined">

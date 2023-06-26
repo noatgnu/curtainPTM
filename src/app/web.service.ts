@@ -140,4 +140,8 @@ export class WebService {
     return this.http.post(this.links.proxyURL + `curtain/${link_id}/generate_token/`, {lifetime}, {responseType: "json", observe: "body"})
   }
 
+  getPRIDEConstants(constantType: string) {
+    return this.http.get("https://raw.githubusercontent.com/PRIDE-Archive/px-submission-tool/master/src/main/resources/cv/"+constantType+".cv", {responseType: "text", observe: "body"})
+  }
+
 }

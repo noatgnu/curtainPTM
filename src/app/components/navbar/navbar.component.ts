@@ -118,7 +118,10 @@ export class NavbarComponent implements OnInit {
   openAnnotation() {
     const ref = this.modal.open(SampleAnnotationComponent, {size: "lg"})
     ref.closed.subscribe(data => {
-      this.settings.settings.project = data
+      for (const i in data) {
+        // @ts-ignore
+        this.settings.settings.project[i] = data[i]
+      }
     })
   }
   openSampleSettings() {
