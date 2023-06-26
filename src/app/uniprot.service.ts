@@ -23,7 +23,7 @@ export class UniprotService {
   constructor(private http: HttpClient) { }
 
   async UniprotParserJS(accList: string[]) {
-    const parser = new Parser(5, "accession,id,gene_names,protein_name,organism_name,organism_id,length,cc_subcellular_location,sequence,ft_var_seq,cc_alternative_products,ft_domain,xref_string,ft_mod_res,cc_function,cc_disease,cc_pharmaceutical,ft_mutagen")
+    const parser = new Parser(5, "accession,id,gene_names,protein_name,organism_name,organism_id,length,cc_subcellular_location,sequence,ft_var_seq,cc_alternative_products,ft_domain,xref_string,ft_mod_res,cc_function,cc_disease,cc_pharmaceutical,ft_mutagen,xref_mim")
     const res = await parser.parse(accList)
     let currentRun = 1
     let totalRun = Math.ceil(accList.length/500)
