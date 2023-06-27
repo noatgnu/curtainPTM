@@ -18,6 +18,7 @@
               <button ngbDropdownItem (click)="web.downloadFile('different.txt', data.differential.originalFile)">Download Differential Analysis File</button>
               <button ngbDropdownItem (click)="web.downloadFile('raw.txt', data.raw.originalFile)">Download Raw File</button>
               <button ngbDropdownItem (click)="openAnnotation()">Project Annotation</button>
+              <button ngbDropdownItem (click)="openQRCode()" *ngIf="settings.settings.currentID !== ''">Session QR Code</button>
               <button ngbDropdownItem (click)="openSampleSettings()">Sample Order and Visibility</button>
               <button ngbDropdownItem (click)="openColorPaletteModal()">
                 Customize Color Palette

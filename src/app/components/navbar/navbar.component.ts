@@ -14,6 +14,7 @@ import {AccountsComponent} from "../../accounts/accounts/accounts.component";
 import {ToastService} from "../../toast.service";
 import {DefaultColorPaletteComponent} from "../default-color-palette/default-color-palette.component";
 import {DataSelectionManagementComponent} from "../data-selection-management/data-selection-management.component";
+import {QrcodeModalComponent} from "../qrcode-modal/qrcode-modal.component";
 
 @Component({
   selector: 'app-navbar',
@@ -29,7 +30,7 @@ export class NavbarComponent implements OnInit {
     public web: WebService,
     public data: DataService,
     private scroll: ScrollService,
-    private settings: SettingsService,
+    public settings: SettingsService,
     private modal: NgbModal,
     public accounts: AccountsService, private toast: ToastService) { }
 
@@ -160,5 +161,12 @@ export class NavbarComponent implements OnInit {
 
       }
     })
+  }
+
+  openQRCode() {
+    const ref = this.modal.open(QrcodeModalComponent, {size: "sm"})
+    if (this.settings.settings.currentID) {
+      ref.componentInstance.url = location.origin + "/#/" + this.settings.settings.currentID
+    }
   }
 }
