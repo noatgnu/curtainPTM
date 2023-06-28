@@ -222,7 +222,9 @@ export class BarChartComponent implements OnInit {
         color = this.settings.settings.barchartColorMap[g]
       }
       const box = {
-        x: g, y: graph[g],
+        x: g, y: graph[g].filter((a: number) => {
+          return !isNaN(a)
+        }),
         type: 'box',
         boxpoints: 'all',
         pointpos: 0,
@@ -243,7 +245,9 @@ export class BarChartComponent implements OnInit {
       const violinX: any[] = graph[g].map(() => g)
       const violin = {
         type: 'violin',
-        x: violinX, y: graph[g], points: "all",
+        x: violinX, y: graph[g].filter((a: number) => {
+          return !isNaN(a)
+        }), points: "all",
         box: {
           visible: true
         },
@@ -259,7 +263,9 @@ export class BarChartComponent implements OnInit {
         spanmode: 'soft'
       }
       graphViolin.push(violin)
-      const s = new Series(graph[g])
+      const s = new Series(graph[g].filter((a: number) => {
+        return !isNaN(a)
+      }))
       const std =  s.std()
       const standardError = std/Math.sqrt(s.count())
       let error = std
@@ -307,8 +313,14 @@ export class BarChartComponent implements OnInit {
     switch (this.testType) {
       case "ANOVA":
         this.comparisons = [{conditions: this.selectedConditions.slice(), comparison: this.stats.calculateAnova2(conditions)}]
+        console.log(this.comparisons)
         break
       case "TTest":
+        this.stats.calculateTTest(this.graph[this.conditionA].y, this.graph[this.conditionB].y).then((result: any) => {
+          this.selectedConditions = [this.conditionA, this.conditionB]
+          this.comparisons = [{conditions: this.selectedConditions.slice(), comparison: result.data}]
+          console.log(this.comparisons)
+        })
         //console.log(this.stats.calculateTTest(a.y, b.y))
         //this.comparisons = [{a: this.conditionA, b: this.conditionB, comparison: this.stats.calculateTTest(a.y, b.y)}]
         break

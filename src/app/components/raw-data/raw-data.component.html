@@ -82,8 +82,13 @@
     <tr *ngIf="barChartState[d[dataService.differentialForm.primaryIDs]]">
       <td [colSpan]="8">
         <div class="card border-warning">
-          <div class="card-body">
+          <div class="card-body" *ngIf="rawDataMap[d[dataService.differentialForm.primaryIDs]]">
             <app-bar-chart [data]="{raw: rawDataMap[d[dataService.differentialForm.primaryIDs]], position: positionMap[d[dataService.differentialForm.primaryIDs]]}"></app-bar-chart>
+          </div>
+          <div class="card-body" *ngIf="!rawDataMap[d[dataService.differentialForm.primaryIDs]]">
+            <div class="alert alert-warning" role="alert">
+              No raw data available for this protein.
+            </div>
           </div>
         </div>
       </td>

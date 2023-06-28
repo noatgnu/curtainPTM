@@ -45,7 +45,7 @@
     <ngb-panel title="Additional Individual Statistical Test">
       <ng-template ngbPanelContent>
         <div class="row">
-          <div class="col-3">
+          <div class="col-3" *ngIf="testType==='ANOVA'">
             <label for="condition{{_data[dataService.rawForm.primaryIDs]}}">Select conditions</label>
             <select multiple [(ngModel)]="selectedConditions" class="form-control" id="condition{{_data[dataService.rawForm.primaryIDs]}}">
               <option [value]="c" *ngFor="let c of dataService.conditions">
@@ -53,7 +53,7 @@
               </option>
             </select>
           </div>
-          <!--<div class="col-3">
+          <div class="col-3" *ngIf="testType==='TTest'">
             <label for="conditionA{{_data[dataService.rawForm.primaryIDs]}}">Condition A</label>
             <select [(ngModel)]="conditionA" class="form-control" id="conditionA{{_data[dataService.rawForm.primaryIDs]}}">
               <option [value]="c" *ngFor="let c of dataService.conditions">
@@ -61,14 +61,14 @@
               </option>
             </select>
           </div>
-          <div class="col-3">
+          <div class="col-3" *ngIf="testType==='TTest'">
             <label for="conditionB{{_data[dataService.rawForm.primaryIDs]}}">Condition B</label>
             <select [(ngModel)]="conditionB" class="form-control" id="conditionB{{_data[dataService.rawForm.primaryIDs]}}">
               <option [value]="c" *ngFor="let c of dataService.conditions">
                 {{c}}
               </option>
             </select>
-          </div>-->
+          </div>
           <div class="col-3">
             <label for="testType{{_data[dataService.rawForm.primaryIDs]}}">Test Type</label>
             <select [(ngModel)]="testType" class="form-control" id="testType{{_data[dataService.rawForm.primaryIDs]}}">
@@ -98,7 +98,8 @@
           <ng-container *ngFor="let c of comparisons">
             <tr>
               <td>{{c.conditions.join(",")}}</td>
-              <td>{{c.comparison.f | number}}</td>
+              <td *ngIf="testType==='ANOVA'">{{c.comparison.f | number}}</td>
+              <td *ngIf="testType==='TTest'">{{c.comparison.p_value | number}}</td>
             </tr>
           </ng-container>
           </tbody>

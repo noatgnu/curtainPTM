@@ -2,13 +2,14 @@ import { Injectable } from '@angular/core';
 
 // @ts-ignore
 import * as jstat from 'jstat';
+import {AccountsService} from "./accounts/accounts.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class StatsService {
 
-  constructor() { }
+  constructor(private accounts: AccountsService) { }
 
   calculateAnova(conditionA: any[], conditionB: any[]) {
     return {f: jstat.anovaftest(conditionA, conditionB)}
@@ -19,6 +20,11 @@ export class StatsService {
   }
 
   calculateTTest(conditionA: any[], conditionB: any[]) {
-    return {f: jstat.ttest([conditionA, conditionB])}
+    return this.accounts.curtainAPI.postPrimitiveStatsTest([conditionA.filter((a: number) => {
+      return !isNaN(a)
+    }), conditionB.filter((a: number) => {
+      return !isNaN(a)
+    })], "t-test")
+
   }
 }

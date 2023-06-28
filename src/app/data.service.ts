@@ -35,7 +35,7 @@ export class DataService {
   }
   dataTestTypes: string[] = [
     "ANOVA",
-    //"TTest"
+    "TTest"
   ]
   palette: any = {
     "pastel": [
