@@ -22,7 +22,7 @@ export class FileFormComponent implements OnInit {
     })
     this.data.restoreTrigger.asObservable().subscribe(data => {
       if (data) {
-        this.processFiles()
+        this.processFiles().then()
       }
     })
   }
@@ -67,7 +67,7 @@ export class FileFormComponent implements OnInit {
     return newCol
   }
 
-  processFiles() {
+  async processFiles() {
     if (!this.data.differentialForm.comparison || this.data.differentialForm.comparison === "" || this.data.differentialForm.comparison === "CurtainSetComparison") {
       this.data.differentialForm.comparison = "CurtainSetComparison"
       this.data.differentialForm.comparisonSelect = "1"

@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { StatsService } from './anova.service';
+import { StatsService } from './stats.service';
 
 describe('AnovaService', () => {
   let service: StatsService;
