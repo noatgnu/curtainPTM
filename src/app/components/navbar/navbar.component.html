@@ -1,14 +1,25 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top d-lex flex-wrap">
   <div class="container-fluid">
     <b style="padding-left: 4px" class="text-dark"><a class="navbar-brand" href="#">CurtainPTM</a></b>
-    <a *ngIf="uniqueLink !== ''" href="{{uniqueLink}}" class="ml-2 text-success">{{uniqueLink}}</a>
+    <div class="d-flex">
+      <div class="p-2">
+        <a *ngIf="uniqueLink !== ''" href="{{uniqueLink}}" class="ml-2 text-success">{{uniqueLink}}</a>
+      </div>
+      <div class="p-2">
+        <span class="badge bg-info" (click)="copyToClipboard()"><i class="bi bi-clipboard"></i></span>
+      </div>
+      <div class="p-2">
+        <span class="badge bg-warning" (click)="openQRCode()">QR Code</span>
+      </div>
+
+    </div>
     <div class="d-flex">
       <div class="p-2">
         <div display="dynamic" ngbDropdown class="d-inline-block">
           <button class="btn btn-outline-primary ml-2" id="dropdownSession" ngbDropdownToggle>Session
             <ng-container *ngIf="data.session !== undefined">
               <span *ngIf="!data.session.enable" class="badge bg-danger">private</span>
-              <span *ngIf="data.session.enable" class="badge bg-primary">public</span>
+              <span *ngIf="data.session.enable" class="badge bg-primary">shareable</span>
             </ng-container>
           </button>
           <div ngbDropdownMenu aria-labelledby="dropdownSession">

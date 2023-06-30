@@ -63,8 +63,9 @@ export class HomeComponent implements OnInit {
               this.currentID = settings[0]
               this.accounts.curtainAPI.getSessionSettings(settings[0]).then((d:any)=> {
                 this.data.session = d.data
-                this.accounts.curtainAPI.postSettings(settings[0], token).then((data:any) => {
+                this.accounts.curtainAPI.postSettings(settings[0], token, this.onDownloadProgress).then((data:any) => {
                   if (data.data) {
+                    this.uniprot.uniprotProgressBar.next({value: 100, text: "Restoring Session..."})
                     this.restoreSettings(data.data).then(result => {
                       this.accounts.curtainAPI.getSessionSettings(settings[0]).then((d:any)=> {
                         this.data.session = d.data
@@ -296,4 +297,9 @@ export class HomeComponent implements OnInit {
       this.data.selectedMap[s[this.data.differentialForm.primaryIDs]][e.title] = true
     }
   }
+
+  onDownloadProgress = (progressEvent: any) => {
+    this.uniprot.uniprotProgressBar.next({value: progressEvent.progress *100, text: "Downloading session data at " + Math.round(progressEvent.progress * 100) + "%"})
+  }
+
 }

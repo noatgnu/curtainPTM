@@ -15,6 +15,7 @@ import {ToastService} from "../../toast.service";
 import {DefaultColorPaletteComponent} from "../default-color-palette/default-color-palette.component";
 import {DataSelectionManagementComponent} from "../data-selection-management/data-selection-management.component";
 import {QrcodeModalComponent} from "../qrcode-modal/qrcode-modal.component";
+import {UniprotService} from "../../uniprot.service";
 
 @Component({
   selector: 'app-navbar',
@@ -32,7 +33,7 @@ export class NavbarComponent implements OnInit {
     private scroll: ScrollService,
     public settings: SettingsService,
     private modal: NgbModal,
-    public accounts: AccountsService, private toast: ToastService) { }
+    public accounts: AccountsService, private toast: ToastService, private uniprot: UniprotService) { }
 
   ngOnInit(): void {
   }
@@ -70,7 +71,7 @@ export class NavbarComponent implements OnInit {
       annotatedData: this.data.annotatedData,
       annotatedMap: this.data.annotatedMap
     }
-    this.accounts.curtainAPI.putSettings(data, !this.accounts.curtainAPI.user.loginStatus, data.settings.description).then((data: any) => {
+    this.accounts.curtainAPI.putSettings(data, !this.accounts.curtainAPI.user.loginStatus, data.settings.description, "PTM", this.onUploadProgress).then((data: any) => {
       if (data.data) {
         this.settings.currentID = data.data.link_id
         this.uniqueLink = location.origin + "/#/" + this.settings.currentID
@@ -79,7 +80,9 @@ export class NavbarComponent implements OnInit {
       this.toast.show("User information", "Curtain link cannot be saved").then()
     })
   }
-
+  onUploadProgress = (progressEvent: any) => {
+    this.uniprot.uniprotProgressBar.next({value: progressEvent.progress * 100, text: "Uploading session data at " + Math.round(progressEvent.progress *100) + "%"})
+  }
   clearSelections() {
     this.data.selected = []
     this.data.selectedGenes = []
@@ -168,5 +171,14 @@ export class NavbarComponent implements OnInit {
     if (this.settings.settings.currentID) {
       ref.componentInstance.url = location.origin + "/#/" + this.settings.settings.currentID
     }
+  }
+
+  copyToClipboard(text: string = "") {
+    if (text === "") {
+      text = location.origin + "/#/" + this.settings.settings.currentID
+    }
+    navigator.clipboard.writeText(text).then(() => {
+      this.toast.show("Clipboard", "Session link has been copied to clipboard").then()
+    })
   }
 }
