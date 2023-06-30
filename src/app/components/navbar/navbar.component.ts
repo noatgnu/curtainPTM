@@ -73,8 +73,10 @@ export class NavbarComponent implements OnInit {
     }
     this.accounts.curtainAPI.putSettings(data, !this.accounts.curtainAPI.user.loginStatus, data.settings.description, "PTM", this.onUploadProgress).then((data: any) => {
       if (data.data) {
-        this.settings.currentID = data.data.link_id
-        this.uniqueLink = location.origin + "/#/" + this.settings.currentID
+        this.settings.settings.currentID = data.data.link_id
+        this.uniqueLink = location.origin + "/#/" + this.settings.settings.currentID
+        this.uniprot.uniprotProgressBar.next({value: 100, text: "Session data saved"})
+        this.finished = true
       }
     }, err => {
       this.toast.show("User information", "Curtain link cannot be saved").then()
@@ -139,7 +141,7 @@ export class NavbarComponent implements OnInit {
 
   openSessionSettings() {
     const ref = this.modal.open(SessionSettingsComponent)
-    ref.componentInstance.currentID = this.settings.currentID
+    ref.componentInstance.currentID = this.settings.settings.currentID
   }
 
   openAccountModal() {
