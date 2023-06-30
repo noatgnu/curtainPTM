@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {ToastService} from "../../toast.service";
 import {DataFrame, fromCSV, IDataFrame, ISeries, Series} from "data-forge";
 import {DataService} from "../../data.service";
@@ -28,6 +28,7 @@ export class HomeComponent implements OnInit {
   uniqueLink: string = ""
   filterModel: string = ""
   currentID: string = ""
+  @Output() currentIDChanged: EventEmitter<string> = new EventEmitter<string>()
   constructor(private accounts: AccountsService, private modal: NgbModal, public settings: SettingsService, private data: DataService, private route: ActivatedRoute, private toast: ToastService, private uniprot: UniprotService, private web: WebService, private ptm: PtmService) {
 
 
@@ -65,6 +66,7 @@ export class HomeComponent implements OnInit {
                 this.data.session = d.data
                 this.accounts.curtainAPI.postSettings(settings[0], token, this.onDownloadProgress).then((data:any) => {
                   if (data.data) {
+                    this.uniqueLink = location.origin + "/#/" + this.currentID
                     this.uniprot.uniprotProgressBar.next({value: 100, text: "Restoring Session..."})
                     this.restoreSettings(data.data).then(result => {
                       this.accounts.curtainAPI.getSessionSettings(settings[0]).then((d:any)=> {
