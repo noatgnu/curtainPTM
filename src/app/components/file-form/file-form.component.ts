@@ -22,69 +22,81 @@ export class FileFormComponent implements OnInit {
     })
     this.data.restoreTrigger.asObservable().subscribe(data => {
       if (data) {
-        if (typeof Worker !== 'undefined') {
-          console.log("start worker")
-          // Create a new
-          const worker = new Worker(new URL('./data.worker', import.meta.url));
-          worker.onmessage = (data: MessageEvent<any>) => {
-            console.log(data.data)
-            if (data.data) {
-              if (data.data.type === "progress") {
-                this.updateProgressBar(data.data.value, data.data.text)
-              } else {
-                if (data.data.type==="resultDifferential") {
-                  this.data.differential.df = fromJSON(data.data.differential)
-                  const currentDF = this.data.differential.df.where(r => r[this.data.differentialForm.comparison] === this.data.differentialForm.comparisonSelect).resetIndex().bake()
-
-                  const fc = currentDF.getSeries(this.data.differentialForm.foldChange).where(i => !isNaN(i)).bake()
-                  const sign = currentDF.getSeries(this.data.differentialForm.significant).where(i => !isNaN(i)).bake()
-
-                  this.data.minMax = {
-                    fcMin: fc.min(),
-                    fcMax: fc.max(),
-                    pMin: sign.min(),
-                    pMax: sign.max()
-                  }
-                  this.data.currentDF = currentDF
-                  this.data.primaryIDsList = this.data.currentDF.getSeries(this.data.differentialForm.primaryIDs).bake().distinct().toArray()
-                  this.data.accessionList = this.data.currentDF.getSeries(this.data.differentialForm.accession).bake().distinct().toArray()
-                  for (const p of this.data.accessionList) {
-                    if (!this.data.accessionMap[p])  {
-                      this.data.accessionMap[p] = {}
-                      this.data.accessionMap[p][p] = true
-                    }
-                    for (const n of p.split(";")) {
-                      if (!this.data.accessionMap[n]) {
-                        this.data.accessionMap[n] = {}
-                      }
-                      this.data.accessionMap[n][p] = true
-                    }
-                  }
-                  worker.postMessage({task: 'processRawFile',rawForm: this.data.rawForm, raw: this.data.raw.originalFile, settings: settings.settings})
-                  this.data.raw.df = new DataFrame()
-                } else if (data.data.type==="resultRaw") {
-                  this.data.raw.df = fromJSON(data.data.raw)
-                  this.data.sampleMap = data.data.sampleMap
-                  this.settings.settings = data.data.settings
-                  this.processUniProt()
-                  worker.terminate()
-                } else if (data.data.type==="resultDifferentialCompleted") {
-
-                }
-              }
-            } else {
-              worker.terminate()
-            }
-
-          };
-          worker.postMessage({task: 'processDifferentialFile', differential: this.data.differential.originalFile, differentialForm: this.data.differentialForm});
-          this.data.differential.df = new DataFrame()
-        } else {
-          this.processFiles().then()
-        }
-
+        this.startWork();
       }
     })
+  }
+
+  startWork() {
+    if (typeof Worker !== 'undefined') {
+      console.log("start worker")
+      // Create a new
+      const worker = new Worker(new URL('./data.worker', import.meta.url));
+      worker.onmessage = (data: MessageEvent<any>) => {
+        console.log(data.data)
+        if (data.data) {
+          if (data.data.type === "progress") {
+            this.updateProgressBar(data.data.value, data.data.text)
+          } else {
+            if (data.data.type === "resultDifferential") {
+              this.data.differential.df = fromJSON(data.data.differential)
+              const currentDF = this.data.differential.df.where(r => r[this.data.differentialForm.comparison] === this.data.differentialForm.comparisonSelect).resetIndex().bake()
+
+              const fc = currentDF.getSeries(this.data.differentialForm.foldChange).where(i => !isNaN(i)).bake()
+              const sign = currentDF.getSeries(this.data.differentialForm.significant).where(i => !isNaN(i)).bake()
+
+              this.data.minMax = {
+                fcMin: fc.min(),
+                fcMax: fc.max(),
+                pMin: sign.min(),
+                pMax: sign.max()
+              }
+              this.data.currentDF = currentDF
+              this.data.primaryIDsList = this.data.currentDF.getSeries(this.data.differentialForm.primaryIDs).bake().distinct().toArray()
+              this.data.accessionList = this.data.currentDF.getSeries(this.data.differentialForm.accession).bake().distinct().toArray()
+              for (const p of this.data.accessionList) {
+                if (!this.data.accessionMap[p]) {
+                  this.data.accessionMap[p] = {}
+                  this.data.accessionMap[p][p] = true
+                }
+                for (const n of p.split(";")) {
+                  if (!this.data.accessionMap[n]) {
+                    this.data.accessionMap[n] = {}
+                  }
+                  this.data.accessionMap[n][p] = true
+                }
+              }
+              worker.postMessage({
+                task: 'processRawFile',
+                rawForm: this.data.rawForm,
+                raw: this.data.raw.originalFile,
+                settings: this.settings.settings
+              })
+              this.data.raw.df = new DataFrame()
+            } else if (data.data.type === "resultRaw") {
+              this.data.raw.df = fromJSON(data.data.raw)
+              this.data.sampleMap = data.data.sampleMap
+              this.settings.settings = data.data.settings
+              this.processUniProt()
+              worker.terminate()
+            } else if (data.data.type === "resultDifferentialCompleted") {
+
+            }
+          }
+        } else {
+          worker.terminate()
+        }
+
+      };
+      worker.postMessage({
+        task: 'processDifferentialFile',
+        differential: this.data.differential.originalFile,
+        differentialForm: this.data.differentialForm
+      });
+      this.data.differential.df = new DataFrame()
+    } else {
+      this.processFiles().then()
+    }
   }
 
   ngOnInit(): void {
