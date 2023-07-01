@@ -77,6 +77,8 @@ export class FileFormComponent implements OnInit {
               this.data.raw.df = fromJSON(data.data.raw)
               this.data.sampleMap = data.data.sampleMap
               this.settings.settings = data.data.settings
+              this.data.conditions = data.data.conditions
+              this.data.colorMap = data.data.colorMap
               this.processUniProt()
               worker.terminate()
             } else if (data.data.type === "resultDifferentialCompleted") {

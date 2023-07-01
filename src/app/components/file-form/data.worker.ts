@@ -111,7 +111,7 @@ addEventListener('message', (data: MessageEvent<any>) => {
     })
 
     // @ts-ignore
-    postMessage({type: "resultRaw", raw: JSON.stringify(storeRaw), settings: data.data.settings, sampleMap: sampleMap})
+    postMessage({type: "resultRaw", raw: JSON.stringify(storeRaw), settings: data.data.settings, sampleMap: sampleMap, conditions: conditions, colorMap: colorMap})
   }
 });
 
