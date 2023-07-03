@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {UniprotService} from "../../uniprot.service";
 import {DataService} from "../../data.service";
@@ -13,6 +13,7 @@ declare const logojs: any;
 export class WebLogoComponent implements OnInit, AfterViewInit {
   private _data: IDataFrame = new DataFrame()
   countMatrix: number[][] = []
+  @ViewChild("logoElement") logoElement: ElementRef|undefined
   @Input() set data(value: IDataFrame) {
     this._data = value
     const pos: any = {}
@@ -159,5 +160,20 @@ export class WebLogoComponent implements OnInit, AfterViewInit {
     this.modal.dismiss()
   }
 
+  downloadSVG() {
+    if (this.logoElement) {
+      console.log(this.logoElement.nativeElement.innerHTML)
+      const svg = this.logoElement.nativeElement.getElementsByTagName("svg")
+      const blob = new Blob([svg[0].outerHTML], {type:"image/svg+xml;charset=utf-8"});
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a")
+      a.href = url
+      a.download = "weblogo.svg"
+      document.body.appendChild(a)
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url)
+    }
+  }
 
 }
