@@ -85,7 +85,7 @@ export class SideFloatControlComponent implements OnInit, OnDestroy {
     const selection = JSON.parse(event.dataTransfer.getData("text/plain"));
     switch (selection.type) {
       case "selection-single":
-        this.ws.send({message: {title:selection.title, data: [selection.selection], timestamp: Date.now()}, senderName: this.ws.displayName, requestType: "chat-selection-single"})
+        this.ws.send({message: {title:selection.title, data: selection.selection, timestamp: Date.now()}, senderName: this.ws.displayName, requestType: "chat-selection-single"})
         break;
       case "selection-group":
         const data: string[] = []
