@@ -1,0 +1,43 @@
+<div class="modal-header">
+  <h5 class="modal-title">Collaborate settings</h5>
+</div>
+<div class="modal-body">
+  <form [formGroup]="form">
+    <div class="form-group">
+      <label for="sessionID">
+        Session ID
+      </label>
+      <input class="form-control" formControlName="sessionID" id="sessionID">
+    </div>
+    <div class="form-group">
+      <label for="displayName">
+        Display name
+      </label>
+      <input class="form-control" formControlName="displayName" id="displayName">
+    </div>
+  </form>
+  <div class="d-flex">
+    <div class="p-2">
+      <p>
+        Collaborative session link: <a href="{{collaborateLink}}" target="_blank">{{collaborateLink}}</a>
+      </p>
+    </div>
+    <div class="p-2">
+      <span class="badge bg-info" (click)="copyToClipboard(collaborateLink)"><i class="bi bi-clipboard"></i></span>
+    </div>
+  </div>
+
+
+  <div class="d-flex justify-content-center">
+    <div class="p-2">
+      <ngx-qrcode
+        [value]="collaborateLink"
+      >
+      </ngx-qrcode>
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <button class="btn btn-primary" (click)="submit()">Save</button>
+  <button class="btn btn-secondary" (click)="cancel()">Cancel</button>
+</div>

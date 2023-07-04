@@ -16,6 +16,7 @@ import {DefaultColorPaletteComponent} from "../default-color-palette/default-col
 import {DataSelectionManagementComponent} from "../data-selection-management/data-selection-management.component";
 import {QrcodeModalComponent} from "../qrcode-modal/qrcode-modal.component";
 import {UniprotService} from "../../uniprot.service";
+import {CollaborateModalComponent} from "../collaborate-modal/collaborate-modal.component";
 
 @Component({
   selector: 'app-navbar',
@@ -182,5 +183,9 @@ export class NavbarComponent implements OnInit {
     navigator.clipboard.writeText(text).then(() => {
       this.toast.show("Clipboard", "Session link has been copied to clipboard").then()
     })
+  }
+
+  openCollaborateModal() {
+    const ref = this.modal.open(CollaborateModalComponent)
   }
 }

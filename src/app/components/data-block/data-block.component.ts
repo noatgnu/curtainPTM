@@ -164,4 +164,9 @@ export class DataBlockComponent implements OnInit {
     })
   }
 
+  handleDragProtein(event: any) {
+    const data =  JSON.stringify({title: this.title, selection:this._data.getSeries(this.dataService.differentialForm.primaryIDs).toArray(), type: "selection-single"})
+    console.log(data)
+    event.dataTransfer?.setData("text/plain",data)
+  }
 }

@@ -2,7 +2,7 @@
   <div class="col-3">
     <div class="card border-primary">
       <div class="card-body">
-        <h3 class="card-title">
+        <h3 class="card-title" draggable="true" (dragstart)="handleDragProtein($event)">
           <p class="text-success">{{title}}</p>
         </h3>
         <!--          <p>

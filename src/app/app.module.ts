@@ -49,6 +49,9 @@ import { SessionExpiredModalComponent } from './components/session-expired-modal
 import { DataSelectionManagementComponent } from './components/data-selection-management/data-selection-management.component';
 import { QrcodeModalComponent } from './components/qrcode-modal/qrcode-modal.component';
 import {NgxQRCodeModule} from "@techiediaries/ngx-qrcode";
+import { DraggableElementComponent } from './components/draggable-element/draggable-element.component';
+import { SideFloatControlComponent } from './components/side-float-control/side-float-control.component';
+import { CollaborateModalComponent } from './components/collaborate-modal/collaborate-modal.component';
 PlotlyModule.plotlyjs = PlotlyJS;
 @NgModule({
   declarations: [
@@ -86,7 +89,10 @@ PlotlyModule.plotlyjs = PlotlyJS;
     VariantSelectionComponent,
     SessionExpiredModalComponent,
     DataSelectionManagementComponent,
-    QrcodeModalComponent
+    QrcodeModalComponent,
+    DraggableElementComponent,
+    SideFloatControlComponent,
+    CollaborateModalComponent
   ],
     imports: [
         BrowserModule,
