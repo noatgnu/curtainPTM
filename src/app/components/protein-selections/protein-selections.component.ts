@@ -27,74 +27,79 @@ export class ProteinSelectionsComponent implements OnInit {
     const ref = this.modal.open(BatchSearchComponent, {size: "lg"})
     ref.closed.subscribe(data => {
       console.log(data)
-      let result: string[] = []
+      let result = this.getPrimaryIDsFromBatch(data);
+      this.searchResult.emit({data: result, title: data.title})
+    })
 
-      for (const d in data.data) {
-        if (data.searchType === "Primary IDs") {
-          for (const m of data.data[d]) {
-            result.push(m)
-          }
-        } else {
-          let res = this.parseData(data, d, true);
-          if (res.length === 0) {
-            for (const dd of data.data[d]) {
-              res = this.parseData(data, dd, false)
-              if (res.length > 0) {
-                for (const a of res) {
-                  if (!result.includes(a)) {
-                    result.push(a)
-                  }
+  }
+
+  private getPrimaryIDsFromBatch(data: any) {
+    let result: string[] = []
+
+    for (const d in data.data) {
+      if (data.searchType === "Primary IDs") {
+        for (const m of data.data[d]) {
+          result.push(m)
+        }
+      } else {
+        let res = this.parseData(data, d, true);
+        if (res.length === 0) {
+          for (const dd of data.data[d]) {
+            res = this.parseData(data, dd, false)
+            if (res.length > 0) {
+              for (const a of res) {
+                if (!result.includes(a)) {
+                  result.push(a)
                 }
               }
             }
           }
-          if (res.length > 0) {
-            for (const a of res) {
-              if (!result.includes(a)) {
-                result.push(a)
-              }
+        }
+        if (res.length > 0) {
+          for (const a of res) {
+            if (!result.includes(a)) {
+              result.push(a)
             }
           }
         }
       }
-      if (data["params"]) {
-        if (data.params.enableAdvanced) {
-          let res: string[] = []
-          let df = this.data.currentDF.where(
-            r =>
-              r[this.data.differentialForm.significant] >= data.params.minP &&
-                r[this.data.differentialForm.significant] <= data.params.maxP
-          ).bake()
-          if (data.params.searchLeft || data.params.searchRight) {
-            if (data.params.searchRight) {
-              const temp = df.where(
-                r =>
-                  (r[this.data.differentialForm.foldChange] >= data.params.minFCRight) &&
-                  (r[this.data.differentialForm.foldChange] <= data.params.maxFCRight)
-              ).bake()
-              res = temp.getSeries(this.data.differentialForm.primaryIDs).bake().toArray()
-            }
-            if (data.params.searchLeft) {
-
-              console.log(data)
-              const left = df.where(
-                r =>
-                  (r[this.data.differentialForm.foldChange] >= -data.params.maxFCLeft) &&
-                  (r[this.data.differentialForm.foldChange] <= -data.params.minFCLeft)
-              ).bake()
-              console.log(left)
-              res = res.concat(left.getSeries(this.data.differentialForm.primaryIDs).bake().toArray())
-            }
-            result = res
-          } else {
-            result = df.getSeries(this.data.differentialForm.primaryIDs).bake().toArray()
+    }
+    if (data["params"]) {
+      if (data.params.enableAdvanced) {
+        let res: string[] = []
+        let df = this.data.currentDF.where(
+          r =>
+            r[this.data.differentialForm.significant] >= data.params.minP &&
+            r[this.data.differentialForm.significant] <= data.params.maxP
+        ).bake()
+        if (data.params.searchLeft || data.params.searchRight) {
+          if (data.params.searchRight) {
+            const temp = df.where(
+              r =>
+                (r[this.data.differentialForm.foldChange] >= data.params.minFCRight) &&
+                (r[this.data.differentialForm.foldChange] <= data.params.maxFCRight)
+            ).bake()
+            res = temp.getSeries(this.data.differentialForm.primaryIDs).bake().toArray()
           }
+          if (data.params.searchLeft) {
 
+            console.log(data)
+            const left = df.where(
+              r =>
+                (r[this.data.differentialForm.foldChange] >= -data.params.maxFCLeft) &&
+                (r[this.data.differentialForm.foldChange] <= -data.params.minFCLeft)
+            ).bake()
+            console.log(left)
+            res = res.concat(left.getSeries(this.data.differentialForm.primaryIDs).bake().toArray())
+          }
+          result = res
+        } else {
+          result = df.getSeries(this.data.differentialForm.primaryIDs).bake().toArray()
         }
-      }
-      this.searchResult.emit({data: result, title: data.title})
-    })
 
+      }
+    }
+    return result;
   }
 
   private parseData(data: any, d: string, exact: boolean) {
@@ -133,7 +138,14 @@ export class ProteinSelectionsComponent implements OnInit {
 
 
 
-  constructor(public data: DataService, private modal: NgbModal, private uniprot: UniprotService) { }
+  constructor(public data: DataService, private modal: NgbModal, private uniprot: UniprotService) {
+    this.data.searchCommandService.subscribe(data => {
+      if (data) {
+        const result = this.getPrimaryIDsFromBatch(data);
+        this.searchResult.emit({data: result, title: data.title})
+      }
+    })
+  }
 
   ngOnInit(): void {
   }

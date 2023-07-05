@@ -1,7 +1,7 @@
 import {Component, ElementRef, EventEmitter, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
 import {WebsocketService} from "../../websocket.service";
 import {FormBuilder} from "@angular/forms";
-import {Subscription} from "rxjs";
+import {debounceTime, distinctUntilChanged, map, Observable, OperatorFunction, Subscription} from "rxjs";
 import {DataService} from "../../data.service";
 
 interface Message {
@@ -29,6 +29,24 @@ export class SideFloatControlComponent implements OnInit, OnDestroy {
   @ViewChild("chatbox") chatbox: ElementRef|undefined
   @Output() searchChatSelection: EventEmitter<any> = new EventEmitter()
   webSub: Subscription | undefined
+  params = {
+    enableAdvanced: false,
+    searchLeft: false,
+    searchRight: false,
+    maxFCRight: 0,
+    maxFCLeft: 0,
+    minFCRight: 0,
+    minFCLeft: 0,
+    maxP: 0,
+    minP: 0,
+    significantOnly: false
+  }
+
+  allCommands: string[] = [
+    "!searchgene",
+    "!searchpid",
+    "!rd"
+  ]
   constructor(private ws: WebsocketService, private fb: FormBuilder, private data: DataService) {
     this.ws.connection = this.ws.connect()
     if (this.webSub) {
@@ -42,7 +60,7 @@ export class SideFloatControlComponent implements OnInit, OnDestroy {
       }
     })
   }
-
+  commandCompleteModel: string = ""
   private setSubscription() {
     console.log("set subscription")
     this.webSub = this.ws.getMessages()?.subscribe((data: any) => {
@@ -61,12 +79,105 @@ export class SideFloatControlComponent implements OnInit, OnDestroy {
   }
 
   sendMessage() {
-    if (this.form.value.message !== "") {
+    console.log(this.form.value.message)
+    if (this.form.value.message !== this.commandCompleteModel) {
+      this.form.controls.message.setValue(this.commandCompleteModel)
+    }
+    if (this.form.value.message !== "" && !this.form.value.message?.startsWith("@") && !this.form.value.message?.startsWith("!")) {
       this.ws.send({message: {message: this.form.value.message, timestamp: Date.now()}, senderName: this.ws.displayName, requestType: "chat"})
-      this.form.reset()
+    } else if (this.form.value.message?.startsWith("!")) {
+      const command = this.form.value.message.split(" ")
+      const firstParameter = command[0]
+      switch (firstParameter) {
+        case "!searchgene":
+          this.searchGene(command);
+          break;
+        case "!searchpid":
+          this.searchPID(command);
+          break
+        case "!rd":
+          this.data.redrawTrigger.next(true)
+          this.data.selectionUpdateTrigger.next(true)
+      }
+
+    } else {
+      //const message: Message = {message: {message: this.form.value.message, timestamp: Date.now()}, senderID: "system", senderName: "System", requestType: "chat-system"}
+      this.ws.send({message: {message: this.form.value.message, timestamp: Date.now()}, senderName: this.ws.displayName, requestType: "chat"})
     }
 
+    this.form.reset()
+    this.commandCompleteModel = ""
+
   }
+
+  private searchPID(command: string[]) {
+    if (command.length > 1) {
+      const pidList = []
+      const dataObject: any = {}
+      for (const c of command) {
+        if (c.startsWith("@")) {
+          const pid = c.substring(1)
+          dataObject[pid] = c.substring(1).split(";")
+          pidList.push(pid)
+        }
+      }
+      const message: Message = {
+        message: {message: `Search for ${pidList.length} PIDs`, timestamp: Date.now()},
+        senderID: "system",
+        senderName: "System",
+        requestType: "chat-system"
+      }
+      if (pidList.length > 0) {
+        this.messagesList = [message].concat(this.messagesList)
+
+        const payload = {
+          searchType: "Primary IDs",
+          data: dataObject,
+          title: `Search #${this.data.selectOperationNames.length}`,
+          params: Object.assign(this.params)
+        }
+        this.data.searchCommandService.next(payload)
+      } else {
+        message.message.message = "No primary ids found"
+        this.messagesList = [message].concat(this.messagesList)
+      }
+    }
+  }
+  private searchGene(command: string[]) {
+    if (command.length > 1) {
+      const geneList = []
+      const dataObject: any = {}
+      for (const c of command) {
+        if (c.startsWith("@")) {
+          const gene = c.substring(1)
+          dataObject[gene] = c.substring(1).split(";")
+          geneList.push(gene)
+        }
+      }
+      const message: Message = {
+        message: {message: `Search for ${geneList.length} genes`, timestamp: Date.now()},
+        senderID: "system",
+        senderName: "System",
+        requestType: "chat-system"
+      }
+      if (geneList.length > 0) {
+        this.messagesList = [message].concat(this.messagesList)
+
+        const payload = {
+          searchType: "Gene Names",
+          data: dataObject,
+          title: `Search #${this.data.selectOperationNames.length}`,
+          params: Object.assign(this.params)
+        }
+        this.data.searchCommandService.next(payload)
+      } else {
+        message.message.message = "No genes found"
+        this.messagesList = [message].concat(this.messagesList)
+      }
+    }
+  }
+
+
   ngOnDestroy() {
     this.webSub?.unsubscribe()
     this.ws.close()
@@ -113,5 +224,49 @@ export class SideFloatControlComponent implements OnInit, OnDestroy {
   }
   searchChatSelectionSingle(event: any) {
     this.searchChatSelection.emit({title:event.title, data: event.data})
+  }
+
+  typeAheadCommandComplete: OperatorFunction<string, string[]> = (text$: Observable<string>) =>
+    text$.pipe(
+      debounceTime(200),
+      distinctUntilChanged(),
+      map((term) => {
+        this.commandCompleteModel = term
+        const command = term.split(" ")
+        const lastParameter = command[command.length - 1]
+        console.log(lastParameter)
+        if (lastParameter.startsWith("@")) {
+          if (lastParameter.length < 3) {
+            return []
+          } else {
+            const searchTerm = lastParameter.replace("@", "")
+            if (command[0] === "!searchpid") {
+              return this.data.primaryIDsList.filter((v: string) => v.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1).slice(0, 10)
+            } else {
+              return this.data.allGenes.filter((v: string) => v.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1).slice(0, 10)
+            }
+          }
+        } else if (lastParameter.startsWith("!")) {
+          const result = this.allCommands.filter((v: string) => v.startsWith(lastParameter.toLowerCase())).slice(0, 10)
+          return result
+        } else {
+          return []
+        }
+      })
+    )
+
+  formatTypeAheadCommandComplete = (x: string) => {
+    const command = this.form.value.message?.split(" ")
+    if (command) {
+      const lastCommand = command[command.length - 1]
+      if (lastCommand.startsWith("@")) {
+        command[command.length - 1] = "@" + x
+      } else if (lastCommand.startsWith("!")) {
+        command[command.length - 1] = x
+      }
+      this.commandCompleteModel = command.join(" ")
+      return this.commandCompleteModel
+    }
+    return x
   }
 }

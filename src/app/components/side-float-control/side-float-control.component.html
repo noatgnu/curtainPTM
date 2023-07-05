@@ -12,6 +12,9 @@
         <ng-container *ngIf="m.requestType==='chat-selection-single'">
           <span class="badge bg-danger" (click)="searchChatSelectionSingle(m.message)">{{m.message.title}}</span> <br>
         </ng-container>
+        <ng-container *ngIf="m.requestType==='chat-system'">
+          {{m.message.message}}<br>
+        </ng-container>
         <small class="text-sm-end text-muted" style="font-size: 10px">{{senderMap[m.senderID]}} - {{m.message.timestamp|date:'short'}}</small>
       </p>
     </div>

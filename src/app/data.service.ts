@@ -20,6 +20,7 @@ export class DataService {
   annotationService: Subject<any> = new Subject<any>()
   batchAnnotateAnnoucement: Subject<any> = new Subject<any>()
   updateVariantCorrection: Subject<boolean> = new Subject<boolean>()
+  searchCommandService: Subject<any> = new Subject<any>()
   raw: InputFile = new InputFile()
   rawForm: Raw = new Raw()
   differential: InputFile = new InputFile()

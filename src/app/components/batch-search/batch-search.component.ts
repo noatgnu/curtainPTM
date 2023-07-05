@@ -130,7 +130,9 @@ export class BatchSearchComponent implements OnInit {
       this.title = this.web.filters[categoryName].name
     })*/
     this.accounts.curtainAPI.getDataFilterListByID(categoryID).then((data: any) => {
-      this.data = data.data.data
+      this.data  = this.data.replace("\r", "").split("\n").filter((a:string) => {
+        return a.trim() !== ""
+      }).concat(data.data.data.replace("\r", "").split("\n")).join("\n").toUpperCase()
       this.title = data.data.name
       this.canDelete = !data.data.default
       this.currentID = data.data.id

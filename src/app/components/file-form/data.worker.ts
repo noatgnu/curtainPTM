@@ -55,7 +55,7 @@ addEventListener('message', (data: MessageEvent<any>) => {
       }*/
       postMessage({type: "progress", value: 100, text: "Finished processing differential data"})
       // @ts-ignore
-      const result = {type: "resultDifferential", differential: JSON.stringify(store)}
+      const result = {type: "resultDifferential", differential: JSON.stringify(store), differentialForm: data.data.differentialForm}
       postMessage(result)
 
       break

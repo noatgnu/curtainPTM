@@ -40,6 +40,15 @@ export class FileFormComponent implements OnInit {
           } else {
             if (data.data.type === "resultDifferential") {
               this.data.differential.df = fromJSON(data.data.differential)
+              for (const i in this.data.differentialForm) {
+                if (this.data.differentialForm.hasOwnProperty(i)) {
+                  if (i in data.data.differentialForm) {
+                    // @ts-ignore
+                    this.data.differentialForm[i] = data.data.differentialForm[i]
+                  }
+                }
+              }
+
               const currentDF = this.data.differential.df.where(r => r[this.data.differentialForm.comparison] === this.data.differentialForm.comparisonSelect).resetIndex().bake()
 
               const fc = currentDF.getSeries(this.data.differentialForm.foldChange).where(i => !isNaN(i)).bake()
