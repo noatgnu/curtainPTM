@@ -98,6 +98,13 @@ export class SideFloatControlComponent implements OnInit, OnDestroy {
         case "!rd":
           this.data.redrawTrigger.next(true)
           this.data.selectionUpdateTrigger.next(true)
+          break
+        case "!anngene":
+          this.annotateGene(command)
+          break
+        case "!annpid":
+          this.annotatePid(command)
+          break
       }
 
     } else {
@@ -177,7 +184,67 @@ export class SideFloatControlComponent implements OnInit, OnDestroy {
     }
   }
 
+  annotateGene(command: string[]) {
+    if (command[0] === "!anngene") {
+      const com: {remove: boolean, id: string[]} = {remove: false, id: []}
+      for (const c of command.splice(2)) {
+        if (c.startsWith("@")) {
+          const pids = this.data.getPrimaryFromGeneNames(c.substring(1))
+          if (pids.length > 0) {
+            com.id = com.id.concat(pids)
+          } else {
+            for (const gene of c.substring(1).split(";")) {
+              const pids = this.data.getPrimaryFromGeneNames(gene)
+              if (pids.length > 0) {
+                com.id = com.id.concat(pids)
+              }
+            }
+          }
+        }
+      }
+      if (command[1] === "-a") {
+        com.remove = false
+      } else if (command[1] === "-r") {
+        com.remove = true
+      }
+      if (com.id.length > 0) {
+        this.data.annotationService.next(com)
+      }
+      const message: Message = {
+        message: {message: `Annotate ${com.id.length} data points`, timestamp: Date.now()},
+        senderID: "system",
+        senderName: "System",
+        requestType: "chat-system"
+      }
+      this.messagesList = [message].concat(this.messagesList)
+    }
+  }
 
+  annotatePid(command: string[]) {
+    if (command[0] === "!annpid") {
+      const com: {remove: boolean, id: string[]} = {remove: false, id: []}
+      for (const c of command.splice(2)) {
+        if (c.startsWith("@")) {
+          com.id.push(c.substring(1))
+        }
+      }
+      if (command[1] === "-a") {
+        com.remove = false
+      } else if (command[1] === "-r") {
+        com.remove = true
+      }
+      if (com.id.length > 0) {
+        this.data.annotationService.next(com)
+      }
+      const message: Message = {
+        message: {message: `Annotate ${com.id.length} data points`, timestamp: Date.now()},
+        senderID: "system",
+        senderName: "System",
+        requestType: "chat-system"
+      }
+      this.messagesList = [message].concat(this.messagesList)
+    }
+  }
   ngOnDestroy() {
     this.webSub?.unsubscribe()
     this.ws.close()
