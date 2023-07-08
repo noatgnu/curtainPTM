@@ -8,7 +8,7 @@ addEventListener('message', (data: MessageEvent<any>) => {
     case "processDifferentialFile":
       postMessage({type: "progress", value: 100, text: "Processing differential data..."})
       let df: IDataFrame = fromCSV(data.data.differential)
-
+      console.log(data.data.differentialForm)
       if (!data.data.differentialForm._comparison || data.data.differentialForm._comparison === "" || data.data.differentialForm._comparison === "CurtainSetComparison") {
         data.data.differentialForm._comparison = "CurtainSetComparison"
         data.data.differentialForm._comparisonSelect = "1"
@@ -17,7 +17,15 @@ addEventListener('message', (data: MessageEvent<any>) => {
       }
 
       if (data.data.differentialForm._comparisonSelect === "" || data.data.differentialForm._comparisonSelect === undefined) {
-        data.data.differentialForm._comparisonSelect = data.data.differential.df.first()[data.data.differentialForm._comparison]
+        if (df.getColumnNames().includes(data.data.differentialForm._comparison)) {
+          data.data.differentialForm._comparisonSelect = data.data.differential.df.first()[data.data.differentialForm._comparison]
+        } else {
+          data.data.differentialForm._comparison = "CurtainSetComparison"
+          data.data.differentialForm._comparisonSelect = "1"
+
+          df = df.withSeries("CurtainSetComparison", new Series(Array(df.count()).fill("1"))).bake()
+        }
+
       }
       const store: any[] = df.toArray().map((r: any) => {
         r[data.data.differentialForm._position] = Number(r[data.data.differentialForm._position])

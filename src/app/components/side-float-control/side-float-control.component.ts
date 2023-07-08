@@ -46,7 +46,10 @@ export class SideFloatControlComponent implements OnInit, OnDestroy {
   allCommands: string[] = [
     "!searchgene",
     "!searchpid",
-    "!rd"
+    "!rd",
+    "!anngene",
+    "!annpid",
+    "!savestate"
   ]
   constructor(private saveState: SaveStateService, private ws: WebsocketService, private fb: FormBuilder, private data: DataService) {
     this.ws.connection = this.ws.connect()
