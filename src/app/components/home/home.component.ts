@@ -42,12 +42,17 @@ export class HomeComponent implements OnInit {
       this.ptm.getDatabase("CDB_CARBONYL")
       this.data.dataClear.asObservable().subscribe(data => {
         if (data) {
-          console.log(this.rawFiltered)
           this.rawFiltered = new DataFrame()
           this.differentialFiltered = new Series()
         }
       })
-
+      this.data.loadDataTrigger.asObservable().subscribe(data => {
+        if (data) {
+          this.rawFiltered = new DataFrame()
+          this.differentialFiltered = new Series()
+          this.handleFinish(true)
+        }
+      })
       this.route.params.subscribe(params => {
         if (params) {
           if (params["settings"] && params["settings"].length > 0) {

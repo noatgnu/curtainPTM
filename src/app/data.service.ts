@@ -11,6 +11,7 @@ import {UniprotService} from "./uniprot.service";
   providedIn: 'root'
 })
 export class DataService {
+  loadDataTrigger: Subject<boolean> = new Subject<boolean>()
   session: any = {}
   tempLink: boolean = false
   dataClear: Subject<boolean> = new Subject()
@@ -174,6 +175,18 @@ export class DataService {
   redrawTrigger: Subject<boolean> = new Subject()
   colorMap: any = {}
   constructor(private settings: SettingsService, private uniprot: UniprotService) { }
+
+  clear() {
+    this.selected = []
+    this.selectedGenes = []
+    this.selectedMap = {}
+    this.selectOperationNames = []
+    this.settings.settings.colorMap = {}
+    this.selectedAccessions = []
+    this.settings.settings.textAnnotation = {}
+    this.settings.settings.barchartColorMap = {}
+    this.annotatedData = {}
+  }
 
   significantGroup(x: number, y: number) {
     const ylog = -Math.log10(this.settings.settings.pCutoff)

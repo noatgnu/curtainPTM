@@ -87,14 +87,7 @@ export class NavbarComponent implements OnInit {
     this.uniprot.uniprotProgressBar.next({value: progressEvent.progress * 100, text: "Uploading session data at " + Math.round(progressEvent.progress *100) + "%"})
   }
   clearSelections() {
-    this.data.selected = []
-    this.data.selectedGenes = []
-    this.data.selectedAccessions = []
-    this.data.selectedMap = {}
-    this.data.selectOperationNames = []
-    this.settings.settings.colorMap = {}
-    this.settings.settings.textAnnotation = {}
-    this.data.annotatedData = {}
+    this.data.clear()
     this.data.dataClear.next(true)
   }
 
