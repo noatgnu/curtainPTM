@@ -25,7 +25,7 @@ export class SideFloatControlComponent implements OnInit, OnDestroy {
     message: ['']
   })
 
-  senderMap: {[key: string]: string} = {}
+  senderMap: {[key: string]: string} = {'system': 'System'}
 
   @ViewChild("chatbox") chatbox: ElementRef|undefined
   @Output() searchChatSelection: EventEmitter<any> = new EventEmitter()
@@ -140,16 +140,23 @@ export class SideFloatControlComponent implements OnInit, OnDestroy {
         this.messagesList = [message].concat(this.messagesList)
       } else if (command.length === 3) {
         if (command[1] === "-l") {
-          this.saveState.loadState(parseInt(command[1]))
+          this.saveState.loadState(parseInt(command[2]))
           const message: Message = {
-            message: {message: `Load state ${command[1]}`, timestamp: Date.now()},
+            message: {message: `Load state ${command[2]}`, timestamp: Date.now()},
             senderID: "system",
             senderName: "System",
             requestType: "chat-system-save-state-load"
           }
           this.messagesList = [message].concat(this.messagesList)
         } else if (command[1] === "-r") {
-          this.saveState.removeState(parseInt(command[1]))
+          this.saveState.removeState(parseInt(command[2]))
+          const message: Message = {
+            message: {message: `Removed load state ${command[2]}`, timestamp: Date.now()},
+            senderID: "system",
+            senderName: "System",
+            requestType: "chat-system-save-state-load"
+          }
+          this.messagesList = [message].concat(this.messagesList)
         }
       } else if (command.length === 2) {
         if (command[1] === "-a") {

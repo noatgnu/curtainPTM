@@ -39,6 +39,8 @@ export class SaveStateService {
     if (state) {
       loadedState = JSON.parse(state)
     }
+    console.log(state)
+    console.log(loadedState)
     this.data.clear()
     this.data.selectedMap = loadedState.data.selectedMap
     this.data.selected = loadedState.data.selected

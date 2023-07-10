@@ -105,13 +105,45 @@ export class BatchSearchComponent implements OnInit {
       tap(() => this.searching = false),
     )
   }
+  categories: string[] = []
+  subcategories: any[] = []
 
+  formCategories = this.fb.group({
+    category: [""],
+    subcategory: [""]
+  })
   constructor(private fb: FormBuilder, private modal: NgbActiveModal, public web: WebService, private dataService: DataService, private accounts: AccountsService) {
     this.builtInList = Object.keys(this.web.filters)
     this.params.maxFCRight = Math.abs(this.dataService.minMax.fcMax)
     this.params.maxFCLeft = Math.abs(this.dataService.minMax.fcMin)
     this.params.maxP = this.dataService.minMax.pMax
     this.params.minP = this.dataService.minMax.pMin
+
+    this.accounts.curtainAPI.getDataAllListCategory().then((data: any) => {
+      if (data) {
+        this.categories = data.data
+        if (this.categories.length > 0) {
+          this.formCategories.controls["category"].setValue(this.categories[0])
+        }
+
+      }
+    })
+
+    this.formCategories.controls["category"].valueChanges.subscribe((value: string|null) => {
+      if (value && value !== "") {
+        this.accounts.curtainAPI.getDataFilterListByCategory(value).then((data: any) => {
+          if (data) {
+            this.subcategories = data.data.results
+          }
+        })
+      }
+    })
+
+    this.formCategories.controls["subcategory"].valueChanges.subscribe((value: any) => {
+      if (value && value !== "") {
+        this.updateTextArea(value)
+      }
+    })
     //this.getAllList();
   }
   private getAllList() {

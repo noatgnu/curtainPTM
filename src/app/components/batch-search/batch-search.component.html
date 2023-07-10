@@ -4,24 +4,10 @@
 <div class="modal-body">
   <div class="row mb-4">
     <div class="col">
-      <input type="text" placeholder="Title" class="form-control" [(ngModel)]="title">
+
     </div>
     <div class="col">
-      <form [formGroup]="form">
-        <input id="typeahead-basic"
-               [resultTemplate]="rt"
-               [inputFormatter]="formatter"
-               placeholder="Protein/Category search"
-               [class.is-invalid]="searchFailed"
-               type="text" class="form-control"
-               formControlName="searchTerm"
-               (focus)="focusCapture.next($any($event).target.value)"
-               (click)="clickCapture.next($any($event).target.value)"
-               [ngbTypeahead]="search"
-               (selectItem)="selectDataList($event)"
-               #instance="ngbTypeahead"
-        />
-      </form>
+
       <!--<div ngbDropdown class="d-inline-block">
         <button type="button" class="btn btn-outline-primary" id="dropDownProteinList" ngbDropdownToggle>Built-in Protein Lists</button>
         <div ngbDropdownMenu aria-labelledby="dropDownProteinList">
@@ -32,17 +18,69 @@
       </div>-->
     </div>
     <div class="col">
-      <select class="form-control" [(ngModel)]="searchType">
-        <option>
-          Gene Names
-        </option>
-        <option>
-          Primary IDs
-        </option>
-      </select>
+
     </div>
   </div>
-  <textarea [disabled]="params.enableAdvanced" class="form-control mb-2" [(ngModel)]="data" rows="10"></textarea>
+  <div class="row">
+    <div class="col-3">
+      <div class="form-group mb-4">
+        <input type="text" placeholder="Title" class="form-control" [(ngModel)]="title">
+      </div>
+      <form [formGroup]="form">
+        <div class="form-group">
+          <input id="typeahead-basic"
+                 [resultTemplate]="rt"
+                 [inputFormatter]="formatter"
+                 placeholder="Protein/Category search"
+                 [class.is-invalid]="searchFailed"
+                 type="text" class="form-control"
+                 formControlName="searchTerm"
+                 (focus)="focusCapture.next($any($event).target.value)"
+                 (click)="clickCapture.next($any($event).target.value)"
+                 [ngbTypeahead]="search"
+                 (selectItem)="selectDataList($event)"
+                 #instance="ngbTypeahead"
+          />
+        </div>
+
+      </form>
+      <p>
+        -
+        Or
+        -
+      </p>
+      <form [formGroup]="formCategories">
+        <div class="form-group">
+          <label for="category">Builtin category</label>
+          <select class="form-control" id="category" formControlName="category">
+            <option></option>
+            <option *ngFor="let c of categories">{{c}}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="subcategory">Builtin sub-category</label>
+          <select class="form-control" id="subcategory" formControlName="subcategory">
+            <option></option>
+            <option *ngFor="let c of subcategories" [value]="c.id">{{c.name}}</option>
+          </select>
+        </div>
+      </form>
+      <div class="form-group">
+        <label>Identifier type</label>
+        <select class="form-control" [(ngModel)]="searchType">
+          <option>
+            Gene Names
+          </option>
+          <option>
+            Primary IDs
+          </option>
+        </select>
+      </div>
+    </div>
+    <div class="col-9">
+      <textarea [disabled]="params.enableAdvanced" class="form-control" [(ngModel)]="data" rows="12"></textarea>
+    </div>
+  </div>
   <div class="d-flex">
     <div class="p-2">
       <button class="btn btn-sm btn-primary" (click)="saveDataFilterList()">Save</button>
