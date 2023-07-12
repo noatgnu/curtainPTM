@@ -19,13 +19,14 @@ export class SaveStateService {
       selected : this.data.selected,
       selectOperationNames : this.data.selectOperationNames,
     }
-    const state: any = {
-      settings, data, currentID: this.settings.settings.currentID, selectedComparison: this.data.differentialForm.comparisonSelect, date: Date.now()
-    }
+
     let stateNumber = localStorage.getItem("SaveStateNumber")
     if (!stateNumber) {
       localStorage.setItem("SaveStateNumber", "0")
       stateNumber = "0"
+    }
+    const state: any = {
+      settings, data, currentID: this.settings.settings.currentID, selectedComparison: this.data.differentialForm.comparisonSelect, date: Date.now()
     }
     localStorage.setItem("SaveState"+stateNumber, JSON.stringify(state))
     localStorage.setItem("SaveStateNumber", (parseInt(stateNumber)+1).toString())
@@ -84,5 +85,14 @@ export class SaveStateService {
     }
     localStorage.removeItem("SaveStateNumber")
     this.states = []
+  }
+
+  getSaveState(stateNumber: number) {
+    const state: string|null = localStorage.getItem("SaveState"+stateNumber)
+    let loadedState: any = {}
+    if (state) {
+      loadedState = JSON.parse(state)
+    }
+    return loadedState
   }
 }

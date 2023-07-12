@@ -17,6 +17,8 @@ import {DataSelectionManagementComponent} from "../data-selection-management/dat
 import {QrcodeModalComponent} from "../qrcode-modal/qrcode-modal.component";
 import {UniprotService} from "../../uniprot.service";
 import {CollaborateModalComponent} from "../collaborate-modal/collaborate-modal.component";
+import {SaveStateService} from "../../save-state.service";
+import {LocalSessionStateModalComponent} from "../local-session-state-modal/local-session-state-modal.component";
 
 @Component({
   selector: 'app-navbar',
@@ -34,7 +36,11 @@ export class NavbarComponent implements OnInit {
     private scroll: ScrollService,
     public settings: SettingsService,
     private modal: NgbModal,
-    public accounts: AccountsService, private toast: ToastService, private uniprot: UniprotService) { }
+    public accounts: AccountsService,
+    private toast: ToastService,
+    private uniprot: UniprotService,
+    private saveState: SaveStateService
+  ) { }
 
   ngOnInit(): void {
   }
@@ -180,5 +186,14 @@ export class NavbarComponent implements OnInit {
 
   openCollaborateModal() {
     const ref = this.modal.open(CollaborateModalComponent)
+  }
+
+  saveLocalState() {
+    this.saveState.saveState()
+    this.toast.show("Local state", "A local settings state has been created").then()
+  }
+
+  openStateModal() {
+    const ref = this.modal.open(LocalSessionStateModalComponent, {scrollable: true})
   }
 }

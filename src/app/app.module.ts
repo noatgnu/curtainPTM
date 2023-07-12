@@ -52,6 +52,7 @@ import {NgxQRCodeModule} from "@techiediaries/ngx-qrcode";
 import { DraggableElementComponent } from './components/draggable-element/draggable-element.component';
 import { SideFloatControlComponent } from './components/side-float-control/side-float-control.component';
 import { CollaborateModalComponent } from './components/collaborate-modal/collaborate-modal.component';
+import { LocalSessionStateModalComponent } from './components/local-session-state-modal/local-session-state-modal.component';
 PlotlyModule.plotlyjs = PlotlyJS;
 @NgModule({
   declarations: [
@@ -92,7 +93,8 @@ PlotlyModule.plotlyjs = PlotlyJS;
     QrcodeModalComponent,
     DraggableElementComponent,
     SideFloatControlComponent,
-    CollaborateModalComponent
+    CollaborateModalComponent,
+    LocalSessionStateModalComponent
   ],
     imports: [
         BrowserModule,

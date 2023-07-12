@@ -1,0 +1,30 @@
+<div class="modal-header">
+  <h5 class="modal-title">
+    Local session state management
+  </h5>
+</div>
+<div class="modal-body">
+  <ng-container *ngFor="let s of states">
+    <div class="card mb-2">
+      <div class="card-body">
+        <p>
+          Session: {{s.currentID}} <br>
+          Created: {{s.date | date:'short'}} <br>
+        </p>
+      </div>
+      <div class="card-footer">
+        <div class="d-flex">
+          <div class="p-2">
+            <button class="btn btn-primary" (click)="loadState(s.id)">Load</button>
+          </div>
+          <div class="p-2">
+            <button class="btn btn-danger" (click)="deleteState(s.id)">Delete</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>
+<div class="modal-footer">
+  <button class="btn btn-secondary" (click)="close()">Close</button>
+</div>

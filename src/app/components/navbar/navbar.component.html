@@ -14,6 +14,16 @@
 
     </div>
     <div class="d-flex">
+      <div class="p-2" *ngIf="finished">
+        <div display="dynamic" ngbDropdown class="d-inline-block">
+          <button class="btn btn-outline-primary ml-2" id="localState" ngbDropdownToggle> State
+          </button>
+          <div ngbDropdownMenu aria-labelledby="localState">
+            <button ngbDropdownItem (click)="saveLocalState()">Create local state</button>
+            <button ngbDropdownItem (click)="openStateModal()">State Management</button>
+          </div>
+        </div>
+      </div>
       <div class="p-2">
         <div display="dynamic" ngbDropdown class="d-inline-block">
           <button class="btn btn-outline-primary ml-2" id="dropdownSession" ngbDropdownToggle>Session
