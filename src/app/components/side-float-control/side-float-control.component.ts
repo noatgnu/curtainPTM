@@ -49,7 +49,7 @@ export class SideFloatControlComponent implements OnInit, OnDestroy {
     "!rd",
     "!anngene",
     "!annpid",
-    "!savestate"
+    "!savestate",
   ]
   constructor(private saveState: SaveStateService, private ws: WebsocketService, private fb: FormBuilder, private data: DataService) {
     this.ws.connection = this.ws.connect()
@@ -118,9 +118,13 @@ export class SideFloatControlComponent implements OnInit, OnDestroy {
         case "!savestate":
           this.saveStateCommand(command)
           break
+        case "!instructor":
+          this.data.instructorMode = !this.data.instructorMode
+          this.messagesList = [{message: {message: `Instructor mode ${this.data.instructorMode ? "enabled" : "disabled"}`, timestamp: Date.now()}, senderID: "system", senderName: "System", requestType: "chat-system"}].concat(this.messagesList)
+          break
         default:
-          const message = {message: {message: "Command not found", timestamp: Date.now()}, senderID: "system", senderName: "System", requestType: "chat-system"}
-          this.messagesList = [message].concat(this.messagesList)
+          const messageSystem = {message: {message: "Command not found", timestamp: Date.now()}, senderID: "system", senderName: "System", requestType: "chat-system"}
+          this.messagesList = [messageSystem].concat(this.messagesList)
       }
 
     } else {

@@ -26,7 +26,16 @@ export class SampleOrderAndHideComponent implements OnInit {
       }
       this.samples[condition].push(s)
     }
-    this.condition = this.settings.settings.conditionOrder.slice()
+    if (this.settings.settings.conditionOrder.length === 0) {
+      for (const s in dataService.sampleMap) {
+        const condition = dataService.sampleMap[s].condition
+        if (!this.condition.includes(condition)) {
+          this.condition.push(condition)
+        }
+      }
+    } else {
+      this.condition = this.settings.settings.conditionOrder.slice()
+    }
     for (const c of this.condition) {
       if (this.settings.settings.barchartColorMap[c]) {
         this.colorMap[c] = this.settings.settings.barchartColorMap[c].slice()
