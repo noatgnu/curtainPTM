@@ -53,6 +53,10 @@ export class SideFloatControlComponent implements OnInit, OnDestroy {
   ]
   constructor(private saveState: SaveStateService, private ws: WebsocketService, private fb: FormBuilder, private data: DataService) {
     this.ws.connection = this.ws.connect()
+    if (this.ws.connection) {
+      const message = {message: {message: "Connected to server", timestamp: Date.now()}, senderID: "system", senderName: "System", requestType: "chat-system"}
+      this.messagesList = [message].concat(this.messagesList)
+    }
     if (this.webSub) {
       this.webSub.unsubscribe()
     }
@@ -75,6 +79,8 @@ export class SideFloatControlComponent implements OnInit, OnDestroy {
     }, (error: any) => {
       console.log(error)
     }, () => {
+      const message = {message: {message: "Disconnected from server", timestamp: Date.now()}, senderID: "system", senderName: "System", requestType: "chat-system"}
+      this.messagesList = [message].concat(this.messagesList)
       console.log("complete")
     })
   }
