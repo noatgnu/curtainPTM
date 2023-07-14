@@ -28,6 +28,7 @@ export class FileFormComponent implements OnInit {
   }
 
   startWork() {
+    this.finished.emit(false)
     if (typeof Worker !== 'undefined') {
       console.log("start worker")
       // Create a new
