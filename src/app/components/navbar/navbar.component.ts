@@ -196,4 +196,8 @@ export class NavbarComponent implements OnInit {
   openStateModal() {
     const ref = this.modal.open(LocalSessionStateModalComponent, {scrollable: true})
   }
+
+  getSelectedList() {
+    this.web.downloadFile("SelectedPrimaryIDs.txt", this.data.selected.join("\n"))
+  }
 }

@@ -42,6 +42,9 @@ addEventListener('message', (data: MessageEvent<any>) => {
             r[data.data.differentialForm._foldChange] = 0
           }
         }
+        if (data.data.differentialForm._reverseFoldChange) {
+          r[data.data.differentialForm._foldChange] = -r[data.data.differentialForm._foldChange]
+        }
         if (data.data.differentialForm._significant) {
           r[data.data.differentialForm._significant] = Number(r[data.data.differentialForm._significant])
         }

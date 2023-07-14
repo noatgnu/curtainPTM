@@ -3,6 +3,9 @@
     <div (drop)="handleDrop($event)" (dragover)="handleDragOver($event)" class="p-1 d-flex flex-column-reverse" style="overflow-y: auto; height: 300px" #chatbox>
       <div></div>
       <div *ngFor="let m of messagesList">
+        <ng-container *ngIf="m.requestType==='push-state-all'">
+          <span class="badge bg-info" (click)="loadSentState(m.message.data)">Click to load save state</span> <br>
+        </ng-container>
         <ng-container *ngIf="m.requestType==='chat'">
           {{m.message.message}} <br>
         </ng-container>

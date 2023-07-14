@@ -176,6 +176,15 @@ export class SideFloatControlComponent implements OnInit, OnDestroy {
             requestType: "chat-system-save-state"
           }
           this.messagesList = [message].concat(this.messagesList)
+        } else if (command[1] === "-p") {
+          const save = this.saveState.createNewState()
+          const message: Message = {
+            message: {data: save, timestamp: Date.now()},
+            senderID: this.ws.personalID,
+            senderName: this.ws.displayName,
+            requestType: "push-state-all"
+          }
+          this.ws.send(message)
         }
       }
     }
@@ -401,5 +410,9 @@ export class SideFloatControlComponent implements OnInit, OnDestroy {
   }
   loadStateDirect(state: number) {
     this.saveState.loadState(state)
+  }
+
+  loadSentState(state: any) {
+    this.saveState.loadStateFromObject(state)
   }
 }

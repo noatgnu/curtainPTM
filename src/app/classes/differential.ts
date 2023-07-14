@@ -1,4 +1,11 @@
 export class Differential {
+  get reverseFoldChange(): boolean {
+    return this._reverseFoldChange;
+  }
+
+  set reverseFoldChange(value: boolean) {
+    this._reverseFoldChange = value;
+  }
   get sequence(): string {
     return this._sequence;
   }
@@ -122,6 +129,7 @@ export class Differential {
   private _peptideSequence: string = "Phospho (STY) Probabilities"
   private _score: string = "Localization prob"
   private _sequence: string = "Sequence window"
+  private _reverseFoldChange: boolean = false
   restore(value: any) {
     for (const i in value) {
       // @ts-ignore
