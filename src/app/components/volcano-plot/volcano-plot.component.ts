@@ -463,7 +463,16 @@ export class VolcanoPlotComponent implements OnInit {
       let title = a[this.dataService.differentialForm.primaryIDs]
       const uni: any = this.uniprot.getUniprotFromAcc(a[this.dataService.differentialForm.primaryIDs])
       if (uni) {
-        if (uni["Gene Names"] !== "") {
+        if (
+          this.dataService.differentialForm.peptideSequence !== "" &&
+          this.dataService.differentialForm.positionPeptide !== "" &&
+          this.dataService.differentialForm.peptideSequence !== ""
+        ) {
+          const position = a[this.dataService.differentialForm.position]
+          const positionInPeptide = a[this.dataService.differentialForm.positionPeptide]
+          const peptide = a[this.dataService.differentialForm.peptideSequence]
+          title = `${ uni["Gene Names"]}(${peptide[positionInPeptide-1]}${position})`
+        } else if ( uni["Gene Names"] !== "") {
           title = uni["Gene Names"] + "(" + title + ")"
         }
       }
