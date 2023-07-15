@@ -173,6 +173,7 @@ export class VolcanoPlotComponent implements OnInit {
       const y = r[this.dataService.differentialForm.significant]
       const primaryID = r[this.dataService.differentialForm.primaryIDs]
       const accID = r[this.dataService.differentialForm.accession]
+
       let text = primaryID
       if (this.dataService.fetchUniProt) {
         const r: any = this.uniprot.getUniprotFromAcc(accID)
@@ -184,7 +185,17 @@ export class VolcanoPlotComponent implements OnInit {
           geneNames = r[this.dataService.differentialForm.geneNames]
         }
       }
-      if (geneNames !== "") {
+
+      if (
+        this.dataService.differentialForm.peptideSequence !== "" &&
+        this.dataService.differentialForm.positionPeptide !== "" &&
+        this.dataService.differentialForm.peptideSequence !== ""
+      ) {
+        const position = r[this.dataService.differentialForm.position]
+        const positionInPeptide = r[this.dataService.differentialForm.positionPeptide]
+        const peptide = r[this.dataService.differentialForm.peptideSequence]
+        text = `${geneNames}(${peptide[positionInPeptide-1]}${position})`
+      } else if (geneNames !== "") {
         text = geneNames + "(" + primaryID + ")"
       }
       //this.nameToID[text] = primaryID

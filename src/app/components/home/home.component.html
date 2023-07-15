@@ -10,4 +10,4 @@
   <app-data-viewer [data]="differentialFiltered"></app-data-viewer>
 </ng-container>
 
-<app-side-float-control (searchChatSelection)="handleSearch($event)"></app-side-float-control>
+<app-side-float-control (searchChatSelection)="handleSearch($event)" *ngIf="finished"></app-side-float-control>

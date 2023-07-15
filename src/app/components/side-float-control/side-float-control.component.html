@@ -3,6 +3,9 @@
     <div (drop)="handleDrop($event)" (dragover)="handleDragOver($event)" class="p-1 d-flex flex-column-reverse" style="overflow-y: auto; height: 300px" #chatbox>
       <div></div>
       <div *ngFor="let m of messagesList">
+        <ng-container *ngIf="m.requestType==='push-state-all-force'">
+          <span class="text-danger">State updated</span> <br>
+        </ng-container>
         <ng-container *ngIf="m.requestType==='push-state-all'">
           <span class="badge bg-info" (click)="loadSentState(m.message.data)">Click to load save state</span> <br>
         </ng-container>
@@ -53,7 +56,16 @@
 
 
 <div class="float-start" style="position: fixed; z-index: 1030; bottom: 50px; left: 50px">
-  <button class="btn btn-sm btn-outline-info" (click)="toggleChat()">
-    <span class="bi bi-chat"></span>
-  </button>
+  <div class="d-flex">
+    <div class="p-2">
+      <button class="btn btn-sm btn-outline-info" (click)="toggleChat()">
+        <span class="bi bi-chat"></span>
+      </button>
+    </div>
+    <div class="p-2" *ngIf="data.instructorMode">
+      <button class="btn btn-sm btn-outline-danger">
+        <span class="bi bi-arrow-up-right"></span>
+      </button>
+    </div>
+  </div>
 </div>

@@ -51,12 +51,9 @@ export class SideFloatControlComponent implements OnInit, OnDestroy {
     "!annpid",
     "!savestate",
   ]
-  constructor(private saveState: SaveStateService, private ws: WebsocketService, private fb: FormBuilder, private data: DataService) {
+  constructor(private saveState: SaveStateService, private ws: WebsocketService, private fb: FormBuilder, public data: DataService) {
     this.ws.connection = this.ws.connect()
-    if (this.ws.connection) {
-      const message = {message: {message: "Connected to server", timestamp: Date.now()}, senderID: "system", senderName: "System", requestType: "chat-system"}
-      this.messagesList = [message].concat(this.messagesList)
-    }
+
     if (this.webSub) {
       this.webSub.unsubscribe()
     }
@@ -67,6 +64,10 @@ export class SideFloatControlComponent implements OnInit, OnDestroy {
         this.setSubscription();
       }
     })
+    if (this.ws.connection) {
+      const message = {message: {message: "Connected to server", timestamp: Date.now()}, senderID: "system", senderName: "System", requestType: "chat-system"}
+      this.messagesList = [message].concat(this.messagesList)
+    }
   }
   commandCompleteModel: string = ""
   private setSubscription() {
@@ -75,6 +76,9 @@ export class SideFloatControlComponent implements OnInit, OnDestroy {
       data.message.timestamp = new Date(data.message.timestamp)
       this.messagesList = [data].concat(this.messagesList)
       this.senderMap[data.senderID] = data.senderName
+      if (data.requestType === "push-state-all-force") {
+        this.loadSentState(data.message.data)
+      }
       this.chatbox?.nativeElement.scrollTo(0, this.chatbox.nativeElement.scrollHeight)
     }, (error: any) => {
       console.log(error)
@@ -424,5 +428,16 @@ export class SideFloatControlComponent implements OnInit, OnDestroy {
 
   loadSentState(state: any) {
     this.saveState.loadStateFromObject(state)
+  }
+
+  forcePushState() {
+    const save = this.saveState.createNewState()
+    const message: Message = {
+      message: {data: save, timestamp: Date.now()},
+      senderID: this.ws.personalID,
+      senderName: this.ws.displayName,
+      requestType: "push-state-all-force"
+    }
+    this.ws.send(message)
   }
 }
