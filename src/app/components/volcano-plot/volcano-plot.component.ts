@@ -463,18 +463,18 @@ export class VolcanoPlotComponent implements OnInit {
       let title = a[this.dataService.differentialForm.primaryIDs]
       const uni: any = this.uniprot.getUniprotFromAcc(a[this.dataService.differentialForm.primaryIDs])
       if (uni) {
-        if (
-          this.dataService.differentialForm.peptideSequence !== "" &&
-          this.dataService.differentialForm.positionPeptide !== "" &&
-          this.dataService.differentialForm.peptideSequence !== ""
-        ) {
-          const position = a[this.dataService.differentialForm.position]
-          const positionInPeptide = a[this.dataService.differentialForm.positionPeptide]
-          const peptide = a[this.dataService.differentialForm.peptideSequence]
-          title = `${ uni["Gene Names"]}(${peptide[positionInPeptide-1]}${position})`
-        } else if ( uni["Gene Names"] !== "") {
-          title = uni["Gene Names"] + "(" + title + ")"
-        }
+        title = uni["Gene Names"] + "(" + title + ")"
+      }
+      let text = title.slice()
+      if (
+        this.dataService.differentialForm.peptideSequence !== "" &&
+        this.dataService.differentialForm.positionPeptide !== "" &&
+        this.dataService.differentialForm.peptideSequence !== ""
+      ) {
+        const position = a[this.dataService.differentialForm.position]
+        const positionInPeptide = a[this.dataService.differentialForm.positionPeptide]
+        const peptide = a[this.dataService.differentialForm.peptideSequence]
+        text = `${ uni["Gene Names"]}(${peptide[positionInPeptide-1]}${position})`
       }
       if (!this.annotated[title]) {
         const ann: any = {
@@ -482,7 +482,7 @@ export class VolcanoPlotComponent implements OnInit {
           yref: 'y',
           x: a[this.dataService.differentialForm.foldChange],
           y: a[this.dataService.differentialForm.significant],
-          text: "<b>"+title+"</b>",
+          text: "<b>"+text+"</b>",
           showarrow: true,
           arrowhead: 1,
           arrowsize: 1,
