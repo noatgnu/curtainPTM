@@ -34,7 +34,7 @@ export class VolcanoColorsComponent implements OnInit {
         delete this.settings.settings.colorMap[g.group]
       }
     }
-    this.modal.dismiss()
+    this.modal.close()
   }
 
   closeModal() {

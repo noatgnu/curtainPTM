@@ -52,6 +52,8 @@ export class HomeComponent implements OnInit {
           this.rawFiltered = new DataFrame()
           this.differentialFiltered = new Series()
           this.handleFinish(true)
+          this.data.redrawTrigger.next(true)
+          this.data.selectionUpdateTrigger.next(true)
         }
       })
       this.route.params.subscribe(params => {

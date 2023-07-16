@@ -453,7 +453,10 @@ export class VolcanoPlotComponent implements OnInit {
   }
 
   openCustomColor() {
-    this.modal.open(VolcanoColorsComponent)
+    const ref = this.modal.open(VolcanoColorsComponent)
+    ref.componentInstance.closed.subscribe(() => {
+      this.drawVolcano()
+    })
   }
 
   async annotateDataPoints(data: string[]) {
