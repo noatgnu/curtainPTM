@@ -4,6 +4,9 @@
   </h5>
 </div>
 <div class="modal-body">
+  <div class="alert alert-warning">
+    <p>The local states in this section include settings like color, searched primary ids, annotation text without the imported data. They can be loaded independently of the session they are associated with. These states are stored within the browser local storage and can be retrieve and load indepedently as files.</p>
+  </div>
   <ng-container *ngFor="let s of states">
     <div class="card mb-2">
       <div class="card-body">
@@ -15,6 +18,9 @@
       <div class="card-footer">
         <div class="d-flex">
           <div class="p-2">
+            <button class="btn btn-primary" (click)="downloadState(s.id)">Download</button>
+          </div>
+          <div class="p-2">
             <button class="btn btn-primary" (click)="loadState(s.id)">Load</button>
           </div>
           <div class="p-2">
@@ -24,7 +30,9 @@
       </div>
     </div>
   </ng-container>
+  <input type="file" (change)="loadFromFile($event)" style="display: none" #fileInput [hidden]="true">
 </div>
 <div class="modal-footer">
+  <button class="btn btn-primary" (click)="fileInput.click()">Load from state file</button>
   <button class="btn btn-secondary" (click)="close()">Close</button>
 </div>

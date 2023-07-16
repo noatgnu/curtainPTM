@@ -130,4 +130,15 @@ export class SaveStateService {
 
     this.data.loadDataTrigger.next(true)
   }
+
+  downloadState(stateNumber: number) {
+    const state: string|null = localStorage.getItem("SaveState"+stateNumber)
+    if (state){
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(state);
+      const dlAnchorElem = document.createElement('a');
+      dlAnchorElem.setAttribute("href",     dataStr     );
+      dlAnchorElem.setAttribute("download", "SaveState"+stateNumber+".json");
+      dlAnchorElem.click();
+    }
+  }
 }
