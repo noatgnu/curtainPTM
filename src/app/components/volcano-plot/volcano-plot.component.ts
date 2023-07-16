@@ -194,7 +194,7 @@ export class VolcanoPlotComponent implements OnInit {
         const position = r[this.dataService.differentialForm.position]
         const positionInPeptide = r[this.dataService.differentialForm.positionPeptide]
         const peptide = r[this.dataService.differentialForm.peptideSequence]
-        text = `${geneNames}(${peptide[positionInPeptide-1]}${position})`
+        text = `${geneNames}(${peptide[positionInPeptide-1]}${position})(${primaryID})`
       } else if (geneNames !== "") {
         text = geneNames + "(" + primaryID + ")"
       }
