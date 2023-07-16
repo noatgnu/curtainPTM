@@ -13,7 +13,7 @@ export class SaveStateService {
   }
 
   saveState() {
-    const settings: any = {}
+    const settings: any = Object.assign({}, this.settings.settings)
     const data: any = {
       selectedMap : this.data.selectedMap,
       selected : this.data.selected,
