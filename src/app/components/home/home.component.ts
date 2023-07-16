@@ -15,6 +15,7 @@ import {Project} from "../../classes/project";
 import {LoginModalComponent} from "../../accounts/login-modal/login-modal.component";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {AccountsService} from "../../accounts/accounts.service";
+import {WebsocketService} from "../../websocket.service";
 
 @Component({
   selector: 'app-home',
@@ -29,7 +30,7 @@ export class HomeComponent implements OnInit {
   filterModel: string = ""
   currentID: string = ""
   @Output() currentIDChanged: EventEmitter<string> = new EventEmitter<string>()
-  constructor(private accounts: AccountsService, private modal: NgbModal, public settings: SettingsService, private data: DataService, private route: ActivatedRoute, private toast: ToastService, private uniprot: UniprotService, private web: WebService, private ptm: PtmService) {
+  constructor(private ws: WebsocketService, private accounts: AccountsService, private modal: NgbModal, public settings: SettingsService, private data: DataService, private route: ActivatedRoute, private toast: ToastService, private uniprot: UniprotService, private web: WebService, private ptm: PtmService) {
 
 
     // if (location.protocol === "https:" && location.hostname === "curtainptm.proteo.info") {
@@ -63,6 +64,11 @@ export class HomeComponent implements OnInit {
               this.data.tempLink = true
             } else {
               this.data.tempLink = false
+            }
+            if (settings.length > 2 && settings[2] !== "") {
+              //this.ws.close()
+              this.ws.sessionID = settings[2]
+              //this.ws.reconnect()
             }
             this.toast.show("Initialization", "Fetching data from session " + params["settings"]).then()
             if (this.currentID !== settings[0]) {
