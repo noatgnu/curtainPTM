@@ -84,6 +84,7 @@ export class HomeComponent implements OnInit {
                     this.restoreSettings(data.data).then(result => {
                       this.accounts.curtainAPI.getSessionSettings(settings[0]).then((d:any)=> {
                         this.data.session = d.data
+                        console.log(d.data)
                         this.settings.settings.currentID = d.data.link_id
                       })
                     })

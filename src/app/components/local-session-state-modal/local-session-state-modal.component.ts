@@ -35,6 +35,7 @@ export class LocalSessionStateModalComponent implements OnInit {
         this.states = [state].concat(this.states)
       }
     }
+    console.log(this.states)
   }
 
   close() {

@@ -86,7 +86,13 @@ export class FileFormComponent implements OnInit {
             } else if (data.data.type === "resultRaw") {
               this.data.raw.df = fromJSON(data.data.raw)
               this.data.sampleMap = data.data.sampleMap
-              this.settings.settings = data.data.settings
+              for (const s in this.settings.settings) {
+
+                if (this.settings.settings.hasOwnProperty(s)) {
+                  // @ts-ignore
+                  this.settings.settings[s] = data.data.settings[s]
+                }
+              }
               this.data.conditions = data.data.conditions
               this.data.colorMap = data.data.colorMap
               this.processUniProt()
