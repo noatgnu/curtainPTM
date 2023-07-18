@@ -89,7 +89,7 @@ export class HomeComponent implements OnInit {
                       })
                     })
                     this.accounts.curtainAPI.getOwnership(settings[0]).then((data:any) => {
-                      if (data.ownership) {
+                      if (data.data.ownership) {
                         this.accounts.isOwner = true
                       } else {
                         this.accounts.isOwner = false
