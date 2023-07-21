@@ -1,0 +1,14 @@
+<div class="modal-header">
+  <h5 class="modal-title">
+    Profile Plot
+  </h5>
+</div>
+<div class="modal-body">
+  <plotly-plot [divId]="divId" [data]="graphData" [layout]="graphLayout" [updateOnLayoutChange]="true" [updateOnDataChange]="true"></plotly-plot>
+</div>
+<div class="modal-footer">
+  <button class="btn btn-primary" (click)="hideBoxPlot()">Toggle Box Plot</button>
+  <button class="btn btn-primary" (click)="downloadSVG()">Download SVG</button>
+  <button class="btn btn-primary" (click)="close()">Close</button>
+</div>
+

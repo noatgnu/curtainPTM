@@ -19,6 +19,7 @@ import {UniprotService} from "../../uniprot.service";
 import {CollaborateModalComponent} from "../collaborate-modal/collaborate-modal.component";
 import {SaveStateService} from "../../save-state.service";
 import {LocalSessionStateModalComponent} from "../local-session-state-modal/local-session-state-modal.component";
+import {ProfilePlotComponent} from "../profile-plot/profile-plot.component";
 
 @Component({
   selector: 'app-navbar',
@@ -63,6 +64,25 @@ export class NavbarComponent implements OnInit {
   }
 
   private saving() {
+    const extraData: any = {
+      uniprot: {
+        results: this.uniprot.results,
+        dataMap: this.uniprot.dataMap,
+        db: this.uniprot.db,
+        organism: this.uniprot.organism,
+        accMap: this.uniprot.accMap,
+        geneNameToPrimary: this.uniprot.geneNameToPrimary,
+      },
+      data: {
+        accessionToPrimaryIDs: this.data.accessionToPrimaryIDs,
+        primaryIDsList: this.data.primaryIDsList,
+        accessionList: this.data.accessionList,
+        accessionMap: this.data.accessionMap,
+        genesMap: this.data.genesMap,
+        allGenes: this.data.allGenes,
+        dataMap: this.data.dataMap,
+      }
+    }
     const data: any = {
       raw: this.data.raw.originalFile,
       rawForm: this.data.rawForm,
@@ -76,7 +96,8 @@ export class NavbarComponent implements OnInit {
       dbIDMap: this.data.dbIDMap,
       fetchUniProt: this.data.fetchUniProt,
       annotatedData: this.data.annotatedData,
-      annotatedMap: this.data.annotatedMap
+      annotatedMap: this.data.annotatedMap,
+      extraData: extraData,
     }
     this.accounts.curtainAPI.putSettings(data, !this.accounts.curtainAPI.user.loginStatus, data.settings.description, "PTM", this.onUploadProgress).then((data: any) => {
       if (data.data) {
@@ -206,5 +227,10 @@ export class NavbarComponent implements OnInit {
 
   getSelectedList() {
     this.web.downloadFile("SelectedPrimaryIDs.txt", this.data.selected.join("\n"))
+  }
+
+  openProfilePlot() {
+    const ref = this.modal.open(ProfilePlotComponent, {size: "xl", scrollable: true})
+    ref.componentInstance.data = this.data.raw.df
   }
 }

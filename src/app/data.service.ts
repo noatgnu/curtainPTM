@@ -11,6 +11,7 @@ import {UniprotService} from "./uniprot.service";
   providedIn: 'root'
 })
 export class DataService {
+  bypassUniProt: boolean = false
   instructorMode: boolean = false
   loadDataTrigger: Subject<boolean> = new Subject<boolean>()
   session: any = {}

@@ -53,6 +53,7 @@ import { DraggableElementComponent } from './components/draggable-element/dragga
 import { SideFloatControlComponent } from './components/side-float-control/side-float-control.component';
 import { CollaborateModalComponent } from './components/collaborate-modal/collaborate-modal.component';
 import { LocalSessionStateModalComponent } from './components/local-session-state-modal/local-session-state-modal.component';
+import { ProfilePlotComponent } from './components/profile-plot/profile-plot.component';
 PlotlyModule.plotlyjs = PlotlyJS;
 @NgModule({
   declarations: [
@@ -94,7 +95,8 @@ PlotlyModule.plotlyjs = PlotlyJS;
     DraggableElementComponent,
     SideFloatControlComponent,
     CollaborateModalComponent,
-    LocalSessionStateModalComponent
+    LocalSessionStateModalComponent,
+    ProfilePlotComponent
   ],
     imports: [
         BrowserModule,

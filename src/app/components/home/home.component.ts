@@ -16,6 +16,7 @@ import {LoginModalComponent} from "../../accounts/login-modal/login-modal.compon
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {AccountsService} from "../../accounts/accounts.service";
 import {WebsocketService} from "../../websocket.service";
+import {reviver} from "curtain-web-api";
 
 @Component({
   selector: 'app-home',
@@ -131,8 +132,35 @@ export class HomeComponent implements OnInit {
   }
   async restoreSettings(object: any) {
     if (typeof object.settings === "string") {
-      object.settings = JSON.parse(object.settings)
+      object.settings = JSON.parse(object.settings, reviver)
     }
+
+    if (object.fetchUniProt) {
+      if (object.extraData) {
+        if (typeof object.extraData === "string") {
+          object.extraData = JSON.parse(object.extraData, reviver)
+        }
+        if (object.extraData.uniprot) {
+          this.uniprot.results = new Map(object.extraData.uniprot.results.value)
+          this.uniprot.dataMap = new Map(object.extraData.uniprot.dataMap.value)
+          this.uniprot.db = new Map(object.extraData.uniprot.db.value)
+          this.uniprot.organism = object.extraData.uniprot.organism
+          this.uniprot.accMap = new Map(object.extraData.uniprot.accMap.value)
+          this.uniprot.geneNameToPrimary = object.extraData.uniprot.geneNameToPrimary
+        }
+        if (object.extraData.data) {
+          this.data.accessionToPrimaryIDs = object.extraData.data.accessionToPrimaryIDs
+          this.data.primaryIDsList = object.extraData.data.primaryIDsList
+          this.data.accessionList = object.extraData.data.accessionList
+          this.data.accessionMap = object.extraData.data.accessionMap
+          this.data.genesMap = object.extraData.data.genesMap
+          this.data.allGenes = object.extraData.data.allGenes
+          this.data.dataMap = new Map(object.extraData.data.dataMap.value)
+        }
+        this.data.bypassUniProt = true
+      }
+    }
+
     if (/\t/.test(object.raw)) {
       // @ts-ignore
       this.data.raw = new InputFile(fromCSV(object.raw, {delimiter: "\t"}), "rawFile.txt", object.raw)
@@ -315,7 +343,13 @@ export class HomeComponent implements OnInit {
   }
 
   onDownloadProgress = (progressEvent: any) => {
-    this.uniprot.uniprotProgressBar.next({value: progressEvent.progress *100, text: "Downloading session data at " + Math.round(progressEvent.progress * 100) + "%"})
+    if (progressEvent.progress) {
+      this.uniprot.uniprotProgressBar.next({value: progressEvent.progress *100, text: "Downloading session data at " + Math.round(progressEvent.progress * 100) + "%"})
+
+    } else {
+      const sizeDownloaded = (progressEvent.loaded / (1024*1024)).toFixed(2)
+      this.uniprot.uniprotProgressBar.next({value: 100, text: "Downloading session data at " + sizeDownloaded + " MB"})
+    }
   }
 
 }
