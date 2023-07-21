@@ -63,15 +63,18 @@ export class HomeComponent implements OnInit {
             const settings = params["settings"].split("&")
             let token: string = ""
             if (settings.length > 1) {
-              token = settings[1]
-              this.data.tempLink = true
-            } else {
-              this.data.tempLink = false
-            }
-            if (settings.length > 2 && settings[2] !== "") {
-              //this.ws.close()
-              this.ws.sessionID = settings[2]
-              //this.ws.reconnect()
+              if (settings[1] !== "") {
+                token = settings[1]
+                this.data.tempLink = true
+              } else {
+                this.data.tempLink = false
+              }
+
+              if (settings.length > 2 && settings[2] !== "") {
+                //this.ws.close()
+                this.ws.sessionID = settings[2]
+                //this.ws.reconnect()
+              }
             }
             this.toast.show("Initialization", "Fetching data from session " + params["settings"]).then()
             if (this.currentID !== settings[0]) {
