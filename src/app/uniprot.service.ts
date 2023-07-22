@@ -37,7 +37,7 @@ export class UniprotService {
         currentSegment = r.segment
       }
 
-      this.uniprotProgressBar.next({value: currentRun * 100/totalRun, text: `Processed UniProt Job ${currentRun}/${totalRun} (Segment ${r.segment/5000+1})`})
+      this.uniprotProgressBar.next({value: currentRun * 100/totalRun, text: `Processed UniProt Job ${currentRun}/${totalRun} (Segment ${r.segment/2000+1})`})
       await this.PrimeProcessReceivedData(r.data)
       if (currentRun === totalRun) {
         this.uniprotParseStatus.next(true)
