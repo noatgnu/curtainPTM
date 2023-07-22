@@ -24,7 +24,7 @@ export class UniprotService {
 
   async UniprotParserJS(accList: string[]) {
     const parser = new Parser(5, "accession,id,gene_names,protein_name,organism_name,organism_id,length,cc_subcellular_location,sequence,ft_var_seq,cc_alternative_products,ft_domain,xref_string,ft_mod_res,cc_function,cc_disease,cc_pharmaceutical,ft_mutagen,xref_mim")
-    const res = await parser.parse(accList, 2000)
+    const res = await parser.parse(accList, 1000)
     let currentRun = 1
     let totalRun = 0
     let currentSegment = 0
@@ -37,7 +37,7 @@ export class UniprotService {
         currentSegment = r.segment
       }
 
-      this.uniprotProgressBar.next({value: currentRun * 100/totalRun, text: `Processed UniProt Job ${currentRun}/${totalRun} (Segment ${r.segment/2000+1})`})
+      this.uniprotProgressBar.next({value: currentRun * 100/totalRun, text: `Processed UniProt Job ${currentRun}/${totalRun} (Segment ${r.segment/1000+1})`})
       await this.PrimeProcessReceivedData(r.data)
       if (currentRun === totalRun) {
         this.uniprotParseStatus.next(true)
