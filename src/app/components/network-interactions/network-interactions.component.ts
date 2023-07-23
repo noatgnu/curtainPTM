@@ -67,11 +67,8 @@ export class NetworkInteractionsComponent implements OnInit {
   selectedData: IDataFrame = new DataFrame()
   selectedAccessions: string[] = []
   @Input() set genes(value: string[]) {
-    console.log(value)
     this.selectedData = this.data.currentDF.where(row => value.includes(row[this.data.differentialForm.primaryIDs])).bake()
-    console.log(this.selectedData)
     this.selectedAccessions = this.selectedData.getSeries(this.data.differentialForm.accession).distinct().bake().toArray()
-    console.log(this.selectedAccessions)
     const genes: string[] = []
     if (this.settings.settings.networkInteractionSettings === undefined) {
       this.settings.settings.networkInteractionSettings = {}

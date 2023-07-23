@@ -52,6 +52,7 @@ export class CytoplotComponent implements OnInit, AfterViewInit {
     console.log(this._drawData)
     const container = document.getElementById(this._drawData.id)
     console.log(container)
+    const ad = this
     if (!this.cy) {
       this.cy = cytoscape(
         {
@@ -104,7 +105,9 @@ export class CytoplotComponent implements OnInit, AfterViewInit {
       };
 
       let menu = this.cy.cxtmenu( defaults );
-
+      this.cy.ready(() => {
+        ad.ready.emit(true)
+      })
     } else {
       if (this._drawData.remove.length > 0) {
         const removeIDs = this._drawData.remove.map((n: any) => n.data.id)
@@ -117,17 +120,13 @@ export class CytoplotComponent implements OnInit, AfterViewInit {
       }
       if (this._drawData.add.length > 0) {
         const newNodes = this.cy.add(this._drawData.add)
-        newNodes.style(this._drawData.stylesheet)
         newNodes.layout({name: "fcose"}).run()
       }
+
+      this.cy.style().clear().fromJson(this._drawData.stylesheet).update()
     }
 
-    const ad = this
-    this.cy.ready(() => {
-      ad.ready.emit(true)
-    })
-
-    for (const n of this.cy.nodes()) {
+/*    for (const n of this.cy.nodes()) {
       n.bind("click", function (event:any) {
         ad.clickedID.emit(event.target.id())
       })
@@ -137,7 +136,7 @@ export class CytoplotComponent implements OnInit, AfterViewInit {
         ad.clickedID.emit(event.target.id())
       })
     }
-    console.log(this.cy)
+    console.log(this.cy)*/
   }
 
   download() {
