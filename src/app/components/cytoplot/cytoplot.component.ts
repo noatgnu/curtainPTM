@@ -1,7 +1,9 @@
 import {AfterViewInit, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import * as cytoscape from "cytoscape";
 import * as fcose from "cytoscape-fcose";
-import * as cxtmenu from "cytoscape-cxtmenu";
+//import * as cxtmenu from "cytoscape-cxtmenu";
+
+
 
 // @ts-ignore
 import * as cytoscapeSVG from "cytoscape-svg";
@@ -11,7 +13,7 @@ import {SettingsService} from "../../settings.service";
 
 cytoscape.use(cytoscapeSVG);
 cytoscape.use(fcose);
-cytoscape.use(cxtmenu);
+//cytoscape.use(cxtmenu);
 @Component({
   selector: 'app-cytoplot',
   templateUrl: './cytoplot.component.html',
@@ -60,19 +62,23 @@ export class CytoplotComponent implements OnInit, AfterViewInit {
           elements: this._drawData.data,
           style: this._drawData.stylesheet,
           wheelSensitivity: 0.1,
+          hideEdgesOnViewport: true,
+          hideLabelsOnViewport: true,
+          pixelRatio: 1,
+          textureOnViewport: true,
         }
       )
       if (this._drawData.fromBase) {
         this.cy.layout({name: "preset"}).run()
       } else {
         //this.cy.layout({name: "cose", maxSimulationTime: 10000}).run()
-        this.cy.layout({name: "fcose"}).run()
+        this.cy.layout({name: "fcose", animationDuraction: 0}).run()
       }
-      let defaults = {
+/*      let defaults = {
         menuRadius: function(ele:any){ return 100; }, // the outer radius (node center to the end of the menu) in pixels. It is added to the rendered size of the node. Can either be a number or function as in the example.
         selector: 'node', // elements matching this Cytoscape.js selector will trigger cxtmenus
         commands: [ // an array of commands to list in the menu or a function that returns the array
-          /*
+          /!*
           { // example command
             fillColor: 'rgba(200, 200, 200, 0.75)', // optional: custom background color for item
             content: 'a command name', // html/text content to be displayed in the menu
@@ -85,8 +91,8 @@ export class CytoplotComponent implements OnInit, AfterViewInit {
             },
             enabled: true // whether the command is selectable
           }
-          */
-        ], // function( ele ){ return [ /*...*/ ] }, // a function that returns commands or a promise of commands
+          *!/
+        ], // function( ele ){ return [ /!*...*!/ ] }, // a function that returns commands or a promise of commands
         fillColor: 'rgba(0, 0, 0, 0.75)', // the background colour of the menu
         activeFillColor: 'rgba(1, 105, 217, 0.75)', // the colour used to indicate the selected command
         activePadding: 20, // additional size in pixels for the active command
@@ -104,7 +110,7 @@ export class CytoplotComponent implements OnInit, AfterViewInit {
         outsideMenuCancel: false // if set to a number, this will cancel the command if the pointer is released outside of the spotlight, padded by the number given
       };
 
-      let menu = this.cy.cxtmenu( defaults );
+      let menu = this.cy.cxtmenu( defaults );*/
       this.cy.ready(() => {
         ad.ready.emit(true)
       })

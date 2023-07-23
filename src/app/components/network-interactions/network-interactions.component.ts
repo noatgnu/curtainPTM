@@ -412,7 +412,8 @@ export class NetworkInteractionsComponent implements OnInit {
       },
       {
         selector: ".genes", style: {
-          label: "data(label)",
+          //label: "data(label)",
+          "content": "data(label)",
           "background-color": "rgba(139,0,220,0.96)",
           "color": "#fffffe",
           "text-valign": "center",
@@ -456,7 +457,7 @@ export class NetworkInteractionsComponent implements OnInit {
         style: {
           "line-color": "rgba(25,128,128,0.66)",
           width: 1,
-          "curve-style": "bezier",
+          "curve-style": "haystack",
           //'line-style': 'dashed'
         }
       },

@@ -1,5 +1,6 @@
 import {AfterViewInit, Component} from '@angular/core';
 import {AccountsService} from "./accounts/accounts.service";
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
