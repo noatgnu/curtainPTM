@@ -20,8 +20,12 @@ cytoscape.use(fcose);
   styleUrls: ['./cytoplot.component.scss']
 })
 export class CytoplotComponent implements OnInit, AfterViewInit {
+  private _dimensions = {width: 700, height: 700}
   @Output() clickedID = new EventEmitter<string>()
   @Output() ready = new EventEmitter<boolean>()
+  @Input() set dimensions(value: any) {
+    this._dimensions = value
+  }
   cy: any
   componentID: string = "cy"
   get drawData(): any {
@@ -53,6 +57,8 @@ export class CytoplotComponent implements OnInit, AfterViewInit {
   draw() {
     console.log(this._drawData)
     const container = document.getElementById(this._drawData.id)
+    container?.style.setProperty("width", this._dimensions.width+"px")
+    container?.style.setProperty("height", this._dimensions.height+"px")
     console.log(container)
     const ad = this
     if (!this.cy) {

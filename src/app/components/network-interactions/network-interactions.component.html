@@ -197,6 +197,6 @@
     </table>
   </div>
   <div class="col-9">
-    <app-cytoplot #cytoplot [drawData]="result" (clickedID)="handleSelect($event)" (ready)="saveNetwork()"></app-cytoplot>
+    <app-cytoplot #cytoplot [drawData]="result" [dimensions]="{width: 1200, height: 700}" (clickedID)="handleSelect($event)" (ready)="saveNetwork()"></app-cytoplot>
   </div>
 </div>
