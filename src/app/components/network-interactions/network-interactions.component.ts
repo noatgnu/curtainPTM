@@ -67,9 +67,11 @@ export class NetworkInteractionsComponent implements OnInit {
   selectedData: IDataFrame = new DataFrame()
   selectedAccessions: string[] = []
   @Input() set genes(value: string[]) {
-
+    console.log(value)
     this.selectedData = this.data.currentDF.where(row => value.includes(row[this.data.differentialForm.primaryIDs])).bake()
+    console.log(this.selectedData)
     this.selectedAccessions = this.selectedData.getSeries(this.data.differentialForm.accession).distinct().bake().toArray()
+    console.log(this.selectedAccessions)
     const genes: string[] = []
     if (this.settings.settings.networkInteractionSettings === undefined) {
       this.settings.settings.networkInteractionSettings = {}
@@ -101,7 +103,6 @@ export class NetworkInteractionsComponent implements OnInit {
           }
         }
       }
-
     }
     for (const v of value) {
       const uni: any = this.uniprot.getUniprotFromAcc(v)
@@ -111,7 +112,8 @@ export class NetworkInteractionsComponent implements OnInit {
         }
       }
     }
-    if (genes.length > 2) {
+    console.log(genes)
+    if (genes.length > 1) {
       const _genes: string[] = []
       for (const v of genes) {
         const g = v.split(";")[0]
@@ -125,7 +127,7 @@ export class NetworkInteractionsComponent implements OnInit {
       }
       this._genes = _genes
 
-      if (this._genes.length > 2) {
+      if (this._genes.length > 1) {
         await this.getInteractions()
       }
     }
