@@ -2,8 +2,11 @@ import {AfterViewInit, Component, EventEmitter, Input, OnInit, Output} from '@an
 import * as cytoscape from "cytoscape";
 import * as fcose from "cytoscape-fcose";
 import * as cxtmenu from "cytoscape-cxtmenu";
+
 // @ts-ignore
 import * as cytoscapeSVG from "cytoscape-svg";
+// @ts-ignore
+//import * as panzoom from "cytoscape-panzoom";
 import {SettingsService} from "../../settings.service";
 
 cytoscape.use(cytoscapeSVG);
@@ -54,7 +57,8 @@ export class CytoplotComponent implements OnInit, AfterViewInit {
         {
           container: container,
           elements: this._drawData.data,
-          style: this._drawData.stylesheet
+          style: this._drawData.stylesheet,
+          wheelSensitivity: 0.1,
         }
       )
       if (this._drawData.fromBase) {
