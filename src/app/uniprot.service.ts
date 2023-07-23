@@ -53,7 +53,7 @@ export class UniprotService {
   async PrimeProcessReceivedData(data: string) {
     // @ts-ignore
     const df = fromCSV(data, {delimiter: '\t'});
-    this.organism = df.first()["Organism ID"]
+    this.organism = df.first()["Organism (ID)"]
     for (const r of df) {
       if (r["Gene Names"]) {
         r["Gene Names"] = r["Gene Names"].replaceAll(" ", ";").toUpperCase()

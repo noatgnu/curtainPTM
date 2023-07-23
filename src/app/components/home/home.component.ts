@@ -277,7 +277,12 @@ export class HomeComponent implements OnInit {
         }
       }
     }
-    this.settings.settings = object.settings;
+    for (const i in object.settings) {
+      if (i !== "currentID") {
+        // @ts-ignore
+        this.settings.settings[i] = object.settings[i]
+      }
+    }
     this.data.restoreTrigger.next(true)
   }
 

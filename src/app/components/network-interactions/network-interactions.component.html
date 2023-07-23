@@ -4,72 +4,86 @@
     <div class="card">
       <div class="card-body">
         <h5 class="card-title">StringDB</h5>
-        <div class="row">
-          <div class="col">
-            <label for="stringNT">StringDB Network Type</label>
-            <select class="form-control" id="stringNT" [(ngModel)]="networkType">
-              <option value="functional">
-                Functional
-              </option>
-              <option value="physical">
-                Physical
-              </option>
-            </select>
+        <form [formGroup]="form">
+          <div class="row">
+            <div class="col">
+              <label for="stringNT">StringDB Network Type</label>
+              <select formControlName="networkType" class="form-control" id="stringNT">
+                <option value="functional">
+                  Functional
+                </option>
+                <option value="physical">
+                  Physical
+                </option>
+              </select>
+            </div>
+            <div class="col">
+              <label for="string">Required Combined Score (Max = 1)</label>
+              <input formControlName="requiredScore" class="form-control" id="string" type="number">
+            </div>
+            <div class="col">
+              <label for="stringT">Required T-Score Score (Max = 1)</label>
+              <input formControlName="tscore" class="form-control" id="stringT" type="number">
+            </div>
           </div>
-          <div class="col">
-            <label for="string">Required Combined Score (Max = 1)</label>
-            <input class="form-control" id="string" type="number" [(ngModel)]="requiredScore">
+        </form>
+        <form [formGroup]="form">
+          <div class="row">
+            <div class="col">
+              <label for="stringA">Required A-Score Score (Max = 1)</label>
+              <input formControlName="ascore" class="form-control" id="stringA" type="number">
+            </div>
+            <div class="col">
+              <label for="stringD">Required D-Score Score (Max = 1)</label>
+              <input formControlName="dscore" class="form-control" id="stringD" type="number">
+            </div>
+            <div class="col">
+              <label for="stringE">Required E-Score Score (Max = 1)</label>
+              <input formControlName="escore" class="form-control" id="stringE" type="number">
+            </div>
           </div>
-          <div class="col">
-            <label for="stringT">Required T-Score Score (Max = 1)</label>
-            <input class="form-control" id="stringT" type="number" [(ngModel)]="otherScore.tscore">
+        </form>
+        <form [formGroup]="form">
+          <div class="row">
+            <div class="col">
+              <label for="stringF">Required F-Score Score (Max = 1)</label>
+              <input formControlName="fscore" class="form-control" id="stringF" type="number">
+            </div>
+            <div class="col">
+              <label for="stringN">Required N-Score Score (Max = 1)</label>
+              <input formControlName="nscore" class="form-control" id="stringN" type="number">
+            </div>
+            <div class="col">
+              <label for="stringP">Required P-Score Score (Max = 1)</label>
+              <input formControlName="pscore" class="form-control" id="stringP" type="number">
+            </div>
           </div>
-        </div>
-        <div class="row">
-          <div class="col">
-            <label for="stringA">Required A-Score Score (Max = 1)</label>
-            <input class="form-control" id="stringA" type="number" [(ngModel)]="otherScore.ascore">
-          </div>
-          <div class="col">
-            <label for="stringD">Required D-Score Score (Max = 1)</label>
-            <input class="form-control" id="stringD" type="number" [(ngModel)]="otherScore.dscore">
-          </div>
-          <div class="col">
-            <label for="stringE">Required E-Score Score (Max = 1)</label>
-            <input class="form-control" id="stringE" type="number" [(ngModel)]="otherScore.escore">
-          </div>
-        </div>
-        <div class="row">
-          <div class="col">
-            <label for="stringF">Required F-Score Score (Max = 1)</label>
-            <input class="form-control" id="stringF" type="number" [(ngModel)]="otherScore.fscore">
-          </div>
-          <div class="col">
-            <label for="stringN">Required N-Score Score (Max = 1)</label>
-            <input class="form-control" id="stringN" type="number" [(ngModel)]="otherScore.nscore">
-          </div>
-          <div class="col">
-            <label for="stringP">Required P-Score Score (Max = 1)</label>
-            <input class="form-control" id="stringP" type="number" [(ngModel)]="otherScore.pscore">
-          </div>
-        </div>
+        </form>
+
       </div>
     </div>
-    <div class="row">
-      <div class="col">
-        <label for="atlasScore">Interactome Required Score (Max = 1)</label>
-        <input class="form-control" id="atlasScore" type="number" [(ngModel)]="atlasScore">
+    <form [formGroup]="form">
+      <div class="row">
+        <div class="col">
+          <label for="atlasScore">Interactome Required Score (Max = 1)</label>
+          <input formControlName="atlasScore" class="form-control" id="atlasScore" type="number" max="1">
+        </div>
       </div>
-    </div>
+    </form>
+
   </div>
   <div class="card-footer">
     <button type="button" class="btn btn-primary" (click)="getInteractions()">Redraw</button>
   </div>
 </div>
+<div class="d-grid gap-2 d-md-flex justify-content-md-end mt-2">
+  <button class="btn btn-primary" (click)="cytoplot.download()">Download as SVG</button>
+</div>
 <div class="row">
-  <div class="col-4">
-    <table class="table table-bordered mt-2">
-      <thead>
+  <div class="col-3">
+    <form [formGroup]="form">
+      <table class="table table-bordered mt-2">
+        <thead>
         <tr>
           <th scope="col">
             Color
@@ -78,26 +92,36 @@
             Description
           </th>
         </tr>
-      </thead>
-      <tbody>
-      <tr>
-        <td style="background-color: rgba(220,169,0,0.96)"></td>
-        <td>Fold change > 0</td>
-      </tr>
-      <tr>
-        <td style="background-color: rgba(220,0,59,0.96)"></td>
-        <td>Fold change < 0</td>
-      </tr>
-      <tr>
-        <td style="background-color: rgb(206,128,128)"></td>
-        <td>StringDB interaction</td>
-      </tr>
-      <tr>
-        <td style="background-color: rgb(73,73,101)"></td>
-        <td>Interactome Atlas interaction</td>
-      </tr>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+        <tr>
+          <td>
+            <input formControlName="Increase" (colorPickerChange)="updateColor($event, 'Increase')" class="form-control" [(colorPicker)]="colorMap['Increase']" [style.background]="colorMap['Increase']">
+          </td>
+          <td>Fold change > 0</td>
+        </tr>
+        <tr>
+          <td>
+            <input formControlName="Decrease" (colorPickerChange)="updateColor($event, 'Decrease')" class="form-control" [(colorPicker)]="colorMap['Decrease']" [style.background]="colorMap['Decrease']">
+          </td>
+          <td>Fold change < 0</td>
+        </tr>
+        <tr>
+          <td>
+            <input formControlName="StringDB" (colorPickerChange)="updateColor($event, 'StringDB')" class="form-control" [(colorPicker)]="colorMap['StringDB']" [style.background]="colorMap['StringDB']">
+          </td>
+          <td>StringDB interaction</td>
+        </tr>
+        <tr>
+          <td>
+            <input formControlName="InteractomeAtlas" (colorPickerChange)="updateColor($event, 'InteractomeAtlas')" class="form-control" [(colorPicker)]="colorMap['InteractomeAtlas']" [style.background]="colorMap['InteractomeAtlas']">
+          </td>
+          <td>Interactome Atlas interaction</td>
+        </tr>
+        </tbody>
+      </table>
+    </form>
+
     <table class="table table-bordered table-striped mt-2" *ngIf="edgeDataViewer[edgeDataSource]">
       <thead>
       <tr>
@@ -171,7 +195,7 @@
       </tbody>
     </table>
   </div>
-  <div class="col-8">
-    <app-cytoplot [drawData]="{data: nodes, stylesheet: styles, id:'networkInteractions'}" (clickedID)="handleSelect($event)"></app-cytoplot>
+  <div class="col-9">
+    <app-cytoplot #cytoplot [drawData]="result" (clickedID)="handleSelect($event)" (ready)="saveNetwork()"></app-cytoplot>
   </div>
 </div>

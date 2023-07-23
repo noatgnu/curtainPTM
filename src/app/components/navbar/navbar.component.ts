@@ -20,6 +20,7 @@ import {CollaborateModalComponent} from "../collaborate-modal/collaborate-modal.
 import {SaveStateService} from "../../save-state.service";
 import {LocalSessionStateModalComponent} from "../local-session-state-modal/local-session-state-modal.component";
 import {ProfilePlotComponent} from "../profile-plot/profile-plot.component";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'app-navbar',
@@ -31,6 +32,8 @@ export class NavbarComponent implements OnInit {
   @Input() uniqueLink: string = ""
   @Output() updateSelection: EventEmitter<boolean> = new EventEmitter<boolean>()
   filterModel: string = ""
+  progressEvent: any = {}
+  subscription: Subscription = new Subscription();
   constructor(
     public web: WebService,
     public data: DataService,
@@ -41,7 +44,14 @@ export class NavbarComponent implements OnInit {
     private toast: ToastService,
     private uniprot: UniprotService,
     private saveState: SaveStateService
-  ) { }
+  ) {
+    if (this.subscription) {
+      this.subscription.unsubscribe()
+    }
+    this.subscription = this.uniprot.uniprotProgressBar.asObservable().subscribe((data: any) => {
+      this.progressEvent = data
+    })
+  }
 
   ngOnInit(): void {
   }

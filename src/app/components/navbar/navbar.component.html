@@ -11,7 +11,9 @@
       <div class="p-2">
         <span class="badge bg-warning" (click)="openQRCode()">QR Code</span>
       </div>
-
+    </div>
+    <div class="p-2" *ngIf="progressEvent && !finished">
+      <span class="text-info">{{progressEvent.text}}</span>
     </div>
     <div class="d-flex">
       <div class="p-2" *ngIf="finished">
