@@ -144,6 +144,9 @@ export class NetworkInteractionsComponent implements OnInit {
     "Increase": ["rgb(25,128,128)",],
     "Decrease": ["rgb(220,0,59)",],
     "StringDB": ["rgb(206,128,128)",],
+    "No change": ["rgba(47,39,40,0.96)",],
+    "Not significant": ["rgba(255,255,255,0.96)",],
+    "Significant": ["rgba(252,107,220,0.96)",],
     "InteractomeAtlas": ["rgb(73,73,101)",],
   })
 
@@ -151,12 +154,15 @@ export class NetworkInteractionsComponent implements OnInit {
     "Increase": "rgb(25,128,128)",
     "Decrease": "rgb(220,0,59)",
     "StringDB": "rgb(206,128,128)",
+    "No change": "rgba(47,39,40,0.96)",
+    "Not significant": "rgba(255,255,255,0.96)",
+    "Significant": "rgba(252,107,220,0.96)",
     "InteractomeAtlas": "rgb(73,73,101)",
   }
 
   result: any = {data: this.nodes.slice(), stylesheet: this.styles.slice(), id:'networkInteractions'}
 
-  constructor(private toast: ToastService, private fb: FormBuilder, private settings: SettingsService, private accounts: AccountsService, private scroll: ScrollService, private data: DataService, private dbString: DbStringService, private interac: InteractomeAtlasService, private uniprot: UniprotService) {
+  constructor(private toast: ToastService, private fb: FormBuilder, public settings: SettingsService, private accounts: AccountsService, private scroll: ScrollService, private data: DataService, private dbString: DbStringService, private interac: InteractomeAtlasService, private uniprot: UniprotService) {
 
 
   }
@@ -326,10 +332,19 @@ export class NetworkInteractionsComponent implements OnInit {
             text = r[this.data.differentialForm.primaryIDs]
           }
           let uidClasses = "uid"
-          if (r[this.data.differentialForm.foldChange] > 0) {
+          if (
+            r[this.data.differentialForm.foldChange] > 0 &&
+            Math.abs(r[this.data.differentialForm.foldChange]) >= this.settings.settings.log2FCCutoff) {
             uidClasses = uidClasses + " increase"
-          } else if (r[this.data.differentialForm.foldChange] < 0) {
+          } else if (r[this.data.differentialForm.foldChange] < 0 && Math.abs(r[this.data.differentialForm.foldChange]) >= this.settings.settings.log2FCCutoff) {
             uidClasses = uidClasses + " decrease"
+          } else {
+            uidClasses = uidClasses + " noChange"
+          }
+          if (r[this.data.differentialForm.significant] >= -Math.log10(this.settings.settings.pCutoff)) {
+            uidClasses = uidClasses + " significant"
+          } else {
+            uidClasses = uidClasses + " not-significant"
           }
           newNodes.push({data: {id: nodeName, label: text, size: 1}, classes: uidClasses})
         }
@@ -360,7 +375,7 @@ export class NetworkInteractionsComponent implements OnInit {
       fromBase = true
     }
     this.toast.show("Interaction network", `Adding ${newNodes.length} objects while removing ${remove.length} objects`).then()
-    this.result = {data: this.nodes.slice(), add: newNodes.slice(), stylesheet: this.styles.slice(), id:'networkInteractions', remove: remove, fromBase: fromBase}
+    this.result = {data: this.nodes.slice(), add: newNodes.slice(), stylesheet: this.styles.slice(), id:'networkInteractions', remove: remove, fromBase: fromBase, enableCxtMenu: true}
   }
 
   handleSelect(e: string) {
@@ -450,6 +465,21 @@ export class NetworkInteractionsComponent implements OnInit {
       {
         selector: ".decrease", style: {
           "background-color": this.settings.settings.networkInteractionSettings["Decrease"]
+        }
+      },
+      {
+        selector: ".noChange", style: {
+          "background-color": this.settings.settings.networkInteractionSettings["No change"]
+        }
+      },
+      {
+        selector: ".significant", style: {
+          "color": this.settings.settings.networkInteractionSettings["Significant"]
+        }
+      },
+      {
+        selector: ".not-significant", style: {
+          "color": this.settings.settings.networkInteractionSettings["Not significant"]
         }
       },
       {

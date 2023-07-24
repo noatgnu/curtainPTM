@@ -99,13 +99,31 @@
           <td>
             <input formControlName="Increase" (colorPickerChange)="updateColor($event, 'Increase')" class="form-control" [(colorPicker)]="colorMap['Increase']" [style.background]="colorMap['Increase']">
           </td>
-          <td>Fold change > 0</td>
+          <td>Fold change > {{settings.settings.log2FCCutoff}}</td>
         </tr>
         <tr>
           <td>
             <input formControlName="Decrease" (colorPickerChange)="updateColor($event, 'Decrease')" class="form-control" [(colorPicker)]="colorMap['Decrease']" [style.background]="colorMap['Decrease']">
           </td>
-          <td>Fold change < 0</td>
+          <td>Fold change < {{-settings.settings.log2FCCutoff}}</td>
+        </tr>
+        <tr>
+          <td>
+            <input formControlName="No change" (colorPickerChange)="updateColor($event, 'No change')" class="form-control" [(colorPicker)]="colorMap['No change']" [style.background]="colorMap['No change']">
+          </td>
+          <td>{{-settings.settings.log2FCCutoff}} < Fold change < {{settings.settings.log2FCCutoff}}</td>
+        </tr>
+        <tr>
+          <td>
+            <input formControlName="Significant" (colorPickerChange)="updateColor($event, 'Significant')" class="form-control" [(colorPicker)]="colorMap['Significant']" [style.background]="colorMap['Significant']">
+          </td>
+          <td>pvalue <= {{settings.settings.pCutoff}}</td>
+        </tr>
+        <tr>
+          <td>
+            <input formControlName="Not significant" (colorPickerChange)="updateColor($event, 'Not significant')" class="form-control" [(colorPicker)]="colorMap['Not significant']" [style.background]="colorMap['Not significant']">
+          </td>
+          <td>pvalue > {{settings.settings.pCutoff}}</td>
         </tr>
         <tr>
           <td>

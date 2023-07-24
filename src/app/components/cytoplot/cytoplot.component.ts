@@ -138,6 +138,7 @@ export class CytoplotComponent implements OnInit, AfterViewInit {
       this.cy.style().clear().fromJson(this._drawData.stylesheet).update()
     }
 
+
     for (const n of this.cy.edges()) {
       n.bind("click", function (event:any) {
         ad.clickedID.emit(event.target.id())
