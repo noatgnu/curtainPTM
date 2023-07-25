@@ -158,6 +158,16 @@ export class CytoplotComponent implements OnInit, AfterViewInit {
     a.click();
     document.body.removeChild(a);
     window.URL.revokeObjectURL(url)*/
+
+    const pngContent = this.cy.png({full:true, scale: 10, bg: "#FFFFFF", output: "blob"})
+    const url = window.URL.createObjectURL(pngContent);
+    const a = document.createElement("a")
+    a.href = url
+    a.download = "cytoplot.png"
+    document.body.appendChild(a)
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url)
   }
 
   saveJSON() {
