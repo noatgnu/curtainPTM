@@ -36,11 +36,9 @@ export class WebsocketService {
       return this.connection
     }
   }
-
   send(message: any) {
     this.connection?.next(message)
   }
-
   close() {
     this.connection?.complete()
     this.connection = undefined
