@@ -33,7 +33,7 @@ export class SessionSettingsComponent implements OnInit {
     return this._currretID
   }
   form = this.fb.group({
-    enable: [true,],
+    enable: [this.data.session.enable,],
     update_content: [false,],
     temporary_link_lifetime: [1,],
     additionalOwner: ["",]
