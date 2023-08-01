@@ -18,6 +18,7 @@ export class DefaultColorPaletteComponent implements OnInit {
     {
       colorPalette: [""],
       resetBarChartColor: [false],
+      resetVolcanoColor: [false],
     }
   )
   selectedColor: string[] = []
@@ -64,6 +65,11 @@ export class DefaultColorPaletteComponent implements OnInit {
         }
       }
     }
+    if (this.form.value["resetVolcanoColor"]) {
+      this.settings.settings.colorMap = {}
+      this.data.selectionUpdateTrigger.next(true)
+    }
+
     this.data.redrawTrigger.next(true)
     this.modal.close()
   }
