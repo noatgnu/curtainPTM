@@ -24,6 +24,7 @@ import {reviver} from "curtain-web-api";
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
+  GDPR: boolean = false
   finished: boolean = false
   rawFiltered: IDataFrame = new DataFrame()
   differentialFiltered:  ISeries<number, IDataFrame<number, any>> = new Series()
@@ -37,7 +38,11 @@ export class HomeComponent implements OnInit {
     // if (location.protocol === "https:" && location.hostname === "curtainptm.proteo.info") {
     //   this.toast.show("Initialization", "Error: The webpage requires the url protocol to be http instead of https")
     // }
-
+    if (localStorage.getItem("GDPR") === "true") {
+      this.GDPR = false
+    } else {
+      this.GDPR = true
+    }
     this.initialize().then(() => {
       this.ptm.getDatabase("PSP_PHOSPHO")
       this.ptm.getDatabase("PLMD_UBI")
@@ -360,4 +365,8 @@ export class HomeComponent implements OnInit {
     }
   }
 
+  closeGDPR() {
+    this.GDPR = false
+    localStorage.setItem("GDPR", "true")
+  }
 }
