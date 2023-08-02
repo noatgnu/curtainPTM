@@ -1,7 +1,7 @@
 <app-navbar [finished]="finished" (updateSelection)="handleFinish($event)" [uniqueLink]="uniqueLink"></app-navbar>
 <ngb-alert type="warning" (closed)="closeGDPR()" *ngIf="GDPR">
   <strong>GDPR Statement</strong><br>
-  <p>This website neither use cookies nor track/log ips of its users. The only personal identification data that we store is ORCID id so that the user can track the session they have submitted.</p>
+  <p>This website neither uses cookies nor tracks/logs ips of its users. The only personal identification data that we store is ORCID id so that the user can track the session they have submitted.</p>
 </ngb-alert>
 <app-pride></app-pride>
 <app-file-form (finished)="handleFinish($event)"></app-file-form>
