@@ -24,6 +24,7 @@
                     {{c}}
                   </option>
                 </select>
+                <small class="text-muted">Unique value column</small>
               </div>
               <div class="col-3">
                 <label for="primaryIDs">Select UniProt Accession IDs</label>
@@ -88,6 +89,7 @@
                 <select class="form-control" id="peptideSequenceCol" [(ngModel)]="data.differentialForm.peptideSequence">
                   <option  *ngFor="let c of data.differential.df.getColumnNames()" [value]="c">{{c}}</option>
                 </select>
+                <small class="text-muted">Modified sequence would have their modifications removed</small>
               </div>
               <div class="col-3">
                 <label for="positionCol">PTM positions</label>
@@ -132,6 +134,7 @@
                     {{c}}
                   </option>
                 </select>
+                <small class="text-muted">Unique value column, should be the same column as differential analysis primary IDs</small>
               </div>
               <div class="col-3">
                 <label for="samples">Select Samples</label>
@@ -140,6 +143,7 @@
                     {{c}}
                   </option>
                 </select>
+                <small class="text-muted">Sample column names in format "condition"."replicate"</small>
               </div>
             </div>
           </div>

@@ -50,6 +50,7 @@ export class BarChartComponent implements OnInit {
   graph: any = {}
   graphData: any[] = []
   graphLayout: any = {
+    width: 1100,
     xaxis: {
       tickfont: {
         size: 17,

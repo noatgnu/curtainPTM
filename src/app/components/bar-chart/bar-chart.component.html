@@ -12,7 +12,12 @@
 </div>
 <div class="card">
   <div class="card-body">
-    <plotly-plot [config]="config" [divId]="_data[dataService.rawForm.primaryIDs]+'bar'" [data]="graphData" [layout]="graphLayout" [updateOnDataChange]="true" [updateOnLayoutChange]="true"></plotly-plot>
+    <div class="d-flex justify-content-center">
+      <div class="p-2">
+        <plotly-plot [config]="config" [divId]="_data[dataService.rawForm.primaryIDs]+'bar'" [data]="graphData" [layout]="graphLayout" [updateOnDataChange]="true" [updateOnLayoutChange]="true"></plotly-plot>
+      </div>
+    </div>
+
   </div>
 </div>
 <div class="row mt-2">
