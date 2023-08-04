@@ -12,6 +12,7 @@ export class Settings {
   academic: boolean = true
   backGroundColorGrey: boolean = false
   currentComparison: string = ""
+  selectedComparison: string[] = []
   version: number = 2
   currentID: string = ""
   fdrCurveText: string = ""

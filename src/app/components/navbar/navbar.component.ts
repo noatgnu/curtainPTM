@@ -241,6 +241,7 @@ export class NavbarComponent implements OnInit {
 
   openProfilePlot() {
     const ref = this.modal.open(ProfilePlotComponent, {size: "xl", scrollable: true})
+    ref.componentInstance.selected = this.settings.settings.selectedComparison.slice()
     ref.componentInstance.data = this.data.raw.df
   }
 }

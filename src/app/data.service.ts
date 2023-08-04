@@ -31,6 +31,7 @@ export class DataService {
   dataMap: Map<string, string> = new Map<string, string>()
   sampleMap: any = {}
   conditions: string[] = []
+
   minMax = {
     fcMin: 0,
     fcMax: 0,

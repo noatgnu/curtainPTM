@@ -125,16 +125,31 @@ export class ProfilePlotComponent implements OnInit {
     selected = selected.join(this.dataService.currentDF, r1 => r1[this.dataService.rawForm.primaryIDs], r2 => r2[this.dataService.differentialForm.primaryIDs], (r1, r2) => {
       const res = Object.assign({}, r1)
       res[this.dataService.differentialForm.accession] = r2[this.dataService.differentialForm.accession]
+      res[this.dataService.differentialForm.peptideSequence] = r2[this.dataService.differentialForm.peptideSequence]
+      res[this.dataService.differentialForm.position] = r2[this.dataService.differentialForm.position]
+      res[this.dataService.differentialForm.positionPeptide] = r2[this.dataService.differentialForm.positionPeptide]
       return res
     })
     for (const r of selected) {
+
       let name = r[this.dataService.rawForm.primaryIDs]
       const uni: any = this.uniprot.getUniprotFromAcc(r[this.dataService.differentialForm.accession])
       if (uni) {
         if (uni["Gene Names"] !== "") {
           name = uni["Gene Names"] + "(" + name + ")"
+          if (
+            this.dataService.differentialForm.peptideSequence !== "" &&
+            this.dataService.differentialForm.positionPeptide !== "" &&
+            this.dataService.differentialForm.peptideSequence !== ""
+          ) {
+            const position = r[this.dataService.differentialForm.position]
+            const positionInPeptide = r[this.dataService.differentialForm.positionPeptide]
+            const peptide = r[this.dataService.differentialForm.peptideSequence]
+            name = `${uni["Gene Names"]}(${peptide[positionInPeptide-1]}${position})(${r[this.dataService.rawForm.primaryIDs]})`
+          }
         }
       }
+
       const temp: any = {
         x: [],
         y: [],

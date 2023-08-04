@@ -25,11 +25,15 @@ export class RawDataComponent implements OnInit {
       this.positionMap[u.id] = u
       this.barChartState[u.id] = false
       this.annotateMap[u.id] = false
+      this.profilePlotMap[u.id] = false
       for (const i in this.settings.settings.textAnnotation) {
         if (this.settings.settings.textAnnotation[i].primary_id === u.id) {
           this.annotateMap[u.id] = true
           break
         }
+      }
+      if (this.settings.settings.selectedComparison.includes(u.id)) {
+        this.profilePlotMap[u.id] = true
       }
     })
     this.differentialData = this.dataService.currentDF.where(r => this.unidList.includes(r[this.dataService.differentialForm.primaryIDs])).bake()
@@ -50,6 +54,7 @@ export class RawDataComponent implements OnInit {
     return this._data
   }
   annotateMap: any = {}
+  profilePlotMap: any = {}
   constructor(public dataService: DataService, private settings: SettingsService) {
     this.dataService.batchAnnotateAnnoucement.subscribe((data: any) => {
       for (const i of data.id) {
@@ -91,5 +96,13 @@ export class RawDataComponent implements OnInit {
       remove: remove
     })
     this.dataService.annotatedMap[uid] = this.annotateMap[uid]
+  }
+
+  profilePlotToggle(uid: string) {
+    if (this.settings.settings.selectedComparison.includes(uid)) {
+      this.settings.settings.selectedComparison = this.settings.settings.selectedComparison.filter(u => u !== uid)
+    } else {
+      this.settings.settings.selectedComparison.push(uid)
+    }
   }
 }

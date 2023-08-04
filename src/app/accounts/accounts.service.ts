@@ -43,7 +43,8 @@ export class AccountsService {
     });
     this.curtainAPI.axiosInstance.interceptors.response.use((response) => {
       return response
-    } , (error) => {
+    } , async (error) => {
+      console.log(error.response)
       if (error.response.status === 401) {
         if (error.config.url !== this.curtainAPI.refereshURL &&
           error.config.url !== this.curtainAPI.loginURL &&
@@ -51,14 +52,15 @@ export class AccountsService {
           if (!this.curtainAPI.checkIfRefreshTokenExpired() && this.curtainAPI.user.loginStatus) {
             console.log("refreshing token")
             if (!this.curtainAPI.isRefreshing) {
-              return this.refresh().then((response) => {
+              try {
+                await this.refresh();
                 this.curtainAPI.isRefreshing = false;
                 return this.curtainAPI.axiosInstance.request(error.config);
-              }).catch((error) => {
+              } catch (error1) {
                 this.curtainAPI.isRefreshing = false;
                 this.curtainAPI.user = new User();
-                return error;
-              });
+                return error1;
+              }
             }
           }
         }

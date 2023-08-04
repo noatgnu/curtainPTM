@@ -75,6 +75,10 @@
                 Volcano plot annotation
               </label>
             </div>
+            <div class="form-check">
+              <input type="checkbox" [(ngModel)]="profilePlotMap[d[dataService.differentialForm.primaryIDs]]" id="toggleProfile{{d[dataService.differentialForm.primaryIDs]}}" (change)="profilePlotToggle(d[dataService.differentialForm.primaryIDs])" class="form-check-input">
+              <label class="form-check-label">Include in profile comparison</label>
+            </div>
           </div>
         </div>
       </td>
