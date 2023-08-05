@@ -40,7 +40,7 @@ export class SampleOrderAndHideComponent implements OnInit {
       if (this.settings.settings.barchartColorMap[c]) {
         this.colorMap[c] = this.settings.settings.barchartColorMap[c].slice()
       } else {
-        this.colorMap[c] = this.dataService.colorMap[c].slice()
+        this.colorMap[c] = this.settings.settings.colorMap[c].slice()
       }
     }
   }

@@ -55,9 +55,9 @@ export class DefaultColorPaletteComponent implements OnInit {
     let currentPosition = 0
     if (this.form.value["resetBarChartColor"]) {
       for (const s of this.settings.settings.conditionOrder) {
-        if (this.settings.settings.defaultColorList[currentPosition] !== this.data.colorMap[s]) {
+        if (this.settings.settings.defaultColorList[currentPosition] !== this.settings.settings.colorMap[s]) {
           this.settings.settings.barchartColorMap[s] = this.settings.settings.defaultColorList[currentPosition].slice()
-          this.data.colorMap[s] = this.settings.settings.defaultColorList[currentPosition].slice()
+          this.settings.settings.colorMap[s] = this.settings.settings.defaultColorList[currentPosition].slice()
         }
         currentPosition += 1
         if (currentPosition >= this.settings.settings.defaultColorList.length) {

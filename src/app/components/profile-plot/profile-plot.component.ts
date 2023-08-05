@@ -96,7 +96,7 @@ export class ProfilePlotComponent implements OnInit {
             line: {
               color: 'black'
             },
-            fillcolor: this.dataService.colorMap[condition],
+            fillcolor: this.settings.settings.colorMap[condition],
             boxpoints: false,
             type: 'box',
             showlegend: false

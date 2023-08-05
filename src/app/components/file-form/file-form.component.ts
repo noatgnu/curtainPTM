@@ -93,7 +93,6 @@ export class FileFormComponent implements OnInit {
                 }
               }
               this.data.conditions = data.data.conditions
-              this.data.colorMap = data.data.colorMap
               this.processUniProt()
               worker.terminate()
             } else if (data.data.type === "resultDifferentialCompleted") {
@@ -214,7 +213,7 @@ export class FileFormComponent implements OnInit {
     if (this.settings.settings.conditionOrder.length === 0) {
       this.settings.settings.conditionOrder = conditions
     }
-    this.data.colorMap = colorMap
+    this.settings.settings.colorMap = colorMap
     const currentDF = this.data.differential.df.where(r => r[this.data.differentialForm.comparison] === this.data.differentialForm.comparisonSelect).resetIndex().bake()
 
     const fc = currentDF.getSeries(this.data.differentialForm.foldChange).where(i => !isNaN(i)).bake()
