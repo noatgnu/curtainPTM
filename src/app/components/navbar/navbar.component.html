@@ -53,6 +53,9 @@
               <button ngbDropdownItem (click)="selectionManagementModal()">
                 Data Selection Management
               </button>
+              <button ngbDropdownItem (click)="openSampleAndConditionModal()">
+                Sample & Condition Assignment
+              </button>
             </ng-container>
             <button ngbDropdownItem (click)="openLoginModal()" *ngIf="accounts.curtainAPI.user.loginStatus===false">
               Account Login

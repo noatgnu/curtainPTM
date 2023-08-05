@@ -85,7 +85,6 @@ export class FileFormComponent implements OnInit {
               this.data.raw.df = new DataFrame()
             } else if (data.data.type === "resultRaw") {
               this.data.raw.df = fromJSON(data.data.raw)
-              this.data.sampleMap = data.data.sampleMap
               for (const s in this.settings.settings) {
 
                 if (this.settings.settings.hasOwnProperty(s)) {
@@ -207,7 +206,7 @@ export class FileFormComponent implements OnInit {
       if (!(s in this.settings.settings.sampleVisible)) {
         this.settings.settings.sampleVisible[s] = true
       }
-      this.data.sampleMap[s] = {replicate: replicate, condition: condition}
+      this.settings.settings.sampleMap[s] = {replicate: replicate, condition: condition, name: s}
       this.data.raw.df = this.data.raw.df.withSeries(s, new Series(this.convertToNumber(this.data.raw.df.getSeries(s).toArray()))).bake()
       sampleNumber ++
       this.updateProgressBar(sampleNumber*100/totalSampleNumber, "Processed "+s+" sample data")

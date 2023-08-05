@@ -21,6 +21,9 @@ import {SaveStateService} from "../../save-state.service";
 import {LocalSessionStateModalComponent} from "../local-session-state-modal/local-session-state-modal.component";
 import {ProfilePlotComponent} from "../profile-plot/profile-plot.component";
 import {Subscription} from "rxjs";
+import {
+  SampleConditionAssignmentModalComponent
+} from "../sample-condition-assignment-modal/sample-condition-assignment-modal.component";
 
 @Component({
   selector: 'app-navbar',
@@ -243,5 +246,9 @@ export class NavbarComponent implements OnInit {
     const ref = this.modal.open(ProfilePlotComponent, {size: "xl", scrollable: true})
     ref.componentInstance.selected = this.settings.settings.selectedComparison.slice()
     ref.componentInstance.data = this.data.raw.df
+  }
+
+  openSampleAndConditionModal() {
+    const ref = this.modal.open(SampleConditionAssignmentModalComponent, {scrollable: true})
   }
 }

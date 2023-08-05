@@ -85,10 +85,10 @@ export class ProfilePlotComponent implements OnInit {
     const tickval: string[] = []
     const ticktext: string[] = []
     const temp: any = {}
-    for (const s in this.dataService.sampleMap) {
+    for (const s in this.settings.settings.sampleMap) {
       if (this.settings.settings.sampleVisible[s]) {
         sampleNumber ++
-        const condition = this.dataService.sampleMap[s].condition
+        const condition = this.settings.settings.sampleMap[s].condition
         if (!temp[condition]) {
           temp[condition] = {
             x: [],
@@ -157,7 +157,7 @@ export class ProfilePlotComponent implements OnInit {
         type: "scatter",
         name: name
       }
-      for (const i in this.dataService.sampleMap) {
+      for (const i in this.settings.settings.sampleMap) {
         if (this.settings.settings.sampleVisible[i]) {
           temp.x.push(i)
           temp.y.push(Math.log2(r[i]))

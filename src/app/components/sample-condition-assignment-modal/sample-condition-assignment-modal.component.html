@@ -1,0 +1,31 @@
+<div class="modal-header">
+  <h5 class="modal-title">
+    Sample and condition assigment
+  </h5>
+</div>
+<div class="modal-body">
+  <table class="table table-striped">
+    <thead>
+    <tr>
+      <th>Sample</th>
+      <th>Condition</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let s of samples">
+      <td><b>{{s}}</b></td>
+      <td>
+        <input type="text" [(ngModel)]="sampleMap[s].condition" style="width: 350px" class="form-control">
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="close()">
+    Close
+  </button>
+  <button type="button" class="btn btn-primary" id="saveSampleCondition" (click)="save()">
+    Save
+  </button>
+</div>

@@ -48,13 +48,13 @@ export class SampleAnnotationComponent implements OnInit {
   })
 
   constructor(private fb: FormBuilder, private data: DataService, public modal: NgbActiveModal, private settings: SettingsService, private web: WebService) {
-    for (const s in this.data.sampleMap) {
-      if (!this.samples.includes(this.data.sampleMap[s].condition)) {
-        this.samples.push(this.data.sampleMap[s].condition)
-        if (this.settings.settings.project.sampleAnnotations[this.data.sampleMap[s].condition]) {
-          this.project.sampleAnnotations[this.data.sampleMap[s].condition] = this.settings.settings.project.sampleAnnotations[this.data.sampleMap[s].condition].slice()
+    for (const s in this.settings.settings.sampleMap) {
+      if (!this.samples.includes(this.settings.settings.sampleMap[s].condition)) {
+        this.samples.push(this.settings.settings.sampleMap[s].condition)
+        if (this.settings.settings.project.sampleAnnotations[this.settings.settings.sampleMap[s].condition]) {
+          this.project.sampleAnnotations[this.settings.settings.sampleMap[s].condition] = this.settings.settings.project.sampleAnnotations[this.settings.settings.sampleMap[s].condition].slice()
         } else {
-          this.project.sampleAnnotations[this.data.sampleMap[s].condition] = this.data.sampleMap[s].condition
+          this.project.sampleAnnotations[this.settings.settings.sampleMap[s].condition] = this.settings.settings.sampleMap[s].condition
         }
       }
     }

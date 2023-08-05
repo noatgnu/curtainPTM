@@ -112,7 +112,11 @@ addEventListener('message', (data: MessageEvent<any>) => {
       if (!(s in data.data.settings.sampleVisible)) {
         data.data.settings.sampleVisible[s] = true
       }
-      sampleMap[s] = {replicate: replicate, condition: condition}
+      sampleMap[s] = {replicate: replicate, condition: condition, name: s}
+    }
+
+    if (Object.keys(data.data.settings.sampleMap).length === 0) {
+      data.data.settings.sampleMap = sampleMap
     }
     const storeRaw = rawDF.toArray().map((r: any) => {
       for (const s of samples) {
@@ -122,7 +126,7 @@ addEventListener('message', (data: MessageEvent<any>) => {
     })
 
     // @ts-ignore
-    postMessage({type: "resultRaw", raw: JSON.stringify(storeRaw), settings: data.data.settings, sampleMap: sampleMap, conditions: conditions, colorMap: colorMap})
+    postMessage({type: "resultRaw", raw: JSON.stringify(storeRaw), settings: data.data.settings, conditions: conditions, colorMap: colorMap})
   }
 });
 

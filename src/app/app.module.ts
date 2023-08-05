@@ -54,6 +54,7 @@ import { SideFloatControlComponent } from './components/side-float-control/side-
 import { CollaborateModalComponent } from './components/collaborate-modal/collaborate-modal.component';
 import { LocalSessionStateModalComponent } from './components/local-session-state-modal/local-session-state-modal.component';
 import { ProfilePlotComponent } from './components/profile-plot/profile-plot.component';
+import { SampleConditionAssignmentModalComponent } from './components/sample-condition-assignment-modal/sample-condition-assignment-modal.component';
 PlotlyModule.plotlyjs = PlotlyJS;
 @NgModule({
   declarations: [
@@ -96,7 +97,8 @@ PlotlyModule.plotlyjs = PlotlyJS;
     SideFloatControlComponent,
     CollaborateModalComponent,
     LocalSessionStateModalComponent,
-    ProfilePlotComponent
+    ProfilePlotComponent,
+    SampleConditionAssignmentModalComponent
   ],
     imports: [
         BrowserModule,
