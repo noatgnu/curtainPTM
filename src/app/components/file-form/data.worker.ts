@@ -119,8 +119,10 @@ addEventListener('message', (data: MessageEvent<any>) => {
       data.data.settings.sampleMap = sampleMap
     }
 
-    if (Object.keys(data.data.settings.colorMap).length === 0) {
-      data.data.settings.colorMap = colorMap
+    for (const s in colorMap) {
+      if (!(s in data.data.settings.colorMap)) {
+        data.data.settings.colorMap[s] = colorMap[s]
+      }
     }
     const storeRaw = rawDF.toArray().map((r: any) => {
       for (const s of samples) {
