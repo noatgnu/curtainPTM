@@ -218,7 +218,7 @@ export class BarChartComponent implements OnInit {
       }
     }
     for (const g in graph) {
-      let color = this.dataService.colorMap[g]
+      let color = this.settings.settings.colorMap[g]
       if (this.settings.settings.barchartColorMap[g]) {
         color = this.settings.settings.barchartColorMap[g]
       }

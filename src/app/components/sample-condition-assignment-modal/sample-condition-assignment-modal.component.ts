@@ -39,7 +39,7 @@ export class SampleConditionAssignmentModalComponent implements OnInit {
         conditions.push(this.sampleMap[s].condition)
       }
       if (this.sampleMap[s].condition !== this.settings.settings.sampleMap[s].condition) {
-        this.dataService.colorMap[this.sampleMap[s].condition] = this.dataService.colorMap[this.settings.settings.sampleMap[s].condition]
+        this.settings.settings.colorMap[this.sampleMap[s].condition] = this.settings.settings.colorMap[this.settings.settings.sampleMap[s].condition]
       }
     }
     this.settings.settings.sampleMap = this.sampleMap
