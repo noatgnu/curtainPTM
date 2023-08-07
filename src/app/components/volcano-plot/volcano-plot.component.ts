@@ -74,7 +74,11 @@ export class VolcanoPlotComponent implements OnInit {
     this.graphLayout.title.text = this.settings.settings.volcanoPlotTitle
     let currentColors: string[] = []
     if (this.settings.settings.colorMap) {
-      currentColors = Object.values(this.settings.settings.colorMap)
+      for (const s of this.dataService.selectOperationNames) {
+        if (this.settings.settings.colorMap[s]) {
+          currentColors.push(this.settings.settings.colorMap[s])
+        }
+      }
     } else {
       this.settings.settings.colorMap = {}
     }
@@ -86,7 +90,9 @@ export class VolcanoPlotComponent implements OnInit {
       }
     }
     const temp: any = {}
-
+    if (currentColors.length !== this.settings.settings.defaultColorList.length) {
+      currentPosition = currentColors.length
+    }
     for (const s of this.dataService.selectOperationNames) {
       if (!this.settings.settings.colorMap[s]) {
         while (true) {
