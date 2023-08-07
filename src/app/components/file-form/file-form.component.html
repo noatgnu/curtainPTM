@@ -5,10 +5,10 @@
         <div class="card">
           <div class="card-body">
             <div class="row">
-              <app-file-input-widget [fileType]="'Differential Analysis File'" (readData)="handleFile($event, false)"></app-file-input-widget>
+              <app-file-input-widget (eventProgress)="handleFileLoadingProgress($event, 'differential analysis file')" [fileType]="'Differential Analysis File'" (readData)="handleFile($event, false)"></app-file-input-widget>
             </div>
             <div class="row">
-              <app-file-input-widget [fileType]="'Raw File'" (readData)="handleFile($event, true)"></app-file-input-widget>
+              <app-file-input-widget (eventProgress)="handleFileLoadingProgress($event, 'raw file')" [fileType]="'Raw File'" (readData)="handleFile($event, true)"></app-file-input-widget>
             </div>
             <small><a href="https://curtainptm.proteo.info/#/85970b1d-8052-4d6f-bf67-654396534d76" target="_blank">Example session</a></small>
           </div>

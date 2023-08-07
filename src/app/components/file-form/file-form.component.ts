@@ -418,4 +418,12 @@ export class FileFormComponent implements OnInit {
       return seq
     })
   }
+
+  handleFileLoadingProgress(progress:number, fileType: string) {
+    if (progress === 100) {
+      this.updateProgressBar(progress, "Finished loading "+fileType)
+    } else {
+      this.updateProgressBar(progress, "Loading "+fileType)
+    }
+  }
 }

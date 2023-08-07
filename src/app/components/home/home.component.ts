@@ -303,6 +303,8 @@ export class HomeComponent implements OnInit {
           const differential = this.data.currentDF.where(r => this.data.selectedAccessions.includes(r[this.data.differentialForm.accession])).bake()
           this.differentialFiltered = differential.groupBy(r => r[this.data.differentialForm.accession]).bake()
         });
+      } else {
+        this.differentialFiltered = new Series()
       }
     }
   }

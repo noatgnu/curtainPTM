@@ -9,6 +9,7 @@ import {InputFile} from "../../classes/input-file";
 })
 export class FileInputWidgetComponent implements OnInit {
   @Output() readData: EventEmitter<InputFile> =  new EventEmitter<InputFile>()
+  @Output() eventProgress: EventEmitter<number> = new EventEmitter<number>()
   @Input() fileType: string = ""
   filename: string = ""
   constructor() { }
@@ -22,7 +23,15 @@ export class FileInputWidgetComponent implements OnInit {
       if (target.files) {
         this.filename = target.files[0].name
         const reader = new FileReader();
+        reader.onprogress = (event) => {
+          if (event.lengthComputable) {
+            const progress = (event.loaded / event.total) * 100;
+            this.eventProgress.emit(progress)
+          }
+        }
         reader.onload = (event) => {
+          // update progress
+          this.eventProgress.emit(100)
           const loadedFile = reader.result;
           this.readData.emit(new InputFile(fromCSV(<string>loadedFile), this.filename, <string>loadedFile))
         }
