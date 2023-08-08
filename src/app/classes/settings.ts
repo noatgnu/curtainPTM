@@ -67,4 +67,5 @@ export class Settings {
   }
   plotFontFamily: string = "Arial"
   networkInteractionData: any[] = []
+  customVolcanoTextCol = ""
 }

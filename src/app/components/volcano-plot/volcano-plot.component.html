@@ -60,6 +60,17 @@
             <input id="markerSize" type="number" class="form-control" [(ngModel)]="markerSize">
           </div>
         </div>
+        <div class="d-flex">
+          <div class="p-2">
+            <div class="form-group">
+              <label class="form-check-label" for="custom-volcano-text-col">Custom Popup Label Column</label>
+              <select id="custom-volcano-text-col" [(ngModel)]="settings.settings.customVolcanoTextCol" class="form-control">
+                <option [value]="''">Default</option>
+                <option *ngFor="let col of dataService.differential.df.getColumnNames()" [value]="col">{{col}}</option>
+              </select>
+            </div>
+          </div>
+        </div>
         <div class="row">
           <div class="col">
             <div class="form-check">
@@ -83,6 +94,7 @@
                 <button ngbDropdownItem (click)="openTextEditor()">Annotation Text Editor</button>
 <!--                <button ngbDropdownItem (click)="download()">Download Volcano Plot</button>-->
                 <button ngbDropdownItem (click)="openWebLogo()">Web Logo Viewer</button>
+                <button ngbDropdownItem (click)="dataService.clear()">Clear Selections</button>
               </div>
             </div>
           </div>

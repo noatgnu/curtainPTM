@@ -74,9 +74,13 @@ export class VolcanoPlotComponent implements OnInit {
     this.graphLayout.title.text = this.settings.settings.volcanoPlotTitle
     let currentColors: string[] = []
     if (this.settings.settings.colorMap) {
-      for (const s of this.dataService.selectOperationNames) {
-        if (this.settings.settings.colorMap[s]) {
-          currentColors.push(this.settings.settings.colorMap[s])
+      for (const s in this.settings.settings.colorMap) {
+        if (!this.dataService.conditions.includes(s)) {
+          if (this.settings.settings.colorMap[s]) {
+            if (this.settings.settings.defaultColorList.includes(this.settings.settings.colorMap[s])) {
+              currentColors.push(this.settings.settings.colorMap[s])
+            }
+          }
         }
       }
     } else {
@@ -384,7 +388,7 @@ export class VolcanoPlotComponent implements OnInit {
     console.log(this.graphLayout.annotations)
   }
 
-  constructor(private web: WebService, private dataService: DataService, private uniprot: UniprotService, public settings: SettingsService, private modal: NgbModal) {
+  constructor(private web: WebService, public dataService: DataService, private uniprot: UniprotService, public settings: SettingsService, private modal: NgbModal) {
     this.annotated = {}
     for (const i in this.settings.settings.textAnnotation) {
       if (this.settings.settings.textAnnotation[i].showannotation === undefined || this.settings.settings.textAnnotation[i].showannotation === null) {
@@ -485,6 +489,7 @@ export class VolcanoPlotComponent implements OnInit {
         const peptide = a[this.dataService.differentialForm.peptideSequence]
         text = `${ uni["Gene Names"]}(${peptide[positionInPeptide-1]}${position})`
       }
+
       if (!this.annotated[title]) {
         const ann: any = {
           xref: 'x',
@@ -502,6 +507,9 @@ export class VolcanoPlotComponent implements OnInit {
             size: 15,
             color: "#000000"
           }
+        }
+        if (this.settings.settings.customVolcanoTextCol !== "") {
+          ann.text = "<b>"+a[this.settings.settings.customVolcanoTextCol]+"</b>"
         }
         if (title in this.settings.settings.textAnnotation) {
 

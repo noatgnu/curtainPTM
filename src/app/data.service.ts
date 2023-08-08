@@ -31,7 +31,7 @@ export class DataService {
   dataMap: Map<string, string> = new Map<string, string>()
   sampleMap: any = {}
   conditions: string[] = []
-
+  clearWatcher: Subject<boolean> = new Subject<boolean>()
   minMax = {
     fcMin: 0,
     fcMax: 0,
@@ -189,6 +189,7 @@ export class DataService {
     this.settings.settings.textAnnotation = {}
     this.settings.settings.barchartColorMap = {}
     this.annotatedData = {}
+    this.dataClear.next(true)
   }
 
   significantGroup(x: number, y: number) {
