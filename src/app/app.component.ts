@@ -23,10 +23,14 @@ export class AppComponent implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     if (this.swUpdate.isEnabled) {
-      this.newVersionSubscription = this.swUpdate.available.subscribe(() => {
-        console.log("New version available")
-        this.settings.newVersionAvailable = true;
-      });
+      setInterval(() => {
+        this.swUpdate.checkForUpdate().then((available) => {
+          if (available) {
+            console.log("New version available")
+            this.settings.newVersionAvailable = true;
+          }
+        })
+      }, 1000*60)
     }
   }
 
