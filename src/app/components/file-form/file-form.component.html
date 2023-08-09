@@ -111,7 +111,7 @@
                   </option>
                 </select>
               </div>
-              <div class="col-3" *ngIf="data.differentialForm.comparison !== ''">
+              <div class="col-6" *ngIf="data.differentialForm.comparison !== ''">
                 <label for="comparisonSelect">Select Comparison</label>
                 <select class="form-select" id="comparisonSelect" aria-label="ComparisonSelect" [(ngModel)]="data.differentialForm.comparisonSelect">
                   <option *ngFor="let c of data.differential.df.getSeries(data.differentialForm.comparison).distinct()" [value]="c">
