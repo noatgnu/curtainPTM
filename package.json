@@ -21,7 +21,7 @@
     "@angular/platform-browser-dynamic": "^15.2.9",
     "@angular/router": "^15.2.9",
     "@angular/service-worker": "^15.2.9",
-    "@ng-bootstrap/ng-bootstrap": "^14.0.0",
+    "@ng-bootstrap/ng-bootstrap": "^14.2.0",
     "@popperjs/core": "^2.10.2",
     "@techiediaries/ngx-qrcode": "^9.1.0",
     "@types/cytoscape-cxtmenu": "^3.4.0",

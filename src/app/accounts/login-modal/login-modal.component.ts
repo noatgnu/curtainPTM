@@ -21,7 +21,7 @@ export class LoginModalComponent implements OnInit, OnDestroy {
   })
 
   loginStatus: Subject<boolean> = new Subject<boolean>()
-  loginWatcher: number|undefined
+  loginWatcher: NodeJS.Timeout|undefined
   constructor(private modal: NgbActiveModal, private fb: UntypedFormBuilder, private accounts: AccountsService, private web: WebService, private toast: ToastService) {
 
   }

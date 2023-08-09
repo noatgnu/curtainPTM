@@ -251,4 +251,8 @@ export class NavbarComponent implements OnInit {
   openSampleAndConditionModal() {
     const ref = this.modal.open(SampleConditionAssignmentModalComponent, {scrollable: true})
   }
+
+  reload() {
+    window.location.reload()
+  }
 }

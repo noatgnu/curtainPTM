@@ -13,7 +13,7 @@
       </div>
     </div>
     <div class="p-2" *ngIf="settings.newVersionAvailable">
-      <span class="badge bg-warning">New CurtainPTM version available</span>
+      <span class="badge bg-warning" [ngbTooltip]="'Click to reload to get the new version'" (click)="reload()">New CurtainPTM version available</span>
     </div>
     <div class="p-2" *ngIf="progressEvent && !finished">
       <span class="text-info">{{progressEvent.text}}</span>
