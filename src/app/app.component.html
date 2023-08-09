@@ -1,7 +1,4 @@
 <app-toast-container aria-live="polite" aria-atomic="true"></app-toast-container>
-<ngb-alert type="info" *ngIf="newVersionAvailable" (closed)="newVersionAvailable=false;newVersionSubscription?.unsubscribe()">
-  New version is available.
-</ngb-alert>
 <router-outlet></router-outlet>
 <div class="container">
   <hr/>

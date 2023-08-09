@@ -7,5 +7,6 @@ import {Settings} from "../app/classes/settings";
 export class SettingsService {
   currentID: string = ""
   settings: Settings = new Settings();
+  newVersionAvailable: boolean = false;
   constructor() { }
 }
