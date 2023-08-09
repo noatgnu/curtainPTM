@@ -186,7 +186,7 @@ export class NavbarComponent implements OnInit {
   }
 
   openAccountModal() {
-    const ref = this.modal.open(AccountsComponent)
+    const ref = this.modal.open(AccountsComponent, {size: "xl", scrollable: true})
   }
   openColorPaletteModal() {
     const ref = this.modal.open(DefaultColorPaletteComponent, {size: "xl", scrollable: true})

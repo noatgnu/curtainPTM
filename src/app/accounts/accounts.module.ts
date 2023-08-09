@@ -3,7 +3,13 @@ import { CommonModule } from '@angular/common';
 import {AccountsComponent} from "./accounts/accounts.component";
 import {LoginModalComponent} from "./login-modal/login-modal.component";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {NgbPaginationModule} from "@ng-bootstrap/ng-bootstrap";
+import {
+  NgbDropdown,
+  NgbDropdownItem,
+  NgbDropdownMenu,
+  NgbDropdownToggle,
+  NgbPaginationModule
+} from "@ng-bootstrap/ng-bootstrap";
 
 
 @NgModule({
@@ -11,12 +17,16 @@ import {NgbPaginationModule} from "@ng-bootstrap/ng-bootstrap";
     AccountsComponent,
     LoginModalComponent
   ],
-    imports: [
-        CommonModule,
-        ReactiveFormsModule,
-        NgbPaginationModule,
-        FormsModule,
-    ],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    NgbPaginationModule,
+    FormsModule,
+    NgbDropdown,
+    NgbDropdownToggle,
+    NgbDropdownMenu,
+    NgbDropdownItem,
+  ],
   providers: [
   ]
 })
