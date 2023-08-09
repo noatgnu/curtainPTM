@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, isDevMode } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -55,6 +55,7 @@ import { CollaborateModalComponent } from './components/collaborate-modal/collab
 import { LocalSessionStateModalComponent } from './components/local-session-state-modal/local-session-state-modal.component';
 import { ProfilePlotComponent } from './components/profile-plot/profile-plot.component';
 import { SampleConditionAssignmentModalComponent } from './components/sample-condition-assignment-modal/sample-condition-assignment-modal.component';
+import { ServiceWorkerModule } from '@angular/service-worker';
 PlotlyModule.plotlyjs = PlotlyJS;
 @NgModule({
   declarations: [
@@ -113,7 +114,13 @@ PlotlyModule.plotlyjs = PlotlyJS;
         QuillModule.forRoot(),
         ReactiveFormsModule,
         AccountsModule,
-        NgxQRCodeModule
+        NgxQRCodeModule,
+        ServiceWorkerModule.register('ngsw-worker.js', {
+          enabled: !isDevMode(),
+          // Register the ServiceWorker as soon as the application is stable
+          // or after 30 seconds (whichever comes first).
+          registrationStrategy: 'registerWhenStable:30000'
+        })
     ],
   providers: [HttpClient,
     //ContextMenuService
