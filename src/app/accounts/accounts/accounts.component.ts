@@ -23,10 +23,12 @@ export class AccountsComponent implements OnInit {
   selectedCount: number = 0
   constructor(private web: WebService, public accounts: AccountsService, private fb: FormBuilder) {
     // @ts-ignore
-    this.accounts.curtainAPI.getCurtainLinks(this.accounts.curtainAPI.user.username, this.form.value["sessionDescription"]).then((data: any) => {
-      this.updateShowingLink(data)
+
+    this.accounts.getUser().then((data: any) => {
+      this.accounts.curtainAPI.getCurtainLinks(this.accounts.curtainAPI.user.username, "").then((data: any) => {
+        this.updateShowingLink(data)
+      })
     })
-    this.accounts.getUser().then()
   }
 
   ngOnInit(): void {
