@@ -87,24 +87,24 @@ export class HomeComponent implements OnInit {
               this.accounts.curtainAPI.getSessionSettings(settings[0]).then((d:any)=> {
                 this.data.session = d.data
                 this.accounts.curtainAPI.postSettings(settings[0], token, this.onDownloadProgress).then((data:any) => {
-                  if (data.data) {
+                  const curtainSettings = data.data
+                  if (curtainSettings) {
                     this.uniqueLink = location.origin + "/#/" + this.currentID
                     this.uniprot.uniprotProgressBar.next({value: 100, text: "Restoring Session..."})
-                    this.restoreSettings(data.data).then(result => {
+                    this.restoreSettings(curtainSettings).then(result => {
+                      this.accounts.curtainAPI.getOwnership(settings[0]).then((d:any) => {
+                        if (d.data.ownership) {
+                          this.accounts.isOwner = true
+                        } else {
+                          this.accounts.isOwner = false
+                        }
+                      }).catch(error => {
+                        this.accounts.isOwner = false
+                      })
                       this.accounts.curtainAPI.getSessionSettings(settings[0]).then((d:any)=> {
                         this.data.session = d.data
-                        console.log(d.data)
                         this.settings.settings.currentID = d.data.link_id
                       })
-                    })
-                    this.accounts.curtainAPI.getOwnership(settings[0]).then((data:any) => {
-                      if (data.data.ownership) {
-                        this.accounts.isOwner = true
-                      } else {
-                        this.accounts.isOwner = false
-                      }
-                    }).catch(error => {
-                      this.accounts.isOwner = false
                     })
                   }
                 }).catch(error => {

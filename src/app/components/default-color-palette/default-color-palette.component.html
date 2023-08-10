@@ -77,7 +77,11 @@
         <tbody>
         <tr *ngFor="let c of customPalette; let ind = index">
           <td>
-            <input [(colorPicker)]="customPalette[ind]" class="form-control" [style.background-color]="c">
+            <input class="form-control"
+                   [(colorPicker)]="customPalette[ind].new"
+                   [style.background]="customPalette[ind].new"
+                   id="color-settings-for-{{ind}}"
+            >
           </td>
           <td><button class="btn btn-sm btn-primary" (click)="removeCustomColor(ind)">-</button></td>
         </tr>
