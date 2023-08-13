@@ -78,6 +78,11 @@
             <span placement="top" ngbTooltip="Kinase" class="badge bg-danger ml-2" *ngFor="let k of alignedPosition[d.alignedPosition][g.name].kinases" (click)="openKinaseInfo(k)">{{k.kinase}}</span>
           </ng-container>
         </span>
+        <ng-container *ngIf="g.name === 'UniProt' && alignedPosition[d.alignedPosition][g.name]">
+          <ng-container *ngIf="alignedPosition[d.alignedPosition][g.name].diseases">
+            <span class="badge bg-info ml-2" *ngFor="let d of alignedPosition[d.alignedPosition][g.name].diseases">{{d.disease}}</span>
+          </ng-container>
+        </ng-container>
       </td>
     </tr>
   </ng-container>

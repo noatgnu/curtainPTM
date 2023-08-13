@@ -1,4 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
+import {PtmDiseasesService} from "../../ptm-diseases.service";
 
 @Component({
   selector: 'app-protein-information',
@@ -10,6 +11,7 @@ export class ProteinInformationComponent implements OnInit {
 
   diseases: string[] = []
   pharmaUse: string[] = []
+  ptmDiseases: any[] = []
   @Input() set data(value: any) {
     this._data = value
     console.log(this._data)
@@ -19,8 +21,11 @@ export class ProteinInformationComponent implements OnInit {
     if (this._data["Pharmaceutical use"] && this._data["Pharmaceutical use"] !== "") {
       this.pharmaUse = this._data["Pharmaceutical use"].split(';').map((x: string) => x.replace(/PHARMACEUTICAL:/g, "").trim())
     }
+    if (this.ptmd.getPTMDiseases(this._data["Entry"])) {
+        this.ptmDiseases = this.ptmd.getPTMDiseases(this._data["Entry"])
+    }
   }
-  constructor() { }
+  constructor(private ptmd: PtmDiseasesService) { }
 
   ngOnInit(): void {
   }

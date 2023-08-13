@@ -17,6 +17,7 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {AccountsService} from "../../accounts/accounts.service";
 import {WebsocketService} from "../../websocket.service";
 import {reviver} from "curtain-web-api";
+import {PtmDiseasesService} from "../../ptm-diseases.service";
 
 @Component({
   selector: 'app-home',
@@ -32,7 +33,7 @@ export class HomeComponent implements OnInit {
   filterModel: string = ""
   currentID: string = ""
   @Output() currentIDChanged: EventEmitter<string> = new EventEmitter<string>()
-  constructor(private ws: WebsocketService, private accounts: AccountsService, private modal: NgbModal, public settings: SettingsService, private data: DataService, private route: ActivatedRoute, private toast: ToastService, private uniprot: UniprotService, private web: WebService, private ptm: PtmService) {
+  constructor(private ptmd: PtmDiseasesService, private ws: WebsocketService, private accounts: AccountsService, private modal: NgbModal, public settings: SettingsService, private data: DataService, private route: ActivatedRoute, private toast: ToastService, private uniprot: UniprotService, private web: WebService, private ptm: PtmService) {
 
 
     // if (location.protocol === "https:" && location.hostname === "curtainptm.proteo.info") {
@@ -44,6 +45,7 @@ export class HomeComponent implements OnInit {
       this.GDPR = true
     }
     this.initialize().then(() => {
+      this.ptmd.parsePTMDiseases()
       this.ptm.getDatabase("PSP_PHOSPHO")
       this.ptm.getDatabase("PLMD_UBI")
       this.ptm.getDatabase("CDB_CARBONYL")

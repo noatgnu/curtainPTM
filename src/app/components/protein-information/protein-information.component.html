@@ -33,7 +33,7 @@
   </table>
 </div>
 
-<ngb-accordion *ngIf="diseases.length > 0 || pharmaUse.length > 0 || _data['Mutagenesis'].length">
+<ngb-accordion *ngIf="diseases.length > 0 || pharmaUse.length > 0 || _data['Mutagenesis'].length || ptmDiseases.length > 0">
   <ngb-panel title="Involvement in Diseases (UniProt)" *ngIf="diseases.length > 0">
     <ng-template ngbPanelContent>
       <div *ngIf="diseases.length > 0">
@@ -64,6 +64,18 @@
             <b class="text-danger">{{d.position}}</b> - {{d.note}}
           </li>
         </ul>
+      </div>
+    </ng-template>
+  </ngb-panel>
+  <ngb-panel title="PTM Disease Data (PTMD)" *ngIf="ptmDiseases.length > 0">
+    <ng-template ngbPanelContent>
+      <div *ngIf="ptmDiseases.length > 0">
+        <ul>
+          <li *ngFor="let d of ptmDiseases">
+            <b class="text-danger">{{d.residue}}{{d.position}}</b> -  {{d.disease}}
+          </li>
+        </ul>
+        Data obtained from <a href="http://ptmd.biocuckoo.org/download.php" target="_blank">PTMD</a>
       </div>
     </ng-template>
   </ngb-panel>

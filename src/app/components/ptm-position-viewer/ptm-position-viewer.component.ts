@@ -13,7 +13,7 @@ import {NetphosKinasesComponent} from "../netphos-kinases/netphos-kinases.compon
 import {KinaseInfoComponent} from "../kinase-info/kinase-info.component";
 import {KinaseLibraryService} from "../../kinase-library.service";
 import {KinaseLibraryModalComponent} from "../kinase-library-modal/kinase-library-modal.component";
-import {sequence} from "@angular/animations";
+import {PtmDiseasesService} from "../../ptm-diseases.service";
 
 @Component({
   selector: 'app-ptm-position-viewer',
@@ -151,7 +151,7 @@ export class PtmPositionViewerComponent implements OnInit {
       })
     }
   }
-  constructor(private kinaseLib: KinaseLibraryService, private modal: NgbModal, private web: WebService, public psp: PspService, private uniprot: UniprotService, private msa: BiomsaService, public ptm: PtmService, private plot: PlotlyService, public dataService: DataService) {
+  constructor(private ptmd: PtmDiseasesService, private kinaseLib: KinaseLibraryService, private modal: NgbModal, private web: WebService, public psp: PspService, private uniprot: UniprotService, private msa: BiomsaService, public ptm: PtmService, private plot: PlotlyService, public dataService: DataService) {
 
   }
 
@@ -229,6 +229,13 @@ export class PtmPositionViewerComponent implements OnInit {
         }
         if (!this.alignedPosition[a.alignedPosition][t]) {
           this.alignedPosition[a.alignedPosition][t] = a
+        }
+        if (t === "UniProt") {
+          if (this.ptmd.getPTMDiseases(this.uni["Entry"])) {
+            this.alignedPosition[a.alignedPosition][t]["diseases"] = this.ptmd.getPTMDiseases(this.uni["Entry"]).filter((d: any) => {
+             return d.position === a.actualPosition+1
+            })
+          }
         }
         if (t === "PhosphoSite Plus (Phosphorylation)") {
           this.alignedPosition[a.alignedPosition][t]["kinases"] = this.getKinase(a.actualPosition)

@@ -1,10 +1,10 @@
 /* Importing Bootstrap SCSS file. */
 @import "node_modules/bootstrap/scss/functions";
 @import "node_modules/bootstrap/scss/variables";
-$min-contrast-ratio: 1;
+$min-contrast-ratio: 3.5;
 $primary: #2E2D62;
 $secondary: #a4a4a4;
-$success:       #7C9D96;
+$success: #003632;
 $info:          #8294C4;
 $warning:       #FFD6A5;
 $danger:        #FF9B9B;

@@ -22,6 +22,8 @@ export class PtmService {
     {name:"GLYCONNECT (O-Linked)", value:"GLYCONNECTO", academic:true}
   ]
   databaseNameMap: any = {}
+
+  ptmDiseaseMap: Map<string, any> = new Map<string, any>()
   constructor(private glyconnect: GlyconnectService, private psp: PspService, private plmd: PlmdService, private carbonyl: CarbonyldbService) {
     for (const db of this.databases) {
       this.databaseNameMap[db.name] = db.value
@@ -107,5 +109,10 @@ export class PtmService {
         }
       }
     }
+  }
+
+
+  getPTMDiseases(acc: string) {
+
   }
 }
