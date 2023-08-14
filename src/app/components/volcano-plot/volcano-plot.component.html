@@ -68,6 +68,7 @@
                 <option [value]="''">Default</option>
                 <option *ngFor="let col of dataService.differential.df.getColumnNames()" [value]="col">{{col}}</option>
               </select>
+              <small class="text-muted">Changes will only affect newly added annotation ids.</small>
             </div>
           </div>
         </div>
