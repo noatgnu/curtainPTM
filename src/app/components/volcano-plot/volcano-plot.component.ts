@@ -66,6 +66,8 @@ export class VolcanoPlotComponent implements OnInit {
 
   breakColor: boolean = false
   markerSize: number = 10
+
+  currentDefaultSignificantGroup: string[] = []
   drawVolcano() {
     if (!this.settings.settings.visible) {
       this.settings.settings.visible = {}
@@ -75,10 +77,12 @@ export class VolcanoPlotComponent implements OnInit {
     let currentColors: string[] = []
     if (this.settings.settings.colorMap) {
       for (const s in this.settings.settings.colorMap) {
-        if (!this.dataService.conditions.includes(s)) {
-          if (this.settings.settings.colorMap[s]) {
-            if (this.settings.settings.defaultColorList.includes(this.settings.settings.colorMap[s])) {
-              currentColors.push(this.settings.settings.colorMap[s])
+        if (!this.currentDefaultSignificantGroup.includes(s)) {
+          if (!this.dataService.conditions.includes(s)) {
+            if (this.settings.settings.colorMap[s]) {
+              if (this.settings.settings.defaultColorList.includes(this.settings.settings.colorMap[s])) {
+                currentColors.push(this.settings.settings.colorMap[s])
+              }
             }
           }
         }
@@ -225,6 +229,9 @@ export class VolcanoPlotComponent implements OnInit {
         const group = this.dataService.significantGroup(x, y)
         if (!temp[group]) {
           if (!this.settings.settings.colorMap[group]) {
+            if (!this.currentDefaultSignificantGroup.includes(group)) {
+              this.currentDefaultSignificantGroup.push(group)
+            }
             this.settings.settings.colorMap[group] = this.settings.settings.defaultColorList[currentPosition]
             currentPosition ++
             if (currentPosition === this.settings.settings.defaultColorList.length) {
