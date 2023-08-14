@@ -67,7 +67,7 @@ export class VolcanoPlotComponent implements OnInit {
   breakColor: boolean = false
   markerSize: number = 10
 
-  currentDefaultSignificantGroup: string[] = []
+  specialColorMap: any = {}
   drawVolcano() {
     if (!this.settings.settings.visible) {
       this.settings.settings.visible = {}
@@ -77,12 +77,10 @@ export class VolcanoPlotComponent implements OnInit {
     let currentColors: string[] = []
     if (this.settings.settings.colorMap) {
       for (const s in this.settings.settings.colorMap) {
-        if (!this.currentDefaultSignificantGroup.includes(s)) {
-          if (!this.dataService.conditions.includes(s)) {
-            if (this.settings.settings.colorMap[s]) {
-              if (this.settings.settings.defaultColorList.includes(this.settings.settings.colorMap[s])) {
-                currentColors.push(this.settings.settings.colorMap[s])
-              }
+        if (!this.dataService.conditions.includes(s)) {
+          if (this.settings.settings.colorMap[s]) {
+            if (this.settings.settings.defaultColorList.includes(this.settings.settings.colorMap[s])) {
+              currentColors.push(this.settings.settings.colorMap[s])
             }
           }
         }
@@ -226,17 +224,22 @@ export class VolcanoPlotComponent implements OnInit {
         temp["Background"].text.push(text)
         temp["Background"].primaryIDs.push(primaryID)
       } else {
-        const group = this.dataService.significantGroup(x, y)
+        const gr = this.dataService.significantGroup(x, y)
+        const group = gr[0]
         if (!temp[group]) {
           if (!this.settings.settings.colorMap[group]) {
-            if (!this.currentDefaultSignificantGroup.includes(group)) {
-              this.currentDefaultSignificantGroup.push(group)
+            if (!this.specialColorMap[gr[1]]) {
+              this.specialColorMap[gr[1]] = this.settings.settings.defaultColorList[currentPosition].slice()
+              this.settings.settings.colorMap[group] = this.settings.settings.defaultColorList[currentPosition].slice()
+            } else {
+              this.settings.settings.colorMap[group] = this.specialColorMap[gr[1]].slice()
             }
-            this.settings.settings.colorMap[group] = this.settings.settings.defaultColorList[currentPosition]
             currentPosition ++
             if (currentPosition === this.settings.settings.defaultColorList.length) {
               currentPosition = 0
             }
+          } else {
+            this.specialColorMap[gr[1]] = this.settings.settings.colorMap[group].slice()
           }
 
           temp[group] = {
