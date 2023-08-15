@@ -124,6 +124,10 @@ addEventListener('message', (data: MessageEvent<any>) => {
         data.data.settings.colorMap[s] = colorMap[s]
       }
     }
+
+    if (data.data.settings.conditionOrder.length === 0) {
+      data.data.settings.conditionOrder = conditions.slice()
+    }
     const storeRaw = rawDF.toArray().map((r: any) => {
       for (const s of samples) {
         r[s] = Number(r[s])
