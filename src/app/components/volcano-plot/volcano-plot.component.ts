@@ -406,6 +406,12 @@ export class VolcanoPlotComponent implements OnInit {
       }
       this.annotated[i] = this.settings.settings.textAnnotation[i]
     }
+
+    this.dataService.resetVolcanoColor.asObservable().subscribe(data => {
+      if (data) {
+        this.specialColorMap = {}
+      }
+    })
     this.dataService.selectionUpdateTrigger.asObservable().subscribe(data => {
       if (data) {
         this.drawVolcano()
