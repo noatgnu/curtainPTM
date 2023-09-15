@@ -229,8 +229,10 @@ export class VolcanoPlotComponent implements OnInit {
         if (!temp[group]) {
           if (!this.settings.settings.colorMap[group]) {
             if (!this.specialColorMap[gr[1]]) {
-              this.specialColorMap[gr[1]] = this.settings.settings.defaultColorList[currentPosition].slice()
-              this.settings.settings.colorMap[group] = this.settings.settings.defaultColorList[currentPosition].slice()
+              if (this.settings.settings.defaultColorList[currentPosition]) {
+                this.specialColorMap[gr[1]] = this.settings.settings.defaultColorList[currentPosition].slice()
+                this.settings.settings.colorMap[group] = this.settings.settings.defaultColorList[currentPosition].slice()
+              }
             } else {
               this.settings.settings.colorMap[group] = this.specialColorMap[gr[1]].slice()
             }
