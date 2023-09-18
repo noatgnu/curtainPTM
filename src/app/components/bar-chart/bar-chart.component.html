@@ -46,72 +46,79 @@
 </div>
 
 <div class="mt-2">
-  <ngb-accordion>
-    <ngb-panel title="Additional Individual Statistical Test">
-      <ng-template ngbPanelContent>
-        <div class="row">
-          <div class="col-3" *ngIf="testType==='ANOVA'">
-            <label for="condition{{_data[dataService.rawForm.primaryIDs]}}">Select conditions</label>
-            <select multiple [(ngModel)]="selectedConditions" class="form-control" id="condition{{_data[dataService.rawForm.primaryIDs]}}">
-              <option [value]="c" *ngFor="let c of dataService.conditions">
-                {{c}}
-              </option>
-            </select>
+  <div class="accordion">
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button [ngClass]="{'accordion-button': true, 'collapsed': iscollapsed}" type="button" (click)="iscollapsed=!iscollapsed">
+          Additional Individual Statistical Test
+        </button>
+      </h2>
+      <div #collapse="ngbCollapse" [(ngbCollapse)]="iscollapsed">
+        <div class="accordion-body">
+          <div class="row">
+            <div class="col-3" *ngIf="testType==='ANOVA'">
+              <label for="condition{{_data[dataService.rawForm.primaryIDs]}}">Select conditions</label>
+              <select multiple [(ngModel)]="selectedConditions" class="form-control" id="condition{{_data[dataService.rawForm.primaryIDs]}}">
+                <option [value]="c" *ngFor="let c of dataService.conditions">
+                  {{c}}
+                </option>
+              </select>
+            </div>
+            <div class="col-3" *ngIf="testType==='TTest'">
+              <label for="conditionA{{_data[dataService.rawForm.primaryIDs]}}">Condition A</label>
+              <select [(ngModel)]="conditionA" class="form-control" id="conditionA{{_data[dataService.rawForm.primaryIDs]}}">
+                <option [value]="c" *ngFor="let c of dataService.conditions">
+                  {{c}}
+                </option>
+              </select>
+            </div>
+            <div class="col-3" *ngIf="testType==='TTest'">
+              <label for="conditionB{{_data[dataService.rawForm.primaryIDs]}}">Condition B</label>
+              <select [(ngModel)]="conditionB" class="form-control" id="conditionB{{_data[dataService.rawForm.primaryIDs]}}">
+                <option [value]="c" *ngFor="let c of dataService.conditions">
+                  {{c}}
+                </option>
+              </select>
+            </div>
+            <div class="col-3">
+              <label for="testType{{_data[dataService.rawForm.primaryIDs]}}">Test Type</label>
+              <select [(ngModel)]="testType" class="form-control" id="testType{{_data[dataService.rawForm.primaryIDs]}}">
+                <option [value]="d" *ngFor="let d of dataService.dataTestTypes">
+                  {{d}}
+                </option>
+              </select>
+            </div>
           </div>
-          <div class="col-3" *ngIf="testType==='TTest'">
-            <label for="conditionA{{_data[dataService.rawForm.primaryIDs]}}">Condition A</label>
-            <select [(ngModel)]="conditionA" class="form-control" id="conditionA{{_data[dataService.rawForm.primaryIDs]}}">
-              <option [value]="c" *ngFor="let c of dataService.conditions">
-                {{c}}
-              </option>
-            </select>
+          <div class="row mt-2">
+            <div class="col-3">
+              <button class="btn btn-primary" (click)="performTest()">Perform Test</button>
+            </div>
           </div>
-          <div class="col-3" *ngIf="testType==='TTest'">
-            <label for="conditionB{{_data[dataService.rawForm.primaryIDs]}}">Condition B</label>
-            <select [(ngModel)]="conditionB" class="form-control" id="conditionB{{_data[dataService.rawForm.primaryIDs]}}">
-              <option [value]="c" *ngFor="let c of dataService.conditions">
-                {{c}}
-              </option>
-            </select>
-          </div>
-          <div class="col-3">
-            <label for="testType{{_data[dataService.rawForm.primaryIDs]}}">Test Type</label>
-            <select [(ngModel)]="testType" class="form-control" id="testType{{_data[dataService.rawForm.primaryIDs]}}">
-              <option [value]="d" *ngFor="let d of dataService.dataTestTypes">
-                {{d}}
-              </option>
-            </select>
-          </div>
-        </div>
-        <div class="row mt-2">
-          <div class="col-3">
-            <button class="btn btn-primary" (click)="performTest()">Perform Test</button>
-          </div>
-        </div>
-        <table *ngIf="selectedConditions.length > 0 && comparisons.length > 0" class="mt-2 table table-striped table-bordered">
-          <thead>
-          <tr>
-            <th scope="col">
-              Conditions
-            </th>
-            <th scope="col">
-              Score
-            </th>
-          </tr>
-          </thead>
-          <tbody>
-          <ng-container *ngFor="let c of comparisons">
+          <table *ngIf="selectedConditions.length > 0 && comparisons.length > 0" class="mt-2 table table-striped table-bordered">
+            <thead>
             <tr>
-              <td>{{c.conditions.join(",")}}</td>
-              <td *ngIf="testType==='ANOVA'">{{c.comparison.f | number}}</td>
-              <td *ngIf="testType==='TTest'">{{c.comparison.p_value | number}}</td>
+              <th scope="col">
+                Conditions
+              </th>
+              <th scope="col">
+                Score
+              </th>
             </tr>
-          </ng-container>
-          </tbody>
-        </table>
-      </ng-template>
-    </ngb-panel>
-  </ngb-accordion>
+            </thead>
+            <tbody>
+            <ng-container *ngFor="let c of comparisons">
+              <tr>
+                <td>{{c.conditions.join(",")}}</td>
+                <td *ngIf="testType==='ANOVA'">{{c.comparison.f | number}}</td>
+                <td *ngIf="testType==='TTest'">{{c.comparison.p_value | number}}</td>
+              </tr>
+            </ng-container>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 

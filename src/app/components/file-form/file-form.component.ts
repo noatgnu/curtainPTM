@@ -14,6 +14,7 @@ export class FileFormComponent implements OnInit {
   progressBar: any = {value: 0, text: ""}
   transformedFC: boolean = false
   transformedP: boolean = false
+  iscollapsed = false
   @Output() finished: EventEmitter<boolean> = new EventEmitter<boolean>()
   constructor(private uniprot: UniprotService, public data: DataService, public settings: SettingsService) {
     this.uniprot.uniprotProgressBar.subscribe(data => {

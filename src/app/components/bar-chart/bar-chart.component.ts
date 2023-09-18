@@ -22,7 +22,7 @@ export class BarChartComponent implements OnInit {
   selectedConditions: string[] = []
   conditions: string[] = []
   testType: string = "ANOVA"
-
+  iscollapsed: boolean = true
   config: any = {
     modeBarButtonsToRemove: ["toImage"]
   }

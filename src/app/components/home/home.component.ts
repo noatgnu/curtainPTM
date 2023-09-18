@@ -65,6 +65,7 @@ export class HomeComponent implements OnInit {
         }
       })
       this.route.params.subscribe(params => {
+        console.log(params)
         if (params) {
           if (params["settings"] && params["settings"].length > 0) {
             const settings = params["settings"].split("&")

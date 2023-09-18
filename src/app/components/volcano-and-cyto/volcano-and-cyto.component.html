@@ -1,21 +1,33 @@
 <div class="container mt-4" id="volcanoNcyto">
-  <ngb-accordion #acc="ngbAccordion" activeIds="volcano">
-    <ngb-panel title="Differential Analysis Volcano Plot" id="volcano">
-      <ng-template ngbPanelContent>
-        <app-volcano-plot [data]="data.currentDF" (selected)="handleVolcanoSelection($event)"></app-volcano-plot>
-      </ng-template>
-    </ngb-panel>
-  </ngb-accordion>
+  <div class="accordion">
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button [ngClass]="{'accordion-button': true, 'collapsed': isVolcanoCollapse}" type="button" (click)=" isVolcanoCollapse=!isVolcanoCollapse">
+          Differential Analysis Volcano Plot
+        </button>
+      </h2>
+      <div #collapse="ngbCollapse" [(ngbCollapse)]="isVolcanoCollapse">
+        <div class="accordion-body">
+          <app-volcano-plot [data]="data.currentDF" (selected)="handleVolcanoSelection($event)"></app-volcano-plot>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
-
-<div class="container-fluid mt-4" *ngIf="data.selected.length >2 && data.fetchUniProt">
-  <ngb-accordion #acc="ngbAccordion">
-    <ngb-panel title="Selected Protein Interactions" id="selectedInteractions">
-      <ng-template ngbPanelContent>
-        <app-network-interactions [genes]="data.selected"></app-network-interactions>
-      </ng-template>
-    </ngb-panel>
-  </ngb-accordion>
+<div class="container-fluid mt-4" *ngIf="data.selected.length >2">
+  <div class="accordion">
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button [ngClass]="{'accordion-button': true, 'collapsed': isNetworkCollapse}" type="button" (click)=" isNetworkCollapse=!isNetworkCollapse">
+          Selected Protein Interactions
+        </button>
+      </h2>
+      <div #collapse2="ngbCollapse" [(ngbCollapse)]="isNetworkCollapse">
+        <div class="accordion-body">
+          <app-network-interactions *ngIf="isNetworkCollapse === false" [genes]="data.selected"></app-network-interactions>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
-
