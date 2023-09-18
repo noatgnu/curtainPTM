@@ -48,7 +48,7 @@ import { VariantSelectionComponent } from './components/variant-selection/varian
 import { SessionExpiredModalComponent } from './components/session-expired-modal/session-expired-modal.component';
 import { DataSelectionManagementComponent } from './components/data-selection-management/data-selection-management.component';
 import { QrcodeModalComponent } from './components/qrcode-modal/qrcode-modal.component';
-import {NgxQRCodeModule} from "@techiediaries/ngx-qrcode";
+import {NgxQrcodeStylingModule} from "ngx-qrcode-styling";
 import { DraggableElementComponent } from './components/draggable-element/draggable-element.component';
 import { SideFloatControlComponent } from './components/side-float-control/side-float-control.component';
 import { CollaborateModalComponent } from './components/collaborate-modal/collaborate-modal.component';
@@ -114,7 +114,7 @@ PlotlyModule.plotlyjs = PlotlyJS;
         QuillModule.forRoot(),
         ReactiveFormsModule,
         AccountsModule,
-        NgxQRCodeModule,
+        NgxQrcodeStylingModule,
         ServiceWorkerModule.register('ngsw-worker.js', {
           enabled: !isDevMode(),
           // Register the ServiceWorker as soon as the application is stable

@@ -3,10 +3,9 @@
 </div>
 <div class="modal-body">
   <div class="d-flex justify-content-center">
-    <ngx-qrcode
-      [value]="url"
-    >
-    </ngx-qrcode>
+    <div class="d-flex justify-content-center">
+      <ngx-qrcode-styling [config]="config" *ngIf="config.data !== ''"></ngx-qrcode-styling>
+    </div>
   </div>
   <div class="alert alert-info">
     <p class="mt-3">Scan the QR code to open the link on your mobile device.</p>

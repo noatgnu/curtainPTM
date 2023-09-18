@@ -4,6 +4,7 @@ import {FormBuilder, FormControl} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {SettingsService} from "../../settings.service";
 import {ToastService} from "../../toast.service";
+import {Options} from "ngx-qrcode-styling";
 
 @Component({
   selector: 'app-collaborate-modal',
@@ -16,6 +17,26 @@ export class CollaborateModalComponent implements OnInit {
     displayName: ['']
   })
   collaborateLink = location.origin + "/#/" + this.settings.settings.currentID + "&&" + this.ws.sessionID
+
+  config: Options = {
+    width: 250,
+    height: 250,
+    data: location.origin + "/#/" + this.settings.settings.currentID + "&&" + this.ws.sessionID,
+    image: "assets/favicon.png",
+    margin: 5,
+    dotsOptions: {
+      color: "#003632",
+      type: "dots",
+    },
+    backgroundOptions: {
+      color: "#ffffff",
+    },
+    imageOptions: {
+      crossOrigin: "anonymous",
+      margin: 0
+    }
+    //image: "assets/favicon.png",
+  }
   constructor(private ws: WebsocketService, private fb: FormBuilder, private modal: NgbActiveModal, private settings: SettingsService, private toast: ToastService) {
     this.form.controls['sessionID'].setValue(this.ws.sessionID)
     this.form.controls['sessionID'].disable()
