@@ -17,7 +17,7 @@ export class QrcodeModalComponent implements OnInit {
     width: 250,
     height: 250,
     data: this.url,
-    image: "assets/favicon.png",
+    //image: "assets/favicon.png",
     margin: 5,
     dotsOptions: {
       color: "#2E2D62",
