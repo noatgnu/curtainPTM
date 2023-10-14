@@ -24,6 +24,7 @@ import {Subscription} from "rxjs";
 import {
   SampleConditionAssignmentModalComponent
 } from "../sample-condition-assignment-modal/sample-condition-assignment-modal.component";
+import {UserPtmImportManagementComponent} from "../user-ptm-import-management/user-ptm-import-management.component";
 
 @Component({
   selector: 'app-navbar',
@@ -254,5 +255,10 @@ export class NavbarComponent implements OnInit {
 
   reload() {
     window.location.reload()
+  }
+
+  openUserPTMImportManagement() {
+    const ref = this.modal.open(UserPtmImportManagementComponent, {scrollable: true})
+
   }
 }

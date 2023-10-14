@@ -291,6 +291,12 @@ export class HomeComponent implements OnInit {
         this.settings.settings[i] = object.settings[i]
       }
     }
+
+    for (const i in this.settings.settings.customPTMData) {
+      if (this.ptm.databases.filter(r => r.name === i).length === 0) {
+        this.ptm.databases.push({name: i, value: i, academic: true, custom: true})
+      }
+    }
     this.data.restoreTrigger.next(true)
   }
 

@@ -81,6 +81,9 @@
             <button ngbDropdownItem (click)="openSessionSettings()" [disabled]="!accounts.getSessionPermission()">
               Session Settings
             </button>
+            <button ngbDropdownItem (click)="openUserPTMImportManagement()">
+              Custom PTM Import Management
+            </button>
             <ng-container *ngIf="accounts.curtainAPI.user.loginStatus">
               <button ngbDropdownItem (click)="openAccountModal()">
                 Account

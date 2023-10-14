@@ -3,28 +3,30 @@ import {GlyconnectService} from "./glyconnect.service";
 import {PspService} from "./psp.service";
 import {PlmdService} from "./plmd.service";
 import {CarbonyldbService} from "./carbonyldb.service";
+import {SettingsService} from "./settings.service";
+import {UniprotService} from "./uniprot.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class PtmService {
   databases: any[] = [
-    {name:"PhosphoSite Plus (Phosphorylation)", value:"PSP_PHOSPHO", academic:true},
-    {name:"PhosphoSite Plus (Ubiquitylation)", value:"PSP_UBI", academic:true},
-    {name:"PhosphoSite Plus (Acetylation)", value:"PSP_ACETYL", academic:true},
-    {name:"PhosphoSite Plus (Methylation)", value:"PSP_METHYL", academic:true},
-    {name:"PhosphoSite Plus (Sumoylation)", value:"PSP_SUMOY", academic:true},
-    {name:"PLMD (Ubiquitylation)", value:"PLMD_UBI", academic:true},
-    {name:"PLMD (Methylation)", value:"PLMD_METHYL", academic:true},
-    {name:"PLMD (Acetylation)", value:"PLMD_ACETYL", academic:true},
-    {name:"CarbonylDB (Carbonylation)", value:"CDB_CARBONYL", academic:true},
-    {name:"GLYCONNECT (N-Linked)", value:"GLYCONNECTN", academic:true},
-    {name:"GLYCONNECT (O-Linked)", value:"GLYCONNECTO", academic:true}
+    {name:"PhosphoSite Plus (Phosphorylation)", value:"PSP_PHOSPHO", academic:true, custom: false},
+    {name:"PhosphoSite Plus (Ubiquitylation)", value:"PSP_UBI", academic:true, custom: false},
+    {name:"PhosphoSite Plus (Acetylation)", value:"PSP_ACETYL", academic:true, custom: false},
+    {name:"PhosphoSite Plus (Methylation)", value:"PSP_METHYL", academic:true, custom: false},
+    {name:"PhosphoSite Plus (Sumoylation)", value:"PSP_SUMOY", academic:true, custom: false},
+    {name:"PLMD (Ubiquitylation)", value:"PLMD_UBI", academic:true, custom: false},
+    {name:"PLMD (Methylation)", value:"PLMD_METHYL", academic:true, custom: false},
+    {name:"PLMD (Acetylation)", value:"PLMD_ACETYL", academic:true, custom: false},
+    {name:"CarbonylDB (Carbonylation)", value:"CDB_CARBONYL", academic:true, custom: false},
+    {name:"GLYCONNECT (N-Linked)", value:"GLYCONNECTN", academic:true, custom: false},
+    {name:"GLYCONNECT (O-Linked)", value:"GLYCONNECTO", academic:true, custom: false}
   ]
   databaseNameMap: any = {}
 
   ptmDiseaseMap: Map<string, any> = new Map<string, any>()
-  constructor(private glyconnect: GlyconnectService, private psp: PspService, private plmd: PlmdService, private carbonyl: CarbonyldbService) {
+  constructor(private glyconnect: GlyconnectService, private psp: PspService, private plmd: PlmdService, private carbonyl: CarbonyldbService, private settings: SettingsService, private uniprot: UniprotService) {
     for (const db of this.databases) {
       this.databaseNameMap[db.name] = db.value
     }
@@ -71,6 +73,7 @@ export class PtmService {
       case "GLYCONNECTO":
         return this.glyconnect.glyconnectOMap
       default:
+        return this.settings.settings.customPTMData[name]
         break
     }
   }
@@ -114,5 +117,40 @@ export class PtmService {
 
   getPTMDiseases(acc: string) {
 
+  }
+
+
+  loadCustomPTMData(data: string, databaseName: string) {
+    const lines = data.split("\n")
+    for (const line of lines) {
+      const row = line.split("\t")
+      const matches = this.uniprot.Re.exec(row[0])
+
+      if (row.length === 5) {
+        if (matches) {
+          if (!this.settings.settings.customPTMData[databaseName]) {
+            this.settings.settings.customPTMData[databaseName] = {}
+          }
+          if (!this.settings.settings.customPTMData[databaseName][matches[1]]) {
+            this.settings.settings.customPTMData[databaseName][matches[1]] = {}
+          }
+
+          if (!this.settings.settings.customPTMData[databaseName][matches[1]][row[0]]) {
+            this.settings.settings.customPTMData[databaseName][matches[1]][row[0]] = []
+          }
+          this.settings.settings.customPTMData[databaseName][matches[1]][row[0]].push({position: parseInt(row[1])-1, residue: row[2]})
+        }
+      }
+      if (this.settings.settings.customPTMData[databaseName]) {
+        this.databases.push({name: databaseName, value: databaseName, academic: true, custom: true})
+      }
+    }
+  }
+
+  deleteCustomPTMData(databaseName: string) {
+    if (this.settings.settings.customPTMData[databaseName]) {
+      delete this.settings.settings.customPTMData[databaseName]
+      this.databases = this.databases.filter(d => d.value !== databaseName)
+    }
   }
 }

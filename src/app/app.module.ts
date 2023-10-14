@@ -56,6 +56,7 @@ import { LocalSessionStateModalComponent } from './components/local-session-stat
 import { ProfilePlotComponent } from './components/profile-plot/profile-plot.component';
 import { SampleConditionAssignmentModalComponent } from './components/sample-condition-assignment-modal/sample-condition-assignment-modal.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
+import { UserPtmImportManagementComponent } from './components/user-ptm-import-management/user-ptm-import-management.component';
 PlotlyModule.plotlyjs = PlotlyJS;
 @NgModule({
   declarations: [
@@ -99,7 +100,8 @@ PlotlyModule.plotlyjs = PlotlyJS;
     CollaborateModalComponent,
     LocalSessionStateModalComponent,
     ProfilePlotComponent,
-    SampleConditionAssignmentModalComponent
+    SampleConditionAssignmentModalComponent,
+    UserPtmImportManagementComponent
   ],
     imports: [
         BrowserModule,
