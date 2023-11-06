@@ -126,7 +126,7 @@ export class PtmService {
       const row = line.split("\t")
       const matches = this.uniprot.Re.exec(row[0])
 
-      if (row.length === 5) {
+      if (row.length === 3) {
         if (matches) {
           if (!this.settings.settings.customPTMData[databaseName]) {
             this.settings.settings.customPTMData[databaseName] = {}
@@ -141,9 +141,10 @@ export class PtmService {
           this.settings.settings.customPTMData[databaseName][matches[1]][row[0]].push({position: parseInt(row[1])-1, residue: row[2]})
         }
       }
-      if (this.settings.settings.customPTMData[databaseName]) {
-        this.databases.push({name: databaseName, value: databaseName, academic: true, custom: true})
-      }
+    }
+    if (this.settings.settings.customPTMData[databaseName]) {
+      this.databases.push({name: databaseName, value: databaseName, academic: true, custom: true})
+      this.databaseNameMap[databaseName] = databaseName
     }
   }
 
