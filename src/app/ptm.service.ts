@@ -152,6 +152,8 @@ export class PtmService {
     if (this.settings.settings.customPTMData[databaseName]) {
       delete this.settings.settings.customPTMData[databaseName]
       this.databases = this.databases.filter(d => d.value !== databaseName)
+      delete this.databaseNameMap[databaseName]
+
     }
   }
 }

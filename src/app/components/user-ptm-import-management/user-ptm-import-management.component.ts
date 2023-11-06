@@ -3,6 +3,7 @@ import {FormBuilder, FormControl, Validators} from "@angular/forms";
 import {PtmService} from "../../ptm.service";
 import {SettingsService} from "../../settings.service";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
+import {DataService} from "../../data.service";
 
 @Component({
   selector: 'app-user-ptm-import-management',
@@ -17,7 +18,7 @@ export class UserPtmImportManagementComponent {
 
   datasetList: string[] = []
 
-  constructor(private fb: FormBuilder, private ptm: PtmService, private settings: SettingsService, private modal: NgbActiveModal) {
+  constructor(private fb: FormBuilder, private ptm: PtmService, private settings: SettingsService, private modal: NgbActiveModal, private dataService: DataService) {
     this.datasetList = Object.keys(this.settings.settings.customPTMData)
   }
 
@@ -43,6 +44,11 @@ export class UserPtmImportManagementComponent {
 
   deleteDataset(dataset: string) {
     this.ptm.deleteCustomPTMData(dataset)
+    for (const i in this.dataService.dbIDMap){
+      if (this.dataService.dbIDMap[i][dataset]) {
+        delete this.dataService.dbIDMap[i][dataset]
+      }
+    }
     this.datasetList = Object.keys(this.settings.settings.customPTMData)
   }
 
