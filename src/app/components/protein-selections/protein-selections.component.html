@@ -1,38 +1,50 @@
 <div class="container mt-4">
-  <ngb-accordion #acc="ngbAccordion" activeIds="searchParameters">
-    <ngb-panel id="searchParameters" title="Protein Search Parameters">
-      <ng-template ngbPanelContent>
-        <div class="row">
-          <div class="col-3">
-            <input id="searchProteinOrGene" type="text" class="form-control" [(ngModel)]="tableFilterModel" placeholder="Search" [ngbTypeahead]="data.search">
-          </div>
-          <div class="col-2">
-            <select class="form-control" [(ngModel)]="data.searchType">
-              <option>
-                Gene Names
-              </option>
-              <option>
-                Accession IDs
-              </option>
-              <option>
-                Primary IDs
-              </option>
-            </select>
-          </div>
-          <div class="col-1">
-            <button class="btn btn-primary" (click)="singleSearchHandle()">
-              Search
-            </button>
-          </div>
-          <div class="col-2">
-            <button class="btn btn-primary" (click)="openBatchSearch()">
-              Batch Search
-            </button>
+  <div class="container mt-4" id="protein-selections">
+    <div class="accordion">
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button [ngClass]="{'accordion-button': true, 'collapsed': iscollapse}" type="button" (click)=" iscollapse=!iscollapse">
+            Protein Search Parameters
+          </button>
+        </h2>
+        <div #collapse="ngbCollapse" [(ngbCollapse)]="iscollapse">
+          <div class="accordion-body">
+            <form (ngSubmit)="singleSearchHandle()">
+              <div class="row">
+                <div class="col-3">
+                  <input id="searchProteinOrGene" [ngModelOptions]="{standalone: true}" type="text" class="form-control" [(ngModel)]="tableFilterModel" placeholder="Search" [ngbTypeahead]="data.search">
+                </div>
+                <div class="col-2">
+                  <select class="form-control" [ngModelOptions]="{standalone: true}" [(ngModel)]="data.searchType">
+                    <option>
+                      Gene Names
+                    </option>
+                    <option>
+                      Accession IDs
+                    </option>
+                    <option>
+                      Primary IDs
+                    </option>
+                  </select>
+                </div>
+                <div class="col-1">
+                  <button class="btn btn-primary" (click)="singleSearchHandle()">
+                    Search
+                  </button>
+                </div>
+                <div class="col-2">
+                  <button class="btn btn-primary" (click)="openBatchSearch()">
+                    Batch Search
+                  </button>
+                </div>
+              </div>
+            </form>
+
           </div>
         </div>
-      </ng-template>
-    </ngb-panel>
-  </ngb-accordion>
+      </div>
+    </div>
+  </div>
 </div>
 
 
