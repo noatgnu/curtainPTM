@@ -69,5 +69,5 @@ export class Settings {
   networkInteractionData: any[] = []
   customVolcanoTextCol = ""
   customPTMData: any = {}
-
+  encrypted: boolean = false
 }

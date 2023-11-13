@@ -57,6 +57,7 @@ import { ProfilePlotComponent } from './components/profile-plot/profile-plot.com
 import { SampleConditionAssignmentModalComponent } from './components/sample-condition-assignment-modal/sample-condition-assignment-modal.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { UserPtmImportManagementComponent } from './components/user-ptm-import-management/user-ptm-import-management.component';
+import { EncryptionSettingsComponent } from './components/encryption-settings/encryption-settings.component';
 PlotlyModule.plotlyjs = PlotlyJS;
 @NgModule({
   declarations: [
@@ -101,7 +102,8 @@ PlotlyModule.plotlyjs = PlotlyJS;
     LocalSessionStateModalComponent,
     ProfilePlotComponent,
     SampleConditionAssignmentModalComponent,
-    UserPtmImportManagementComponent
+    UserPtmImportManagementComponent,
+    EncryptionSettingsComponent
   ],
     imports: [
         BrowserModule,

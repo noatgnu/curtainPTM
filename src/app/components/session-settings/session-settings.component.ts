@@ -5,6 +5,8 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {DataService} from "../../data.service";
 import {SettingsService} from "../../settings.service";
 import {AccountsService} from "../../accounts/accounts.service";
+import {UniprotService} from "../../uniprot.service";
+import {CurtainEncryption} from "curtain-web-api";
 
 @Component({
   selector: 'app-session-settings',
@@ -39,7 +41,7 @@ export class SessionSettingsComponent implements OnInit {
     additionalOwner: ["",]
   })
   temporaryLink: string = ""
-  constructor(private fb: UntypedFormBuilder, private accounts: AccountsService, private web: WebService, private modal: NgbActiveModal, private data: DataService, private settings: SettingsService ) {
+  constructor(private fb: UntypedFormBuilder, private accounts: AccountsService, private web: WebService, private modal: NgbActiveModal, private data: DataService, private settings: SettingsService, private uniprot: UniprotService ) {
 
   }
 
@@ -55,6 +57,25 @@ export class SessionSettingsComponent implements OnInit {
   }
 
   submit() {
+    const extraData: any = {
+      uniprot: {
+        results: this.uniprot.results,
+        dataMap: this.uniprot.dataMap,
+        db: this.uniprot.db,
+        organism: this.uniprot.organism,
+        accMap: this.uniprot.accMap,
+        geneNameToPrimary: this.uniprot.geneNameToPrimary,
+      },
+      data: {
+        accessionToPrimaryIDs: this.data.accessionToPrimaryIDs,
+        primaryIDsList: this.data.primaryIDsList,
+        accessionList: this.data.accessionList,
+        accessionMap: this.data.accessionMap,
+        genesMap: this.data.genesMap,
+        allGenes: this.data.allGenes,
+        dataMap: this.data.dataMap,
+      }
+    }
     const payload: any = {enable: this.form.value["enable"]}
     if (this.form.value["update_content"]) {
       payload["file"] = {
@@ -70,10 +91,17 @@ export class SessionSettingsComponent implements OnInit {
         dbIDMap: this.data.dbIDMap,
         fetchUniProt: this.data.fetchUniProt,
         annotatedData: this.data.annotatedData,
-        annotatedMap: this.data.annotatedMap
+        annotatedMap: this.data.annotatedMap,
+        extraData: extraData,
       }
     }
-    this.accounts.curtainAPI.updateSession(payload, this.currentID).then(data => {
+    const encryption: CurtainEncryption = {
+      encrypted: this.settings.settings.encrypted,
+      e2e: this.settings.settings.encrypted,
+      publicKey: this.data.public_key,
+    }
+
+    this.accounts.curtainAPI.updateSession(payload, this.currentID, encryption).then(data => {
       this.data.session = data.data
       this.modal.dismiss()
     })

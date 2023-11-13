@@ -6,6 +6,7 @@ import {DataFrame, IDataFrame} from "data-forge";
 import {BehaviorSubject, debounceTime, distinctUntilChanged, map, Observable, OperatorFunction, Subject} from "rxjs";
 import {SettingsService} from "./settings.service";
 import {UniprotService} from "./uniprot.service";
+import {loadFromLocalStorage} from "curtain-web-api";
 
 @Injectable({
   providedIn: 'root'
@@ -154,6 +155,8 @@ export class DataService {
   page: number = 1
   pageSize: number = 5
   dbIDMap: any = {}
+  public_key: CryptoKey|undefined = undefined
+  private_key: CryptoKey|undefined = undefined
   /*defaultColorList = [
     '#1f77b4',
     '#ff7f0e',
@@ -282,5 +285,8 @@ export class DataService {
     }
   }
 
-
+  async getKey() {
+    this.private_key = await loadFromLocalStorage("private")
+    this.public_key = await loadFromLocalStorage("public")
+  }
 }

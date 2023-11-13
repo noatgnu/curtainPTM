@@ -16,8 +16,10 @@ import {LoginModalComponent} from "../../accounts/login-modal/login-modal.compon
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {AccountsService} from "../../accounts/accounts.service";
 import {WebsocketService} from "../../websocket.service";
-import {reviver} from "curtain-web-api";
+import {arrayBufferToBase64String, base64ToArrayBuffer, reviver, saveToLocalStorage} from "curtain-web-api";
 import {PtmDiseasesService} from "../../ptm-diseases.service";
+import {EncryptionSettingsComponent} from "../encryption-settings/encryption-settings.component";
+import {decryptAESData, decryptAESKey, importAESKey} from "curtain-web-api/build/classes/curtain-encryption";
 
 @Component({
   selector: 'app-home',
@@ -87,52 +89,118 @@ export class HomeComponent implements OnInit {
             this.toast.show("Initialization", "Fetching data from session " + params["settings"]).then()
             if (this.currentID !== settings[0]) {
               this.currentID = settings[0]
-              this.accounts.curtainAPI.getSessionSettings(settings[0]).then((d:any)=> {
-                this.data.session = d.data
-                this.accounts.curtainAPI.postSettings(settings[0], token, this.onDownloadProgress).then((data:any) => {
-                  const curtainSettings = data.data
-                  if (curtainSettings) {
-                    this.uniqueLink = location.origin + "/#/" + this.currentID
-                    this.uniprot.uniprotProgressBar.next({value: 100, text: "Restoring Session..."})
-                    this.restoreSettings(curtainSettings).then(result => {
-                      this.accounts.curtainAPI.getOwnership(settings[0]).then((d:any) => {
-                        if (d.data.ownership) {
-                          this.accounts.isOwner = true
-                        } else {
-                          this.accounts.isOwner = false
-                        }
-                      }).catch(error => {
-                        this.accounts.isOwner = false
-                      })
-                      this.accounts.curtainAPI.getSessionSettings(settings[0]).then((d:any)=> {
-                        this.data.session = d.data
-                        this.settings.settings.currentID = d.data.link_id
-                      })
-                    })
-                  }
-                }).catch(error => {
-                  if (error.status === 400) {
-                    this.toast.show("Credential Error", "Login Information Required").then()
-                    const login = this.openLoginModal()
-                    login.componentInstance.loginStatus.asObservable().subscribe((data:boolean) => {
-                      if (data) {
-                        location.reload()
-                      }
-                    })
-                  }
-                })
+              this.getSessionData(settings[0], token).then(() => {
+
               })
+              // this.accounts.curtainAPI.getSessionSettings(settings[0]).then((d:any)=> {
+              //   this.data.session = d.data
+              //   this.accounts.curtainAPI.postSettings(settings[0], token, this.onDownloadProgress).then((data:any) => {
+              //     const curtainSettings = data.data
+              //     if (curtainSettings) {
+              //       this.uniqueLink = location.origin + "/#/" + this.currentID
+              //       this.uniprot.uniprotProgressBar.next({value: 100, text: "Restoring Session..."})
+              //       this.restoreSettings(curtainSettings).then(result => {
+              //         this.accounts.curtainAPI.getOwnership(settings[0]).then((d:any) => {
+              //           if (d.data.ownership) {
+              //             this.accounts.isOwner = true
+              //           } else {
+              //             this.accounts.isOwner = false
+              //           }
+              //         }).catch(error => {
+              //           this.accounts.isOwner = false
+              //         })
+              //         this.accounts.curtainAPI.getSessionSettings(settings[0]).then((d:any)=> {
+              //           this.data.session = d.data
+              //           this.settings.settings.currentID = d.data.link_id
+              //         })
+              //       })
+              //     }
+              //   }).catch(error => {
+              //     if (error.status === 400) {
+              //       this.toast.show("Credential Error", "Login Information Required").then()
+              //       const login = this.openLoginModal()
+              //       login.componentInstance.loginStatus.asObservable().subscribe((data:boolean) => {
+              //         if (data) {
+              //           location.reload()
+              //         }
+              //       })
+              //     }
+              //   })
+              // })
             }
           }
         }
       })
     })
+  }
 
+  async getSessionData(id: string, token: string = "") {
+    const d = await this.accounts.curtainAPI.getSessionSettings(id)
+    this.data.session = d.data
 
+    try {
+      const ownership = await this.accounts.curtainAPI.getOwnership(id)
+      if (ownership.data.ownership) {
+        this.accounts.isOwner = true
+      } else {
+        this.accounts.isOwner = false
+      }
+    } catch (e) {
+      this.accounts.isOwner = false
+    }
+    try {
+      const data = await this.accounts.curtainAPI.postSettings(id, token, this.onDownloadProgress)
+      if (data.data) {
+        if (d.data.encrypted) {
+          const encryption = await this.accounts.curtainAPI.getEncryptionFactors(id)
+          if (this.data.private_key) {
+            this.toast.show("Encryption", "Decrypting data using private key").then()
+            const decryptedKey = await decryptAESKey(this.data.private_key, base64ToArrayBuffer(encryption.data.encryption_key))
+            const decryptedIV = await decryptAESKey(this.data.private_key, base64ToArrayBuffer(encryption.data.encryption_iv))
+            data.data = await decryptAESData(await importAESKey(decryptedKey), data.data, arrayBufferToBase64String(decryptedIV))
+            this.restoreSettings(data.data).then(result => {
+              this.accounts.curtainAPI.getSessionSettings(id).then((d:any)=> {
+                this.data.session = d.data
+                this.settings.settings.currentID = d.data.link_id
+                this.uniqueLink = location.origin + "/#/" + this.settings.settings.currentID
+                this.uniprot.uniprotProgressBar.next({value: 100, text: "Restoring Session..."})
+                this.data.restoreTrigger.next(true)
 
+              })
+            })
+            this.toast.show("Encryption", "Data decrypted").then()
+          } else {
+            this.toast.show("Encryption", "Data is encrypted but no private key has been supplied").then()
+          }
+        } else {
+          this.restoreSettings(data.data).then(result => {
+            console.log(data.data)
+            this.accounts.curtainAPI.getSessionSettings(id).then((d:any)=> {
+              this.data.session = d.data
+              this.settings.settings.currentID = d.data.link_id
+              this.uniqueLink = location.origin + "/#/" + this.settings.settings.currentID
+              this.uniprot.uniprotProgressBar.next({value: 100, text: "Restoring Session..."})
+              this.data.restoreTrigger.next(true)
+            })
+          })
+        }
+      }
+    } catch (error: any) {
+      console.log(error)
+      if (error.status === 400) {
+        this.toast.show("Credential Error", "Login Information Required").then()
+        const login = this.openLoginModal()
+        login.componentInstance.loginStatus.asObservable().subscribe((data:boolean) => {
+          if (data) {
+            location.reload()
+          }
+        })
+      }
+    }
   }
 
   async initialize() {
+    await this.data.getKey()
     await this.accounts.curtainAPI.getSiteProperties()
     await this.accounts.curtainAPI.user.loadFromDB()
   }
@@ -142,10 +210,13 @@ export class HomeComponent implements OnInit {
     return ref
   }
   async restoreSettings(object: any) {
+    if (typeof object === "string") {
+      object = JSON.parse(object, reviver)
+    }
     if (typeof object.settings === "string") {
       object.settings = JSON.parse(object.settings, reviver)
     }
-
+    console.log(object)
     if (object.fetchUniProt) {
       if (object.extraData) {
         if (typeof object.extraData === "string") {
@@ -381,4 +452,6 @@ export class HomeComponent implements OnInit {
     this.GDPR = false
     localStorage.setItem("GDPR", "true")
   }
+
+
 }

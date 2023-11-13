@@ -25,6 +25,8 @@ import {
   SampleConditionAssignmentModalComponent
 } from "../sample-condition-assignment-modal/sample-condition-assignment-modal.component";
 import {UserPtmImportManagementComponent} from "../user-ptm-import-management/user-ptm-import-management.component";
+import {EncryptionSettingsComponent} from "../encryption-settings/encryption-settings.component";
+import {CurtainEncryption, saveToLocalStorage} from "curtain-web-api";
 
 @Component({
   selector: 'app-navbar',
@@ -113,7 +115,14 @@ export class NavbarComponent implements OnInit {
       annotatedMap: this.data.annotatedMap,
       extraData: extraData,
     }
-    this.accounts.curtainAPI.putSettings(data, !this.accounts.curtainAPI.user.loginStatus, data.settings.description, "PTM", this.onUploadProgress).then((data: any) => {
+
+    const encryption: CurtainEncryption = {
+      encrypted: this.settings.settings.encrypted,
+      e2e: this.settings.settings.encrypted,
+      publicKey: this.data.public_key,
+    }
+
+    this.accounts.curtainAPI.putSettings(data, !this.accounts.curtainAPI.user.loginStatus, data.settings.description, "PTM", encryption, this.onUploadProgress).then((data: any) => {
       if (data.data) {
         this.settings.settings.currentID = data.data.link_id
         this.uniqueLink = location.origin + "/#/" + this.settings.settings.currentID
@@ -260,5 +269,26 @@ export class NavbarComponent implements OnInit {
   openUserPTMImportManagement() {
     const ref = this.modal.open(UserPtmImportManagementComponent, {scrollable: true})
 
+  }
+  openEncryptionSettings() {
+
+    const ref = this.modal.open(EncryptionSettingsComponent, {scrollable: true})
+    ref.componentInstance.enabled = this.settings.settings.encrypted
+    ref.closed.subscribe(data => {
+      if (data.savePublicKey && data.public_key) {
+        saveToLocalStorage(data.public_key, "public").then()
+      }
+      if (data.savePrivateKey && data.private_key) {
+        saveToLocalStorage(data.private_key, "private").then()
+      }
+      this.settings.settings.encrypted = data.enabled
+      if (data.public_key) {
+        this.data.public_key = data.public_key
+      }
+      if (data.private_key) {
+        this.data.private_key = data.private_key
+      }
+
+    })
   }
 }

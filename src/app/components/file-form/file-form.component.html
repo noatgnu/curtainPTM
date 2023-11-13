@@ -143,12 +143,18 @@
                   <small class="text-muted">Unique value column, should be the same column as differential analysis primary IDs</small>
                 </div>
                 <div class="col-5">
-                  <label for="samples">Select Samples</label>
-                  <select multiple class="form-select" id="samples" aria-label="Select Sampes" [(ngModel)]="data.rawForm.samples">
-                    <option *ngFor="let c of data.raw.df.getColumnNames()" [value]="c">
-                      {{c}}
-                    </option>
-                  </select>
+                  <div class="form-group">
+                    <label for="samples">Select Samples</label>
+                    <select multiple class="form-select" id="samples" aria-label="Select Sampes" [(ngModel)]="data.rawForm.samples">
+                      <option *ngFor="let c of data.raw.df.getColumnNames()" [value]="c">
+                        {{c}}
+                      </option>
+                    </select>
+                  </div>
+                  <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="rawdatalog2" [(ngModel)]="data.rawForm.log2">
+                    <label for="rawdatalog2" class="form-check-label">Data has already been log2 transformed</label>
+                  </div>
                   <small class="text-muted">Sample column names in format "condition"."replicate" for automated experimental condition parsing</small>
                 </div>
               </div>

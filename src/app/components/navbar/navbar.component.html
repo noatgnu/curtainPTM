@@ -19,6 +19,9 @@
       <span class="text-info">{{progressEvent.text}}</span>
     </div>
     <div class="d-flex">
+      <div class="p-2" *ngIf="settings.settings.encrypted">
+        <span class="badge bg-danger">Encryption Enabled</span>
+      </div>
       <div class="p-2" *ngIf="finished">
         <div display="dynamic" ngbDropdown class="d-inline-block">
           <button class="btn btn-outline-primary ml-2" id="localState" ngbDropdownToggle> State
@@ -93,6 +96,7 @@
               </button>
             </ng-container>
             <button ngbDropdownItem (click)="openCollaborateModal()">Collaborate</button>
+            <button ngbDropdownItem (click)="openEncryptionSettings()">Encryption Settings</button>
             <a type="button" ngbDropdownItem href="https://www.youtube.com/channel/UCwTAaXMvmqoozLB0XwZz20g" target="_blank"><i class="bi bi-youtube"></i> Video Tutorial</a>
             <a type="button" ngbDropdownItem href="https://groups.google.com/g/curtain-proteomics" target="_blank"><i class="bi bi-google"></i> Support Google Group</a>
           </div>

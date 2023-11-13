@@ -103,7 +103,12 @@ export class ProfilePlotComponent implements OnInit {
           }
         }
         temp[condition].x = temp[condition].x.concat(Array(this._data.count()).fill(s))
-        temp[condition].y = temp[condition].y.concat(this._data.getSeries(s).bake().toArray().map(a=> Math.log2(a)))
+        if (this.dataService.rawForm.log2) {
+          temp[condition].y = temp[condition].y.concat(this._data.getSeries(s).bake().toArray())
+        } else {
+          temp[condition].y = temp[condition].y.concat(this._data.getSeries(s).bake().toArray().map(a=> Math.log2(a)))
+        }
+
       }
     }
 
