@@ -33,6 +33,12 @@
         </label>
       </div>
     </ng-container>
+    <div class="alert alert-info">
+      <p>Encryption is done entirely on the client-side where the browser will generate a AES-GCM key 256-bit length. This key will be use to encrypt the data before saving on Curtain server. Then the key will also be encrypted using the provided public key. The encrypted key would also be saved on the server together with the data. Due to the encrypted nature of the key, Curtain will be unable to utilize it without the private key thus the session will only be decrypted and viewable on the web browser with the appropriate private key.</p>
+    </div>
+    <div class="alert alert-danger">
+      <p>Avoid sharing private key. If you are expecting an encrypted session from another, it is good practice to share your public key and have the creator of the session encrypted it using your public key.</p>
+    </div>
   </form>
 </div>
 <div class="modal-footer">
