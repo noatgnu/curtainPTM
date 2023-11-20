@@ -2,6 +2,20 @@
   Sample Settings
 </div>
 <div class="modal-body">
+  <div>
+    <div class="form-group" style="width: 200px">
+      <label for="barChartColumnSize">Bar Chart Column Width</label>
+      <input type="number" class="form-control" [(ngModel)]="columnSize.barChart" id="barChartColumnSize">
+    </div>
+    <div class="form-group" style="width: 300px">
+      <label for="averageBarChartColumnSize">Average Bar Chart Column Width</label>
+      <input type="number" class="form-control" [(ngModel)]="columnSize.averageBarChart" id="averageBarChartColumnSize">
+    </div>
+    <div class="form-group" style="width: 200px">
+      <label for="violinPlotColumnSize">Violin Plot Width</label>
+      <input type="number" class="form-control" [(ngModel)]="columnSize.violinPlot" id="violinPlotColumnSize">
+    </div>
+  </div>
   <div class="row">
     <div class="col-4">
       <b>Sample Order</b>

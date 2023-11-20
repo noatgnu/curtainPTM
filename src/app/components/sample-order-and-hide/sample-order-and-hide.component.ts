@@ -14,7 +14,17 @@ export class SampleOrderAndHideComponent implements OnInit {
   condition: string[] = []
 
   colorMap: any = {}
+  columnSize: any = {
+    barChart: 0,
+    averageBarChart: 0,
+    violinPlot: 0,
+  }
   constructor(public dataService: DataService, public modal: NgbActiveModal, private settings: SettingsService) {
+    for (const c in this.settings.settings.columnSize) {
+      if (c in this.columnSize) {
+        this.columnSize[c] = this.settings.settings.columnSize[c]
+      }
+    }
     for (const s in settings.settings.sampleMap) {
       const condition = settings.settings.sampleMap[s].condition
       this.samplesVisible[s] = true

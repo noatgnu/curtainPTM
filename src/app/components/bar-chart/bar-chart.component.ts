@@ -195,7 +195,9 @@ export class BarChartComponent implements OnInit {
     this.graph = graph
     // this.comparisons = comparisons
     this.graphLayout.shapes = shapes
-
+    if (this.settings.settings.columnSize.barChart !== 0) {
+      this.graphLayout.width = this.graphLayout.margin.l + this.graphLayout.margin.r + this.settings.settings.columnSize.barChart * sampleNumber
+    }
     this.graphLayout.xaxis.tickvals = tickvals
     this.graphLayout.xaxis.ticktext = ticktext
   }
@@ -298,8 +300,14 @@ export class BarChartComponent implements OnInit {
       tickText.push(g)
     }
     this.graphDataAverage = graphData
+    if (this.settings.settings.columnSize.averageBarChart !== 0) {
+      this.graphLayoutAverage.width = this.graphLayoutAverage.margin.l + this.graphLayoutAverage.margin.r + this.settings.settings.columnSize.averageBarChart * tickVals.length
+    }
     this.graphLayoutAverage.xaxis.tickvals = tickVals
     this.graphLayoutAverage.xaxis.ticktext = tickText
+    if (this.settings.settings.columnSize.violinPlot !== 0) {
+      this.graphLayoutViolin.width = this.graphLayoutViolin.margin.l + this.graphLayoutViolin.margin.r + this.settings.settings.columnSize.violinPlot * tickVals.length
+    }
     this.graphLayoutViolin.xaxis.tickvals = tickVals
     this.graphLayoutViolin.xaxis.ticktext = tickText
     this.graphDataViolin = graphViolin

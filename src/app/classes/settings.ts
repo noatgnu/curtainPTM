@@ -70,4 +70,11 @@ export class Settings {
   customVolcanoTextCol = ""
   customPTMData: any = {}
   encrypted: boolean = false
+
+  columnSize: any = {
+    barChart: 0,
+    averageBarChart: 0,
+    violinPlot: 0,
+    profilePlot: 0,
+  }
 }
