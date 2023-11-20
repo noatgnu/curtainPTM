@@ -24,7 +24,9 @@
   <div class="col-6">
     <div class="card">
       <div class="card-body">
-        <plotly-plot [config]="config" [divId]="_data[dataService.rawForm.primaryIDs]+'average'" [data]="graphDataAverage" [layout]="graphLayoutAverage" [updateOnDataChange]="true" [updateOnLayoutChange]="true"></plotly-plot>
+        <div class="d-flex justify-content-center">
+          <plotly-plot [config]="config" [divId]="_data[dataService.rawForm.primaryIDs]+'average'" [data]="graphDataAverage" [layout]="graphLayoutAverage" [updateOnDataChange]="true" [updateOnLayoutChange]="true"></plotly-plot>
+        </div>
         <div class="row">
           <div class="col-6">
             <select class="form-control" [(ngModel)]="barChartErrorType" (change)="drawAverageBarChart()">
@@ -39,7 +41,9 @@
   <div class="col-6">
     <div class="card">
       <div class="card-body">
-        <plotly-plot [config]="config" [divId]="_data[dataService.rawForm.primaryIDs]+'violin'" [data]="graphDataViolin" [layout]="graphLayoutViolin" [updateOnDataChange]="true" [updateOnLayoutChange]="true"></plotly-plot>
+        <div class="d-flex justify-content-center">
+          <plotly-plot [config]="config" [divId]="_data[dataService.rawForm.primaryIDs]+'violin'" [data]="graphDataViolin" [layout]="graphLayoutViolin" [updateOnDataChange]="true" [updateOnLayoutChange]="true"></plotly-plot>
+        </div>
       </div>
     </div>
   </div>
