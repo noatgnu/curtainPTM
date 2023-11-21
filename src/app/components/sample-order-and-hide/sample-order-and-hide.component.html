@@ -15,6 +15,12 @@
       <label for="violinPlotColumnSize">Violin Plot Width</label>
       <input type="number" class="form-control" [(ngModel)]="columnSize.violinPlot" id="violinPlotColumnSize">
     </div>
+    <div class="form-group" style="width: 300px">
+      <label for="pointPos">
+        Dot Position in relative to violin plot
+      </label>
+      <input type="number" class="form-control" id="pointPos" min="-2" max="2" [(ngModel)]="violinPointPos">
+    </div>
   </div>
   <div class="row">
     <div class="col-4">

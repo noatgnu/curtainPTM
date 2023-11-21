@@ -77,4 +77,5 @@ export class Settings {
     violinPlot: 0,
     profilePlot: 0,
   }
+  violinPointPos: number = -2
 }

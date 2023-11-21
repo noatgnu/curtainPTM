@@ -251,6 +251,7 @@ export class BarChartComponent implements OnInit {
         x: violinX, y: graph[g].filter((a: number) => {
           return !isNaN(a)
         }), points: "all",
+        pointpos: this.settings.settings.violinPointPos,
         box: {
           visible: true
         },
