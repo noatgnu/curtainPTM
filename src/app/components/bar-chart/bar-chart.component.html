@@ -12,19 +12,16 @@
 </div>
 <div class="card">
   <div class="card-body">
-    <div class="d-flex justify-content-center">
-      <div class="p-2">
-        <plotly-plot [config]="config" [divId]="_data[dataService.rawForm.primaryIDs]+'bar'" [data]="graphData" [layout]="graphLayout" [updateOnDataChange]="true" [updateOnLayoutChange]="true"></plotly-plot>
-      </div>
+    <div class="d-flex justify-content-center overflow-auto">
+      <plotly-plot [config]="config" [divId]="_data[dataService.rawForm.primaryIDs]+'bar'" [data]="graphData" [layout]="graphLayout" [updateOnDataChange]="true" [updateOnLayoutChange]="true"></plotly-plot>
     </div>
-
   </div>
 </div>
 <div class="row mt-2">
   <div class="col-6">
     <div class="card">
       <div class="card-body">
-        <div class="d-flex justify-content-center">
+        <div class="d-flex justify-content-center overflow-auto">
           <plotly-plot [config]="config" [divId]="_data[dataService.rawForm.primaryIDs]+'average'" [data]="graphDataAverage" [layout]="graphLayoutAverage" [updateOnDataChange]="true" [updateOnLayoutChange]="true"></plotly-plot>
         </div>
         <div class="row">
@@ -41,7 +38,7 @@
   <div class="col-6">
     <div class="card">
       <div class="card-body">
-        <div class="d-flex justify-content-center">
+        <div class="d-flex justify-content-center overflow-auto">
           <plotly-plot [config]="config" [divId]="_data[dataService.rawForm.primaryIDs]+'violin'" [data]="graphDataViolin" [layout]="graphLayoutViolin" [updateOnDataChange]="true" [updateOnLayoutChange]="true"></plotly-plot>
         </div>
       </div>
