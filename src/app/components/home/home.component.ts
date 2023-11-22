@@ -223,11 +223,30 @@ export class HomeComponent implements OnInit {
           object.extraData = JSON.parse(object.extraData, reviver)
         }
         if (object.extraData.uniprot) {
-          this.uniprot.results = new Map(object.extraData.uniprot.results.value)
-          this.uniprot.dataMap = new Map(object.extraData.uniprot.dataMap.value)
-          this.uniprot.db = new Map(object.extraData.uniprot.db.value)
+          this.uniprot.results = object.extraData.uniprot.results
+          if (object.extraData.uniprot.dataMap instanceof Map) {
+            this.uniprot.dataMap = object.extraData.uniprot.dataMap
+          } else {
+            this.uniprot.dataMap = new Map(object.extraData.uniprot.dataMap.value)
+          }
+          if (object.extraData.uniprot.accMap instanceof Map) {
+            this.uniprot.accMap = object.extraData.uniprot.accMap
+          } else {
+            this.uniprot.accMap = new Map(object.extraData.uniprot.accMap.value)
+          }
+          if (object.extraData.uniprot.db instanceof Map) {
+            this.uniprot.db = object.extraData.uniprot.db
+          } else {
+            this.uniprot.db = new Map(object.extraData.uniprot.db.value)
+          }
+
           this.uniprot.organism = object.extraData.uniprot.organism
-          this.uniprot.accMap = new Map(object.extraData.uniprot.accMap.value)
+          if (object.extraData.uniprot.accMap instanceof Map) {
+            this.uniprot.accMap = object.extraData.uniprot.accMap
+          } else {
+            this.uniprot.accMap = new Map(object.extraData.uniprot.accMap.value)
+          }
+
           this.uniprot.geneNameToPrimary = object.extraData.uniprot.geneNameToPrimary
         }
         if (object.extraData.data) {
@@ -237,7 +256,11 @@ export class HomeComponent implements OnInit {
           this.data.accessionMap = object.extraData.data.accessionMap
           this.data.genesMap = object.extraData.data.genesMap
           this.data.allGenes = object.extraData.data.allGenes
-          this.data.dataMap = new Map(object.extraData.data.dataMap.value)
+          if (object.extraData.data.dataMap instanceof Map) {
+            this.data.dataMap = object.extraData.data.dataMap
+          } else {
+            this.data.dataMap = new Map(object.extraData.data.dataMap.value)
+          }
         }
         this.data.bypassUniProt = true
       }
