@@ -35,6 +35,13 @@
     <tr [ngClass]="{'table-success': dataService.selectedMap[d[dataService.differentialForm.primaryIDs]]}" id="{{d[dataService.differentialForm.primaryIDs]}}scrollID">
       <td>
         {{d[dataService.differentialForm.primaryIDs]}}
+        <ng-container *ngIf="dataService.selectedMap[d[dataService.differentialForm.primaryIDs]]">
+          <ng-container *ngFor="let o of dataService.selectOperationNames">
+          <span *ngIf="dataService.selectedMap[d[dataService.differentialForm.primaryIDs]][o]" class="badge bg-primary mr-2">
+            {{o}}
+          </span>
+          </ng-container>
+        </ng-container>
       </td>
       <td>
         {{positionMap[d[dataService.differentialForm.primaryIDs]].residue}}

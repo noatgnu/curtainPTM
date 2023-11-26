@@ -21,6 +21,18 @@
           </select>
         </div>
       </div>
+      <div class="p-2">
+        <div class="form-group">
+          <select formControlName="filterSearchOperation" class="form-control">
+            <option value="All selected">
+              All selected
+            </option>
+            <option *ngFor="let o of dataService.selectOperationNames" [value]="o">
+              {{o}}
+            </option>
+          </select>
+        </div>
+      </div>
     </div>
   </form>
 <!--  <div class="card bg-warning" [hidden]="searchForm">
@@ -32,17 +44,19 @@
   </div>-->
   <hr>
 
-
-  <div *ngIf="displaySeries.count() > 0; else noData">
-    <ngb-pagination [(page)]="dataService.page" [boundaryLinks]="true" [maxSize]="10" [rotate]="true" [pageSize]="dataService.pageSize" [collectionSize]="displaySeries.count()"></ngb-pagination>
-    <hr>
-    <ng-container *ngFor="let r of displaySeries.toArray()|slice: (dataService.page-1) * dataService.pageSize: dataService.page* dataService.pageSize">
-      <app-data-block [data]="r"></app-data-block>
+  <ng-container *ngIf="ready; else notready">
+    <div *ngIf="displaySeries.count() > 0; else noData">
+      <ngb-pagination [(page)]="dataService.page" [boundaryLinks]="true" [maxSize]="10" [rotate]="true" [pageSize]="dataService.pageSize" [collectionSize]="displaySeries.count()"></ngb-pagination>
       <hr>
-    </ng-container>
+      <ng-container *ngFor="let r of displaySeries.toArray()|slice: (dataService.page-1) * dataService.pageSize: dataService.page* dataService.pageSize">
+        <app-data-block [data]="r"></app-data-block>
+        <hr>
+      </ng-container>
 
-    <ngb-pagination [(page)]="dataService.page" [boundaryLinks]="true" [maxSize]="10" [rotate]="true" [pageSize]="dataService.pageSize" [collectionSize]="displaySeries.count()"></ngb-pagination>
-  </div>
+      <ngb-pagination [(page)]="dataService.page" [boundaryLinks]="true" [maxSize]="10" [rotate]="true" [pageSize]="dataService.pageSize" [collectionSize]="displaySeries.count()"></ngb-pagination>
+    </div>
+  </ng-container>
+
   <ng-template #noData>
     <div class="card">
       <div class="card-body">
@@ -54,3 +68,14 @@
 
 
 </div>
+
+<ng-template #notready>
+  <div class="container-fluid mt-4">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Not ready</h5>
+        <p class="card-text">Please wait for the data to be loaded.</p>
+      </div>
+    </div>
+  </div>
+</ng-template>
