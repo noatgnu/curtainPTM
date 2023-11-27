@@ -67,7 +67,7 @@ export class BarChartComponent implements OnInit {
     },
     annotations: [],
     shapes: [],
-    margin: {r: 50, l: 50, b: 100, t: 100},
+    margin: {r: 50, l: 100, b: 100, t: 100},
 
   }
 
@@ -87,7 +87,7 @@ export class BarChartComponent implements OnInit {
         color: "black",
       },
     },
-    margin: {r: 40, l: 40, b: 120, t: 100}
+    margin: {r: 40, l: 100, b: 120, t: 100}
   }
 
   graphDataViolin: any[] = []
@@ -106,7 +106,7 @@ export class BarChartComponent implements OnInit {
         color: "black",
       },
     },
-    margin: {r: 40, l: 40, b: 120, t: 100}
+    margin: {r: 40, l: 100, b: 120, t: 100}
   }
   constructor(private settings: SettingsService, private stats: StatsService, private web: WebService, public dataService: DataService, private uniprot: UniprotService) {
     this.dataService.finishedProcessingData.subscribe(data => {
