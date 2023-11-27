@@ -289,4 +289,20 @@ export class DataService {
     this.private_key = await loadFromLocalStorage("private")
     this.public_key = await loadFromLocalStorage("public")
   }
+
+  mergeSearchOperation(searchOperations: string[], newSearchOperationName: string, color: string = "") {
+    for (const i in this.selectedMap) {
+      for (const j in this.selectedMap[i]) {
+        if (searchOperations.includes(j)) {
+          this.selectedMap[i][newSearchOperationName] = true
+        }
+      }
+    }
+    this.selectOperationNames.push(newSearchOperationName)
+    if (color !== "") {
+      this.settings.settings.colorMap[newSearchOperationName] = color
+    } else {
+      this.settings.settings.colorMap[newSearchOperationName] = this.defaultColorList[0]
+    }
+  }
 }

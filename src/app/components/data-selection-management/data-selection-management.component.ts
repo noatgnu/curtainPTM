@@ -28,6 +28,7 @@ export class DataSelectionManagementComponent implements OnInit {
         enabled: [true],
         title: [s],
         markForDeletion: [false],
+        merge: [false],
       })
       this.selectionMap[s] = []
       this.selectionToggle[s] = false
@@ -71,6 +72,11 @@ export class DataSelectionManagementComponent implements OnInit {
   save() {
     const newList = this.data.selectOperationNames.filter(s => !this.selectionForms[s].value["markForDeletion"])
     const listRemoved = this.data.selectOperationNames.filter(s => this.selectionForms[s].value["markForDeletion"])
+    const mergeList = this.data.selectOperationNames.filter(s => this.selectionForms[s].value["merge"])
+    if (mergeList.length > 0) {
+      this.data.mergeSearchOperation(mergeList, mergeList.join(" - "), this.settings.settings.colorMap[mergeList[0]])
+      newList.push(mergeList.join(" - "))
+    }
     for (const s of listRemoved) {
       if (this.settings.settings.colorMap[s]) {
         delete this.settings.settings.colorMap[s]
@@ -109,17 +115,23 @@ export class DataSelectionManagementComponent implements OnInit {
         delete this.data.selectedMap[sel]
       } else {
         for (const s in this.data.selectedMap[sel]) {
-          if (this.selectionForms[s].value["title"] !== s && this.selectionForms[s].value["title"] !== "" && this.selectionForms[s].value["title"]) {
-            this.data.selectedMap[sel][this.selectionForms[s].value["title"]] = this.data.selectedMap[sel][s]
-            delete this.data.selectedMap[sel][s]
+          if (this.selectionForms[s]) {
+            if (this.selectionForms[s].value["title"] !== s && this.selectionForms[s].value["title"] !== "" && this.selectionForms[s].value["title"]) {
+              this.data.selectedMap[sel][this.selectionForms[s].value["title"]] = this.data.selectedMap[sel][s]
+              delete this.data.selectedMap[sel][s]
+            }
           }
         }
       }
     }
     const renamedList: string[] = []
     for (const s of newList) {
-      if (this.selectionForms[s].value["title"] !== s && this.selectionForms[s].value["title"] !== "" && this.selectionForms[s].value["title"]) {
-        renamedList.push(this.selectionForms[s].value["title"])
+      if (this.selectionForms[s]) {
+        if (this.selectionForms[s].value["title"] !== s && this.selectionForms[s].value["title"] !== "" && this.selectionForms[s].value["title"]) {
+          renamedList.push(this.selectionForms[s].value["title"])
+        } else {
+          renamedList.push(s)
+        }
       } else {
         renamedList.push(s)
       }
