@@ -336,4 +336,13 @@ export class BarChartComponent implements OnInit {
         break
     }
   }
+
+  downloadData() {
+    console.log(this._data)
+    let data: string = ""
+    data = Object.keys(this._data).join("\t") + "\n"
+    data = data+ Object.values(this._data).join("\t") + "\n"
+
+    this.web.downloadFile(this.title + ".txt", data)
+  }
 }
