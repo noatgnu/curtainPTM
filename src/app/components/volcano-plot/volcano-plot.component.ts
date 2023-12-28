@@ -24,8 +24,23 @@ export class VolcanoPlotComponent implements OnInit {
   //nameToID: any = {}
   graphData: any[] = []
   graphLayout: any = {
-    height: 700, width: 700, xaxis: {title: "<b>Log2FC</b>"},
-    yaxis: {title: "<b>-log10(p-value)</b>"},
+    height: 700, width: 700,
+    xaxis: {
+      title: "<b>Log2FC</b>",
+      tickmode: "linear",
+      ticklen: 5,
+      showgrid: false,
+      visible: true,
+    },
+    yaxis: {
+      title: "<b>-log10(p-value)</b>",
+      tickmode: "linear",
+      ticklen: 5,
+      showgrid: false,
+      visible: true,
+      showticklabels: true,
+      zeroline: true,
+    },
     annotations: [],
     showlegend: true, legend: {
       orientation: 'h'
@@ -389,7 +404,28 @@ export class VolcanoPlotComponent implements OnInit {
     }
     this.graphData = graphData.reverse()
     this.graphLayout.annotations = []
-    console.log(this.settings.settings.textAnnotation)
+    if (this.settings.settings.volcanoPlotYaxisPosition.includes("left")) {
+      this.graphLayout.shapes = []
+      // draw y axis line at min x
+      this.graphLayout.shapes.push({
+        type: "line",
+        x0: this.graphLayout.xaxis.range[0],
+        x1: this.graphLayout.xaxis.range[0],
+        y0: this.graphLayout.yaxis.range[0],
+        y1: this.graphLayout.yaxis.range[1],
+        line: {
+          color: 'rgb(21,4,4)',
+          width: 1,
+        }
+      })
+    } else {
+      this.graphLayout.shapes = []
+    }
+    if (this.settings.settings.volcanoPlotYaxisPosition.includes("middle")) {
+      this.graphLayout.xaxis.zerolinecolor = "#000000"
+    } else {
+      this.graphLayout.xaxis.zerolinecolor = "#ffffff"
+    }
     for (const i in this.settings.settings.textAnnotation) {
       if (this.settings.settings.textAnnotation[i].showannotation === true) {
         this.annotated[this.settings.settings.textAnnotation[i].title] = this.settings.settings.textAnnotation[i].data

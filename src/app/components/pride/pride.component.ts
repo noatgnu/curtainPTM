@@ -11,7 +11,7 @@ import {DataService} from "../../data.service";
 })
 export class PrideComponent implements OnInit {
   @ViewChild("projectDescription") projectDescription: ElementRef | undefined
-
+  isCollapse: boolean = true
   constructor(public settings: SettingsService, private web: WebService, public data: DataService) {
 
   }

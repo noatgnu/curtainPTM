@@ -33,51 +33,62 @@
   </table>
 </div>
 
-<ngb-accordion *ngIf="diseases.length > 0 || pharmaUse.length > 0 || _data['Mutagenesis'].length || ptmDiseases.length > 0">
-  <ngb-panel title="Involvement in Diseases (UniProt)" *ngIf="diseases.length > 0">
-    <ng-template ngbPanelContent>
-      <div *ngIf="diseases.length > 0">
-        <ul>
-          <li *ngFor="let d of diseases">
-            {{d}}
-          </li>
-        </ul>
+<div class="mt-4" *ngIf="diseases.length > 0 || pharmaUse.length > 0 || _data['Mutagenesis'].length">
+  <div class="accordion">
+    <div class="accordion-item" *ngIf="diseases.length > 0">
+      <h2 class="accordion-header">
+        <button [ngClass]="{'accordion-button': true, 'collapsed': isDiseaseCollapse}" type="button" (click)="isDiseaseCollapse=!isDiseaseCollapse">
+          Involvement in Diseases (UniProt)
+        </button>
+      </h2>
+      <div #collapse="ngbCollapse" [(ngbCollapse)]="isDiseaseCollapse">
+        <div class="accordion-body">
+          <div *ngIf="diseases.length > 0">
+            <ul>
+              <li *ngFor="let d of diseases">
+                {{d}}
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
-    </ng-template>
-  </ngb-panel>
-  <ngb-panel title="Pharmaceutical use (UniProt)" *ngIf="pharmaUse.length > 0">
-    <ng-template ngbPanelContent>
-      <div *ngIf="pharmaUse.length > 0">
-        <ul>
-          <li *ngFor="let d of pharmaUse">
-            {{d}}
-          </li>
-        </ul>
+    </div>
+    <div class="accordion-item" *ngIf="pharmaUse.length > 0">
+      <h2 class="accordion-header">
+        <button [ngClass]="{'accordion-button': true, 'collapsed': isPharmaUseCollapse}" type="button" (click)="isPharmaUseCollapse=!isPharmaUseCollapse">
+          Pharmaceutical use (UniProt)
+        </button>
+      </h2>
+      <div #collapse="ngbCollapse" [(ngbCollapse)]="isPharmaUseCollapse">
+        <div class="accordion-body">
+          <div *ngIf="pharmaUse.length > 0">
+            <ul>
+              <li *ngFor="let d of pharmaUse">
+                {{d}}
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
-    </ng-template>
-  </ngb-panel>
-  <ngb-panel title="Mutagenesis (UniProt)" *ngIf="_data['Mutagenesis'].length > 0">
-    <ng-template ngbPanelContent>
-      <div *ngIf="_data['Mutagenesis'].length > 0">
-        <ul>
-          <li *ngFor="let d of _data['Mutagenesis']">
-            <b class="text-danger">{{d.position}}</b> - {{d.note}}
-          </li>
-        </ul>
+    </div>
+    <div class="accordion-item" *ngIf="_data['Mutagenesis'].length > 0">
+      <h2 class="accordion-header">
+        <button [ngClass]="{'accordion-button': true, 'collapsed': isMutagenesisCollapse}" type="button" (click)="isMutagenesisCollapse=!isMutagenesisCollapse">
+          Mutagenesis (UniProt)
+        </button>
+      </h2>
+      <div #collapse="ngbCollapse" [(ngbCollapse)]="isMutagenesisCollapse">
+        <div class="accordion-body">
+          <div *ngIf="_data['Mutagenesis'].length > 0">
+            <ul>
+              <li *ngFor="let d of _data['Mutagenesis']">
+                <b class="text-danger">{{d.position}}</b> - {{d.note}}
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
-    </ng-template>
-  </ngb-panel>
-  <ngb-panel title="PTM Disease Data (PTMD)" *ngIf="ptmDiseases.length > 0">
-    <ng-template ngbPanelContent>
-      <div *ngIf="ptmDiseases.length > 0">
-        <ul>
-          <li *ngFor="let d of ptmDiseases">
-            <b class="text-danger">{{d.residue}}{{d.position}}</b> -  {{d.disease}}
-          </li>
-        </ul>
-        Data obtained from <a href="http://ptmd.biocuckoo.org/download.php" target="_blank">PTMD</a>
-      </div>
-    </ng-template>
-  </ngb-panel>
-</ngb-accordion>
+    </div>
+  </div>
+</div>
 

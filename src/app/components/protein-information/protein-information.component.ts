@@ -12,6 +12,9 @@ export class ProteinInformationComponent implements OnInit {
   diseases: string[] = []
   pharmaUse: string[] = []
   ptmDiseases: any[] = []
+  isDiseaseCollapse: boolean = true
+  isPharmaUseCollapse: boolean = true
+  isMutagenesisCollapse: boolean = true
   @Input() set data(value: any) {
     this._data = value
     console.log(this._data)

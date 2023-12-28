@@ -127,7 +127,11 @@ export class ProfilePlotComponent implements OnInit {
   async drawSelected() {
     const graphData: any[] = []
     let selected = this._data.where(r => this._selected.includes(r[this.dataService.rawForm.primaryIDs])).bake()
-    selected = selected.join(this.dataService.currentDF, r1 => r1[this.dataService.rawForm.primaryIDs], r2 => r2[this.dataService.differentialForm.primaryIDs], (r1, r2) => {
+    selected = selected.join(
+      this.dataService.currentDF,
+        r1 => r1[this.dataService.rawForm.primaryIDs],
+        r2 => r2[this.dataService.differentialForm.primaryIDs],
+      (r1, r2) => {
       const res = Object.assign({}, r1)
       res[this.dataService.differentialForm.accession] = r2[this.dataService.differentialForm.accession]
       res[this.dataService.differentialForm.peptideSequence] = r2[this.dataService.differentialForm.peptideSequence]
