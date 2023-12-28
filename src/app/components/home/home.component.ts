@@ -222,6 +222,7 @@ export class HomeComponent implements OnInit {
         if (typeof object.extraData === "string") {
           object.extraData = JSON.parse(object.extraData, reviver)
         }
+        console.log(object.extraData)
         if (object.extraData.uniprot) {
           this.uniprot.results = object.extraData.uniprot.results
           if (object.extraData.uniprot.dataMap instanceof Map) {
@@ -263,6 +264,7 @@ export class HomeComponent implements OnInit {
           }
         }
         this.data.bypassUniProt = true
+        console.log(this.data.dataMap)
       }
     }
 
@@ -392,7 +394,7 @@ export class HomeComponent implements OnInit {
         this.ptm.databaseNameMap[i] = i
       }
     }
-    this.data.restoreTrigger.next(true)
+    //this.data.restoreTrigger.next(true)
   }
 
   ngOnInit(): void {

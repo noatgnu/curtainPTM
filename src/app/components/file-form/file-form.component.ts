@@ -283,7 +283,8 @@ export class FileFormComponent implements OnInit {
   }
 
   processUniProt() {
-
+    console.log(this.data.fetchUniProt)
+    console.log(this.data.bypassUniProt)
     if (this.data.fetchUniProt) {
       if (!this.data.bypassUniProt) {
         this.uniprot.geneNameToPrimary = {}
