@@ -20,6 +20,7 @@ export class SampleOrderAndHideComponent implements OnInit {
     violinPlot: 0,
   }
   violinPointPos: number = -2
+  batchToggle: any = {}
   constructor(public dataService: DataService, public modal: NgbActiveModal, private settings: SettingsService) {
     for (const c in this.settings.settings.columnSize) {
       if (c in this.columnSize) {
@@ -49,6 +50,7 @@ export class SampleOrderAndHideComponent implements OnInit {
       this.condition = this.settings.settings.conditionOrder.slice()
     }
     for (const c of this.condition) {
+      this.batchToggle[c] = !this.samples[c].some((s: string) => this.samplesVisible[s] === false);
       if (this.settings.settings.barchartColorMap[c]) {
         this.colorMap[c] = this.settings.settings.barchartColorMap[c].slice()
       } else {
@@ -123,6 +125,11 @@ export class SampleOrderAndHideComponent implements OnInit {
   check(cond: boolean) {
     for (const s in this.samplesVisible) {
       this.samplesVisible[s] = cond
+    }
+  }
+  batchToggleSamples(condition: string) {
+    for (const s of this.samples[condition]) {
+      this.samplesVisible[s] = this.batchToggle[condition]
     }
   }
 }

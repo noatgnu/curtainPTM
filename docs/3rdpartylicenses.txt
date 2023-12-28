@@ -614,7 +614,7 @@ SOFTWARE.
 
 
 ngx-qrcode-styling
-MIT
+Beerware
 
 ngx-quill
 MIT

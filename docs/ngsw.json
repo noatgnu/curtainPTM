@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1703792771428,
+  "timestamp": 1703793503511,
   "index": "/index.html",
   "assetGroups": [
     {
@@ -15,12 +15,12 @@
         "/989.38756e540282592a.js",
         "/favicon.ico",
         "/index.html",
-        "/main.428b4b4342a07196.js",
+        "/main.e5bf35605e2829be.js",
         "/manifest.webmanifest",
-        "/polyfills.42b94c10d9edb4ad.js",
-        "/runtime.de5413147af75048.js",
+        "/polyfills.dbbedcc01c1fc82a.js",
+        "/runtime.cc80b6f4d3d1a517.js",
         "/scripts.df4a482cc0f8eb03.js",
-        "/styles.56ba34910345183e.css"
+        "/styles.e7690caf04343a64.css"
       ],
       "patterns": []
     },
@@ -78,15 +78,15 @@
         "/assets/proteinLists/pd.txt",
         "/assets/proteinLists/phosphatases.txt",
         "/assets/proteinLists/pink1.txt",
-        "/bootstrap-icons.49c9b8524d23a4c2.woff",
-        "/bootstrap-icons.f41d849d445f6f5f.woff2"
+        "/bootstrap-icons.0b6b73b0fd96e41b.woff",
+        "/bootstrap-icons.a0e283a44c6f3530.woff2"
       ],
       "patterns": []
     }
   ],
   "dataGroups": [],
   "hashTable": {
-    "/3rdpartylicenses.txt": "b54bcb7f7d49d1dfd4ce5c5ede6575de3d5a65d1",
+    "/3rdpartylicenses.txt": "ccfab7eb829ddccb2f00f371f70ffbbef7d86894",
     "/536.20a70ee49098ea54.js": "d0c0c345713fe5ff1ddb6e2b138e66eb2816624d",
     "/989.38756e540282592a.js": "26868379f698cb489b2cfd57ae9d50a7e3452a98",
     "/assets/databases/Acetylation_PLMD.tsv": "bb13456e320d4c2a0b132849fefee8238fd8bfa2",
@@ -134,16 +134,16 @@
     "/assets/proteinLists/pd.txt": "915c4a708c5dc7227d0b8fdc5eb51b17b2342746",
     "/assets/proteinLists/phosphatases.txt": "c350ec4656fee8be08c7dead8fdd42a0cd20e350",
     "/assets/proteinLists/pink1.txt": "6b73c270d0407981851903bae49a622c0c22e0f8",
-    "/bootstrap-icons.49c9b8524d23a4c2.woff": "cce254d50d2f744cd8f384cd4aa2a23c8850e2ee",
-    "/bootstrap-icons.f41d849d445f6f5f.woff2": "d33714cb0836ea9ebe02f4ccc22806593903167a",
+    "/bootstrap-icons.0b6b73b0fd96e41b.woff": "56c1142eef349c581d14dcd45a1c2eba9b9463c1",
+    "/bootstrap-icons.a0e283a44c6f3530.woff2": "9d95f6fe35540b602284c9f2bfa67d2b464448f7",
     "/favicon.ico": "22f6a4a3bcaafafb0254e0f2fa4ceb89e505e8b2",
-    "/index.html": "c642aaa6acd1189aa5c9c94c4c826eafa3a2e7ed",
-    "/main.428b4b4342a07196.js": "75463093c871f88b52c13aa934012fae4c90c9d5",
+    "/index.html": "428aed2ebe10ac8b23ae5a6e353649e59c6c1eda",
+    "/main.e5bf35605e2829be.js": "2a922030dd469344ecc053670085bb91f7e50132",
     "/manifest.webmanifest": "0eb74bee05d08791252872d45422389a4c8ede7e",
-    "/polyfills.42b94c10d9edb4ad.js": "30649eee4325afcd01f2be9707309d7c0559d744",
-    "/runtime.de5413147af75048.js": "5c0e19653c10f6c41ff69e1a0608e12ab7cfb1f0",
+    "/polyfills.dbbedcc01c1fc82a.js": "39c11e399180f4eaf1ee8f4645db621624acea05",
+    "/runtime.cc80b6f4d3d1a517.js": "ee87ae4cabfeb5604e54bef5260c2e7d333b10fb",
     "/scripts.df4a482cc0f8eb03.js": "02a61096565e0b6a8ac7a9d6714e660ac85554c8",
-    "/styles.56ba34910345183e.css": "3fbc5c673f4a4af2e1d909f00180a1afcac4885f"
+    "/styles.e7690caf04343a64.css": "86840711a6786a37ac98339c629fc98bd4b9a570"
   },
   "navigationUrls": [
     {
