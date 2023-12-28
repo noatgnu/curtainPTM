@@ -103,10 +103,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "curtainPTM2:build:production"
+              "buildTarget": "curtainPTM2:build:production"
             },
             "development": {
-              "browserTarget": "curtainPTM2:build:development"
+              "buildTarget": "curtainPTM2:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -114,7 +114,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "curtainPTM2:build"
+            "buildTarget": "curtainPTM2:build"
           }
         },
         "test": {
