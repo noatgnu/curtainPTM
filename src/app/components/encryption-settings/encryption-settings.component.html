@@ -45,5 +45,6 @@
   <button type="button" class="btn btn-warning" (click)="generateKeys()">Generate RSA Key Pair</button>
   <button type="button" class="btn btn-danger" (click)="testEncryption()" *ngIf="private_key&&public_key">Test</button>
   <button type="button" class="btn btn-primary" (click)="save()">Save</button>
+  <button type="button" class="btn btn-danger" (click)="clearKeys()">Remove Keys From Browser</button>
   <button type="button" class="btn btn-secondary" (click)="cancel()">Cancel</button>
 </div>

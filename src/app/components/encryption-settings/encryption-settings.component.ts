@@ -96,4 +96,15 @@ export class EncryptionSettingsComponent {
     this.web.downloadFile("private_key.pem", private_pem)
 
   }
+
+  clearKeys() {
+    // remove keys from memory
+    this.public_key = undefined
+    this.private_key = undefined
+    this.public_key_string = ""
+    this.private_key_string = ""
+    // remove keys from local storage
+    localStorage.removeItem("public_key")
+    localStorage.removeItem("private_key")
+  }
 }
