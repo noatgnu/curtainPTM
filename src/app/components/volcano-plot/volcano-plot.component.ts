@@ -83,6 +83,7 @@ export class VolcanoPlotComponent implements OnInit {
   markerSize: number = 10
 
   specialColorMap: any = {}
+  repeat: boolean = false
   drawVolcano() {
     if (!this.settings.settings.visible) {
       this.settings.settings.visible = {}
@@ -122,7 +123,16 @@ export class VolcanoPlotComponent implements OnInit {
             break
           }
           if (currentColors.indexOf(this.settings.settings.defaultColorList[currentPosition]) !== -1) {
-            currentPosition ++
+            currentPosition++
+            if (this.repeat) {
+              this.settings.settings.colorMap[s] = this.settings.settings.defaultColorList[currentPosition]
+              break
+            }
+          } else if (currentPosition >= this.settings.settings.defaultColorList.length) {
+              currentPosition = 0
+              this.settings.settings.colorMap[s] = this.settings.settings.defaultColorList[currentPosition]
+              this.repeat = true
+              break
           } else if (currentPosition !== this.settings.settings.defaultColorList.length) {
             this.settings.settings.colorMap[s] = this.settings.settings.defaultColorList[currentPosition]
             break

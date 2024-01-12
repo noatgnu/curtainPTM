@@ -79,8 +79,8 @@ export class Settings {
   }
   violinPointPos: number = -2
   volcanoPlotGrid: any = {
-    x: false,
-    y: false,
+    x: true,
+    y: true,
   }
   volcanoPlotYaxisPosition: string[] = [
     "middle"
