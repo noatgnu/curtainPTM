@@ -27,6 +27,7 @@ import {
 import {UserPtmImportManagementComponent} from "../user-ptm-import-management/user-ptm-import-management.component";
 import {EncryptionSettingsComponent} from "../encryption-settings/encryption-settings.component";
 import {CurtainEncryption, saveToLocalStorage} from "curtain-web-api";
+import {PrimaryIdExportModalComponent} from "../primary-id-export-modal/primary-id-export-modal.component";
 
 @Component({
   selector: 'app-navbar',
@@ -249,7 +250,8 @@ export class NavbarComponent implements OnInit {
   }
 
   getSelectedList() {
-    this.web.downloadFile("SelectedPrimaryIDs.txt", this.data.selected.join("\n"))
+    //this.web.downloadFile("SelectedPrimaryIDs.txt", this.data.selected.join("\n"))
+    const ref = this.modal.open(PrimaryIdExportModalComponent, {scrollable: true})
   }
 
   openProfilePlot() {

@@ -1,0 +1,23 @@
+<div class="modal-header">
+  <h1 class="modal-title">Data ID Export</h1>
+</div>
+<div class="modal-body">
+  @for (s of selections; track s) {
+    <div class="d-flex gap-2">
+      <div>
+        {{s}}
+      </div>
+      <div>
+        <span class="badge bg-primary" (click)="export(s)">Primary IDs</span>
+      </div>
+      <div>
+        <span class="badge bg-primary" (click)="export(s, 'geneNames')">Gene Names</span>
+      </div>
+    </div>
+  }
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-primary" (click)="export()">Export All Primary Ids</button>
+  <button type="button" class="btn btn-primary" (click)="export('', 'geneNames')">Export All Gene Names</button>
+  <button type="button" class="btn btn-default" (click)="modal.dismiss()">Close</button>
+</div>
