@@ -3,6 +3,7 @@ import {AccountsService} from "./accounts/accounts.service";
 import {SwUpdate} from "@angular/service-worker";
 import {Subscription} from "rxjs";
 import {SettingsService} from "./settings.service";
+import {environment} from "../environments/environment";
 
 @Component({
   selector: 'app-root',
@@ -12,6 +13,7 @@ import {SettingsService} from "./settings.service";
 export class AppComponent implements AfterViewInit, OnDestroy {
   title = 'CurtainPTM';
   newVersionSubscription: Subscription|undefined;
+  baseURL = environment.apiURL
   constructor(private accounts: AccountsService, private swUpdate: SwUpdate, private settings: SettingsService) {
     const path = document.URL.replace(window.location.origin+"/", "")
     if (path.startsWith("?code=")) {
