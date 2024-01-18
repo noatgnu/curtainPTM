@@ -64,6 +64,7 @@ export class NavbarComponent implements OnInit {
   }
 
   saveSession() {
+    this.toast.show("User information", "Saving session data").then()
     if (!this.accounts.curtainAPI.user.loginStatus) {
       if (this.web.siteProperties.non_user_post) {
         this.saving();
@@ -125,6 +126,7 @@ export class NavbarComponent implements OnInit {
 
     this.accounts.curtainAPI.putSettings(data, !this.accounts.curtainAPI.user.loginStatus, data.settings.description, "PTM", encryption, this.onUploadProgress).then((data: any) => {
       if (data.data) {
+        this.toast.show("User information", `Curtain link has been saved with unique id ${data.data.link_id}`).then()
         this.settings.settings.currentID = data.data.link_id
         this.uniqueLink = location.origin + "/#/" + this.settings.settings.currentID
         this.uniprot.uniprotProgressBar.next({value: 100, text: "Session data saved"})
