@@ -89,6 +89,10 @@ export class ProfilePlotComponent implements OnInit {
       if (this.settings.settings.sampleVisible[s]) {
         sampleNumber ++
         const condition = this.settings.settings.sampleMap[s].condition
+        let color = this.settings.settings.colorMap[condition]
+        if (this.settings.settings.barchartColorMap[condition]) {
+          color = this.settings.settings.barchartColorMap[condition]
+        }
         if (!temp[condition]) {
           temp[condition] = {
             x: [],
@@ -96,7 +100,7 @@ export class ProfilePlotComponent implements OnInit {
             line: {
               color: 'black'
             },
-            fillcolor: this.settings.settings.colorMap[condition],
+            fillcolor: color,
             boxpoints: false,
             type: 'box',
             showlegend: false
