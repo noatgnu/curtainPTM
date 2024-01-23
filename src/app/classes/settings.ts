@@ -86,8 +86,8 @@ export class Settings {
     "middle"
   ]
   volcanoPlotDimension: any = {
-    width: 700,
-    height: 700,
+    width: 800,
+    height: 1000,
     margin: {
       l: null,
       r: null,

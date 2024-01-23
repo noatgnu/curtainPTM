@@ -444,6 +444,9 @@ export class VolcanoPlotComponent implements OnInit {
     if (this.settings.settings.volcanoPlotDimension.width) {
       this.graphLayout.width = this.settings.settings.volcanoPlotDimension.width
     }
+    if (this.settings.settings.volcanoPlotDimension.margin) {
+      this.graphLayout.margin = this.settings.settings.volcanoPlotDimension.margin
+    }
     if (this.settings.settings.volcanoPlotYaxisPosition.includes("middle")) {
       this.graphLayout.xaxis.zerolinecolor = "#000000"
     } else {
