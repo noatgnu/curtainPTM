@@ -22,7 +22,7 @@ export class Settings {
   sampleOrder: any = {}
   sampleVisible: any = {}
   conditionOrder: string[] = []
-  volcanoAxis: any = {minX: null, maxX: null, minY: null, maxY: null}
+  volcanoAxis: any = {minX: null, maxX: null, minY: null, maxY: null, x: "-log10(p-value)", y: "Log2FC"}
   barchartColorMap: any = {}
   textAnnotation: any = {}
   volcanoPlotTitle: string = ""
@@ -85,4 +85,8 @@ export class Settings {
   volcanoPlotYaxisPosition: string[] = [
     "middle"
   ]
+  volcanPlotDimension: any = {
+    width: 700,
+    height: 700,
+  }
 }

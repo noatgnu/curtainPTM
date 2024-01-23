@@ -20,6 +20,7 @@ import {WebLogoComponent} from "../web-logo/web-logo.component";
 })
 export class VolcanoPlotComponent implements OnInit {
   @Output() selected: EventEmitter<selectionData> = new EventEmitter<selectionData>()
+  isVolcanoParameterCollapsed: boolean = false
   _data: any;
   //nameToID: any = {}
   graphData: any[] = []
@@ -186,6 +187,12 @@ export class VolcanoPlotComponent implements OnInit {
     }
     if (this.settings.settings.volcanoAxis.maxY) {
       this.graphLayout.yaxis.range[1] = this.settings.settings.volcanoAxis.maxY
+    }
+    if (this.settings.settings.volcanoAxis.x) {
+      this.graphLayout.xaxis.title = `<b>${this.settings.settings.volcanoAxis.x}</b>`
+    }
+    if (this.settings.settings.volcanoAxis.y) {
+      this.graphLayout.yaxis.title = `<b>${this.settings.settings.volcanoAxis.y}</b>`
     }
     temp["Background"] = {
       x:[],
@@ -430,6 +437,12 @@ export class VolcanoPlotComponent implements OnInit {
       })
     } else {
       //this.graphLayout.shapes = []
+    }
+    if (this.settings.settings.volcanPlotDimension.height) {
+      this.graphLayout.height = this.settings.settings.volcanPlotDimension.height
+    }
+    if (this.settings.settings.volcanPlotDimension.width) {
+      this.graphLayout.width = this.settings.settings.volcanPlotDimension.width
     }
     if (this.settings.settings.volcanoPlotYaxisPosition.includes("middle")) {
       this.graphLayout.xaxis.zerolinecolor = "#000000"
