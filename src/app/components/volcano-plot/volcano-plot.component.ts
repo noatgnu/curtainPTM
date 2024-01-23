@@ -438,11 +438,11 @@ export class VolcanoPlotComponent implements OnInit {
     } else {
       //this.graphLayout.shapes = []
     }
-    if (this.settings.settings.volcanPlotDimension.height) {
-      this.graphLayout.height = this.settings.settings.volcanPlotDimension.height
+    if (this.settings.settings.volcanoPlotDimension.height) {
+      this.graphLayout.height = this.settings.settings.volcanoPlotDimension.height
     }
-    if (this.settings.settings.volcanPlotDimension.width) {
-      this.graphLayout.width = this.settings.settings.volcanPlotDimension.width
+    if (this.settings.settings.volcanoPlotDimension.width) {
+      this.graphLayout.width = this.settings.settings.volcanoPlotDimension.width
     }
     if (this.settings.settings.volcanoPlotYaxisPosition.includes("middle")) {
       this.graphLayout.xaxis.zerolinecolor = "#000000"
