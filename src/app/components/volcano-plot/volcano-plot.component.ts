@@ -459,6 +459,17 @@ export class VolcanoPlotComponent implements OnInit {
       }
 
     }
+
+    this.config = {
+      toImageButtonOptions: {
+        format: 'svg',
+        filename: this.graphLayout.title.text,
+        height: this.graphLayout.height,
+        width: this.graphLayout.width,
+        scale: 1,
+        margin: this.graphLayout.margin,
+      }
+    }
     console.log(this.graphLayout.annotations)
   }
 
