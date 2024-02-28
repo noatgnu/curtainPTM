@@ -26,6 +26,7 @@ export class VolcanoPlotComponent implements OnInit {
   graphData: any[] = []
   graphLayout: any = {
     height: 700, width: 700,
+    margin: {r: null, l: null, b: null, t: null},
     xaxis: {
       title: "<b>Log2FC</b>",
       tickmode: "linear",
