@@ -62,7 +62,9 @@
           </button>
           <div ngbDropdownMenu aria-labelledby="dropdownSession">
             <ng-container *ngIf="finished">
-              <button ngbDropdownItem (click)="saveSession()" [disabled]="data.tempLink===true">Save Session</button>
+              @if (gdprAccepted) {
+                <button ngbDropdownItem (click)="saveSession()" [disabled]="data.tempLink===true">Save Session</button>
+              }
               <button ngbDropdownItem (click)="clearSelections()">Clear Selections</button>
               <button ngbDropdownItem (click)="web.downloadFile('different.txt', data.differential.originalFile)">Download Differential Analysis File</button>
               <button ngbDropdownItem (click)="web.downloadFile('raw.txt', data.raw.originalFile)">Download Raw File</button>
