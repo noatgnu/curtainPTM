@@ -126,3 +126,13 @@
 
   </div>
 </nav>
+<ngb-alert type="warning" (closed)="closeGDPR()">
+  <strong>GDPR Statement</strong><br>
+  <p>This website neither uses cookies nor tracks/logs ips of its users. The only personal identification data that we store is ORCID id so that the user can track the session they have submitted.</p>
+  <p>It is the responsibility of the user to make sure that there are no personal identification data submitted. By saving the data to CURTAIN, the user has accepted that there are no personal identification data presented within the submitted data.</p>
+  <div class="form-check">
+    <input type="checkbox" class="form-check-input" [(ngModel)]="gdprAccepted" style="border-color: red">
+    <label class="form-check-label">I have read and accepted the GDPR statement</label>
+  </div>
+
+</ngb-alert>

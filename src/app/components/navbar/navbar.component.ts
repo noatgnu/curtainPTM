@@ -41,6 +41,18 @@ export class NavbarComponent implements OnInit {
   filterModel: string = ""
   progressEvent: any = {}
   subscription: Subscription = new Subscription();
+
+  _gdprAccepted: boolean = false
+
+  get gdprAccepted(): boolean {
+    return this._gdprAccepted
+  }
+
+  set gdprAccepted(value: boolean) {
+    this._gdprAccepted = value
+    localStorage.setItem("CurtainGDPR", value.toString())
+  }
+
   constructor(
     public web: WebService,
     public data: DataService,
@@ -58,6 +70,14 @@ export class NavbarComponent implements OnInit {
     this.subscription = this.uniprot.uniprotProgressBar.asObservable().subscribe((data: any) => {
       this.progressEvent = data
     })
+
+    if (localStorage.getItem("CurtainGDPR") === "true") {
+      this.GDPR = true
+      this.gdprAccepted = true
+    } else {
+      this.GDPR = false
+      this.gdprAccepted = false
+    }
   }
 
   ngOnInit(): void {
@@ -294,5 +314,12 @@ export class NavbarComponent implements OnInit {
       }
 
     })
+  }
+
+  GDPR: boolean = false
+
+  closeGDPR() {
+    this.GDPR = false
+    //localStorage.setItem("GDPR", "true")
   }
 }
