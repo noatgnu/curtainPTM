@@ -64,6 +64,8 @@
             <ng-container *ngIf="finished">
               @if (gdprAccepted) {
                 <button ngbDropdownItem (click)="saveSession()" [disabled]="data.tempLink===true">Save Session</button>
+              } @else {
+                <button ngbDropdownItem disabled>Accept GDPR to Enable Saving</button>
               }
               <button ngbDropdownItem (click)="clearSelections()">Clear Selections</button>
               <button ngbDropdownItem (click)="web.downloadFile('different.txt', data.differential.originalFile)">Download Differential Analysis File</button>
@@ -134,7 +136,7 @@
   <p>It is the responsibility of the user to make sure that there are no personal identification data submitted. By saving the data to CURTAIN, the user has accepted that there are no personal identification data presented within the submitted data.</p>
   <div class="form-check">
     <input type="checkbox" class="form-check-input" [(ngModel)]="gdprAccepted" style="border-color: red">
-    <label class="form-check-label">I have read and accepted the GDPR statement</label>
+    <label class="form-check-label"><b>I have read and accepted the GDPR statement (Enable Session Saving)</b></label>
   </div>
 
 </ngb-alert>
