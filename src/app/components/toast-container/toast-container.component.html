@@ -1,7 +1,7 @@
 <ngb-toast
         *ngFor="let toast of toastService.toasts"
         [autohide]="true"
-        [delay]="toast.delay || 10000"
+        [delay]="toast.delay || 5000"
         (hidden)="toastService.remove(toast)" [ngClass]="toast.type === 'info' ? 'bg-primary text-light' : toast.type === 'success' ? 'bg-success text-light' : toast.type === 'warning' ? 'bg-warning text-light' : 'bg-danger text-light'"
 >
     <div class="d-flex">
@@ -12,4 +12,5 @@
             <button type="button" class="btn btn-close" aria-label="Close" (click)="toastService.remove(toast)"></button>
         </div>
     </div>
+  <app-toast-progressbar [total]="toast.delay || 5000"></app-toast-progressbar>
 </ngb-toast>

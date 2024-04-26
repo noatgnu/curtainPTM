@@ -80,15 +80,7 @@ addEventListener('message', (data: MessageEvent<any>) => {
     const colorMap: any = {}
     const conditionOrder = data.data.settings.conditionOrder.slice()
     let samples: string[] = []
-    if (conditionOrder.length > 0) {
-      for (const c of conditionOrder) {
-        for (const s of data.data.settings.sampleOrder[c]) {
-          samples.push(s)
-        }
-      }
-    } else {
-      samples = data.data.rawForm._samples.slice()
-    }
+    samples = data.data.rawForm._samples.slice()
     const sampleMap: any = {}
     for (const s of samples) {
       const condition_replicate = s.split(".")
@@ -118,14 +110,39 @@ addEventListener('message', (data: MessageEvent<any>) => {
     if (Object.keys(data.data.settings.sampleMap).length === 0) {
       data.data.settings.sampleMap = sampleMap
     }
-
+    for (const s in data.data.settings.sampleVisible) {
+      if (!(s in sampleMap)) {
+        delete data.data.settings.sampleVisible[s]
+      }
+    }
     for (const s in colorMap) {
       if (!(s in data.data.settings.colorMap)) {
         data.data.settings.colorMap[s] = colorMap[s]
       }
     }
+    for (const s in data.data.settings.sampleMap) {
+      if (!(s in sampleMap)) {
+        delete data.data.settings.sampleMap[s]
+      }
+    }
 
     if (data.data.settings.conditionOrder.length === 0) {
+      data.data.settings.conditionOrder = conditions.slice()
+    } else {
+      //let conditionOrder = conditions.slice()
+      /*for (const c of data.data.settings.conditionOrder) {
+        if (!conditionOrder.includes(c)) {
+          data.data.settings.conditionOrder = data.data.settings.conditionOrder.filter((cc: string) => cc !== c)
+        }
+      }
+      console.log(conditionOrder)
+      for (const c of conditionOrder) {
+        if (!data.data.settings.conditionOrder.includes(c)) {
+          data.data.settings.conditionOrder.push(c)
+        }
+      }
+      console.log(data.data.settings.conditionOrder)
+    }*/
       data.data.settings.conditionOrder = conditions.slice()
     }
     const storeRaw = rawDF.toArray().map((r: any) => {

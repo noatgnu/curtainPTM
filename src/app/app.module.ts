@@ -58,6 +58,7 @@ import { SampleConditionAssignmentModalComponent } from './components/sample-con
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { UserPtmImportManagementComponent } from './components/user-ptm-import-management/user-ptm-import-management.component';
 import { EncryptionSettingsComponent } from './components/encryption-settings/encryption-settings.component';
+import {ToastProgressbarComponent} from "./components/toast-container/toast-progressbar/toast-progressbar.component";
 PlotlyModule.plotlyjs = PlotlyJS;
 @NgModule({
   declarations: [
@@ -120,11 +121,12 @@ PlotlyModule.plotlyjs = PlotlyJS;
         AccountsModule,
         NgxQrcodeStylingModule,
         ServiceWorkerModule.register('ngsw-worker.js', {
-          enabled: !isDevMode(),
-          // Register the ServiceWorker as soon as the application is stable
-          // or after 30 seconds (whichever comes first).
-          registrationStrategy: 'registerWhenStable:30000'
-        })
+            enabled: !isDevMode(),
+            // Register the ServiceWorker as soon as the application is stable
+            // or after 30 seconds (whichever comes first).
+            registrationStrategy: 'registerWhenStable:30000'
+        }),
+        ToastProgressbarComponent
     ],
   providers: [HttpClient,
     //ContextMenuService
