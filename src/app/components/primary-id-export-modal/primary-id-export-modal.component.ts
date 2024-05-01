@@ -23,10 +23,12 @@ export class PrimaryIdExportModalComponent {
     const data: string[] = []
     if (selection === "") {
       for (const s in this.dataService.selectedMap) {
-        for (const i of this.dataService.selectedMap[s]) {
+        console.log(this.dataService.selectedMap[s])
+        for (const i in this.dataService.selectedMap[s]) {
+          console.log(this.dataService.selectedMap[s][i])
           if (this.dataService.selectedMap[s][i]) {
             if (format === "primaryID") {
-              data.push(i)
+              data.push(s)
             } else {
               const uni = this.uniprot.getUniprotFromAcc(i)
               if (uni && !data.includes(uni["Gene Names"])) {
@@ -50,11 +52,10 @@ export class PrimaryIdExportModalComponent {
               }
             }
           }
-
         }
       }
     }
-
+    console.log(data)
     this.web.downloadFile(`${selection}.txt`, data.join("\n"))
   }
 
