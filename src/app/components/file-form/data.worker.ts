@@ -143,7 +143,21 @@ addEventListener('message', (data: MessageEvent<any>) => {
       }
       console.log(data.data.settings.conditionOrder)
     }*/
-      data.data.settings.conditionOrder = conditions.slice()
+      const conditionO: string[] = []
+      for (const c of conditionOrder) {
+
+        if (!conditions.includes(c)) {
+
+        } else {
+          conditionO.push(c)
+        }
+      }
+      for (const c of conditions) {
+        if (!conditionO.includes(c)) {
+          conditionO.push(c)
+        }
+      }
+      data.data.settings.conditionOrder = conditionO
     }
     const storeRaw = rawDF.toArray().map((r: any) => {
       for (const s of samples) {
