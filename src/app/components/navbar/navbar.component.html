@@ -70,7 +70,7 @@
           <div ngbDropdownMenu aria-labelledby="dropdownSession">
             <ng-container *ngIf="finished">
               @if (gdprAccepted) {
-                <button ngbDropdownItem (click)="saveSession()" [disabled]="data.tempLink===true">Save Temporary Session</button>
+                <button ngbDropdownItem (click)="saveSession()" [disabled]="data.tempLink===true">Save Temporary Session (remove 3 months after last access)</button>
                 <button ngbDropdownItem (click)="saveSession(true)" [disabled]="data.tempLink===true">Save Permanent Session</button>
               } @else {
                 <button ngbDropdownItem disabled>Accept GDPR to Enable Saving</button>
