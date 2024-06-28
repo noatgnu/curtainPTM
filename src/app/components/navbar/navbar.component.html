@@ -6,6 +6,13 @@
         <a *ngIf="uniqueLink !== ''" href="{{uniqueLink}}" class="ml-2 text-success">{{uniqueLink}}</a>
       </div>
       <div class="p-2">
+        @if (!data.session.permanent) {
+          <span class="badge bg-danger">Temporary</span>
+        } @else {
+          <span class="badge bg-success">Permanent</span>
+        }
+      </div>
+      <div class="p-2">
         <span class="badge bg-info" (click)="copyToClipboard()"><i class="bi bi-clipboard"></i></span>
       </div>
       <div class="p-2">
@@ -63,7 +70,8 @@
           <div ngbDropdownMenu aria-labelledby="dropdownSession">
             <ng-container *ngIf="finished">
               @if (gdprAccepted) {
-                <button ngbDropdownItem (click)="saveSession()" [disabled]="data.tempLink===true">Save Session</button>
+                <button ngbDropdownItem (click)="saveSession()" [disabled]="data.tempLink===true">Save Temporary Session</button>
+                <button ngbDropdownItem (click)="saveSession(true)" [disabled]="data.tempLink===true">Save Permanent Session</button>
               } @else {
                 <button ngbDropdownItem disabled>Accept GDPR to Enable Saving</button>
               }

@@ -41,6 +41,7 @@ export class NavbarComponent implements OnInit {
   filterModel: string = ""
   progressEvent: any = {}
   subscription: Subscription = new Subscription();
+  @Input() permanent: boolean = false
 
   _gdprAccepted: boolean = false
 
@@ -83,17 +84,17 @@ export class NavbarComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  saveSession() {
+  saveSession(permanent: boolean = false) {
     this.toast.show("User information", "Saving session data").then()
     if (!this.accounts.curtainAPI.user.loginStatus) {
       if (this.web.siteProperties.non_user_post) {
-        this.saving();
+        this.saving(permanent);
       } else {
         this.toast.show("User information", "Please login before saving data session").then()
       }
     } else {
       if (!this.accounts.curtainAPI.user.curtainLinkLimitExceeded ) {
-        this.saving();
+        this.saving(permanent);
       } else {
         this.toast.show("User information", "Curtain link limit exceed").then()
       }
@@ -101,7 +102,7 @@ export class NavbarComponent implements OnInit {
 
   }
 
-  private saving() {
+  private saving(permanent: boolean) {
     const extraData: any = {
       uniprot: {
         results: this.uniprot.results,
@@ -136,6 +137,7 @@ export class NavbarComponent implements OnInit {
       annotatedData: this.data.annotatedData,
       annotatedMap: this.data.annotatedMap,
       extraData: extraData,
+      permanent: permanent
     }
 
     const encryption: CurtainEncryption = {
@@ -144,12 +146,14 @@ export class NavbarComponent implements OnInit {
       publicKey: this.data.public_key,
     }
 
-    this.accounts.curtainAPI.putSettings(data, !this.accounts.curtainAPI.user.loginStatus, data.settings.description, "PTM", encryption, this.onUploadProgress).then((data: any) => {
+    this.accounts.curtainAPI.putSettings(data, !this.accounts.curtainAPI.user.loginStatus, data.settings.description, "PTM", encryption, permanent, this.onUploadProgress).then((data: any) => {
       if (data.data) {
         this.toast.show("User information", `Curtain link has been saved with unique id ${data.data.link_id}`).then()
         this.settings.settings.currentID = data.data.link_id
         this.uniqueLink = location.origin + "/#/" + this.settings.settings.currentID
         this.uniprot.uniprotProgressBar.next({value: 100, text: "Session data saved"})
+        this.permanent = data.data.permanent
+        this.data.session = data.data
         this.finished = true
       }
     }, err => {
