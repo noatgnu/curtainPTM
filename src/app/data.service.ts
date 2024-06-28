@@ -193,6 +193,7 @@ export class DataService {
     this.settings.settings.textAnnotation = {}
     this.settings.settings.barchartColorMap = {}
     this.annotatedData = {}
+    this.settings.settings.volcanoAdditionalShapes = []
     this.dataClear.next(true)
   }
 

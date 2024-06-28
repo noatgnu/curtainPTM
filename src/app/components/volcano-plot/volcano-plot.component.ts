@@ -20,6 +20,7 @@ import {WebLogoComponent} from "../web-logo/web-logo.component";
 })
 export class VolcanoPlotComponent implements OnInit {
   @Output() selected: EventEmitter<selectionData> = new EventEmitter<selectionData>()
+  revision: number = 0
   isVolcanoParameterCollapsed: boolean = false
   _data: any;
   //nameToID: any = {}
@@ -469,8 +470,15 @@ export class VolcanoPlotComponent implements OnInit {
         width: this.graphLayout.width,
         scale: 1,
         margin: this.graphLayout.margin,
+      },
+      modeBarButtonsToAdd: ["drawline", "drawcircle", "drawrect", "eraseshape"]
+    }
+    if (this.settings.settings.volcanoAdditionalShapes) {
+      for (const s of this.settings.settings.volcanoAdditionalShapes) {
+        this.graphLayout.shapes.push(s)
       }
     }
+    this.revision ++
     console.log(this.graphLayout.annotations)
   }
 
@@ -679,5 +687,11 @@ export class VolcanoPlotComponent implements OnInit {
   openWebLogo() {
     const ref = this.modal.open(WebLogoComponent, {size: "lg"})
     ref.componentInstance.data = this.dataService.currentDF.where(r => r[this.dataService.differentialForm.primaryIDs] in this.dataService.selectedMap).bake()
+  }
+
+  handleLayoutChange(data: any) {
+    if (data.shapes) {
+      this.settings.settings.volcanoAdditionalShapes = data.shapes
+    }
   }
 }

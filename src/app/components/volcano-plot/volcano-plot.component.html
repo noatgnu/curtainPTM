@@ -1,7 +1,7 @@
 
 <div class="d-flex justify-content-around">
   <div class="d-flex justify-content-center align-items-center flex-grow-1">
-    <plotly-plot (legendClick)="legendClickHandler($event)" [config]="config" [divId]="'volcanoPlot'" [data]="graphData" [layout]="graphLayout" [updateOnDataChange]="true" [updateOnLayoutChange]="true" (plotlyClick)="selectData($event)" (selected)="selectData($event)"></plotly-plot>
+    <plotly-plot (relayout)="handleLayoutChange($event)" (legendClick)="legendClickHandler($event)" [config]="config" [divId]="'volcanoPlot'" [data]="graphData" [layout]="graphLayout" [revision]="revision" [updateOnlyWithRevision]="true" (plotlyClick)="selectData($event)" (selected)="selectData($event)"></plotly-plot>
   </div>
   <div class="flex-grow-0" style="max-width: 500px">
     <div class="accordion">
