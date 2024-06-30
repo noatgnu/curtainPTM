@@ -33,6 +33,12 @@
     <div *ngIf="selectionToggle[s] === true && primaryIDForms[s]">
       <div class="card border-dark mt-2">
         <div class="card-body">
+          <form [formGroup]="selectAllForms[s]">
+            <div class="form-check">
+              <input type="checkbox" class="form-check-input" formControlName="selectAll">
+              <label class="form-check-label">Annotate/Deannotate all</label>
+            </div>
+          </form>
           <div *ngFor="let primaryID of selectionMap[s]; let ind = index">
             <div>
               <b>{{primaryID}} <span *ngIf="geneNameMap[primaryID]">[{{geneNameMap[primaryID]}}]</span></b>

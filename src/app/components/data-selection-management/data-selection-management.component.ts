@@ -20,6 +20,7 @@ export class DataSelectionManagementComponent implements OnInit {
   primaryIDForms: any = {}
   geneNameMap: {[key: string]: string} = {}
   selectionToggle: {[key:string]: boolean} = {}
+  selectAllForms: {[key: string]: FormGroup} = {}
   constructor(private uniprot: UniprotService, private modal: NgbActiveModal, private settings: SettingsService, public data: DataService, private fb: FormBuilder) {
     this.selectOperationNames = this.data.selectOperationNames.slice()
 
@@ -33,6 +34,16 @@ export class DataSelectionManagementComponent implements OnInit {
       this.selectionMap[s] = []
       this.selectionToggle[s] = false
       this.primaryIDForms[s] = {}
+      this.selectAllForms[s] = this.fb.group({
+        selectAll: [false]
+      })
+      this.selectAllForms[s].controls["selectAll"].valueChanges.subscribe((value:boolean) => {
+        for (const p in this.primaryIDForms[s]) {
+          this.primaryIDForms[s][p].controls["annotate"].setValue(value)
+          this.primaryIDForms[s][p].controls["annotate"].markAsDirty()
+        }
+      }
+      )
     }
     const textAnnotationList: string[] = []
     for (const a in this.settings.settings.textAnnotation) {
