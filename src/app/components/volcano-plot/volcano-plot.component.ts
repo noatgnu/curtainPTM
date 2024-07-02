@@ -19,6 +19,7 @@ import {WebLogoComponent} from "../web-logo/web-logo.component";
   styleUrls: ['./volcano-plot.component.scss']
 })
 export class VolcanoPlotComponent implements OnInit {
+  editMode: boolean = false
   @Output() selected: EventEmitter<selectionData> = new EventEmitter<selectionData>()
   revision: number = 0
   isVolcanoParameterCollapsed: boolean = false
@@ -56,6 +57,7 @@ export class VolcanoPlotComponent implements OnInit {
     }
   }
   config: any = {
+    editable: this.editMode,
     //modeBarButtonsToRemove: ["toImage"]
     toImageButtonOptions: {
       format: 'svg',
@@ -463,6 +465,7 @@ export class VolcanoPlotComponent implements OnInit {
     }
 
     this.config = {
+      editable: this.editMode,
       toImageButtonOptions: {
         format: 'svg',
         filename: this.graphLayout.title.text,
@@ -477,6 +480,12 @@ export class VolcanoPlotComponent implements OnInit {
       for (const s of this.settings.settings.volcanoAdditionalShapes) {
         this.graphLayout.shapes.push(s)
       }
+    }
+    if (this.settings.settings.volcanoPlotLegendX) {
+      this.graphLayout.legend.x = this.settings.settings.volcanoPlotLegendX
+    }
+    if (this.settings.settings.volcanoPlotLegendY) {
+      this.graphLayout.legend.y = this.settings.settings.volcanoPlotLegendY
     }
     this.revision ++
     console.log(this.graphLayout.annotations)
@@ -606,7 +615,8 @@ export class VolcanoPlotComponent implements OnInit {
           font: {
             size: 15,
             color: "#000000"
-          }
+          },
+          annotationID: title,
         }
         if (this.settings.settings.customVolcanoTextCol !== "") {
           ann.text = "<b>"+a[this.settings.settings.customVolcanoTextCol]+"</b>"
@@ -670,6 +680,7 @@ export class VolcanoPlotComponent implements OnInit {
         this.settings.settings.textAnnotation[f.value.annotationID].data.font.color = f.value.fontcolor
         this.settings.settings.textAnnotation[f.value.annotationID].data.text = f.value.text
         this.settings.settings.textAnnotation[f.value.annotationID].showannotation = f.value.showannotation
+        this.settings.settings.textAnnotation[f.value.annotationID].annotationID = f.value.annotationID
         this.annotated[f.value.annotationID] = this.settings.settings.textAnnotation[f.value.annotationID].data
         this.graphLayout.annotations.push(this.annotated[f.value.annotationID])
       }
@@ -690,8 +701,40 @@ export class VolcanoPlotComponent implements OnInit {
   }
 
   handleLayoutChange(data: any) {
+    const keys = Object.keys(data)
     if (data.shapes) {
       this.settings.settings.volcanoAdditionalShapes = data.shapes
     }
+    if (data["legend.x"]) {
+      this.settings.settings.volcanoPlotLegendX = data["legend.x"]
+    }
+    if (data["legend.y"]) {
+      this.settings.settings.volcanoPlotLegendY = data["legend.y"]
+    }
+    if (data["title.text"]) {
+      this.settings.settings.volcanoPlotTitle = data["title.text"]
+    }
+    if (data["yaxis.title.text"]) {
+      this.settings.settings.volcanoAxis.y = data["yaxis.title.text"]
+    }
+    if (data["xaxis.title.text"]) {
+      this.settings.settings.volcanoAxis.x = data["xaxis.title.text"]
+    }
+    if (keys[0].startsWith("annotations")) {
+      for (const k of keys) {
+        const index = parseInt(keys[0].split("[")[1].split("]")[0])
+        const annotationID = this.graphLayout.annotations[index].annotationID
+        console.log(annotationID)
+        if (`annotations[${index}].ax` === k) {
+          this.settings.settings.textAnnotation[annotationID].ax = data[k]
+        } else if (`annotations[${index}].ay` === k) {
+          this.settings.settings.textAnnotation[annotationID].ay = data[k]
+        } else if (`annotations[${index}].text` === k) {
+          this.settings.settings.textAnnotation[annotationID].text = data[k]
+        }
+      }
+    }
   }
+
+
 }
