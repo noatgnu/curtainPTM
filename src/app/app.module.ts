@@ -59,6 +59,7 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { UserPtmImportManagementComponent } from './components/user-ptm-import-management/user-ptm-import-management.component';
 import { EncryptionSettingsComponent } from './components/encryption-settings/encryption-settings.component';
 import {ToastProgressbarComponent} from "./components/toast-container/toast-progressbar/toast-progressbar.component";
+import {ShapesComponent} from "./components/volcano-plot/shapes/shapes.component";
 PlotlyModule.plotlyjs = PlotlyJS;
 @NgModule({
   declarations: [
@@ -126,7 +127,8 @@ PlotlyModule.plotlyjs = PlotlyJS;
             // or after 30 seconds (whichever comes first).
             registrationStrategy: 'registerWhenStable:30000'
         }),
-        ToastProgressbarComponent
+        ToastProgressbarComponent,
+        ShapesComponent
     ],
   providers: [HttpClient,
     //ContextMenuService

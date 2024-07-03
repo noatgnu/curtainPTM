@@ -1,0 +1,51 @@
+@if (forms.length > 0) {
+  @for (f of forms; track f) {
+    <form [formGroup]="f">
+      <div class="d-flex">
+        <div class="p-2">
+          <div class="form-group">
+            <label>Text</label>
+            <input type="text" class="form-control" formControlName="text">
+          </div>
+        </div>
+        <div class="p-2">
+          <div class="form-group">
+            <label>Text Size</label>
+            <input type="number" class="form-control" formControlName="fontsize">
+          </div>
+        </div>
+        <div class="p-2">
+          <div class="form-group">
+            <label>Text Color</label>
+            <input (colorPickerChange)="updateColorFont($event, f.value.index)" formControlName="fontcolor" [(colorPicker)]="colorMapFont[f.value.index]" class="form-control" [style.background-color]="colorMapFont[f.value.index]">
+          </div>
+        </div>
+      </div>
+      <div class="d-flex">
+        <div class="p-2">
+          <div class="form-group">
+            <label>Fill Color</label>
+            <input (colorPickerChange)="updateColorFill($event, f.value.index)" formControlName="fillcolor" [(colorPicker)]="colorMapFill[f.value.index]" class="form-control" [style.background-color]="colorMapFill[f.value.index]">
+          </div>
+        </div>
+        <div class="p-2">
+          <div class="form-group">
+            <label>Line Color</label>
+            <input (colorPickerChange)="updateColorLine($event, f.value.index)" formControlName="linecolor" [(colorPicker)]="colorMapLine[f.value.index]" class="form-control" [style.background-color]="colorMapLine[f.value.index]">
+          </div>
+        </div>
+        <div class="p-2">
+          <div class="form-group">
+            <label>Line Width</label>
+            <input type="number" class="form-control" formControlName="linewidth">
+          </div>
+        </div>
+      </div>
+    </form>
+    <hr>
+  }
+} @else {
+  <p>No shapes to display</p>
+}
+
+<button type="button" class="btn btn-primary mt-2 mb-2" (click)="updateData()">Update Shapes</button>
