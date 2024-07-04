@@ -2,6 +2,7 @@ import {Component, EventEmitter, Output} from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule} from "@angular/forms";
 import {SettingsService} from "../../../settings.service";
 import {ColorPickerModule} from "ngx-color-picker";
+import {DataService} from "../../../data.service";
 
 @Component({
   selector: 'app-shapes',
@@ -19,11 +20,19 @@ export class ShapesComponent {
   colorMapFont: any = {}
   forms: FormGroup<any>[] = []
   @Output() updateShapes: EventEmitter<any> = new EventEmitter<any>()
-  constructor(public settings: SettingsService, private fb: FormBuilder) {
-    for (let i=0; i<settings.settings.volcanoAdditionalShapes.length; i++) {
-      const s = settings.settings.volcanoAdditionalShapes[i]
+  constructor(public settings: SettingsService, private fb: FormBuilder, private dataService: DataService) {
+    this.updateForms();
+    this.dataService.volcanoAdditionalShapesSubject.subscribe((value) => {
+      this.updateForms()
+    })
+  }
+
+  private updateForms() {
+    const forms: FormGroup<any>[] = []
+    for (let i = 0; i < this.settings.settings.volcanoAdditionalShapes.length; i++) {
+      const s = this.settings.settings.volcanoAdditionalShapes[i]
       if (s.editable) {
-        const form:FormGroup<any> = this.fb.group({
+        const form: FormGroup<any> = this.fb.group({
           text: s.label.text,
           fillcolor: s.fillcolor,
           linecolor: s.line.color,
@@ -36,9 +45,10 @@ export class ShapesComponent {
 
         this.colorMapLine[i] = s.line.color
         this.colorMapFill[i] = s.fillcolor
-        this.forms.push(form)
+        forms.push(form)
       }
     }
+    this.forms = forms
   }
 
   updateData() {

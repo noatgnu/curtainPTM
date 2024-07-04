@@ -33,6 +33,7 @@ export class DataService {
   sampleMap: any = {}
   conditions: string[] = []
   resetVolcanoColor: Subject<boolean> = new Subject<boolean>()
+  volcanoAdditionalShapesSubject: Subject<boolean> = new Subject<boolean>()
 
   minMax = {
     fcMin: 0,

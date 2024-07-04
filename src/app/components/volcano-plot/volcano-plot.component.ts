@@ -720,6 +720,7 @@ export class VolcanoPlotComponent implements OnInit {
         }
       }
       console.log(this.settings.settings.volcanoAdditionalShapes)
+      this.dataService.volcanoAdditionalShapesSubject.next(true)
     }
     if (data["legend.x"]) {
       this.settings.settings.volcanoPlotLegendX = data["legend.x"]
