@@ -751,6 +751,21 @@ export class VolcanoPlotComponent implements OnInit {
         }
 
       }
+    } else if (keys[0].startsWith("shapes")) {
+      for (const k of keys) {
+        const index = parseInt(keys[0].split("[")[1].split("]")[0])
+        const shape = this.settings.settings.volcanoAdditionalShapes[index]
+        if (`shapes[${index}].x0` === k) {
+          shape.x0 = data[k]
+        } else if (`shapes[${index}].x1` === k) {
+          shape.x1 = data[k]
+        } else if (`shapes[${index}].y0` === k) {
+          shape.y0 = data[k]
+        } else if (`shapes[${index}].y1` === k) {
+          shape.y1 = data[k]
+        }
+      }
+      this.dataService.volcanoAdditionalShapesSubject.next(true)
     }
     console.log(data)
   }
