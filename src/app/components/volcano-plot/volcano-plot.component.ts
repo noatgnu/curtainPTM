@@ -186,7 +186,7 @@ export class VolcanoPlotComponent implements OnInit {
     if (this.settings.settings.volcanoAxis.maxX) {
       this.graphLayout.xaxis.range[1] = this.settings.settings.volcanoAxis.maxX
     }
-    this.graphLayout.yaxis.range = [0, this.layoutMaxMin.yMax - this.layoutMaxMin.yMin / 2]
+    this.graphLayout.yaxis.range = [0, this.layoutMaxMin.yMax + this.layoutMaxMin.yMin / 10]
     if (this.settings.settings.volcanoAxis.minY) {
       this.graphLayout.yaxis.range[0] = this.settings.settings.volcanoAxis.minY
     }

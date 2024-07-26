@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import * as cytoscape from "cytoscape";
+import cytoscape from "cytoscape";
 import * as fcose from "cytoscape-fcose";
 //import * as cxtmenu from "cytoscape-cxtmenu";
 
