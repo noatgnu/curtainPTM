@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {HttpClient} from "@angular/common/http";
+import { HttpClient } from "@angular/common/http";
 import {WebService} from "./web.service";
 import {fromCSV} from "data-forge";
 import {BehaviorSubject, Subject} from "rxjs";

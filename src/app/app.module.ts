@@ -9,7 +9,7 @@ import { ToastContainerComponent } from './components/toast-container/toast-cont
 import { FileFormComponent } from './components/file-form/file-form.component';
 import {FileInputWidgetComponent} from "./components/file-input-widget/file-input-widget.component";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from "@angular/common/http";
+import { HTTP_INTERCEPTORS, HttpClient, provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
 import {VolcanoColorsComponent} from "./components/volcano-colors/volcano-colors.component";
 import {VolcanoPlotComponent} from "./components/volcano-plot/volcano-plot.component";
 import {BatchSearchComponent} from "./components/batch-search/batch-search.component";
@@ -61,58 +61,55 @@ import { EncryptionSettingsComponent } from './components/encryption-settings/en
 import {ToastProgressbarComponent} from "./components/toast-container/toast-progressbar/toast-progressbar.component";
 import {ShapesComponent} from "./components/volcano-plot/shapes/shapes.component";
 PlotlyModule.plotlyjs = PlotlyJS;
-@NgModule({
-  declarations: [
-    AppComponent,
-    HomeComponent,
-    ToastContainerComponent,
-    FileFormComponent,
-    FileInputWidgetComponent,
-    VolcanoColorsComponent,
-    VolcanoPlotComponent,
-    BatchSearchComponent,
-    ProteinSelectionsComponent,
-    FdrCurveComponent,
-    CytoplotComponent,
-    VolcanoAndCytoComponent,
-    NetworkInteractionsComponent,
-    DataViewerComponent,
-    DataBlockComponent,
-    ProteinInformationComponent,
-    ProteinDomainPlotComponent,
-    RawDataComponent,
-    BarChartComponent,
-    PtmPositionViewerComponent,
-    NavbarComponent,
-    NetphosKinasesComponent,
-    KinaseInfoComponent,
-    SampleAnnotationComponent,
-    PrideComponent,
-    SampleOrderAndHideComponent,
-    VolcanoPlotTextAnnotationComponent,
-    SessionSettingsComponent,
-    KinaseLibraryModalComponent,
-    WebLogoComponent,
-    DefaultColorPaletteComponent,
-    VariantSelectionComponent,
-    SessionExpiredModalComponent,
-    DataSelectionManagementComponent,
-    QrcodeModalComponent,
-    DraggableElementComponent,
-    SideFloatControlComponent,
-    CollaborateModalComponent,
-    LocalSessionStateModalComponent,
-    ProfilePlotComponent,
-    SampleConditionAssignmentModalComponent,
-    UserPtmImportManagementComponent,
-    EncryptionSettingsComponent
-  ],
-    imports: [
-        BrowserModule,
+@NgModule({ declarations: [
+        AppComponent,
+        HomeComponent,
+        ToastContainerComponent,
+        FileFormComponent,
+        FileInputWidgetComponent,
+        VolcanoColorsComponent,
+        VolcanoPlotComponent,
+        BatchSearchComponent,
+        ProteinSelectionsComponent,
+        FdrCurveComponent,
+        CytoplotComponent,
+        VolcanoAndCytoComponent,
+        NetworkInteractionsComponent,
+        DataViewerComponent,
+        DataBlockComponent,
+        ProteinInformationComponent,
+        ProteinDomainPlotComponent,
+        RawDataComponent,
+        BarChartComponent,
+        PtmPositionViewerComponent,
+        NavbarComponent,
+        NetphosKinasesComponent,
+        KinaseInfoComponent,
+        SampleAnnotationComponent,
+        PrideComponent,
+        SampleOrderAndHideComponent,
+        VolcanoPlotTextAnnotationComponent,
+        SessionSettingsComponent,
+        KinaseLibraryModalComponent,
+        WebLogoComponent,
+        DefaultColorPaletteComponent,
+        VariantSelectionComponent,
+        SessionExpiredModalComponent,
+        DataSelectionManagementComponent,
+        QrcodeModalComponent,
+        DraggableElementComponent,
+        SideFloatControlComponent,
+        CollaborateModalComponent,
+        LocalSessionStateModalComponent,
+        ProfilePlotComponent,
+        SampleConditionAssignmentModalComponent,
+        UserPtmImportManagementComponent,
+        EncryptionSettingsComponent
+    ],
+    bootstrap: [AppComponent], imports: [BrowserModule,
         AppRoutingModule,
         NgbModule,
         FormsModule,
-        HttpClientModule,
         PlotlyModule,
         ColorPickerModule,
         //ContextMenuModule,
@@ -128,11 +125,5 @@ PlotlyModule.plotlyjs = PlotlyJS;
             registrationStrategy: 'registerWhenStable:30000'
         }),
         ToastProgressbarComponent,
-        ShapesComponent
-    ],
-  providers: [HttpClient,
-    //ContextMenuService
-  ],
-  bootstrap: [AppComponent]
-})
+        ShapesComponent], providers: [HttpClient, provideHttpClient(withInterceptorsFromDi()),] })
 export class AppModule { }

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {WebService} from "./web.service";
-import {HttpClient} from "@angular/common/http";
+import { HttpClient } from "@angular/common/http";
 import {UniprotService} from "./uniprot.service";
 
 @Injectable({

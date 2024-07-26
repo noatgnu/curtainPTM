@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {HttpClient} from "@angular/common/http";
+import { HttpClient } from "@angular/common/http";
 import {DataFrame, fromCSV, IDataFrame} from "data-forge";
 import {UniprotService} from "./uniprot.service";
 
