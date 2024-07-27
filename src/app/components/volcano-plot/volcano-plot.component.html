@@ -1,7 +1,19 @@
 
 <div class="d-flex justify-content-around">
   <div class="d-flex justify-content-center align-items-center flex-grow-1">
-    <plotly-plot (relayout)="handleLayoutChange($event)" (legendClick)="legendClickHandler($event)" [config]="config" [divId]="'volcanoPlot'" [data]="graphData" [layout]="graphLayout" [revision]="revision" [updateOnLayoutChange]="true" (plotlyClick)="selectData($event)" (selected)="selectData($event)"></plotly-plot>
+    <div class="d-flex flex-column">
+      @if (config.editable) {
+        <div class="alert alert-info">
+          <p>Edit mode is currently activated</p>
+          <ul>
+            <li>Click on the plot title or axis title to edit them directly</li>
+            <li>Data point annotations can now be freely dragged</li>
+            <li>Legends can now also be freely dragged</li>
+          </ul>
+        </div>
+      }
+      <plotly-plot (relayout)="handleLayoutChange($event)" (legendClick)="legendClickHandler($event)" [config]="config" [divId]="'volcanoPlot'" [data]="graphData" [layout]="graphLayout" [revision]="revision" [updateOnLayoutChange]="true" (plotlyClick)="selectData($event)" (selected)="selectData($event)"></plotly-plot>
+    </div>
   </div>
   <div class="flex-grow-0" style="max-width: 500px">
     <div class="accordion">

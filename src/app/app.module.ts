@@ -15,7 +15,7 @@ import {VolcanoPlotComponent} from "./components/volcano-plot/volcano-plot.compo
 import {BatchSearchComponent} from "./components/batch-search/batch-search.component";
 import {ProteinSelectionsComponent} from "./components/protein-selections/protein-selections.component";
 import {FdrCurveComponent} from "./components/fdr-curve/fdr-curve.component";
-import {PlotlyModule} from "angular-plotly.js";
+import {PlotlyModule, PlotlyViaCDNModule} from "angular-plotly.js";
 import * as PlotlyJS from 'plotly.js-dist-min';
 import {ColorPickerModule} from "ngx-color-picker";
 import {CytoplotComponent} from "./components/cytoplot/cytoplot.component";
@@ -60,7 +60,8 @@ import { UserPtmImportManagementComponent } from './components/user-ptm-import-m
 import { EncryptionSettingsComponent } from './components/encryption-settings/encryption-settings.component';
 import {ToastProgressbarComponent} from "./components/toast-container/toast-progressbar/toast-progressbar.component";
 import {ShapesComponent} from "./components/volcano-plot/shapes/shapes.component";
-PlotlyModule.plotlyjs = PlotlyJS;
+PlotlyViaCDNModule.setPlotlyVersion('latest');
+PlotlyViaCDNModule.setPlotlyBundle('basic');
 @NgModule({ declarations: [
         AppComponent,
         HomeComponent,
@@ -110,7 +111,8 @@ PlotlyModule.plotlyjs = PlotlyJS;
         AppRoutingModule,
         NgbModule,
         FormsModule,
-        PlotlyModule,
+        //PlotlyModule,
+        PlotlyViaCDNModule,
         ColorPickerModule,
         //ContextMenuModule,
         NgxPrintModule,

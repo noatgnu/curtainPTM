@@ -32,7 +32,7 @@ export class AppComponent implements AfterViewInit, OnDestroy {
             this.settings.newVersionAvailable = true;
           }
         })
-      }, 1000*60)
+      }, 1000*10)
     }
   }
 
