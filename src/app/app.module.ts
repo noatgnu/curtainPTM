@@ -60,8 +60,9 @@ import { UserPtmImportManagementComponent } from './components/user-ptm-import-m
 import { EncryptionSettingsComponent } from './components/encryption-settings/encryption-settings.component';
 import {ToastProgressbarComponent} from "./components/toast-container/toast-progressbar/toast-progressbar.component";
 import {ShapesComponent} from "./components/volcano-plot/shapes/shapes.component";
-PlotlyViaCDNModule.setPlotlyVersion('latest');
-PlotlyViaCDNModule.setPlotlyBundle('basic');
+//PlotlyViaCDNModule.setPlotlyVersion('latest');
+//PlotlyViaCDNModule.setPlotlyBundle('basic');
+PlotlyModule.plotlyjs = PlotlyJS;
 @NgModule({ declarations: [
         AppComponent,
         HomeComponent,
@@ -111,8 +112,8 @@ PlotlyViaCDNModule.setPlotlyBundle('basic');
         AppRoutingModule,
         NgbModule,
         FormsModule,
-        //PlotlyModule,
-        PlotlyViaCDNModule,
+        PlotlyModule,
+        //PlotlyViaCDNModule,
         ColorPickerModule,
         //ContextMenuModule,
         NgxPrintModule,
