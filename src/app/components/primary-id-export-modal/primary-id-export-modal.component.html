@@ -7,17 +7,28 @@
       <div>
         {{s}}
       </div>
+    </div>
+    <div class="d-flex gap-2">
       <div>
-        <span class="badge bg-primary" (click)="export(s)">Primary IDs</span>
+        <span class="badge bg-primary" (click)="export(s, 'primaryID')">Primary IDs</span>
       </div>
       <div>
         <span class="badge bg-primary" (click)="export(s, 'geneNames')">Gene Names</span>
       </div>
+      <div>
+        <span class="badge bg-primary" (click)="export(s, 'dataSearched')">Searched Data</span>
+      </div>
+      <div>
+        <span class="badge bg-primary" (click)="export(s, 'dataDF')">Diff Data</span>
+      </div>
     </div>
+    <hr>
   }
 </div>
 <div class="modal-footer">
-  <button type="button" class="btn btn-primary" (click)="export()">Export All Primary Ids</button>
-  <button type="button" class="btn btn-primary" (click)="export('', 'geneNames')">Export All Gene Names</button>
+  <button type="button" class="btn btn-primary" (click)="export('', 'primaryID')">Export PIds</button>
+  <button type="button" class="btn btn-primary" (click)="export('', 'geneNames')">Export Gene Names</button>
+  <button type="button" class="btn btn-primary" (click)="export('', 'dataSearched')">Export Searched Data</button>
+  <button type="button" class="btn btn-primary" (click)="export('', 'dataDF')">Export Diff Data</button>
   <button type="button" class="btn btn-default" (click)="modal.dismiss()">Close</button>
 </div>
