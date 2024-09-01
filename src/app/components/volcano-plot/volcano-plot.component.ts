@@ -464,7 +464,8 @@ export class VolcanoPlotComponent implements OnInit {
       }
 
     }
-
+    console.log(this.settings.settings.textAnnotation)
+    console.log(this.graphLayout.annotations)
     this.config = {
       editable: this.editMode,
       toImageButtonOptions: {
@@ -487,6 +488,16 @@ export class VolcanoPlotComponent implements OnInit {
     }
     if (this.settings.settings.volcanoPlotLegendY) {
       this.graphLayout.legend.y = this.settings.settings.volcanoPlotLegendY
+    }
+    if (this.settings.settings.volcanoAxis.dtickX) {
+      this.graphLayout.xaxis.dtick = this.settings.settings.volcanoAxis.dtickX
+    } else {
+      this.graphLayout.xaxis.dtick = undefined
+    }
+    if (this.settings.settings.volcanoAxis.dtickY) {
+      this.graphLayout.yaxis.dtick = this.settings.settings.volcanoAxis.dtickY
+    } else {
+      this.graphLayout.yaxis.dtick = undefined
     }
     this.revision ++
     console.log(this.graphLayout.annotations)
