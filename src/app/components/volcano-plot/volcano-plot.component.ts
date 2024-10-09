@@ -499,6 +499,16 @@ export class VolcanoPlotComponent implements OnInit {
     } else {
       this.graphLayout.yaxis.dtick = undefined
     }
+    if (this.settings.settings.volcanoAxis.ticklenX) {
+      this.graphLayout.xaxis.ticklen = this.settings.settings.volcanoAxis.ticklenX
+    } else {
+      this.graphLayout.xaxis.ticklen = 5
+    }
+    if (this.settings.settings.volcanoAxis.ticklenY) {
+      this.graphLayout.yaxis.ticklen = this.settings.settings.volcanoAxis.ticklenY
+    } else {
+      this.graphLayout.yaxis.ticklen = 5
+    }
     this.revision ++
     console.log(this.graphLayout.annotations)
   }

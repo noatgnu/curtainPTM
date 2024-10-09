@@ -22,7 +22,18 @@ export class Settings {
   sampleOrder: any = {}
   sampleVisible: any = {}
   conditionOrder: string[] = []
-  volcanoAxis: any = {minX: null, maxX: null, minY: null, maxY: null, x: "Log2FC", y: "-log10(p-value)", dtickX: undefined, dtickY: undefined}
+  volcanoAxis: any = {
+    minX: null,
+    maxX: null,
+    minY: null,
+    maxY: null,
+    x: "Log2FC",
+    y: "-log10(p-value)",
+    dtickX: undefined,
+    dtickY: undefined,
+    ticklenX: 5,
+    ticklenY: 5,
+  }
   barchartColorMap: any = {}
   textAnnotation: any = {}
   volcanoPlotTitle: string = ""
