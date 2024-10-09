@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1725209542905,
+  "timestamp": 1728491703217,
   "index": "/index.html",
   "assetGroups": [
     {
@@ -15,9 +15,9 @@
         "/55.45fd48575e0839e7.js",
         "/favicon.ico",
         "/index.html",
-        "/main.6ae20d6f8332e77d.js",
+        "/main.eccf998d97cdecbc.js",
         "/manifest.webmanifest",
-        "/polyfills.3aa49820b40f65e5.js",
+        "/polyfills.6c513b29db036035.js",
         "/runtime.a712cd7e57140103.js",
         "/scripts.12af90f1c3eb0799.js",
         "/styles.6ac70248e4f9ba93.css"
@@ -87,7 +87,7 @@
   "dataGroups": [],
   "hashTable": {
     "/17.a884cac68a2d8f8a.js": "68ff8f5c89e5ed3f278284371527f60dd2e69ee3",
-    "/3rdpartylicenses.txt": "5b7761936600ccb339320faaa2662c83173ec264",
+    "/3rdpartylicenses.txt": "0c35e4dda318b9bd0bc340cca9a81ac8339e7f5b",
     "/55.45fd48575e0839e7.js": "00701592ddcabceaa5de6b8d99236ba0fc82668b",
     "/assets/databases/Acetylation_PLMD.tsv": "bb13456e320d4c2a0b132849fefee8238fd8bfa2",
     "/assets/databases/Acetylation_PSP.tsv": "fc579aa61abb198e152eda9546455d1916fc099f",
@@ -137,10 +137,10 @@
     "/bootstrap-icons.70a9dee9e5ab72aa.woff": "d5831fd39baf13aff7626e483b9a089730f18604",
     "/bootstrap-icons.bfa90bda92a84a6a.woff2": "020c3c6f9280a315e8425d7f92e15bcd0cdda1b2",
     "/favicon.ico": "22f6a4a3bcaafafb0254e0f2fa4ceb89e505e8b2",
-    "/index.html": "b177ea5a705f6479b71a0f4f56445563ec1ba847",
-    "/main.6ae20d6f8332e77d.js": "6ffedfc355fb74e6a79e8a795d2a3314d5b78f8b",
+    "/index.html": "851f2fbcd7dbfd07f56039de31b5286f17d39ae0",
+    "/main.eccf998d97cdecbc.js": "f8069a429487ce5e60c0e6315943554078bbd96d",
     "/manifest.webmanifest": "0eb74bee05d08791252872d45422389a4c8ede7e",
-    "/polyfills.3aa49820b40f65e5.js": "534feea4b87789f704b6c971ed194183d4f3eba3",
+    "/polyfills.6c513b29db036035.js": "44999fd5fb10a2d317d72eb9053a5d31f7b23ea5",
     "/runtime.a712cd7e57140103.js": "3ab7ead3bcf01824a4cfa5c989be881f229bef81",
     "/scripts.12af90f1c3eb0799.js": "e4bf05489d8b04dab93d4fcfb085111031a8cc1f",
     "/styles.6ac70248e4f9ba93.css": "9778d77822b9d28eb18dbb40ff05d193336668c4"
