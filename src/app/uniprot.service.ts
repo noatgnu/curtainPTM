@@ -164,6 +164,9 @@ export class UniprotService {
 
 
   getUniprotFromAcc(accession_id: string) {
+    if (this.db.has(accession_id)) {
+      return this.db.get(accession_id)
+    }
     if (this.accMap.has(accession_id)) {
       const a = this.accMap.get(accession_id)
       if (a) {
