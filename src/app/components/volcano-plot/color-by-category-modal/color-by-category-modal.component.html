@@ -22,7 +22,7 @@
     <div>
       <div class="form-group">
         <label for="color{{c}}">Color for {{c}}</label>
-        <input style="width: 100px"  [(ngModel)]="categoryMap[c].color" [(colorPicker)]="categoryMap[c].color" class="form-control" [style.background-color]="categoryMap[c].color" placeholder="Select a color">
+        <input style="width: 200px"  [(ngModel)]="categoryMap[c].color" [(colorPicker)]="categoryMap[c].color" class="form-control" [style.background-color]="categoryMap[c].color" placeholder="Select a color">
         <small class="text-muted">Count: {{categoryMap[c].count}}</small>
       </div>
       <button type="button" class="btn btn-danger" (click)="removeGroup(c)"><i class="bi bi-trash"></i> remove {{c}}</button>
