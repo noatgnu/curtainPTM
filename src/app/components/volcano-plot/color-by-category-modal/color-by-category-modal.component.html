@@ -1,0 +1,36 @@
+<div class="modal-header">
+  <div class="modal-title">
+    Assign Colors by Category
+  </div>
+</div>
+<div class="modal-body">
+  @if (data) {
+    <form [formGroup]="form">
+      <div>
+        <label>Categorical value column</label>
+        <select class="form-control" formControlName="selectedColumn">
+          @for (o of data.getColumnNames(); track o) {
+            <option [value]="o">{{o}}</option>
+          }
+        </select>
+      </div>
+    </form>
+  }
+
+
+  @for (c of categories; track c) {
+    <div>
+      <div class="form-group">
+        <label for="color{{c}}">Color for {{c}}</label>
+        <input style="width: 100px"  [(ngModel)]="categoryMap[c].color" [(colorPicker)]="categoryMap[c].color" class="form-control" [style.background-color]="categoryMap[c].color" placeholder="Select a color">
+        <small class="text-muted">Count: {{categoryMap[c].count}}</small>
+      </div>
+      <button type="button" class="btn btn-danger" (click)="removeGroup(c)"><i class="bi bi-trash"></i> remove {{c}}</button>
+    </div>
+
+  }
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="close()">Cancel</button>
+  <button type="button" class="btn btn-primary" (click)="submit()">Apply</button>
+</div>
