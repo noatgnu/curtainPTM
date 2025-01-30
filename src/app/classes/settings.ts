@@ -4,6 +4,7 @@ export class Settings {
   fetchUniprot: boolean = true
   inputDataCols: any = {}
   probabilityFilterMap: any = {}
+  dataAnalysisContact: string = ""
   pCutoff: number = 0.05
   log2FCCutoff: number = 0.6
   description: string = ""
