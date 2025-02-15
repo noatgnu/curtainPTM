@@ -1,16 +1,34 @@
-<ngb-toast
-        *ngFor="let toast of toastService.toasts"
-        [autohide]="true"
-        [delay]="toast.delay || 5000"
-        (hidden)="toastService.remove(toast)" [ngClass]="toast.type === 'info' ? 'bg-primary text-light' : toast.type === 'success' ? 'bg-success text-light' : toast.type === 'warning' ? 'bg-warning text-light' : 'bg-danger text-light'"
->
-    <div class="d-flex">
+@for (toast of toastService.toasts; track toast) {
+  @if (toast.action === "other") {
+    <ngb-toast
+      [autohide]="true"
+      [delay]="toast.delay || 5000"
+      (hidden)="toastService.remove(toast)" [ngClass]="toast.type === 'info' ? 'bg-primary text-light' : toast.type === 'success' ? 'bg-success text-light' : toast.type === 'warning' ? 'bg-warning text-light' : 'bg-danger text-light'"
+    >
+      <div class="d-flex">
         <div class="p-2">
-            <b>{{toast.header}}: </b>{{toast.body}}
+          <b>{{toast.header}}: </b>{{toast.body}}
         </div>
         <div class="p-2">
-            <button type="button" class="btn btn-close" aria-label="Close" (click)="toastService.remove(toast)"></button>
+          <button type="button" class="btn btn-close" aria-label="Close" (click)="toastService.remove(toast)"></button>
         </div>
-    </div>
-  <app-toast-progressbar [total]="toast.delay || 5000"></app-toast-progressbar>
-</ngb-toast>
+      </div>
+      <!--      <app-toast-progressbar [total]="toast.delay || 5000"></app-toast-progressbar>-->
+    </ngb-toast>
+  } @else {
+    <ngb-toast
+      (hidden)="toastService.remove(toast)" [ngClass]="toast.type === 'info' ? 'bg-primary text-light' : toast.type === 'success' ? 'bg-success text-light' : toast.type === 'warning' ? 'bg-warning text-light' : 'bg-danger text-light'"
+      #toastHandler
+    >
+      <div class="d-flex">
+        <div class="p-2">
+          <b>{{toast.header}}: </b>{{toast.body}}
+        </div>
+        <div class="p-2">
+          <button type="button" class="btn btn-close" aria-label="Close" (click)="toastService.remove(toast)"></button>
+        </div>
+      </div>
+      <app-toast-progressbar [action]="toast.action" (finished)="toastHandler.hide()"></app-toast-progressbar>
+    </ngb-toast>
+  }
+}

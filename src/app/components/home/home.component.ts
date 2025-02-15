@@ -82,7 +82,7 @@ export class HomeComponent implements OnInit {
                 //this.ws.reconnect()
               }
             }
-            this.toast.show("Initialization", "Fetching data from session " + params["settings"]).then()
+            this.toast.show("Initialization", "Fetching data from session " + params["settings"], undefined, undefined, "download").then()
             if (this.currentID !== settings[0]) {
               this.currentID = settings[0]
               this.getSessionData(settings[0], token).then(() => {

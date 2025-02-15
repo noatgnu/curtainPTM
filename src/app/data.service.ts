@@ -34,6 +34,9 @@ export class DataService {
   conditions: string[] = []
   resetVolcanoColor: Subject<boolean> = new Subject<boolean>()
   volcanoAdditionalShapesSubject: Subject<boolean> = new Subject<boolean>()
+  downloadProgress: Subject<number> = new Subject<number>()
+  uploadProgress: Subject<number> = new Subject<number>()
+
 
   minMax = {
     fcMin: 0,

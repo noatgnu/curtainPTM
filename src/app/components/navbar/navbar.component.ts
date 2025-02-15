@@ -146,7 +146,7 @@ export class NavbarComponent implements OnInit {
       e2e: this.settings.settings.encrypted,
       publicKey: this.data.public_key,
     }
-
+    this.toast.show("User information", "Uploading session data", undefined, undefined, "upload").then()
     this.accounts.curtainAPI.putSettings(data, !this.accounts.curtainAPI.user.loginStatus, data.settings.description, "PTM", encryption, permanent, this.onUploadProgress).then((data: any) => {
       if (data.data) {
         this.toast.show("User information", `Curtain link has been saved with unique id ${data.data.link_id}`).then()
