@@ -462,11 +462,13 @@ export class HomeComponent implements OnInit {
   onDownloadProgress = (progressEvent: any) => {
     if (progressEvent.progress) {
       this.uniprot.uniprotProgressBar.next({value: progressEvent.progress *100, text: "Downloading session data at " + Math.round(progressEvent.progress * 100) + "%"})
-
+      this.data.downloadProgress.next(progressEvent.progress*100)
     } else {
       const sizeDownloaded = (progressEvent.loaded / (1024*1024)).toFixed(2)
       this.uniprot.uniprotProgressBar.next({value: 100, text: "Downloading session data at " + sizeDownloaded + " MB"})
+      this.data.downloadProgress.next(100)
     }
+
   }
 
 }
