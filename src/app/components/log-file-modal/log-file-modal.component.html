@@ -1,0 +1,49 @@
+<div class="modal-header">
+  <h5 class="modal-title">Log Files</h5>
+</div>
+<div class="modal-body d-flex flex-column gap-2">
+  <div class="d-flex gap-2">
+    <button class="btn btn-primary" (click)="logFileAdd.click()">+ Log File</button>
+  </div>
+  <input hidden type="file" id="file" #logFileAdd (change)="handleAddLogFile($event)">
+  @if (settings.settings.extraData.length > 0) {
+    <div class="form-group">
+      <label for="selectLogFile">Select File</label>
+      <select class="form-select" id="selectLogFile" [(ngModel)]="selectedLogFile">
+        @for (l of settings.settings.extraData; track l; let index = $index) {
+          <option [value]="index">{{l.name}} ({{l.type}})</option>
+        }
+      </select>
+    </div>
+  } @else {
+    <div class="alert alert-info">
+      <p>
+        No files added
+      </p>
+    </div>
+  }
+  @if (selectedLogFile !== -1) {
+    <div class="d-flex gap-2">
+      <button class="btn btn-danger" (click)="removeLogFile(selectedLogFile)">
+        <i class="bi bi-trash"></i>
+      </button>
+      <button class="btn btn-primary" (click)="downloadLogFile(selectedLogFile)">
+        <i class="bi bi-download"></i>
+      </button>
+      <div class="form-floating">
+        <select class="form-select" id="logFileType" [(ngModel)]="settings.settings.extraData[selectedLogFile].type">
+          <option value="log">Log</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="log-file-content">
+      <h5>{{settings.settings.extraData[selectedLogFile].name}}</h5>
+      <p>{{settings.settings.extraData[selectedLogFile].content}}</p>
+    </div>
+  }
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="close()">Close</button>
+</div>
+

@@ -28,6 +28,7 @@ import {UserPtmImportManagementComponent} from "../user-ptm-import-management/us
 import {EncryptionSettingsComponent} from "../encryption-settings/encryption-settings.component";
 import {CurtainEncryption, saveToLocalStorage} from "curtain-web-api";
 import {PrimaryIdExportModalComponent} from "../primary-id-export-modal/primary-id-export-modal.component";
+import {LogFileModalComponent} from "../log-file-modal/log-file-modal.component";
 
 @Component({
   selector: 'app-navbar',
@@ -325,5 +326,9 @@ export class NavbarComponent implements OnInit {
   closeGDPR() {
     this.GDPR = false
     //localStorage.setItem("GDPR", "true")
+  }
+
+  openLogFileModal() {
+    const ref = this.modal.open(LogFileModalComponent, {scrollable: true, size: "xl"})
   }
 }

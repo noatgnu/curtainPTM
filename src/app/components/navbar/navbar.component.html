@@ -82,6 +82,7 @@
               <button ngbDropdownItem (click)="getSelectedList()">
                 Get Selected Primary IDs List
               </button>
+              <button ngbDropdownItem (click)="openLogFileModal()">Log File</button>
               <button ngbDropdownItem (click)="openQRCode()" *ngIf="settings.settings.currentID !== ''">Session QR Code</button>
               <button ngbDropdownItem (click)="selectionManagementModal()">
                 Data Selection Management

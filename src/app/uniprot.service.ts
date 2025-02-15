@@ -156,7 +156,20 @@ export class UniprotService {
         // @ts-ignore
         const query = a.replace(",", ";")
         for (const q of query.split(";")) {
-          this.dataMap.set(q, r["Entry"])
+          if (!this.dataMap.has(q)) {
+            this.dataMap.set(q, r["Entry"])
+          } else {
+            if (q === r["Entry"]) {
+              this.dataMap.set(q, r["Entry"])
+            } else {
+              const qSplitted = q.split("-")
+              if (qSplitted.length === 2) {
+                if (qSplitted[0] === r["Entry"]) {
+                  this.dataMap.set(q, r["Entry"])
+                }
+              }
+            }
+          }
         }
       }
     }
