@@ -23,12 +23,14 @@
     </div>
   }
   @if (selectedLogFile !== -1) {
-    <div class="form-floating">
-      <select class="form-select" id="logFileType" [(ngModel)]="settings.settings.extraData[selectedLogFile].type">
-        <option value="log">Log</option>
-        <option value="other">Other</option>
-      </select>
-      <label for="logFileType">File Type</label>
+    <div>
+      <div class="form-floating">
+        <select class="form-select" id="logFileType" [(ngModel)]="settings.settings.extraData[selectedLogFile].type">
+          <option value="log">Log</option>
+          <option value="other">Other</option>
+        </select>
+        <label for="logFileType">File Type</label>
+      </div>
     </div>
     <div class="log-file-content">
       <h5>{{settings.settings.extraData[selectedLogFile].name}}</h5>
