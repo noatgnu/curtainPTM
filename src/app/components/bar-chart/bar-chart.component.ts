@@ -34,7 +34,7 @@ export class BarChartComponent implements OnInit {
     this._data = value.raw
     if (this._data[this.dataService.rawForm.primaryIDs]) {
       this.title = "<b>" + this._data[this.dataService.rawForm.primaryIDs] + "</b>"
-      if (this.settings.settings.fetchUniprot) {
+      if (this.dataService.fetchUniProt) {
         this.uni = this.uniprot.getUniprotFromAcc(this._data[this.dataService.rawForm.primaryIDs])
 
         if (this.uni["Gene Names"] !== "") {
