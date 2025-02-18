@@ -34,11 +34,25 @@ export class BarChartComponent implements OnInit {
     this._data = value.raw
     if (this._data[this.dataService.rawForm.primaryIDs]) {
       this.title = "<b>" + this._data[this.dataService.rawForm.primaryIDs] + "</b>"
-      this.uni = this.uniprot.getUniprotFromAcc(this._data[this.dataService.rawForm.primaryIDs])
+      if (this.settings.settings.fetchUniprot) {
+        this.uni = this.uniprot.getUniprotFromAcc(this._data[this.dataService.rawForm.primaryIDs])
 
-      if (this.uni["Gene Names"] !== "") {
-        this.title = "<b>" + value.position.residue + value.position.position + " "+ this.uni["Gene Names"] + "(" + this._data[this.dataService.rawForm.primaryIDs] + ")" + "</b>"
+        if (this.uni["Gene Names"] !== "") {
+          this.title = "<b>" + value.position.residue + value.position.position + " "+ this.uni["Gene Names"] + "(" + this._data[this.dataService.rawForm.primaryIDs] + ")" + "</b>"
+        }
+      } else {
+        if (this.dataService.differentialForm.geneNames !== "") {
+          const result = this.dataService.currentDF.where(row => (row[this.dataService.differentialForm.primaryIDs] === this._data[this.dataService.rawForm.primaryIDs])).toArray()
+          if (result.length > 0) {
+            const diffData = result[0]
+            this.title = "<b>" + value.position.residue + value.position.position + " "+ diffData[this.dataService.differentialForm.geneNames] + "(" + this._data[this.dataService.rawForm.primaryIDs] + ")" + "</b>"
+          }
+        } else {
+          this.title = "<b>" + this._data[this.dataService.rawForm.primaryIDs] + "</b>"
+        }
       }
+
+
       this.drawBarChart()
       this.graphLayout["title"] = this.title
       this.graphLayoutAverage["title"] = this.title
