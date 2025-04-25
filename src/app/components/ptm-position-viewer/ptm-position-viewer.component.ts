@@ -82,13 +82,16 @@ export class PtmPositionViewerComponent implements OnInit {
       this.getKinaseLibrary()
       this.uni = uni
       const mods: any = {}
-      this.uni["Modified residue"].forEach((m: any) => {
+      if (this.uni["Modified residue"]) {
+        this.uni["Modified residue"].forEach((m: any) => {
 
-        if (!mods[m.modType]) {
-          mods[m.modType] = []
-        }
-        mods[m.modType].push(m)
-      })
+          if (!mods[m.modType]) {
+            mods[m.modType] = []
+          }
+          mods[m.modType].push(m)
+        })
+      }
+
       this.uniMods = Object.keys(mods)
       for (const d of this.ptm.databases) {
         if (d.value !== "GLYCONNECTN" && d.value !== "GLYCONNECTO") {
@@ -394,11 +397,14 @@ export class PtmPositionViewerComponent implements OnInit {
   }
 
   gatherMods() {
-    this.uni["Modified residue"].forEach((m: any) => {
-      if (this.selectedUniProt.includes(m.modType)) {
-        this.unidMap["UniProt"][m.position - 1] = m
-      }
-    })
+    if (this.uni["Modified residue"]) {
+      this.uni["Modified residue"].forEach((m: any) => {
+        if (this.selectedUniProt.includes(m.modType)) {
+          this.unidMap["UniProt"][m.position - 1] = m
+        }
+      })
+    }
+
     for (const d of this.dbSelected) {
 
       const dbName = this.ptm.databaseNameMap[d]
