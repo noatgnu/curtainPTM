@@ -1,0 +1,25 @@
+<div class="modal-header">
+  <h5 class="modal-title">
+    Content Citation
+  </h5>
+</div>
+<div class="modal-body">
+  <div>
+    <div class="form-floating">
+      <select class="form-select" id="templates" [(ngModel)]="template">
+        @for (s of templates; track s) {
+          <option value="{{s}}">{{s}}</option>
+        }
+      </select>
+      <label for="templates">Style</label>
+    </div>
+  </div>
+  <div [innerHTML]="data">
+  </div>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="close()">Close</button>
+  <button class="btn btn-primary" (click)="exportCitation()">Export Citation</button>
+</div>
+
+

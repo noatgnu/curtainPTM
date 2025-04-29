@@ -29,6 +29,9 @@ import {decryptAESData, decryptAESKey, importAESKey} from "curtain-web-api/build
 })
 export class HomeComponent implements OnInit {
 
+  isDOI: boolean = false;
+  doiMetadata: any = {}
+  loadingDataCite: boolean = false
   finished: boolean = false
   rawFiltered: IDataFrame = new DataFrame()
   differentialFiltered:  ISeries<number, IDataFrame<number, any>> = new Series()
@@ -67,6 +70,31 @@ export class HomeComponent implements OnInit {
         console.log(params)
         if (params) {
           if (params["settings"] && params["settings"].length > 0) {
+            if (params["settings"].startsWith("doi.org/")) {
+              this.isDOI = true
+              this.loadingDataCite = true
+              this.toast.show("Initialization", "Fetching data from DOI").then()
+              const meta = document.createElement("meta");
+              meta.name = "DC.identifier";
+              meta.content = params["settings"];
+              meta.scheme = "DCTERMS.URI";
+              document.head.appendChild(meta);
+              const doiID = params["settings"].replace("doi.org/", "")
+              console.log(doiID)
+              this.web.getDataCiteMetaData(doiID).subscribe((data) => {
+                console.log(data)
+                this.loadingDataCite = false
+                this.doiMetadata = data
+                if (data.data.attributes.alternateIdentifiers.length > 0) {
+                  this.getDOISessionData(data.data.attributes.alternateIdentifiers[0]["alternateIdentifier"], params["settings"]).then()
+                }
+
+              })
+
+              return
+            } else {
+              this.isDOI = false
+            }
             const settings = params["settings"].split("&")
             let token: string = ""
             if (settings.length > 1) {
@@ -129,6 +157,28 @@ export class HomeComponent implements OnInit {
         }
       })
     })
+  }
+
+  async getDOISessionData(url: string, doiLink: string) {
+    this.toast.show("Initialization", "Downloading data from DOI link", undefined, undefined, "download").then()
+    try {
+      const data =  await this.accounts.curtainAPI.postSettings("", "", this.onDownloadProgress, url)
+      if (data.data) {
+        this.restoreSettings(data.data).then(() => {
+          this.uniqueLink = location.origin + "/#/" + encodeURIComponent(doiLink)
+          this.settings.settings.currentID = doiLink
+          if (this.data.session) {
+            this.data.session.permanent = true
+          }
+          this.data.restoreTrigger.next(true)
+        })
+      }
+    } catch (e) {
+      console.log(e)
+      this.toast.show("Initialization", "Error: DOI link is not valid").then()
+      this.data.downloadProgress.next(100)
+    }
+
   }
 
   async getSessionData(id: string, token: string = "") {

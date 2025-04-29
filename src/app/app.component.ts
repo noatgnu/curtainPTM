@@ -4,6 +4,8 @@ import {SwUpdate} from "@angular/service-worker";
 import {Subscription} from "rxjs";
 import {SettingsService} from "./settings.service";
 import {environment} from "../environments/environment";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {CurtainStatsSummaryComponent} from "./components/curtain-stats-summary/curtain-stats-summary.component";
 
 @Component({
     selector: 'app-root',
@@ -15,7 +17,7 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   title = 'CurtainPTM';
   newVersionSubscription: Subscription|undefined;
   baseURL = environment.apiURL
-  constructor(private accounts: AccountsService, private swUpdate: SwUpdate, private settings: SettingsService) {
+  constructor(private accounts: AccountsService, private swUpdate: SwUpdate, private settings: SettingsService, private modal: NgbModal) {
     const path = document.URL.replace(window.location.origin+"/", "")
     if (path.startsWith("?code=")) {
       const code = path.split("=")
@@ -41,5 +43,8 @@ export class AppComponent implements AfterViewInit, OnDestroy {
     if (this.newVersionSubscription) {
       this.newVersionSubscription.unsubscribe();
     }
+  }
+  openStatsSummary() {
+    this.modal.open(CurtainStatsSummaryComponent, {size: "xl"})
   }
 }

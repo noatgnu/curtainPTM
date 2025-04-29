@@ -6,11 +6,13 @@ import {GlyconnectService} from "./glyconnect.service";
 import {PspService} from "./psp.service";
 import {PlmdService} from "./plmd.service";
 import {CarbonyldbService} from "./carbonyldb.service";
-
+import {environment} from "../environments/environment";
+import {DataCiteMetadata} from "./data-cite-metadata";
 @Injectable({
   providedIn: 'root'
 })
 export class WebService {
+  dataciteURL: string = environment.datacite
   siteProperties: any = {
     non_user_post: true
   }
@@ -144,4 +146,7 @@ export class WebService {
     return this.http.get("https://raw.githubusercontent.com/PRIDE-Archive/px-submission-tool/master/src/main/resources/cv/"+constantType+".cv", {responseType: "text", observe: "body"})
   }
 
+  getDataCiteMetaData(doi: string) {
+    return this.http.get<DataCiteMetadata>(`${this.dataciteURL}/`+doi, {responseType: "json", observe: "body"})
+  }
 }

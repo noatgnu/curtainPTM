@@ -1,30 +1,41 @@
 <app-toast-container aria-live="polite" aria-atomic="true"></app-toast-container>
 <router-outlet></router-outlet>
-<div class="container">
-  <hr/>
-  <footer class="py-5">
-    <div class="row">
-      <div class="col-5">
-        <img src="assets/logo/UKRI_MRC_%20PPU_Dundee.png" class="mx-auto" height="132" width="981" alt="mrc-ppu-log">
+<div class="bg-light mt-5">
+  <div class="container">
+    <footer class="py-4">
+      <div class="row">
+        <div class="col-md-6">
+          <h5>Resources</h5>
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class="nav-link p-0 text-muted" href="https://www.pnas.org/doi/full/10.1073/pnas.2312676121" target="_blank">Publication</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link p-0 text-danger" href="https://celsus.muttsu.xyz/admin" target="_blank">Administration Portal</a>
+            </li>
+          </ul>
+        </div>
+        <div class="col-md-6">
+          <h5>Project Links</h5>
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class="nav-link p-0 text-muted" href="https://github.com/Alessi-Lab/celsusdjango" target="_blank">Backend Repository</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link p-0 text-muted" href="https://github.com/Alessi-Lab/curtainPTM" target="_blank">Frontend Repository</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link p-0 text-muted" href="https://github.com/Alessi-Lab/uniprotparserjs">UniProt Parser JS</a>
+            </li>
+          </ul>
+        </div>
       </div>
-    </div>
-    <div class="row mt-4">
-      <div class="col-5">
-        <img src="assets/logo/ASAP_FullColor.png" class="mx-auto" alt="asap-logo">
+      <div class="d-flex justify-content-between align-items-center mt-4">
+        <p class="mb-0">
+          With support from <a href="https://parkinsonsroadmap.org/">Aligning Science Across Parkinson's</a>
+        </p>
+        <img src="assets/logo/UKRI_MRC_%20PPU_Dundee.png" height="40" alt="MRC PPU Logo" (click)="openStatsSummary()">
       </div>
-    </div>
-    <div class="row">
-      <div class="p-2">
-        <p class="text-secondary">
-          <span class="bi bi-github"></span> GitHub: <a href="https://github.com/Alessi-Lab/celsusdjango">Backend</a> | <a href="https://github.com/alessi-lab/curtainPTM">Frontend</a> | <a href="https://github.com/Alessi-Lab/curtain-web-api">JS API</a> | <a href="https://github.com/Alessi-Lab/uniprotparserjs">UniProt Parser JS</a>
-        </p>
-        <p class="text-secondary">
-          <span class="bi bi-journal"></span> <a href="https://www.pnas.org/doi/full/10.1073/pnas.2312676121">Publication</a>
-        </p>
-        <p class="text-danger">
-          <span class="bi bi-person-workspace"> <a href="{{baseURL}}admin">Admin Portal</a></span>
-        </p>
-      </div>
-    </div>
-  </footer>
+    </footer>
+  </div>
 </div>

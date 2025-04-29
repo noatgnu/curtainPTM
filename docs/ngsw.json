@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1745602882219,
+  "timestamp": 1745932486597,
   "index": "/index.html",
   "assetGroups": [
     {
@@ -11,16 +11,16 @@
         "ignoreVary": true
       },
       "urls": [
-        "/17.a884cac68a2d8f8a.js",
-        "/55.45fd48575e0839e7.js",
+        "/chunk-JEL3XU2C.js",
+        "/chunk-N57AJHA5.js",
         "/favicon.ico",
         "/index.html",
-        "/main.8fde10ca5279b915.js",
+        "/main-E6GDU3SK.js",
         "/manifest.webmanifest",
-        "/polyfills.6c513b29db036035.js",
-        "/runtime.a712cd7e57140103.js",
-        "/scripts.12af90f1c3eb0799.js",
-        "/styles.6ac70248e4f9ba93.css"
+        "/polyfills-TDZWUUU5.js",
+        "/scripts-UWB6B7W7.js",
+        "/styles-7XK3T7F5.css",
+        "/worker-L7HZJU7O.js"
       ],
       "patterns": []
     },
@@ -32,7 +32,6 @@
         "ignoreVary": true
       },
       "urls": [
-        "/3rdpartylicenses.txt",
         "/assets/databases/Acetylation_PLMD.tsv",
         "/assets/databases/Acetylation_PSP.tsv",
         "/assets/databases/Kinase_Substrate_PSP.tsv",
@@ -77,18 +76,13 @@
         "/assets/proteinLists/pd.gwas.txt",
         "/assets/proteinLists/pd.txt",
         "/assets/proteinLists/phosphatases.txt",
-        "/assets/proteinLists/pink1.txt",
-        "/bootstrap-icons.70a9dee9e5ab72aa.woff",
-        "/bootstrap-icons.bfa90bda92a84a6a.woff2"
+        "/assets/proteinLists/pink1.txt"
       ],
       "patterns": []
     }
   ],
   "dataGroups": [],
   "hashTable": {
-    "/17.a884cac68a2d8f8a.js": "68ff8f5c89e5ed3f278284371527f60dd2e69ee3",
-    "/3rdpartylicenses.txt": "1242e30f84857d13ed46ab0130c2c39db860fe87",
-    "/55.45fd48575e0839e7.js": "00701592ddcabceaa5de6b8d99236ba0fc82668b",
     "/assets/databases/Acetylation_PLMD.tsv": "bb13456e320d4c2a0b132849fefee8238fd8bfa2",
     "/assets/databases/Acetylation_PSP.tsv": "fc579aa61abb198e152eda9546455d1916fc099f",
     "/assets/databases/Kinase_Substrate_PSP.tsv": "c0c823f79a400e766c8f9f5c1112471c0bd78c6a",
@@ -134,16 +128,16 @@
     "/assets/proteinLists/pd.txt": "915c4a708c5dc7227d0b8fdc5eb51b17b2342746",
     "/assets/proteinLists/phosphatases.txt": "c350ec4656fee8be08c7dead8fdd42a0cd20e350",
     "/assets/proteinLists/pink1.txt": "6b73c270d0407981851903bae49a622c0c22e0f8",
-    "/bootstrap-icons.70a9dee9e5ab72aa.woff": "d5831fd39baf13aff7626e483b9a089730f18604",
-    "/bootstrap-icons.bfa90bda92a84a6a.woff2": "020c3c6f9280a315e8425d7f92e15bcd0cdda1b2",
+    "/chunk-JEL3XU2C.js": "3f81b075477c91e02b3968f4186dcec52f687506",
+    "/chunk-N57AJHA5.js": "0596171feebf974cc1f5eeeef7f1e75616da8bca",
     "/favicon.ico": "22f6a4a3bcaafafb0254e0f2fa4ceb89e505e8b2",
-    "/index.html": "bb21ec697d89a206d628d23bce6918fa30a07570",
-    "/main.8fde10ca5279b915.js": "cbdbfed6cdd381229f4bc10c7e930ad2b1b25bdb",
+    "/index.html": "7649ee5500537a4c8be365f7cf71588e958cbcfb",
+    "/main-E6GDU3SK.js": "5c2a5a8be75063c37ba5043a1c828b384cc8ac91",
     "/manifest.webmanifest": "0eb74bee05d08791252872d45422389a4c8ede7e",
-    "/polyfills.6c513b29db036035.js": "44999fd5fb10a2d317d72eb9053a5d31f7b23ea5",
-    "/runtime.a712cd7e57140103.js": "3ab7ead3bcf01824a4cfa5c989be881f229bef81",
-    "/scripts.12af90f1c3eb0799.js": "e4bf05489d8b04dab93d4fcfb085111031a8cc1f",
-    "/styles.6ac70248e4f9ba93.css": "9778d77822b9d28eb18dbb40ff05d193336668c4"
+    "/polyfills-TDZWUUU5.js": "cc19aa84b795bbafde22b3dbf783c86defea20f2",
+    "/scripts-UWB6B7W7.js": "c19c2e37f277ce31484f2afac301a172646f6b25",
+    "/styles-7XK3T7F5.css": "bb21bdebe5daa651c4551729c1f261b6a4c667ba",
+    "/worker-L7HZJU7O.js": "0aed257e7520924b885879668adb5cd37236b6d3"
   },
   "navigationUrls": [
     {

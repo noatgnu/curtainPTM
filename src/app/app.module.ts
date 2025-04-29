@@ -4,7 +4,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './components/home/home.component';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import {NgbDropdownModule, NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import { ToastContainerComponent } from './components/toast-container/toast-container.component';
 import { FileFormComponent } from './components/file-form/file-form.component';
 import {FileInputWidgetComponent} from "./components/file-input-widget/file-input-widget.component";
@@ -48,7 +48,6 @@ import { VariantSelectionComponent } from './components/variant-selection/varian
 import { SessionExpiredModalComponent } from './components/session-expired-modal/session-expired-modal.component';
 import { DataSelectionManagementComponent } from './components/data-selection-management/data-selection-management.component';
 import { QrcodeModalComponent } from './components/qrcode-modal/qrcode-modal.component';
-import {NgxQrcodeStylingModule} from "ngx-qrcode-styling";
 import { DraggableElementComponent } from './components/draggable-element/draggable-element.component';
 import { SideFloatControlComponent } from './components/side-float-control/side-float-control.component';
 import { CollaborateModalComponent } from './components/collaborate-modal/collaborate-modal.component';
@@ -120,7 +119,7 @@ PlotlyModule.plotlyjs = PlotlyJS;
         QuillModule.forRoot(),
         ReactiveFormsModule,
         AccountsModule,
-        NgxQrcodeStylingModule,
+    NgbDropdownModule,
         ServiceWorkerModule.register('ngsw-worker.js', {
             enabled: !isDevMode(),
             // Register the ServiceWorker as soon as the application is stable

@@ -4,7 +4,7 @@ import {FormBuilder, FormControl} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {SettingsService} from "../../settings.service";
 import {ToastService} from "../../toast.service";
-import {Options} from "ngx-qrcode-styling";
+import QRCodeStyling, {Options} from "qr-code-styling";
 
 @Component({
     selector: 'app-collaborate-modal',
@@ -23,7 +23,7 @@ export class CollaborateModalComponent implements OnInit {
     width: 250,
     height: 250,
     data: location.origin + "/#/" + this.settings.settings.currentID + "&&" + this.ws.sessionID,
-    image: "assets/favicon.png",
+    image: "assets/favicon.128x128.png",
     margin: 5,
     dotsOptions: {
       color: "#003632",
@@ -45,6 +45,13 @@ export class CollaborateModalComponent implements OnInit {
   }
 
   ngOnInit(): void {
+  }
+  ngAfterViewInit() {
+    const qrCode = new QRCodeStyling(this.config);
+    const canvas = document.getElementById("canvas")
+    if (canvas) {
+      qrCode.append(canvas)
+    }
   }
 
   submit() {

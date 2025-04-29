@@ -1,0 +1,14 @@
+<div class="modal-header">
+  <h5 class="modal-title">Curtain Backend Weekly Stats - 30 days</h5>
+</div>
+<div class="modal-body">
+  <div>
+    <plotly-plot [data]="graphDataCreated" [layout]="graphLayoutCreated"></plotly-plot>
+  </div>
+  <div>
+    <plotly-plot [data]="graphDataDownload" [layout]="graphLayoutDownload"></plotly-plot>
+  </div>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">Close</button>
+</div>

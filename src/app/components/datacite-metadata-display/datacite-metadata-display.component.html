@@ -1,0 +1,128 @@
+@if (metadata) {
+  <div class="container mb-4">
+    <div class="card shadow-sm">
+      <!-- Header with title and DOI -->
+      <div class="card-header bg-light d-flex justify-content-between align-items-center">
+        <h4 class="card-title mb-0 text-primary">
+          <i class="bi bi-journal-text me-2"></i>{{metadata.data.attributes.titles[0].title}}
+        </h4>
+        <span class="badge bg-info text-dark">
+        <i class="bi bi-link-45deg"></i> {{metadata.data.attributes.doi}}
+      </span>
+      </div>
+
+      <div class="card-body">
+        <!-- Authors and Contributors Section -->
+        <div class="mb-4">
+          <h5 class="border-bottom pb-2"><i class="bi bi-people-fill me-2"></i>Authors & Contributors</h5>
+          <div class="mb-3">
+            <strong class="text-secondary me-2">Authors:</strong>
+            <div class="d-flex flex-wrap gap-1 mt-1">
+              @for (a of metadata.data.attributes.creators; track a) {
+                <span class="badge bg-primary" [ngbTooltip]="affiliation" placement="top">
+                <i class="bi bi-person-fill me-1"></i>{{a.name}}
+              </span>
+                <ng-template #affiliation>
+                  <div class="p-1">
+                    <strong>Affiliations:</strong>
+                    @for (aff of a.affiliation; track aff) {
+                      <div class="mt-1">{{aff}}</div>
+                    }
+                  </div>
+                </ng-template>
+              }
+            </div>
+          </div>
+
+          @if (metadata.data.attributes.contributors.length > 0) {
+            <div>
+              <strong class="text-secondary me-2">Contributors:</strong>
+              <div class="d-flex flex-wrap gap-1 mt-1">
+                @for (c of metadata.data.attributes.contributors; track c) {
+                  <span class="badge bg-secondary" [ngbTooltip]="affiliationContributor" placement="top">
+                  <i class="bi bi-person me-1"></i>{{c.name}}
+                </span>
+                  <ng-template #affiliationContributor>
+                    <div class="p-1">
+                      <strong>Affiliations:</strong>
+                      @for (aff of c.affiliation; track aff) {
+                        <div class="mt-1">{{aff}}</div>
+                      }
+                    </div>
+                  </ng-template>
+                }
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Publication Info -->
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <div class="card h-100 bg-light">
+              <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-info-circle me-2"></i>Publication Details</h5>
+                <div class="mt-3">
+                  <p><strong>DOI:</strong> <a href="https://doi.org/{{metadata.data.attributes.doi}}" target="_blank">https://doi.org/{{metadata.data.attributes.doi}}</a></p>
+                  <p><strong>Publisher:</strong> {{metadata.data.attributes.publisher}}</p>
+                  <p><strong>Publication Year:</strong> {{metadata.data.attributes.publicationYear}}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="card h-100 bg-light">
+              <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-shield-check me-2"></i>Rights & Licenses</h5>
+                <div class="mt-3">
+                  @for (r of metadata.data.attributes.rightsList; track r) {
+                    <div class="mb-2">
+                      <a href="{{r.rigtsUri}}" class="d-block">{{r.rights}}</a>
+                      <span class="text-muted">{{r.rightsIdentifier}}</span>
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Descriptions -->
+        <div class="mb-3">
+          <h5 class="border-bottom pb-2"><i class="bi bi-file-text me-2"></i>Descriptions</h5>
+          @for (d of metadata.data.attributes.descriptions; track d) {
+            <div class="card mb-3">
+              <div class="card-header bg-light">
+                <strong>{{d.descriptionType}}</strong>
+              </div>
+              <div class="card-body">
+                <quill-view [content]="d.description"></quill-view>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Actions Footer -->
+      <div class="card-footer bg-light">
+        <div class="d-flex flex-wrap gap-2">
+          <button class="btn btn-success" (click)="openCitation()">
+            <i class="bi bi-quote me-1"></i>Cite This Dataset
+          </button>
+          <button class="btn btn-primary" (click)="clickDownload.emit('different')">
+            <i class="bi bi-file-earmark-arrow-down me-1"></i>Download Differential Analysis
+          </button>
+          <button class="btn btn-primary" (click)="clickDownload.emit('searched')">
+            <i class="bi bi-search me-1"></i>Download Searched Data
+          </button>
+          @if (mediaID) {
+            <a type="button" class="btn btn-warning" href="https://commons.datacite.org/api/download-reports/doi/related-works?id={{mediaID}}" target="_blank">
+              <i class="bi bi-cloud-arrow-down me-1"></i>Download Complete Session Data
+            </a>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+}

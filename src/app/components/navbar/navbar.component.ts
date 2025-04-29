@@ -29,6 +29,9 @@ import {EncryptionSettingsComponent} from "../encryption-settings/encryption-set
 import {CurtainEncryption, saveToLocalStorage} from "curtain-web-api";
 import {PrimaryIdExportModalComponent} from "../primary-id-export-modal/primary-id-export-modal.component";
 import {LogFileModalComponent} from "../log-file-modal/log-file-modal.component";
+import {DataCiteCurtain} from "../../data-cite-metadata";
+import {DataciteAdminManagementComponent} from "../datacite-admin-management/datacite-admin-management.component";
+import {DataciteComponent} from "../datacite/datacite.component";
 
 @Component({
     selector: 'app-navbar',
@@ -37,6 +40,9 @@ import {LogFileModalComponent} from "../log-file-modal/log-file-modal.component"
     standalone: false
 })
 export class NavbarComponent implements OnInit {
+  @Input() loadingDataCite: boolean = false
+  @Input() doiMetadata: any = {}
+  @Input() isDOI: boolean = false
   @Input() finished: boolean = false
   @Input() uniqueLink: string = ""
   @Output() updateSelection: EventEmitter<boolean> = new EventEmitter<boolean>()
@@ -44,7 +50,7 @@ export class NavbarComponent implements OnInit {
   progressEvent: any = {}
   subscription: Subscription = new Subscription();
   @Input() permanent: boolean = false
-
+  showAlert: boolean = true;
   _gdprAccepted: boolean = false
 
   get gdprAccepted(): boolean {
@@ -332,5 +338,34 @@ export class NavbarComponent implements OnInit {
 
   openLogFileModal() {
     const ref = this.modal.open(LogFileModalComponent, {scrollable: true, size: "xl"})
+  }
+
+  openDataciteDOI() {
+    const ref = this.modal.open(DataciteComponent, {scrollable: true, size: "xl"})
+    ref.componentInstance.linkID = this.settings.settings.currentID
+    if (this.data.session) {
+      if (this.data.session.data_cite) {
+        ref.componentInstance.dataCiteMetadata = this.data.session.data_cite
+        ref.componentInstance.lock = this.data.session.data_cite.lock
+      }
+    }
+
+    ref.closed.subscribe((data: DataCiteCurtain) => {
+      if (data) {
+        //this.uniqueLink = location.origin + "/#/" + encodeURIComponent(`doi.org/${data.doi}`)
+        //this.settings.settings.currentID = `doi.org/${data.doi}`
+        //this.permanent = true
+        //this.isDOI = true
+        if (this.data.session) {
+          //this.data.session.permanent = true
+          this.data.session.data_cite = data
+        }
+      }
+    })
+  }
+
+  openDataciteAdminManagement() {
+    const ref = this.modal.open(DataciteAdminManagementComponent, {scrollable: true, size: "xl", backdrop: "static"})
+
   }
 }

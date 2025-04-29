@@ -12,6 +12,7 @@ import {loadFromLocalStorage} from "curtain-web-api";
   providedIn: 'root'
 })
 export class DataService {
+  draftDataCiteCount: number = 0
   bypassUniProt: boolean = false
   instructorMode: boolean = false
   loadDataTrigger: Subject<boolean> = new Subject<boolean>()

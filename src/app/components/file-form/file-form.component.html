@@ -1,186 +1,280 @@
-<div class="container">
+<div class="container py-3">
   <div class="accordion">
     <div class="accordion-item">
       <h2 class="accordion-header">
-        <button [ngClass]="{'accordion-button': true, 'collapsed': iscollapsed}" type="button" (click)="iscollapsed=!iscollapsed">
-          Data Parameters Input
+        <button class="accordion-button" [class.collapsed]="iscollapsed" type="button" (click)="iscollapsed=!iscollapsed">
+          <span class="mb-0">Data Parameters Input</span>
         </button>
       </h2>
-      <div #collapse="ngbCollapse" [(ngbCollapse)]="iscollapsed">
+      <div class="accordion-collapse" [ngbCollapse]="iscollapsed">
         <div class="accordion-body">
-          <div class="card">
-            <div class="card-body">
-              <div class="row">
-                <app-file-input-widget (eventProgress)="handleFileLoadingProgress($event, 'differential analysis file')" [fileType]="'Differential Analysis File'" (readData)="handleFile($event, false)"></app-file-input-widget>
-              </div>
-              <div class="row">
-                <app-file-input-widget (eventProgress)="handleFileLoadingProgress($event, 'raw file')" [fileType]="'Raw File'" (readData)="handleFile($event, true)"></app-file-input-widget>
-              </div>
-              <small><a href="https://curtainptm.proteo.info/#/85970b1d-8052-4d6f-bf67-654396534d76" target="_blank">Example session</a></small>
+          <!-- File Upload Section -->
+          <div class="row mb-4">
+            <div class="col-md-6">
+              <app-file-input-widget
+                (eventProgress)="handleFileLoadingProgress($event, 'differential analysis file')"
+                [fileType]="'Differential Analysis File'"
+                (readData)="handleFile($event, false)">
+              </app-file-input-widget>
+            </div>
+
+            <div class="col-md-6">
+              <app-file-input-widget
+                (eventProgress)="handleFileLoadingProgress($event, 'raw file')"
+                [fileType]="'Raw File'"
+                (readData)="handleFile($event, true)">
+              </app-file-input-widget>
             </div>
           </div>
-          <div class="card mt-4">
+
+          <div class="text-end mb-3">
+            <a href="https://curtainptm.proteo.info/#/85970b1d-8052-4d6f-bf67-654396534d76"
+               target="_blank"
+               class="text-decoration-none">
+              <i class="bi bi-box-arrow-up-right me-1"></i>Example session
+            </a>
+          </div>
+
+          <!-- Differential Analysis File Section -->
+          <div class="card mb-4 border-primary border-opacity-25">
+            <div class="card-header bg-primary bg-opacity-10">
+              <span class="mb-0">Differential Analysis File</span>
+            </div>
             <div class="card-body">
-              <h5 class="card-title">Differential Analysis File</h5>
-              <div class="row">
-                <div class="col-3">
-                  <label for="primaryIDs">Select Primary IDs</label>
-                  <select class="form-select" id="primaryIDs" aria-label="Select Primary IDs" [(ngModel)]="data.differentialForm.primaryIDs">
-                    <option *ngFor="let c of data.differential.df.getColumnNames()" [value]="c">
-                      {{c}}
-                    </option>
+              <div class="row g-3">
+                <!-- Primary IDs -->
+                <div class="col-md-3">
+                  <label for="primaryIDs" class="form-label fw-bold">Primary IDs</label>
+                  <select class="form-select" id="primaryIDs" [(ngModel)]="data.differentialForm.primaryIDs">
+                    @for (column of data.differential.df.getColumnNames(); track column) {
+                      <option [value]="column">{{column}}</option>
+                    }
                   </select>
-                  <small class="text-muted">Unique value column</small>
+                  <small class="text-muted d-block mt-1">Unique value column</small>
                 </div>
-                <div class="col-3">
-                  <label for="primaryIDs">Select UniProt Accession IDs</label>
-                  <select class="form-select" id="accessionIDs" aria-label="Select Accession IDs" [(ngModel)]="data.differentialForm.accession">
-                    <option *ngFor="let c of data.differential.df.getColumnNames()" [value]="c">
-                      {{c}}
-                    </option>
-                  </select>
-                </div>
-                <div class="col-3" *ngIf="data.fetchUniProt === false">
-                  <label for="geneNames">Select Gene Names</label>
-                  <select class="form-select" id="geneNames" aria-label="Select Gene Names" [(ngModel)]="data.differentialForm.geneNames">
-                    <option *ngFor="let c of data.differential.df.getColumnNames()" [value]="c">
-                      {{c}}
-                    </option>
+
+                <!-- Accession IDs -->
+                <div class="col-md-3">
+                  <label for="accessionIDs" class="form-label fw-bold">UniProt Accession IDs</label>
+                  <select class="form-select" id="accessionIDs" [(ngModel)]="data.differentialForm.accession">
+                    @for (column of data.differential.df.getColumnNames(); track column) {
+                      <option [value]="column">{{column}}</option>
+                    }
                   </select>
                 </div>
-                <div class="col-3">
-                  <label for="foldChange">Select Fold Change</label>
-                  <select class="form-select" id="foldChange" aria-label="Select Fold Change" [(ngModel)]="data.differentialForm.foldChange">
-                    <option *ngFor="let c of data.differential.df.getColumnNames()" [value]="c">
-                      {{c}}
-                    </option>
-                  </select>
-                  <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="transformFC" [(ngModel)]="data.differentialForm.transformFC">
-                    <label for="transformFC">Perform log2 Transformation</label>
+
+                <!-- Gene Names (conditional) -->
+                @if (data.fetchUniProt === false) {
+                  <div class="col-md-3">
+                    <label for="geneNames" class="form-label fw-bold">Gene Names</label>
+                    <select class="form-select" id="geneNames" [(ngModel)]="data.differentialForm.geneNames">
+                      @for (column of data.differential.df.getColumnNames(); track column) {
+                        <option [value]="column">{{column}}</option>
+                      }
+                    </select>
                   </div>
-                  <div class="form-check">
-                    <input type="checkbox" id="reverseX" class="form-check-input" [(ngModel)]="data.differentialForm.reverseFoldChange">
-                    <label class="form-check-label" for="reverseX">Reverse fold change value</label>
+                }
+
+                <!-- Fold Change -->
+                <div class="col-md-3">
+                  <label for="foldChange" class="form-label fw-bold">Fold Change</label>
+                  <select class="form-select" id="foldChange" [(ngModel)]="data.differentialForm.foldChange">
+                    @for (column of data.differential.df.getColumnNames(); track column) {
+                      <option [value]="column">{{column}}</option>
+                    }
+                  </select>
+                  <div class="form-check mt-2">
+                    <input type="checkbox" class="form-check-input" id="transformFC"
+                           [(ngModel)]="data.differentialForm.transformFC">
+                    <label class="form-check-label" for="transformFC">Log<sub>2</sub> transform</label>
                   </div>
-                </div>
-                <div class="col-3">
-                  <label for="score">Select Probability Score</label>
-                  <select class="form-select" id="score" aria-label="Select Fold Change" [(ngModel)]="data.differentialForm.score">
-                    <option *ngFor="let c of data.differential.df.getColumnNames()" [value]="c">
-                      {{c}}
-                    </option>
-                  </select>
-                </div>
-                <div class="col-3">
-                  <label for="significant">Select Significant</label>
-                  <select class="form-select" id="Significant" aria-label="Select Significant" [(ngModel)]="data.differentialForm.significant">
-                    <option *ngFor="let c of data.differential.df.getColumnNames()" [value]="c">
-                      {{c}}
-                    </option>
-                  </select>
-                  <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="transformSignificant" [(ngModel)]="data.differentialForm.transformSignificant">
-                    <label for="transformSignificant">Perform -log10 Transformation</label>
+                  <div class="form-check mt-1">
+                    <input type="checkbox" id="reverseFC" class="form-check-input"
+                           [(ngModel)]="data.differentialForm.reverseFoldChange">
+                    <label class="form-check-label" for="reverseFC">Reverse values</label>
                   </div>
                 </div>
-                <div class="col-3">
-                  <label for="sequenceCol">Sequence Window</label>
-                  <select class="form-control" [(ngModel)]="data.differentialForm.sequence" id="sequenceCol">
-                    <option  *ngFor="let c of data.differential.df.getColumnNames()" [value]="c">{{c}}</option>
+
+                <!-- Score -->
+                <div class="col-md-3">
+                  <label for="score" class="form-label fw-bold">Probability Score</label>
+                  <select class="form-select" id="score" [(ngModel)]="data.differentialForm.score">
+                    @for (column of data.differential.df.getColumnNames(); track column) {
+                      <option [value]="column">{{column}}</option>
+                    }
                   </select>
                 </div>
-                <div class="col-3">
-                  <label for="peptideSequenceCol">Peptide sequences</label>
-                  <select class="form-control" id="peptideSequenceCol" [(ngModel)]="data.differentialForm.peptideSequence">
-                    <option  *ngFor="let c of data.differential.df.getColumnNames()" [value]="c">{{c}}</option>
+
+                <!-- Significance -->
+                <div class="col-md-3">
+                  <label for="significant" class="form-label fw-bold">Significance</label>
+                  <select class="form-select" id="significant" [(ngModel)]="data.differentialForm.significant">
+                    @for (column of data.differential.df.getColumnNames(); track column) {
+                      <option [value]="column">{{column}}</option>
+                    }
                   </select>
-                  <small class="text-muted">Modified sequence would have their modifications removed</small>
+                  <div class="form-check mt-2">
+                    <input type="checkbox" class="form-check-input" id="transformSignificant"
+                           [(ngModel)]="data.differentialForm.transformSignificant">
+                    <label class="form-check-label" for="transformSignificant">-Log<sub>10</sub> transform</label>
+                  </div>
                 </div>
-                <div class="col-3">
-                  <label for="positionCol">PTM positions</label>
-                  <select class="form-control" id="positionCol" [(ngModel)]="data.differentialForm.position">
-                    <option  *ngFor="let c of data.differential.df.getColumnNames()" [value]="c">{{c}}</option>
-                  </select>
-                </div>
-                <div class="col-3">
-                  <label for="positionPeptideCol">PTM position in peptides</label>
-                  <select class="form-control" id="positionPeptideCol" [(ngModel)]="data.differentialForm.positionPeptide">
-                    <option  *ngFor="let c of data.differential.df.getColumnNames()" [value]="c">{{c}}</option>
-                  </select>
-                </div>
-                <div class="col-3">
-                  <label for="comparison">Comparison</label>
-                  <select class="form-select" id="comparison" aria-label="Comparison" [(ngModel)]="data.differentialForm.comparison">
-                    <option *ngFor="let c of data.differential.df.getColumnNames()" [value]="c">
-                      {{c}}
-                    </option>
+
+                <!-- Sequence Window -->
+                <div class="col-md-3">
+                  <label for="sequenceCol" class="form-label fw-bold">Sequence Window</label>
+                  <select class="form-select" id="sequenceCol" [(ngModel)]="data.differentialForm.sequence">
+                    @for (column of data.differential.df.getColumnNames(); track column) {
+                      <option [value]="column">{{column}}</option>
+                    }
                   </select>
                 </div>
-                <div class="col-6" *ngIf="data.differentialForm.comparison !== ''">
-                  <label for="comparisonSelect">Select Comparison</label>
-                  <select class="form-select" id="comparisonSelect" aria-label="ComparisonSelect" [(ngModel)]="data.differentialForm.comparisonSelect">
-                    <option *ngFor="let c of data.differential.df.getSeries(data.differentialForm.comparison).distinct()" [value]="c">
-                      {{c}}
-                    </option>
+
+                <!-- Peptide Sequence -->
+                <div class="col-md-3">
+                  <label for="peptideSequenceCol" class="form-label fw-bold">Peptide Sequences</label>
+                  <select class="form-select" id="peptideSequenceCol" [(ngModel)]="data.differentialForm.peptideSequence">
+                    @for (column of data.differential.df.getColumnNames(); track column) {
+                      <option [value]="column">{{column}}</option>
+                    }
                   </select>
+                  <small class="text-muted d-block mt-1">Modified sequence would have their modifications removed</small>
+                </div>
+
+                <!-- PTM Positions -->
+                <div class="col-md-3">
+                  <label for="positionCol" class="form-label fw-bold">PTM Positions</label>
+                  <select class="form-select" id="positionCol" [(ngModel)]="data.differentialForm.position">
+                    @for (column of data.differential.df.getColumnNames(); track column) {
+                      <option [value]="column">{{column}}</option>
+                    }
+                  </select>
+                </div>
+
+                <!-- PTM Position in Peptides -->
+                <div class="col-md-3">
+                  <label for="positionPeptideCol" class="form-label fw-bold">PTM Position in Peptides</label>
+                  <select class="form-select" id="positionPeptideCol" [(ngModel)]="data.differentialForm.positionPeptide">
+                    @for (column of data.differential.df.getColumnNames(); track column) {
+                      <option [value]="column">{{column}}</option>
+                    }
+                  </select>
+                </div>
+
+                <!-- Comparison -->
+                <div class="col-md-3">
+                  <label for="comparison" class="form-label fw-bold">Comparison</label>
+                  <select class="form-select" id="comparison" [(ngModel)]="data.differentialForm.comparison">
+                    @for (column of data.differential.df.getColumnNames(); track column) {
+                      <option [value]="column">{{column}}</option>
+                    }
+                  </select>
+                </div>
+
+                <!-- Comparison Selection (conditional) -->
+                @if (data.differentialForm.comparison !== '') {
+                  <div class="col-md-6">
+                    <label for="comparisonSelect" class="form-label fw-bold">Select Comparison</label>
+                    <select multiple class="form-select" id="comparisonSelect" [(ngModel)]="data.differentialForm.comparisonSelect"
+                            size="4">
+                      @for (val of data.differential.df.getSeries(data.differentialForm.comparison).distinct().toArray(); track val) {
+                        <option [value]="val">{{val}}</option>
+                      }
+                    </select>
+                    <small class="text-muted d-block mt-1">Hold Ctrl/Cmd to select multiple values</small>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- Raw File Section -->
+          <div class="card mb-4 border-success border-opacity-25">
+            <div class="card-header bg-success bg-opacity-10">
+              <span class="mb-0">Raw File</span>
+            </div>
+            <div class="card-body">
+              <div class="row g-3">
+                <!-- Primary IDs for Raw -->
+                <div class="col-md-4">
+                  <label for="primaryIDsraw" class="form-label fw-bold">Primary IDs</label>
+                  <select class="form-select" id="primaryIDsraw" [(ngModel)]="data.rawForm.primaryIDs">
+                    @for (column of data.raw.df.getColumnNames(); track column) {
+                      <option [value]="column">{{column}}</option>
+                    }
+                  </select>
+                  <small class="text-muted d-block mt-1">
+                    Unique value column, should be the same column as differential analysis primary IDs
+                  </small>
+                </div>
+
+                <!-- Samples -->
+                <div class="col-md-8">
+                  <div class="form-group">
+                    <label for="samples" class="form-label fw-bold">Select Samples</label>
+                    <select multiple class="form-select" id="samples" [(ngModel)]="data.rawForm.samples"
+                            size="5">
+                      @for (column of data.raw.df.getColumnNames(); track column) {
+                        <option [value]="column">{{column}}</option>
+                      }
+                    </select>
+                    <small class="text-muted d-block mt-1">
+                      Sample column names in format "condition"."replicate" for automated experimental condition parsing
+                    </small>
+                  </div>
+
+                  <div class="form-check mt-2">
+                    <input type="checkbox" class="form-check-input" id="rawdatalog2"
+                           [(ngModel)]="data.rawForm.log2">
+                    <label for="rawdatalog2" class="form-check-label">Data has already been log2 transformed</label>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
-          <div class="card mt-4">
+          <!-- Session Description Section -->
+          <div class="card mb-4">
+            <div class="card-header bg-light">
+              <span class="mb-0">Session Information</span>
+            </div>
             <div class="card-body">
-              <h5 class="card-title">Raw File</h5>
-              <div class="row">
-                <div class="col-3">
-                  <label for="primaryIDsraw">Select Primary IDs</label>
-                  <select class="form-select" id="primaryIDsraw" aria-label="Select Primary IDs Raw" [(ngModel)]="data.rawForm.primaryIDs">
-                    <option *ngFor="let c of data.raw.df.getColumnNames()" [value]="c">
-                      {{c}}
-                    </option>
-                  </select>
-                  <small class="text-muted">Unique value column, should be the same column as differential analysis primary IDs</small>
-                </div>
-                <div class="col-5">
-                  <div class="form-group">
-                    <label for="samples">Select Samples</label>
-                    <select multiple class="form-select" id="samples" aria-label="Select Sampes" [(ngModel)]="data.rawForm.samples">
-                      <option *ngFor="let c of data.raw.df.getColumnNames()" [value]="c">
-                        {{c}}
-                      </option>
-                    </select>
-                  </div>
-                  <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="rawdatalog2" [(ngModel)]="data.rawForm.log2">
-                    <label for="rawdatalog2" class="form-check-label">Data has already been log2 transformed</label>
-                  </div>
-                  <small class="text-muted">Sample column names in format "condition"."replicate" for automated experimental condition parsing</small>
-                </div>
+              <div class="mb-3">
+                <label class="form-label fw-bold">Session Description</label>
+                <quill-editor [(ngModel)]="settings.settings.description"></quill-editor>
+              </div>
+
+              <div class="mb-3">
+                <label for="dataAnalysisContact" class="form-label fw-bold">Data Analysis Contact</label>
+                <input type="text" class="form-control" id="dataAnalysisContact"
+                       [(ngModel)]="settings.settings.dataAnalysisContact"
+                       placeholder="Enter contact information">
               </div>
             </div>
           </div>
-          <div class="form-group mb-2 mt-2">
-            <label><b>Session Description</b></label>
-            <quill-editor [(ngModel)]="settings.settings.description"></quill-editor>
-          </div>
-          <div class="form-group mb-2">
-            <label><b>Data Analysis Contact</b></label>
-            <input type="text" class="form-control" [(ngModel)]="settings.settings.dataAnalysisContact">
-          </div>
-          <div class="row mt-4">
-            <div class="col">
-              <button class="btn btn-primary" (click)="startWork()">Submit</button>
+
+          <!-- Submit Section -->
+          <div class="d-flex justify-content-between align-items-center mt-4">
+            <div class="form-check">
+              <input type="checkbox" class="form-check-input" id="fetchUniProt"
+                     [(ngModel)]="data.fetchUniProt">
+              <label for="fetchUniProt" class="form-check-label">
+                Fetch UniProt data
+              </label>
             </div>
-            <div class="col">
-              <div class="form-check">
-                <input type="checkbox" class="form-check-input" id="fetchUniprot" [(ngModel)]="data.fetchUniProt">
-                <label for="fetchUniprot">Fetch Uniprot Data Using Primary Ids</label>
-              </div>
-            </div>
+
+            <button class="btn btn-primary px-4" (click)="startWork()">
+              <i class="bi bi-play-fill me-1"></i>Submit
+            </button>
           </div>
-          <p class="mt-2">
-            <ngb-progressbar type="info" [value]="progressBar.value">
+
+          <!-- Progress Bar -->
+          <p class="mt-3">
+            <ngb-progressbar
+              [type]="progressBar.value < 100 ? 'info' : 'success'"
+              [value]="progressBar.value"
+              [striped]="progressBar.value < 100"
+              [animated]="progressBar.value < 100">
               {{progressBar.text}}
             </ngb-progressbar>
           </p>

@@ -1,0 +1,17 @@
+.gdpr-alert {
+  margin-top: 56px;
+}
+@media (max-width: 992px) {
+  .navbar .dropdown-menu {
+    width: 100%;
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+}
+
+.session-link {
+  max-width: 250px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

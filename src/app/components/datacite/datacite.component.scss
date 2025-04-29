@@ -1,0 +1,25 @@
+.accordion-button:not(.collapsed) {
+  background-color: rgba(13, 110, 253, 0.1);
+  border-bottom: 0;
+}
+
+.accordion-button:focus {
+  box-shadow: none;
+  border-color: rgba(0,0,0,.125);
+}
+
+.form-control:disabled, .form-select:disabled, .form-control[readonly] {
+  background-color: #f8f9fa;
+}
+
+/* Improve display on small screens */
+@media (max-width: 767.98px) {
+  .modal-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .modal-footer .btn-group {
+    margin-bottom: 0.5rem;
+  }
+}

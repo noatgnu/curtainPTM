@@ -1,0 +1,188 @@
+<div class="modal-header">
+  <h5 class="modal-title">
+    DOI Management
+  </h5>
+</div>
+<div class="modal-body d-flex flex-column gap-2">
+  <form [formGroup]="searchForm">
+    <div class="form-floating">
+      <input type="text" class="form-control" formControlName="searchTerm" id="search">
+      <label for="search">Search</label>
+    </div>
+  </form>
+  <ul [(activeId)]="activeID" ngbNav #nav="ngbNav" class="nav-tabs" (activeIdChange)="changed($event, searchForm.value.searchTerm)">
+    <li [ngbNavItem]="'user'" [destroyOnHide]="true" >
+      <button ngbNavLink>Manage Submitted Link</button>
+      <ng-template ngbNavContent>
+        @if (dataCiteDraftQuery) {
+          <table class="table table-striped">
+            <thead>
+            <tr>
+              <th scope="col">
+                ID
+              </th>
+              <th scope="col">
+                DOI
+              </th>
+              <th scope="col">
+                Title
+              </th>
+              <th scope="col">
+                Curtain URL
+              </th>
+              <th scope="col">
+                Status
+              </th>
+              <th scope="col">
+                Lock
+              </th>
+            </tr>
+            </thead>
+            <tbody>
+              @if (dataCiteDraftQuery) {
+                @for (r of dataCiteDraftQuery.results; track r.id) {
+                  <tr>
+                    <td>{{r.id}}</td>
+                    <td>{{r.doi}}</td>
+                    <td>{{r.title}}</td>
+                    <td>
+                      @if (r.form_data) {
+                        @if (r.form_data["url"].includes("curtain.proteo")) {
+                          <a href="https://curtain.proteo.info/#/{{r.curtain}}">{{r.curtain}}</a>
+                        } @else if (r.form_data["url"].includes("curtainptm.proteo")) {
+                          <a href="https://curtainptm.proteo.info/#/{{r.curtain}}">{{r.curtain}}</a>
+                        } @else {
+                          Invalid URL
+                        }
+                      } @else {
+                        Invalid URL
+                      }
+
+                    </td>
+                    <td>{{r.status}}</td>
+                    <td>
+                      @if (r.lock) {
+                        <span class="bi bi-lock"></span>
+                      } @else {
+                        <span class="bi bi-unlock"></span>
+                      }
+                    </td>
+                  </tr>
+                }
+              }
+            </tbody>
+          </table>
+          @if (dataCiteDraftQuery) {
+            <div class="d-flex">
+              <div class="p-2">
+                <ngb-pagination [(page)]="page" [boundaryLinks]="true" [maxSize]="10" [rotate]="true" [pageSize]="pageSize" [collectionSize]="dataCiteDraftQuery.count" (pageChange)="pageChange($event)"></ngb-pagination>
+              </div>
+            </div>
+          }
+        } @else {
+          <div class="alert alert-info">
+            There are no DOI links associated to this account.
+          </div>
+        }
+      </ng-template>
+    </li>
+    @if (accountService.curtainAPI.user.isStaff) {
+      <li [ngbNavItem]="'admin'" [destroyOnHide]="true">
+        <button ngbNavLink>Draft Approval</button>
+        <ng-template ngbNavContent>
+          @if (dataCiteDraftQuery) {
+            <table class="table table-striped">
+              <thead>
+              <tr>
+                <th scope="col">
+                  ID
+                </th>
+                <th scope="col">
+                  DOI
+                </th>
+                <th scope="col">
+                  Title
+                </th>
+                <th scope="col">
+                  Curtain URL
+                </th>
+                <th scope="col">
+                  Status
+                </th>
+                <th scope="col">
+                  Lock
+                </th>
+                <th scope="col">
+                  Actions
+                </th>
+              </tr>
+              </thead>
+              <tbody>
+                @if (dataCiteDraftQuery) {
+                  @for (r of dataCiteDraftQuery.results; track r.id) {
+                    <tr>
+                      <td>{{r.id}}</td>
+                      <td>{{r.doi}}</td>
+                      <td>{{r.title}}</td>
+                      <td>
+                        @if (r.form_data) {
+                          @if (r.form_data["url"].includes("curtain.proteo")) {
+                            <a href="https://curtain.proteo.info/#/{{r.curtain}}">{{r.curtain}}</a>
+                          } @else if (r.form_data["url"].includes("curtainptm.proteo")) {
+                            <a href="https://curtainptm.proteo.info/#/{{r.curtain}}">{{r.curtain}}</a>
+                          } @else {
+                            Invalid URL
+                          }
+                        } @else {
+                          Invalid URL
+                        }
+                      </td>
+                      <td>{{r.status}}</td>
+                      <td>
+                        @if (r.lock) {
+                          <span class="bi bi-lock"></span>
+                        } @else {
+                          <span class="bi bi-unlock"></span>
+                        }
+                      </td>
+                      <td>
+                        <div class="d-flex flex-wrap gap-2">
+                          @if (r.lock) {
+                            <button type="button" class="btn btn-sm btn-outline-warning" (click)="unlockDOI(r)" ngbTooltip="Unlock DataCite"><i class="bi bi-unlock"></i></button>
+                          } @else {
+                            <button type="button" class="btn btn-sm btn-outline-warning" (click)="lockDOI(r)" ngbTooltip="Lock DataCite"><i class="bi bi-lock"></i></button>
+                          }
+                          <button type="button" class="btn btn-sm btn-outline-success" (click)="approveDOI(r)" ngbTooltip="Approve DOI"><i class="bi bi-check"></i></button>
+                          <button type="button" class="btn btn-sm btn-outline-danger" (click)="rejectDOI(r)" ngbTooltip="Reject DataCite"><i class="bi bi-x"></i></button>
+                        </div>
+                      </td>
+                    </tr>
+                  }
+                }
+              </tbody>
+            </table>
+            @if (dataCiteDraftQuery) {
+              <div class="d-flex">
+                <div class="p-2">
+                  <ngb-pagination [(page)]="page" [boundaryLinks]="true" [maxSize]="10" [rotate]="true" [pageSize]="pageSize" [collectionSize]="dataCiteDraftQuery.count" (pageChange)="pageChange($event)"></ngb-pagination>
+                </div>
+              </div>
+            }
+          } @else {
+            <div class="alert alert-info">
+              No DOI are currently waiting for approval.
+            </div>
+          }
+
+        </ng-template>
+      </li>
+    }
+
+
+  </ul>
+  <div [ngbNavOutlet]="nav"></div>
+
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="close()">Close</button>
+</div>

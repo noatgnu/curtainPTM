@@ -3,18 +3,20 @@
 </div>
 <div class="modal-body">
   <div class="d-flex justify-content-center">
-    <div class="d-flex justify-content-center">
-      <ngx-qrcode-styling [config]="config" *ngIf="config.data !== ''"></ngx-qrcode-styling>
-    </div>
+    <!--    <ngx-qrcode-styling [config]="config" *ngIf="config.data !== ''"></ngx-qrcode-styling>-->
+    <div id="canvas"></div>
   </div>
+
   <div class="alert alert-info">
     <p class="mt-3">Scan the QR code to open the link on your mobile device.</p>
   </div>
 
   <div class="alert alert-warning">
-    <p>Mobile devices with low total system RAM or low amount of allocatable RAM for web process (iOS) might have problem with loading a full dataset in CurtainPTM</p>
+    <p>Mobile devices with low total system RAM or low amount of allocatable RAM
+      for web process (iOS) might have problem with loading a large dataset in Curtain</p>
   </div>
 </div>
 <div class="modal-footer">
   <button type="button" class="btn btn-secondary" (click)="close()">Close</button>
+  <button type="button" class="btn btn-primary" (click)="download()">Download</button>
 </div>

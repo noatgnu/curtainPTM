@@ -1,0 +1,909 @@
+<div class="modal-header bg-light">
+  <h5 class="modal-title d-flex align-items-center gap-2">
+    DOI Registration
+    @if(lock) {<span class="badge bg-secondary"><i class="bi bi-lock me-1"></i>Locked</span>}
+  </h5>
+</div>
+<div class="modal-body">
+  <div class="container mb-3">
+    @if (dataCiteMetadata) {
+      @if (dataCiteMetadata.status === "published") {
+        <div class="alert alert-success d-flex align-items-center">
+          <i class="bi bi-check-circle-fill me-2 fs-5"></i>
+          <div>
+            The DOI registration has been published. @if(lock){You can still view the information but you cannot edit it.} <br>
+            DOI: <a href="https://doi.org/{{dataCiteMetadata.doi}}" target="_blank">https://doi.org/{{dataCiteMetadata.doi}}</a>
+          </div>
+        </div>
+      } @else if (dataCiteMetadata.status === "rejected") {
+        <div class="alert alert-danger d-flex align-items-center">
+          <i class="bi bi-x-circle-fill me-2 fs-5"></i>
+          <div>
+            The DOI registration has been rejected. Please contact us for more details.
+          </div>
+        </div>
+      } @else {
+        <div class="alert alert-info d-flex align-items-center">
+          <i class="bi bi-hourglass-split me-2 fs-5"></i>
+          <div>
+            The DOI registration is locked during processing. @if(lock) {You can still view the information but you cannot edit it.} <br>
+            Destination DOI after approval: <a href="https://doi.org/{{dataCiteMetadata.doi}}" target="_blank">https://doi.org/{{dataCiteMetadata.doi}}</a>
+          </div>
+        </div>
+      }
+    }
+
+    @if (!this.accountsService.isOwner) {
+      <div class="alert alert-danger d-flex align-items-center">
+        <i class="bi bi-shield-exclamation me-2 fs-5"></i>
+        <div>
+          You are not the owner of this Curtain Session. You cannot register a DOI for it.
+        </div>
+      </div>
+    }
+    <div class="alert alert-info d-flex align-items-center">
+      <i class="bi bi-info-circle-fill me-2 fs-5"></i>
+      <div>
+        Your account has <strong>{{dataCiteQuota}}</strong> new DOI(s) registration remaining today. <span class="text-muted">(refresh every 24 hours)</span>
+      </div>
+    </div>
+  </div>
+
+
+  <form [formGroup]="dataCiteForm" class="needs-validation">
+    <!-- DOI Information section -->
+    <div class="card mb-3">
+      <div class="card-header bg-light d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 d-flex align-items-center">
+          <i class="bi bi-fingerprint me-2"></i>DOI Information
+        </h5>
+        <button class="btn btn-link p-0" type="button" (click)="isCollapsedInfo = !isCollapsedInfo">
+          <i class="bi" [ngClass]="isCollapsedInfo ? 'bi-chevron-down' : 'bi-chevron-up'"></i>
+        </button>
+      </div>
+      <div [ngbCollapse]="isCollapsedInfo">
+        <div class="card-body">
+          <p class="text-muted mb-3">These fields are automatically set by the system.</p>
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label for="prefix" class="form-label">DOI Prefix</label>
+              <input class="form-control" id="prefix" formControlName="prefix" required readonly>
+              <div class="form-text">The prefix of the DOI. This number will be automatically assigned by backend.</div>
+            </div>
+            <div class="col-md-4">
+              <label for="suffix" class="form-label">DOI Suffix</label>
+              <input class="form-control" id="suffix" formControlName="suffix" required readonly>
+              <div class="form-text">The suffix of the DOI. This number will be automatically assigned by backend.</div>
+            </div>
+            <div class="col-md-4">
+              <label for="url" class="form-label">DOI Landing Page URL</label>
+              <input class="form-control" id="url" formControlName="url" required readonly>
+              <div class="form-text">The URL of the landing page of the DOI. This URL will be automatically created using information from backend.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-3">
+      <div class="card-header bg-light d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 d-flex align-items-center">
+          <i class="bi bi-people-fill me-2"></i>Creators
+          <span class="badge bg-primary ms-2 rounded-pill">{{dataCiteForm.controls.creators.controls.length}}</span>
+        </h5>
+        <button class="btn btn-link p-0" type="button" (click)="isCollapsedCreators = !isCollapsedCreators">
+          <i class="bi" [ngClass]="isCollapsedCreators ? 'bi-chevron-down' : 'bi-chevron-up'"></i>
+        </button>
+      </div>
+      <div [ngbCollapse]="isCollapsedCreators">
+        <div class="card-body">
+          <p class="text-muted mb-3">The main researchers involved in producing the data, or the authors of the publication, in priority order. ORCID is required for all creators.</p>
+
+          <div class="d-flex flex-column gap-3" formArrayName="creators">
+            @for (c of dataCiteForm.controls.creators.controls; track c; let index = $index) {
+              <div class="card border-light">
+                <div class="card-header bg-light d-flex justify-content-between">
+                  <h6 class="mb-0">Creator #{{index+1}}</h6>
+                  <button class="btn btn-sm btn-outline-danger" (click)="removeCreator(index)">
+                    <i class="bi bi-trash me-1"></i>Remove
+                  </button>
+                </div>
+                <div class="card-body" [formGroupName]="index">
+                  <div class="row g-3">
+                    <div class="col-12" formArrayName="nameIdentifiers">
+                      <div [formGroupName]="0">
+                        <label class="form-label">ORCID</label>
+                        <input class="form-control" formControlName="nameIdentifier" required>
+                        <div class="form-text">ORCID iD of the creator. Will also be used to automatically fill Display Name, Given Name and Family Name fields</div>
+                      </div>
+                    </div>
+
+                    <div class="col-md-4">
+                      <label class="form-label">Display Name</label>
+                      <input class="form-control" formControlName="name" required>
+                      <div class="form-text">The name of the creator as it should appear in the citation.</div>
+                    </div>
+
+                    <div class="col-md-4">
+                      <label class="form-label">Given Name</label>
+                      <input class="form-control" formControlName="givenName">
+                    </div>
+
+                    <div class="col-md-4">
+                      <label class="form-label">Family Name</label>
+                      <input class="form-control" formControlName="familyName">
+                    </div>
+
+                    <div class="col-md-6">
+                      <label class="form-label">Creator Type</label>
+                      <select class="form-select" formControlName="nameType" required>
+                        @for (o of nameTypes; track o) {
+                          <option [value]="o">{{o}}</option>
+                        }
+                      </select>
+                      <div class="form-text">Whether or not the creator is an individual or an organization.</div>
+                    </div>
+                  </div>
+
+                  <div class="mt-3" formArrayName="affiliation">
+                    <h6 class="mb-2">Creator's Affiliations</h6>
+                    @for (a of c.controls.affiliation.controls; track a; let affIndex = $index) {
+                      <div class="card mb-3">
+                        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                          <span>Affiliation #{{affIndex+1}}</span>
+                          @if (affIndex > 0) {
+                            <button class="btn btn-sm btn-outline-danger" (click)="removeAffiliation('creators', index, affIndex)">
+                              <i class="bi bi-trash me-1"></i>Remove
+                            </button>
+                          }
+                        </div>
+                        <div class="card-body" [formGroupName]="affIndex">
+                          <div class="mb-3">
+                            <label class="form-label">Affiliation Search</label>
+                            <input [disabled]="lock" type="search" class="form-control" [ngbTypeahead]="searchAffiliations"
+                                   [resultFormatter]="resultFormatter" [inputFormatter]="inputFormatter"
+                                   [resultTemplate]="rt" (selectItem)="onAffiliationSelect($event, 'creators', index, affIndex)">
+                            <div class="form-text">The name of the institution with which the creator is affiliated. Autocomplete information is retrieve from ROR. Please choose the most appropriate option unless your affiliation could not be found.</div>
+                          </div>
+
+                          <div class="row g-3">
+                            <div class="col-md-6">
+                              <label class="form-label">Affiliation name</label>
+                              <input class="form-control" formControlName="name">
+                            </div>
+                            <div class="col-md-6">
+                              <label class="form-label">Affiliation Identifier</label>
+                              <input class="form-control" formControlName="affiliationIdentifier">
+                              <div class="form-text">The unique identifier of the affiliation or webpage.</div>
+                            </div>
+                            <div class="col-md-6">
+                              <label class="form-label">Affiliation Identifier Scheme</label>
+                              <input class="form-control" formControlName="affiliationIdentifierScheme">
+                              <div class="form-text">If the identifier is from an aggregated source, please add the name of the resource here.</div>
+                            </div>
+                            <div class="col-md-6">
+                              <label class="form-label">Scheme URI</label>
+                              <input class="form-control" formControlName="schemeUri">
+                              <div class="form-text">If the identifier is from an aggregated source, please add the URI of the resource here.</div>
+                            </div>
+                          </div>
+
+                          <div class="mt-2">
+                            <button class="btn btn-sm btn-outline-secondary" (click)="a.reset()">
+                              <i class="bi bi-arrow-counterclockwise me-1"></i>Reset
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    }
+
+                    <button type="button" class="btn btn-outline-primary" (click)="addAffiliation('creators', index)">
+                      <i class="bi bi-plus-circle me-1"></i>Add Affiliation
+                    </button>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+
+          <div class="mt-3">
+            <button type="button" class="btn btn-primary" (click)="addCreator()">
+              <i class="bi bi-plus-circle me-1"></i>Add Creator
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card mb-3">
+      <div class="card-header bg-light d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 d-flex align-items-center">
+          <i class="bi bi-card-heading me-2"></i>Title
+        </h5>
+        <button class="btn btn-link p-0" type="button" (click)="isCollapsedTitle = !isCollapsedTitle">
+          <i class="bi" [ngClass]="isCollapsedTitle ? 'bi-chevron-down' : 'bi-chevron-up'"></i>
+        </button>
+      </div>
+      <div [ngbCollapse]="isCollapsedTitle">
+        <div class="card-body">
+          <p class="text-muted mb-3">A name or title by which this resource is known.</p>
+          <div formArrayName="titles">
+            <div formGroupName="0">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label">Title</label>
+                  <input class="form-control" formControlName="title" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Title language</label>
+                  <select class="form-select" formControlName="lang" required>
+                    @for (o of getLanguageOptions(); track o.key) {
+                      <option [value]="o.key">{{o.value.nativeName}}</option>
+                    }
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr>
+    <div class="card mb-3">
+      <div class="card-header bg-light d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 d-flex align-items-center">
+          <i class="bi bi-journal-check me-2"></i>Publishing Information
+        </h5>
+        <button class="btn btn-link p-0" type="button" (click)="isCollapsedPublishing = !isCollapsedPublishing">
+          <i class="bi" [ngClass]="isCollapsedPublishing ? 'bi-chevron-down' : 'bi-chevron-up'"></i>
+        </button>
+      </div>
+      <div [ngbCollapse]="isCollapsedPublishing">
+        <div class="card-body">
+          <div formGroupName="publisher">
+            <div class="row g-3 mb-3">
+              <div class="col-12">
+                <label class="form-label">Publisher</label>
+                <input class="form-control" formControlName="name" required readonly>
+                <div class="form-text">The name of the entity that holds, archives, publishes prints, distributes, releases, issues, or produces the resource. For Curtain and CurtainPTM, as of current, the University of Dundee will be the publisher of the datasets.</div>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Publisher Identifier</label>
+                <input class="form-control" formControlName="publisherIdentifier" required readonly>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Publisher Identifier Scheme</label>
+                <input class="form-control" formControlName="publisherIdentifierScheme" required readonly>
+                <div class="form-text">The name of the identifier scheme.</div>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Publisher Identifier Scheme URI</label>
+                <input class="form-control" formControlName="schemeUri" required readonly>
+                <div class="form-text">The URI of the identifier scheme.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6">
+              <label class="form-label">Publication Year</label>
+              <input class="form-control" formControlName="publicationYear" required>
+              <div class="form-text">The year when the data was or will be made publicly available.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card mb-3">
+      <div class="card-header bg-light d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 d-flex align-items-center">
+          <i class="bi bi-tag me-2"></i>Related Subjects
+          <span class="badge bg-primary ms-2 rounded-pill">{{dataCiteForm.controls.subjects.controls.length}}</span>
+        </h5>
+        <button class="btn btn-link p-0" type="button" (click)="isCollapsedSubjects = !isCollapsedSubjects">
+          <i class="bi" [ngClass]="isCollapsedSubjects ? 'bi-chevron-down' : 'bi-chevron-up'"></i>
+        </button>
+      </div>
+      <div [ngbCollapse]="isCollapsedSubjects">
+        <div class="card-body">
+          <p class="text-muted mb-3">For Curtain and CurtainPTM, the subjects will be the FOS (Field of Science) of the OECD (Organisation for Economic Co-operation and Development) classification.</p>
+
+          <div class="d-flex flex-column gap-2" formArrayName="subjects">
+            @for (s of dataCiteForm.controls.subjects.controls; track s; let index = $index) {
+              <div class="row g-3 align-items-end" [formGroupName]="index">
+                <div class="col-md-10">
+                  <label class="form-label">Subject #{{index+1}}</label>
+                  <select class="form-select" formControlName="subject" required>
+                    @for (o of getSubjectOptions(); track o.fosId) {
+                      <option [value]="o.fosLabel">{{o.fosLabel}}</option>
+                    }
+                  </select>
+                </div>
+                <div class="col-md-2">
+                  <button type="button" class="btn btn-outline-danger w-100" (click)="removeSubject(index)">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+
+          <div class="mt-3">
+            <button type="button" class="btn btn-outline-primary" (click)="addSubject()">
+              <i class="bi bi-plus-circle me-1"></i>Add Subject
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card mb-3">
+      <div class="card-header bg-light d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 d-flex align-items-center">
+          <i class="bi bi-file-earmark-text me-2"></i>Rights and Licensing
+        </h5>
+        <button class="btn btn-link p-0" type="button" (click)="isCollapsedRights = !isCollapsedRights">
+          <i class="bi" [ngClass]="isCollapsedRights ? 'bi-chevron-down' : 'bi-chevron-up'"></i>
+        </button>
+      </div>
+      <div [ngbCollapse]="isCollapsedRights">
+        <div class="card-body">
+          <div class="d-flex flex-column gap-2" formArrayName="rightsList">
+            @for (r of dataCiteForm.controls.rightsList.controls; track r; let index = $index) {
+              <div class="row g-3" [formGroupName]="index">
+                <div class="col-md-6">
+                  <label class="form-label">Rights</label>
+                  <select class="form-select" formControlName="rights" required>
+                    @for (o of getLicenseOptions(); track o.licenseId) {
+                      <option [value]="o.name">{{o.name}}</option>
+                    }
+                  </select>
+                  <div class="form-text">The license of the resource. For the content of this DOI, you can choose between different flavour of CC-BY-4.0.</div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Rights URI</label>
+                  <input class="form-control" formControlName="rightsUri" required readonly>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr>
+    <div class="card mb-3">
+      <div class="card-header bg-light d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 d-flex align-items-center">
+          <i class="bi bi-people me-2"></i>Contributors
+          <span class="badge bg-primary ms-2 rounded-pill">{{dataCiteForm.controls.contributors.controls.length}}</span>
+        </h5>
+        <button class="btn btn-link p-0" type="button" (click)="isCollapsedContributors = !isCollapsedContributors">
+          <i class="bi" [ngClass]="isCollapsedContributors ? 'bi-chevron-down' : 'bi-chevron-up'"></i>
+        </button>
+      </div>
+      <div [ngbCollapse]="isCollapsedContributors">
+        <div class="card-body">
+          <p class="text-muted mb-3">The institution or person responsible for collecting, managing, distributing, or otherwise contributing to the development of the resource. ORCID is required for all contributors.</p>
+
+          <div class="d-flex flex-column gap-3" formArrayName="contributors">
+            @for (c of dataCiteForm.controls.contributors.controls; track c; let index = $index) {
+              <div class="card border-light">
+                <div class="card-header bg-light d-flex justify-content-between">
+                  <h6 class="mb-0">Contributor #{{index+1}}</h6>
+                  <button class="btn btn-sm btn-outline-danger" (click)="removeContributor(index)">
+                    <i class="bi bi-trash me-1"></i>Remove
+                  </button>
+                </div>
+                <div class="card-body" [formGroupName]="index">
+                  <!-- Similar structure to creators with appropriate fields -->
+                  <div class="row g-3">
+                    <div class="col-12" formArrayName="nameIdentifiers">
+                      <div [formGroupName]="0">
+                        <label class="form-label">ORCID</label>
+                        <input class="form-control" formControlName="nameIdentifier" required>
+                        <div class="form-text">ORCID iD of the contributor. Will also be used to automatically fill Display Name, Given Name and Family Name fields</div>
+                      </div>
+                    </div>
+
+                    <div class="col-md-4">
+                      <label class="form-label">Display Name</label>
+                      <input class="form-control" formControlName="name" required>
+                      <div class="form-text">The name of the contributor as it should appear in the citation.</div>
+                    </div>
+
+                    <div class="col-md-4">
+                      <label class="form-label">Given Name</label>
+                      <input class="form-control" formControlName="givenName">
+                    </div>
+
+                    <div class="col-md-4">
+                      <label class="form-label">Family Name</label>
+                      <input class="form-control" formControlName="familyName">
+                    </div>
+
+                    <div class="col-md-6">
+                      <label class="form-label">Contributor Type</label>
+                      <select class="form-select" formControlName="nameType" required>
+                        @for (o of nameTypes; track o) {
+                          <option [value]="o">{{o}}</option>
+                        }
+                      </select>
+                      <div class="form-text">Whether or not the contributor is an individual or an organization.</div>
+                    </div>
+                  </div>
+
+                  <div class="mt-3" formArrayName="affiliation">
+                    <h6 class="mb-2">Contributor's Affiliations</h6>
+                    @for (a of c.controls.affiliation.controls; track a; let affIndex = $index) {
+                      <!-- Similar structure to creator affiliations -->
+                      <div class="card mb-3">
+                        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                          <span>Affiliation #{{affIndex+1}}</span>
+                          @if (affIndex > 0) {
+                            <button class="btn btn-sm btn-outline-danger" (click)="removeAffiliation('contributors', index, affIndex)">
+                              <i class="bi bi-trash me-1"></i>Remove
+                            </button>
+                          }
+                        </div>
+                        <div class="card-body" [formGroupName]="affIndex">
+                          <div class="mb-3">
+                            <label class="form-label">Affiliation Search</label>
+                            <input [disabled]="lock" type="search" class="form-control" [ngbTypeahead]="searchAffiliations"
+                                   [resultFormatter]="resultFormatter" [inputFormatter]="inputFormatter"
+                                   [resultTemplate]="rt" (selectItem)="onAffiliationSelect($event, 'contributors', index, affIndex)">
+                            <div class="form-text">The name of the institution with which the contributor is affiliated.</div>
+                          </div>
+
+                          <div class="row g-3">
+                            <div class="col-md-6">
+                              <label class="form-label">Affiliation name</label>
+                              <input class="form-control" formControlName="name">
+                            </div>
+                            <div class="col-md-6">
+                              <label class="form-label">Affiliation Identifier</label>
+                              <input class="form-control" formControlName="affiliationIdentifier">
+                              <div class="form-text">The unique identifier of the affiliation.</div>
+                            </div>
+                            <div class="col-md-6">
+                              <label class="form-label">Affiliation Identifier Scheme</label>
+                              <input class="form-control" formControlName="affiliationIdentifierScheme">
+                            </div>
+                            <div class="col-md-6">
+                              <label class="form-label">Scheme URI</label>
+                              <input class="form-control" formControlName="schemeUri">
+                            </div>
+                          </div>
+
+                          <div class="mt-2">
+                            <button class="btn btn-sm btn-outline-secondary" (click)="a.reset()">
+                              <i class="bi bi-arrow-counterclockwise me-1"></i>Reset
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    }
+
+                    <button type="button" class="btn btn-outline-primary" (click)="addAffiliation('contributors', index)">
+                      <i class="bi bi-plus-circle me-1"></i>Add Affiliation
+                    </button>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+
+          <div class="mt-3">
+            <button type="button" class="btn btn-primary" (click)="addContributor()">
+              <i class="bi bi-plus-circle me-1"></i>Add Contributor
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card mb-3">
+      <div class="card-header bg-light d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 d-flex align-items-center">
+          <i class="bi bi-key me-2"></i>Alternate Identifiers
+          <span class="badge bg-primary ms-2 rounded-pill">{{dataCiteForm.controls.alternateIdentifiers.controls.length}}</span>
+        </h5>
+        <button class="btn btn-link p-0" type="button" (click)="isCollapsedAlternateIds = !isCollapsedAlternateIds">
+          <i class="bi" [ngClass]="isCollapsedAlternateIds ? 'bi-chevron-down' : 'bi-chevron-up'"></i>
+        </button>
+      </div>
+      <div [ngbCollapse]="isCollapsedAlternateIds">
+        <div class="card-body">
+          <p class="text-muted mb-3">These fields are automatically set by the system.</p>
+
+          <div class="d-flex flex-column gap-3" formArrayName="alternateIdentifiers">
+            @for (a of dataCiteForm.controls.alternateIdentifiers.controls; track a; let index = $index) {
+              <div class="card border-light" [formGroupName]="index">
+                <div class="card-header bg-light">
+                  <h6 class="mb-0">Alternate Identifier #{{index+1}}</h6>
+                </div>
+                <div class="card-body">
+                  <div class="row g-3">
+                    <div class="col-md-6">
+                      <label for="alternateId{{index}}" class="form-label">Alternate Identifier</label>
+                      <input id="alternateId{{index}}" class="form-control bg-light" formControlName="alternateIdentifier" readonly>
+                    </div>
+                    <div class="col-md-6">
+                      <label for="alternateIdType{{index}}" class="form-label">Alternate Identifier Type</label>
+                      <input id="alternateIdType{{index}}" class="form-control bg-light" formControlName="alternateIdentifierType" readonly>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card mb-3">
+      <div class="card-header bg-light d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 d-flex align-items-center">
+          <i class="bi bi-link-45deg me-2"></i>Related Identifiers
+          <span class="badge bg-primary ms-2 rounded-pill">{{dataCiteForm.controls.relatedIdentifiers.controls.length}}</span>
+        </h5>
+        <button class="btn btn-link p-0" type="button" (click)="isCollapsedRelatedIds = !isCollapsedRelatedIds">
+          <i class="bi" [ngClass]="isCollapsedRelatedIds ? 'bi-chevron-down' : 'bi-chevron-up'"></i>
+        </button>
+      </div>
+      <div [ngbCollapse]="isCollapsedRelatedIds">
+        <div class="card-body">
+          <p class="text-muted mb-3">Identifiers of related resources. For Curtain and CurtainPTM, the related identifiers will be the PRIDE, MassIVE, and other similar database with unique links to the raw data of the datasets.</p>
+
+          <div class="d-flex flex-column gap-3" formArrayName="relatedIdentifiers">
+            @for (r of dataCiteForm.controls.relatedIdentifiers.controls; track r; let index = $index) {
+              <div class="card border-light">
+                <div class="card-header bg-light d-flex justify-content-between">
+                  <h6 class="mb-0">Related Resource #{{index+1}}</h6>
+                  <button class="btn btn-sm btn-outline-danger" (click)="removeRelatedIdentifier(index)">
+                    <i class="bi bi-trash me-1"></i>Remove
+                  </button>
+                </div>
+                <div class="card-body" [formGroupName]="index">
+                  <div class="row g-3">
+                    <div class="col-md-6">
+                      <label class="form-label">Related Identifier</label>
+                      <input class="form-control" formControlName="relatedIdentifier" required>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label">Related Identifier Type</label>
+                      <select class="form-select" formControlName="relatedIdentifierType" required>
+                        <option value="">Select Type</option>
+                        <option value="ARK">ARK</option>
+                        <option value="arXiv">arXiv</option>
+                        <option value="DOI">DOI</option>
+                        <option value="URL">URL</option>
+                        <!-- Other options -->
+                      </select>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label">Relation Type</label>
+                      <select class="form-select" formControlName="relationType" required>
+                        <option value="">Select relation</option>
+                        <option value="IsCitedBy">Is cited by</option>
+                        <option value="Cites">Cites</option>
+                        <option value="IsSupplementTo">Is supplement to</option>
+                        <option value="IsSupplementedBy">Is supplemented by</option>
+                        <option value="HasMetadata">Has metadata</option>
+                        <!-- Other options -->
+                      </select>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label">Resource Type</label>
+                      <select class="form-select" formControlName="resourceTypeGeneral" required>
+                        <option value="">Select resource type</option>
+                        <option value="Dataset">Dataset</option>
+                        <option value="Software">Software</option>
+                        <option value="Text">Text</option>
+                        <!-- Other options -->
+                      </select>
+                    </div>
+                  </div>
+
+                  @if (checkHasMetadataScheme(index)) {
+                    <div class="row g-3 mt-2">
+                      <div class="col-md-4">
+                        <label class="form-label">Metadata Scheme</label>
+                        <input class="form-control" formControlName="relatedMetadataScheme">
+                      </div>
+                      <div class="col-md-4">
+                        <label class="form-label">Scheme URI</label>
+                        <input class="form-control" formControlName="schemeUri">
+                      </div>
+                      <div class="col-md-4">
+                        <label class="form-label">Scheme Type</label>
+                        <input class="form-control" formControlName="schemeType">
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+
+          <div class="mt-3 d-flex gap-2 flex-wrap">
+            <button type="button" class="btn btn-primary" (click)="addRelatedIdentifier('')">
+              <i class="bi bi-plus-circle me-1"></i>Add Related Identifier
+            </button>
+            <button type="button" class="btn btn-outline-primary" (click)="addRelatedIdentifier('PRIDE')">
+              <i class="bi bi-database me-1"></i>Add PRIDE/MassIVE Link
+            </button>
+            <button type="button" class="btn btn-outline-primary" (click)="addRelatedIdentifier('SDRF-Proteomics')">
+              <i class="bi bi-file-earmark-code me-1"></i>Add SDRF Metadata
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card mb-3">
+      <div class="card-header bg-light d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 d-flex align-items-center">
+          <i class="bi bi-card-text me-2"></i>Descriptions
+          <span class="badge bg-primary ms-2 rounded-pill">{{dataCiteForm.controls.descriptions.controls.length}}</span>
+        </h5>
+        <button class="btn btn-link p-0" type="button" (click)="isCollapsedDescriptions = !isCollapsedDescriptions">
+          <i class="bi" [ngClass]="isCollapsedDescriptions ? 'bi-chevron-down' : 'bi-chevron-up'"></i>
+        </button>
+      </div>
+      <div [ngbCollapse]="isCollapsedDescriptions">
+        <div class="card-body">
+          <p class="text-muted mb-3">A description of the resource. For Curtain and CurtainPTM, the description will be the abstract of the research as well as the methods utilized to acquire and process.</p>
+
+          <div class="d-flex flex-column gap-3" formArrayName="descriptions">
+            @for (d of dataCiteForm.controls.descriptions.controls; track d; let index = $index) {
+              <div class="card border-light">
+                <div class="card-header bg-light d-flex justify-content-between">
+                  <h6 class="mb-0">Description #{{index+1}}</h6>
+                  <button class="btn btn-sm btn-outline-danger" (click)="removeDescription(index)">
+                    <i class="bi bi-trash me-1"></i>Remove
+                  </button>
+                </div>
+                <div class="card-body" [formGroupName]="index">
+                  <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                      <label class="form-label" for="descType{{index}}">Description Type</label>
+                      <input class="form-control" id="descType{{index}}" formControlName="descriptionType" required readonly>
+                      <div class="form-text">Type of description (abstract, methods, etc.)</div>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label" for="desc{{index}}">Description</label>
+                    <quill-editor id="desc{{index}}" formControlName="description" class="bg-white"></quill-editor>
+                    <div class="form-text">Detailed description of the research or dataset</div>
+                  </div>
+                </div>
+              </div>
+            }
+
+            @if (dataCiteForm.controls.descriptions.controls.length === 0) {
+              <div class="alert alert-info">
+                <i class="bi bi-info-circle me-2"></i>No descriptions added yet. Add at least one description.
+              </div>
+            }
+          </div>
+
+          <div class="mt-3">
+            <button type="button" class="btn btn-primary" (click)="addDescription()">
+              <i class="bi bi-plus-circle me-1"></i>Add Description
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card mb-3">
+      <div class="card-header bg-light d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 d-flex align-items-center">
+          <i class="bi bi-cash-coin me-2"></i>Funding References
+          <span class="badge bg-primary ms-2 rounded-pill">{{dataCiteForm.controls.fundingReferences.controls.length}}</span>
+        </h5>
+        <button class="btn btn-link p-0" type="button" (click)="isCollapsedFunding = !isCollapsedFunding">
+          <i class="bi" [ngClass]="isCollapsedFunding ? 'bi-chevron-down' : 'bi-chevron-up'"></i>
+        </button>
+      </div>
+      <div [ngbCollapse]="isCollapsedFunding">
+        <div class="card-body">
+          <p class="text-muted mb-3">Information about the funding that supported the research. For Curtain and CurtainPTM, the funding references will be the grants and funding bodies that supported the research.</p>
+          <div class="d-flex flex-column gap-3" formArrayName="fundingReferences">
+            @for (f of dataCiteForm.controls.fundingReferences.controls; track f; let index = $index) {
+              <div class="card border-light">
+                <div class="card-header bg-light d-flex justify-content-between">
+                  <h6 class="mb-0">Funding Reference #{{index+1}}</h6>
+                  <button class="btn btn-sm btn-outline-danger" (click)="removeFundingReference(index)">
+                    <i class="bi bi-trash me-1"></i>Remove
+                  </button>
+                </div>
+                <div class="card-body" [formGroupName]="index">
+                  <div class="row g-3">
+                    <div class="col-12 mb-2">
+                      <label class="form-label">Funder Search</label>
+                      <input [disabled]="lock" type="search" class="form-control" [ngbTypeahead]="searchFunder"
+                             [resultFormatter]="resultFormatter" [inputFormatter]="inputFormatter"
+                             [resultTemplate]="rt"
+                             (selectItem)="onFunderSelect($event, index)">
+                      <div class="form-text">The name of the entity that provided the funding. Autocomplete information is retrieved from CrossRef.</div>
+                    </div>
+
+                    <div class="col-md-6">
+                      <label class="form-label">Funder Name</label>
+                      <input class="form-control" formControlName="funderName" required>
+                    </div>
+
+                    <div class="col-md-6">
+                      <label class="form-label">Funder Identifier</label>
+                      <input class="form-control" formControlName="funderIdentifier">
+                      <div class="form-text">The unique identifier or website of the funder</div>
+                    </div>
+
+                    <div class="col-md-4">
+                      <label class="form-label">Funder Identifier Type</label>
+                      <select class="form-select" formControlName="funderIdentifierType">
+                        @for (o of funderIdentifierTypes; track o) {
+                          <option [value]="o">{{o}}</option>
+                        }
+                      </select>
+                      <div class="form-text">Type of the funder identifier</div>
+                    </div>
+
+                    <div class="col-md-4">
+                      <label class="form-label">Award Number</label>
+                      <input class="form-control" formControlName="awardNumber">
+                      <div class="form-text">Number or identifier of the award/grant</div>
+                    </div>
+
+                    <div class="col-md-4">
+                      <label class="form-label">Award Title</label>
+                      <input class="form-control" formControlName="awardTitle">
+                      <div class="form-text">Title of the award or grant</div>
+                    </div>
+
+                    <div class="col-12">
+                      <label class="form-label">Award URI</label>
+                      <input class="form-control" formControlName="awardUri">
+                      <div class="form-text">URL of the award or grant</div>
+                    </div>
+                  </div>
+
+                  <div class="mt-3">
+                    <button class="btn btn-sm btn-outline-secondary" (click)="f.reset()">
+                      <i class="bi bi-arrow-counterclockwise me-1"></i>Reset Fields
+                    </button>
+                  </div>
+                </div>
+              </div>
+            }
+
+            @if (dataCiteForm.controls.fundingReferences.controls.length === 0) {
+              <div class="alert alert-info">
+                <i class="bi bi-info-circle me-2"></i>No funding references added yet.
+              </div>
+            }
+          </div>
+
+          <div class="mt-3">
+            <button type="button" class="btn btn-primary" (click)="addFundingReference()">
+              <i class="bi bi-plus-circle me-1"></i>Add Funding Reference
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card mb-3">
+      <div class="card-header bg-light d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 d-flex align-items-center">
+          <i class="bi bi-info-circle me-2"></i>Additional Required Information
+        </h5>
+        <button class="btn btn-link p-0" type="button" (click)="isCollapsedAdditionalData = !isCollapsedAdditionalData">
+          <i class="bi" [ngClass]="isCollapsedAdditionalData ? 'bi-chevron-down' : 'bi-chevron-up'"></i>
+        </button>
+      </div>
+      <div [ngbCollapse]="isCollapsedAdditionalData">
+        <div class="card-body">
+          <p class="text-muted mb-3">Additional required information for DOI registration.</p>
+
+          <form [formGroup]="form_additional_data">
+            <div class="row g-3">
+              <div class="col-12 mb-3">
+                <label for="pii_statement" class="form-label">PII Statement</label>
+                <textarea class="form-control" id="pii_statement" rows="3"
+                          formControlName="pii_statement" required [disabled]="lock"></textarea>
+                <div class="form-text">Statement regarding personally identifiable information in the dataset.</div>
+              </div>
+
+              <div class="col-md-6">
+                <label for="contact_email" class="form-label">Contact Email</label>
+                <input type="email" class="form-control" id="contact_email"
+                       formControlName="contact_email" required [disabled]="lock">
+                <div class="form-text">Email address for inquiries related to this dataset.</div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </form>
+  <input type="file" #importFile hidden (change)="importJSON($event)">
+</div>
+<div class="modal-footer">
+  <div class="container-fluid p-0">
+    @if (accountsService.isOwner) {
+      <form [formGroup]="form_additional_data" class="mb-3">
+        <div class="card bg-light">
+          <div class="card-body">
+            <h6 class="mb-2">Publication Confirmations</h6>
+            <div class="form-check mb-2">
+              <input type="checkbox" class="form-check-input" id="informationIsTrue" formControlName="informationIsTrue">
+              <label for="informationIsTrue" class="form-check-label">I confirm that the information provided is true and accurate.</label>
+            </div>
+            <div class="form-check">
+              <input type="checkbox" class="form-check-input" id="asapPolicy" formControlName="asapPolicy">
+              <label for="asapPolicy" class="form-check-label">I agree to comply with <a href="https://parkinsonsroadmap.org/open-science-policy/" target="_blank">ASAP's Open Science Policy</a> for data sharing and publication.</label>
+            </div>
+            <div class="form-check">
+              <input type="checkbox" class="form-check-input" id="publicationRights" formControlName="publicationRights">
+              <label for="publicationRights" class="form-check-label">I confirm that I have the right to publish this dataset and doing so does not violate any third-party rights.</label>
+            </div>
+          </div>
+        </div>
+      </form>
+    }
+
+    <div class="d-flex flex-wrap justify-content-between">
+      <div class="btn-group me-2 mb-2">
+        <button type="button" class="btn btn-outline-secondary" (click)="exportJSON()">
+          <i class="bi bi-download me-1"></i>Export
+        </button>
+        <button type="button" class="btn btn-outline-secondary" (click)="importFile.click()">
+          <i class="bi bi-upload me-1"></i>Import
+        </button>
+      </div>
+
+      <div class="d-flex gap-2 mb-2">
+        @if (accountsService.curtainAPI.user.isStaff) {
+          @if (dataCiteMetadata) {
+            <div class="btn-group me-2">
+              @if (lock) {
+                <button type="button" class="btn btn-warning" (click)="unlockForm()">
+                  <i class="bi bi-unlock me-1"></i>Unlock
+                </button>
+              } @else {
+                <button type="button" class="btn btn-warning" (click)="lockForm()">
+                  <i class="bi bi-lock me-1"></i>Lock
+                </button>
+              }
+            </div>
+
+            @if (dataCiteMetadata.status === "draft") {
+              <div class="btn-group me-2">
+                <button type="button" class="btn btn-success" (click)="approveDOI()">
+                  <i class="bi bi-check-circle me-1"></i>Approve
+                </button>
+                <button type="button" class="btn btn-danger" (click)="rejectDOI()">
+                  <i class="bi bi-x-circle me-1"></i>Reject
+                </button>
+              </div>
+            }
+          }
+        }
+
+        <button type="button" class="btn btn-secondary" (click)="close()">Cancel</button>
+
+        @if (dataCiteMetadata) {
+          <button type="button" class="btn btn-primary"
+                  [disabled]="!form_additional_data.value.informationIsTrue || !form_additional_data.value.publicationRights || !form_additional_data.value.asapPolicy"
+                  (click)="onSubmit('update')">
+            <i class="bi bi-arrow-repeat me-1"></i>Update DOI
+          </button>
+        } @else {
+          <button type="button" class="btn btn-primary"
+                  [disabled]="!form_additional_data.value.informationIsTrue || !form_additional_data.value.publicationRights || !form_additional_data.value.asapPolicy"
+                  (click)="onSubmit('create')">
+            <i class="bi bi-plus-circle me-1"></i>Register DOI
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+</div>
+<ng-template #rt let-r="result" let-t="term">
+  <ngb-highlight [result]="r.name" [term]="t"></ngb-highlight>
+</ng-template>

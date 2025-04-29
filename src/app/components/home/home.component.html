@@ -1,4 +1,4 @@
-<app-navbar [finished]="finished" (updateSelection)="handleFinish($event)" [uniqueLink]="uniqueLink"></app-navbar>
+<app-navbar [isDOI]="isDOI" [doiMetadata]="doiMetadata" [loadingDataCite]="loadingDataCite" [finished]="finished" (updateSelection)="handleFinish($event)" [uniqueLink]="uniqueLink"></app-navbar>
 
 <app-pride></app-pride>
 <app-file-form (finished)="handleFinish($event)"></app-file-form>

@@ -1,151 +1,227 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top d-lex flex-wrap">
+<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top shadow-sm">
   <div class="container-fluid">
-    <a class="navbar-brand" href="#"><b style="padding-left: 4px" class="text-dark">Curtain</b><b class="text-danger">PTM</b></a>
-    <div class="d-flex" *ngIf="finished && settings.settings.currentID !==''">
-      <div class="p-2">
-        <a *ngIf="uniqueLink !== ''" href="{{uniqueLink}}" class="ml-2 text-success">{{uniqueLink}}</a>
-      </div>
-      <div class="p-2">
-        @if (!data.session.permanent) {
-          <span class="badge bg-danger">Temporary</span>
-        } @else {
-          <span class="badge bg-success">Permanent</span>
+    <a class="navbar-brand fw-bold" href="#">Curtain<span class="text-danger">PTM</span></a>
+    @if (finished && settings.settings.currentID !== '') {
+      <div class="d-flex align-items-center me-auto">
+        @if (uniqueLink !== '') {
+          <a href="{{uniqueLink}}" class="me-2 text-success text-truncate session-link">{{uniqueLink}}</a>
         }
+
+        @if (!data.session.permanent) {
+          <span class="badge bg-danger me-2">Temporary</span>
+        } @else {
+          @if (isDOI && data.session) {
+            @if (data.session.data_cite) {
+              <span class="badge me-2" [ngClass]="{
+                'bg-warning': data.session.data_cite.status === 'draft',
+                'bg-success': data.session.data_cite.status === 'published',
+                'bg-danger': data.session.data_cite.status !== 'draft' && data.session.data_cite.status !== 'published'
+              }">
+                {{data.session.data_cite.status === 'draft' ? 'DOI Draft' :
+                data.session.data_cite.status === 'published' ? 'DOI Permanent' : 'DOI Pending'}}
+              </span>
+            }
+          } @else {
+            @if (!isDOI) {
+              <span class="badge bg-success me-2">Permanent</span>
+            }
+          }
+        }
+
+        <button class="btn btn-sm btn-outline-info me-1" (click)="copyToClipboard(uniqueLink)">
+          <i class="bi bi-clipboard"></i>
+        </button>
+        <button class="btn btn-sm btn-outline-warning" (click)="openQRCode()">
+          <i class="bi bi-qr-code"></i>
+        </button>
       </div>
-      <div class="p-2">
-        <span class="badge bg-info" (click)="copyToClipboard()"><i class="bi bi-clipboard"></i></span>
+    }
+
+    @if (progressEvent && !finished) {
+      <div class="glitch-element me-auto">
+        <span class="text-info">
+          {{progressEvent.text}}
+        </span>
       </div>
-      <div class="p-2">
-        <span class="badge bg-warning" (click)="openQRCode()">QR Code</span>
+    }
+
+    @if (settings.newVersionAvailable) {
+      <div class="me-2">
+        <span class="badge bg-warning" (click)="reload()">New Curtain version available</span>
       </div>
-    </div>
-    <div class="p-2" *ngIf="settings.newVersionAvailable">
-      <span class="badge bg-warning" [ngbTooltip]="'Click to reload to get the new version'" (click)="reload()">New CurtainPTM version available</span>
-    </div>
-    <div class="p-2" *ngIf="progressEvent && !finished">
-      <span class="text-info">{{progressEvent.text}}</span>
-    </div>
-    <div class="d-flex">
-      <div class="p-2" *ngIf="settings.settings.encrypted">
-        <span class="badge bg-danger">Encryption Enabled</span>
-      </div>
-      <div class="p-2" *ngIf="finished">
-        <div display="dynamic" ngbDropdown class="d-inline-block">
-          <button class="btn btn-outline-primary ml-2" id="localState" ngbDropdownToggle> State
-          </button>
-          <div ngbDropdownMenu aria-labelledby="localState">
-            <button ngbDropdownItem (click)="saveLocalState()">Create local state</button>
-            <button ngbDropdownItem (click)="openStateModal()">State Management</button>
+    }
+
+    <div class="d-flex align-items-center">
+      @if (accounts.curtainAPI.user.loginStatus) {
+        <div class="me-2">
+          <div display="dynamic" ngbDropdown>
+            <button class="btn btn-outline-primary" id="doiManagement" ngbDropdownToggle>
+              DOI Management
+              @if (data.draftDataCiteCount > 0) {
+                <span class="badge bg-danger ms-1">{{data.draftDataCiteCount}}</span>
+              }
+            </button>
+            <div ngbDropdownMenu aria-labelledby="doiManagement">
+              <button ngbDropdownItem (click)="openDataciteAdminManagement()">
+                Submitted DOI @if (data.draftDataCiteCount > 0) {<span class="badge bg-danger ms-1">{{data.draftDataCiteCount}}</span>}
+              </button>
+              @if (finished && gdprAccepted && data.session) {
+                <button ngbDropdownItem (click)="openDataciteDOI()" [disabled]="!data.session">
+                  {{data.session.data_cite ? 'View DOI Form' : 'Register DOI (Beta)'}}
+                </button>
+              }
+            </div>
           </div>
         </div>
-      </div>
-      <div class="p-2">
-        <div display="dynamic" ngbDropdown class="d-inline-block">
-          <button class="btn btn-outline-primary ml-2" id="plot-dropdown" ngbDropdownToggle> Plot
+      }
+
+      @if (finished) {
+        <div class="me-2">
+          <div display="dynamic" ngbDropdown>
+            <button class="btn btn-outline-primary" id="localState" ngbDropdownToggle>
+              <i class="bi bi-save"></i> State
+            </button>
+            <div ngbDropdownMenu aria-labelledby="localState">
+              <button ngbDropdownItem (click)="saveLocalState()">Create local state</button>
+              <button ngbDropdownItem (click)="openStateModal()">State Management</button>
+            </div>
+          </div>
+        </div>
+      }
+
+      <div class="me-2">
+        <div display="dynamic" ngbDropdown>
+          <button class="btn btn-outline-primary" id="plot-dropdown" ngbDropdownToggle>
+            <i class="bi bi-graph-up"></i> Plot
           </button>
           <div ngbDropdownMenu aria-labelledby="plot-dropdown">
-            <ng-container *ngIf="finished">
-              <button ngbDropdownItem (click)="openProfilePlot()">
-                Profile Plot  ({{settings.settings.selectedComparison.length}})
+            @if (finished) {
+              <h6 class="dropdown-header">Data Visualization</h6>
+              <button>
+                Profile Plot <span class="badge bg-secondary ms-1">{{settings.settings.selectedComparison.length}}</span>
               </button>
-
-              <button ngbDropdownItem (click)="openSampleSettings()">
-                Sample Order & Visibility Settings
-              </button>
-            </ng-container>
-            <button ngbDropdownItem (click)="openColorPaletteModal()">
-              Customize Color Palette
-            </button>
+              <button ngbDropdownItem (click)="getSelectedList()">Get Selected Protein List</button>
+              <button ngbDropdownItem (click)="openSampleSettings()">Sample Order & Visibility</button>
+              <div class="dropdown-divider"></div>
+            }
+            <button ngbDropdownItem (click)="openColorPaletteModal()">Customize Color Palette</button>
           </div>
         </div>
       </div>
-      <div class="p-2">
-        <div display="dynamic" ngbDropdown class="d-inline-block">
-          <button class="btn btn-outline-primary ml-2" id="dropdownSession" ngbDropdownToggle>Session
-            <ng-container *ngIf="data.session !== undefined">
-              <span *ngIf="!data.session.enable" class="badge bg-danger">private</span>
-              <span *ngIf="data.session.enable" class="badge bg-primary">shareable</span>
-            </ng-container>
+
+      <div>
+        <div display="dynamic" ngbDropdown>
+          <button class="btn btn-outline-primary" id="dropdownSession" ngbDropdownToggle>
+            <i class="bi bi-folder"></i> Session
+            @if (data.session) {
+              <span class="badge ms-1"
+                    [ngClass]="{'bg-danger': !data.session.enable, 'bg-primary': data.session.enable}">
+                {{data.session.enable ? 'shareable' : 'private'}}
+              </span>
+            }
           </button>
-          <div ngbDropdownMenu aria-labelledby="dropdownSession">
-            <ng-container *ngIf="finished">
-              @if (gdprAccepted) {
-                <button ngbDropdownItem (click)="saveSession()" [disabled]="data.tempLink===true">Save Temporary Session (remove 3 months after last access)</button>
-                <button ngbDropdownItem (click)="saveSession(true)" [disabled]="data.tempLink===true">Save Permanent Session</button>
+          <div ngbDropdownMenu aria-labelledby="dropdownSession" class="dropdown-menu-end">
+            <h6 class="dropdown-header">Project Data</h6>
+            <button ngbDropdownItem (click)="openAnnotation()">Project Annotation</button>
+            <button ngbDropdownItem (click)="openLogFileModal()">Log File</button>
+
+            @if (finished) {
+              <div class="dropdown-divider"></div>
+              <h6 class="dropdown-header">Session Actions</h6>
+            }
+
+            @if (finished) {
+              @if(gdprAccepted) {
+                <button ngbDropdownItem (click)="saveSession()" [disabled]="data.tempLink">
+                  Save Temporary Session
+                </button>
+                <button ngbDropdownItem (click)="saveSession(true)" [disabled]="data.tempLink">
+                  Save Permanent Session
+                </button>
+                @if (accounts.curtainAPI.user.loginStatus && data.session) {
+                  <button ngbDropdownItem (click)="openDataciteDOI()">
+                    {{data.session.data_cite ? 'View DOI Form' : 'Register DOI (Beta)'}}
+                  </button>
+                }
               } @else {
                 <button ngbDropdownItem disabled>Accept GDPR to Enable Saving</button>
               }
+
+              <div class="dropdown-divider"></div>
+              <h6 class="dropdown-header">Data Management</h6>
               <button ngbDropdownItem (click)="clearSelections()">Clear Selections</button>
-              <button ngbDropdownItem (click)="web.downloadFile('different.txt', data.differential.originalFile)">Download Differential Analysis File</button>
-              <button ngbDropdownItem (click)="web.downloadFile('raw.txt', data.raw.originalFile)">Download Raw File</button>
-              <button ngbDropdownItem (click)="openAnnotation()">Project Annotation</button>
-              <button ngbDropdownItem (click)="getSelectedList()">
-                Get Selected Primary IDs List
+              <button ngbDropdownItem (click)="web.downloadFile('different.txt', data.differential.originalFile)">
+                Download Differential File
               </button>
-              <button ngbDropdownItem (click)="openLogFileModal()">Log File</button>
-              <button ngbDropdownItem (click)="openQRCode()" *ngIf="settings.settings.currentID !== ''">Session QR Code</button>
-              <button ngbDropdownItem (click)="selectionManagementModal()">
-                Data Selection Management
+              <button ngbDropdownItem (click)="web.downloadFile('raw.txt', data.raw.originalFile)">
+                Download Raw File
               </button>
-              <button ngbDropdownItem (click)="openSampleAndConditionModal()">
-                Sample & Condition Assignment
-              </button>
-            </ng-container>
-            <button ngbDropdownItem (click)="openLoginModal()" *ngIf="accounts.curtainAPI.user.loginStatus===false">
-              Account Login
-            </button>
-            <button ngbDropdownItem (click)="openSessionSettings()" [disabled]="!accounts.getSessionPermission()">
+              <!--<button ngbDropdownItem (click)="openEnrichrModal()">Enrichr Analysis</button>-->
+              <button ngbDropdownItem (click)="selectionManagementModal()">Selection Management</button>
+              <button ngbDropdownItem (click)="openSampleAndConditionModal()">Sample & Condition Assignment</button>
+              <!--@if (settings.settings.currentID !== '') {
+                <button ngbDropdownItem (click)="openCompareSessionModal()">Compare Sessions</button>
+              }-->
+            }
+
+            <div class="dropdown-divider"></div>
+            <h6 class="dropdown-header">Settings</h6>
+            <button ngbDropdownItem (click)="openSessionSettings()"
+                    [disabled]="!accounts.isOwner && !accounts.curtainAPI.user.isStaff">
               Session Settings
             </button>
-            <button ngbDropdownItem (click)="openUserPTMImportManagement()">
-              Custom PTM Import Management
-            </button>
-            <ng-container *ngIf="accounts.curtainAPI.user.loginStatus">
-              <button ngbDropdownItem (click)="openAccountModal()">
-                Account
-              </button>
-              <button ngbDropdownItem (click)="accounts.logout()">
-                Logout
-              </button>
-            </ng-container>
             <button ngbDropdownItem (click)="openCollaborateModal()">Collaborate</button>
             <button ngbDropdownItem (click)="openEncryptionSettings()">Encryption Settings</button>
-            <a type="button" ngbDropdownItem href="https://www.youtube.com/channel/UCwTAaXMvmqoozLB0XwZz20g" target="_blank"><i class="bi bi-youtube"></i> Video Tutorial</a>
-            <a type="button" ngbDropdownItem href="https://groups.google.com/g/curtain-proteomics" target="_blank"><i class="bi bi-google"></i> Support Google Group</a>
-            <a type="button" ngbDropdownItem href="https://curtain-docs.proteo.info" target="_blank">Documentation (in progress)</a>
+
+            @if (accounts.curtainAPI.user.loginStatus) {
+              <div class="dropdown-divider"></div>
+              <h6 class="dropdown-header">Account</h6>
+              <button ngbDropdownItem (click)="openAccountModal()">My Account</button>
+              <!--<button ngbDropdownItem (click)="openAPIKeyModal()">API Keys</button>-->
+              <button ngbDropdownItem (click)="accounts.logout()">Logout</button>
+            }
+
+            <div class="dropdown-divider"></div>
+            <h6 class="dropdown-header">Help & Resources</h6>
+            <a ngbDropdownItem href="https://www.youtube.com/channel/UCwTAaXMvmqoozLB0XwZz20g" target="_blank">
+              <i class="bi bi-youtube"></i> Video Tutorials
+            </a>
+            <a ngbDropdownItem href="https://groups.google.com/g/curtain-proteomics" target="_blank">
+              <i class="bi bi-google"></i> Support Group
+            </a>
+            <a ngbDropdownItem href="https://curtain-docs.proteo.info" target="_blank">
+              <i class="bi bi-book"></i> Documentation
+            </a>
+
+            @if (!accounts.curtainAPI.user.loginStatus) {
+              <div class="dropdown-divider"></div>
+              <button ngbDropdownItem (click)="openLoginModal()">
+                <i class="bi bi-box-arrow-in-right"></i> Login
+              </button>
+            }
           </div>
         </div>
       </div>
-      <!--<div class="p-2">
-        <input class="form-control" type="text" placeholder="Quick Navigation of Selected Data" width="300" [ngbTypeahead]="data.searchLimited" [(ngModel)]="filterModel">
-      </div>
-      <div class="p-2">
-        <select class="form-control" [(ngModel)]="data.searchType">
-          <option value="Gene Names">
-            Gene Names
-          </option>
-          <option value="Accession IDs">
-            Accession IDs
-          </option>
-          <option value="Primary IDs">
-            Primary IDs
-          </option>
-        </select>
-      </div>
-      <div class="p-2">
-        <button class="btn btn-primary" (click)="scrollTo()">Go to</button>
-      </div>-->
     </div>
-
   </div>
 </nav>
-<ngb-alert type="warning" (closed)="closeGDPR()">
-  <strong>GDPR Statement</strong><br>
-  <p>This website neither uses cookies nor tracks/logs ips of its users. The only personal identification data that we store is ORCID id so that the user can track the session they have submitted.</p>
-  <p>It is the responsibility of the user to make sure that there are no personal identification data submitted. By saving the data to CURTAIN, the user has accepted that there are no personal identification data presented within the submitted data.</p>
-  <div class="form-check">
-    <input type="checkbox" class="form-check-input" [(ngModel)]="gdprAccepted" style="border-color: red">
-    <label class="form-check-label"><b>I have read and accepted the GDPR statement (Enable Session Saving)</b></label>
-  </div>
 
-</ngb-alert>
+<div class="container mt-5 pt-3">
+  @if (showAlert) {
+    <ngb-alert type="warning" [dismissible]="true" (closed)="closeGDPR()">
+      <h5><i class="bi bi-shield-check"></i> GDPR Statement</h5>
+      <p>
+        This website neither uses cookies nor tracks/logs IPs of its users. The only personal identification data
+        that we store is ORCID ID so that users can track their submitted sessions.
+      </p>
+      <p>
+        It is the responsibility of the user to ensure no personal identification data is submitted. By saving
+        data to CURTAIN, you confirm there is no personal identification data in your submitted information.
+      </p>
+      <div class="form-check">
+        <input type="checkbox" class="form-check-input" [(ngModel)]="gdprAccepted" style="border-color: red">
+        <label class="form-check-label"><strong>I have read and accepted the GDPR statement (Enable Session Saving)</strong></label>
+      </div>
+    </ngb-alert>
+  }
+</div>
