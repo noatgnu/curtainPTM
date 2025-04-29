@@ -5,9 +5,10 @@ import {FormBuilder, FormGroup} from "@angular/forms";
 import {DataService} from "../../data.service";
 
 @Component({
-  selector: 'app-sample-condition-assignment-modal',
-  templateUrl: './sample-condition-assignment-modal.component.html',
-  styleUrls: ['./sample-condition-assignment-modal.component.scss']
+    selector: 'app-sample-condition-assignment-modal',
+    templateUrl: './sample-condition-assignment-modal.component.html',
+    styleUrls: ['./sample-condition-assignment-modal.component.scss'],
+    standalone: false
 })
 export class SampleConditionAssignmentModalComponent implements OnInit {
   samples: string[] = []

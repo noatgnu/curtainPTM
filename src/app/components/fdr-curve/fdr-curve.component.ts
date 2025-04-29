@@ -3,9 +3,10 @@ import {SettingsService} from "../../settings.service";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
-  selector: 'app-fdr-curve',
-  templateUrl: './fdr-curve.component.html',
-  styleUrls: ['./fdr-curve.component.scss']
+    selector: 'app-fdr-curve',
+    templateUrl: './fdr-curve.component.html',
+    styleUrls: ['./fdr-curve.component.scss'],
+    standalone: false
 })
 export class FdrCurveComponent implements OnInit {
   fdrCurveText: string = ""

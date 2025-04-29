@@ -5,9 +5,10 @@ import {SettingsService} from "../../settings.service";
 //import {ContextMenuComponent} from "ngx-contextmenu";
 
 @Component({
-  selector: 'app-raw-data',
-  templateUrl: './raw-data.component.html',
-  styleUrls: ['./raw-data.component.scss']
+    selector: 'app-raw-data',
+    templateUrl: './raw-data.component.html',
+    styleUrls: ['./raw-data.component.scss'],
+    standalone: false
 })
 export class RawDataComponent implements OnInit {
   _data: any[] = []

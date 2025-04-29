@@ -16,9 +16,10 @@ import {KinaseLibraryModalComponent} from "../kinase-library-modal/kinase-librar
 import {PtmDiseasesService} from "../../ptm-diseases.service";
 
 @Component({
-  selector: 'app-ptm-position-viewer',
-  templateUrl: './ptm-position-viewer.component.html',
-  styleUrls: ['./ptm-position-viewer.component.scss']
+    selector: 'app-ptm-position-viewer',
+    templateUrl: './ptm-position-viewer.component.html',
+    styleUrls: ['./ptm-position-viewer.component.scss'],
+    standalone: false
 })
 export class PtmPositionViewerComponent implements OnInit {
   _data: any = {}

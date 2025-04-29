@@ -3,9 +3,10 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {FormBuilder} from "@angular/forms";
 
 @Component({
-  selector: 'app-variant-selection',
-  templateUrl: './variant-selection.component.html',
-  styleUrls: ['./variant-selection.component.scss']
+    selector: 'app-variant-selection',
+    templateUrl: './variant-selection.component.html',
+    styleUrls: ['./variant-selection.component.scss'],
+    standalone: false
 })
 export class VariantSelectionComponent implements OnInit {
   private _data: string[] = []

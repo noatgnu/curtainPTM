@@ -2,9 +2,10 @@ import {AfterContentInit, Component, ElementRef, Input, OnInit, ViewChild} from 
 import {DataService} from "../../data.service";
 
 @Component({
-  selector: 'app-draggable-element',
-  templateUrl: './draggable-element.component.html',
-  styleUrls: ['./draggable-element.component.scss']
+    selector: 'app-draggable-element',
+    templateUrl: './draggable-element.component.html',
+    styleUrls: ['./draggable-element.component.scss'],
+    standalone: false
 })
 export class DraggableElementComponent implements OnInit, AfterContentInit {
   @Input() label = ""

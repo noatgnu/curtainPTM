@@ -13,9 +13,10 @@ import {CytoplotComponent} from "../cytoplot/cytoplot.component";
 import {ToastService} from "../../toast.service";
 
 @Component({
-  selector: 'app-network-interactions',
-  templateUrl: './network-interactions.component.html',
-  styleUrls: ['./network-interactions.component.scss']
+    selector: 'app-network-interactions',
+    templateUrl: './network-interactions.component.html',
+    styleUrls: ['./network-interactions.component.scss'],
+    standalone: false
 })
 export class NetworkInteractionsComponent implements OnInit {
   @ViewChild(CytoplotComponent) cytoplot: CytoplotComponent | undefined

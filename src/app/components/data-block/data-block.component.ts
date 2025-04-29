@@ -9,9 +9,10 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {VariantSelectionComponent} from "../variant-selection/variant-selection.component";
 
 @Component({
-  selector: 'app-data-block',
-  templateUrl: './data-block.component.html',
-  styleUrls: ['./data-block.component.scss']
+    selector: 'app-data-block',
+    templateUrl: './data-block.component.html',
+    styleUrls: ['./data-block.component.scss'],
+    standalone: false
 })
 export class DataBlockComponent implements OnInit {
   _data: IDataFrame = new DataFrame()

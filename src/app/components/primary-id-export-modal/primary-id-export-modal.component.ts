@@ -5,11 +5,10 @@ import {WebService} from "../../web.service";
 import {UniprotService} from "../../uniprot.service";
 
 @Component({
-  selector: 'app-primary-id-export-modal',
-  standalone: true,
-  imports: [],
-  templateUrl: './primary-id-export-modal.component.html',
-  styleUrl: './primary-id-export-modal.component.scss'
+    selector: 'app-primary-id-export-modal',
+    imports: [],
+    templateUrl: './primary-id-export-modal.component.html',
+    styleUrl: './primary-id-export-modal.component.scss'
 })
 export class PrimaryIdExportModalComponent {
 

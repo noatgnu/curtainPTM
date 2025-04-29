@@ -15,9 +15,10 @@ import {AccountsService} from "../../accounts/accounts.service";
 import {WebService} from "../../web.service";
 
 @Component({
-  selector: 'app-encryption-settings',
-  templateUrl: './encryption-settings.component.html',
-  styleUrls: ['./encryption-settings.component.scss']
+    selector: 'app-encryption-settings',
+    templateUrl: './encryption-settings.component.html',
+    styleUrls: ['./encryption-settings.component.scss'],
+    standalone: false
 })
 export class EncryptionSettingsComponent {
   public_key: CryptoKey|undefined = undefined

@@ -5,15 +5,14 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {ColorPickerModule} from "ngx-color-picker";
 
 @Component({
-  selector: 'app-color-by-category-modal',
-  standalone: true,
-  imports: [
-    FormsModule,
-    ColorPickerModule,
-    ReactiveFormsModule
-  ],
-  templateUrl: './color-by-category-modal.component.html',
-  styleUrl: './color-by-category-modal.component.scss'
+    selector: 'app-color-by-category-modal',
+    imports: [
+        FormsModule,
+        ColorPickerModule,
+        ReactiveFormsModule
+    ],
+    templateUrl: './color-by-category-modal.component.html',
+    styleUrl: './color-by-category-modal.component.scss'
 })
 export class ColorByCategoryModalComponent {
   @Input() data: IDataFrame = new DataFrame()

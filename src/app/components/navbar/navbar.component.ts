@@ -31,9 +31,10 @@ import {PrimaryIdExportModalComponent} from "../primary-id-export-modal/primary-
 import {LogFileModalComponent} from "../log-file-modal/log-file-modal.component";
 
 @Component({
-  selector: 'app-navbar',
-  templateUrl: './navbar.component.html',
-  styleUrls: ['./navbar.component.scss']
+    selector: 'app-navbar',
+    templateUrl: './navbar.component.html',
+    styleUrls: ['./navbar.component.scss'],
+    standalone: false
 })
 export class NavbarComponent implements OnInit {
   @Input() finished: boolean = false

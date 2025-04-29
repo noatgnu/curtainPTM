@@ -6,9 +6,10 @@ import {FormBuilder} from "@angular/forms";
 import {ToastService} from "../../toast.service";
 
 @Component({
-  selector: 'app-default-color-palette',
-  templateUrl: './default-color-palette.component.html',
-  styleUrls: ['./default-color-palette.component.scss']
+    selector: 'app-default-color-palette',
+    templateUrl: './default-color-palette.component.html',
+    styleUrls: ['./default-color-palette.component.scss'],
+    standalone: false
 })
 export class DefaultColorPaletteComponent implements OnInit {
 

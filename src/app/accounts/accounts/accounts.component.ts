@@ -5,9 +5,10 @@ import {FormBuilder} from "@angular/forms";
 import {forkJoin, Observable} from "rxjs";
 
 @Component({
-  selector: 'app-accounts',
-  templateUrl: './accounts.component.html',
-  styleUrls: ['./accounts.component.scss']
+    selector: 'app-accounts',
+    templateUrl: './accounts.component.html',
+    styleUrls: ['./accounts.component.scss'],
+    standalone: false
 })
 export class AccountsComponent implements OnInit {
   data: any = {}

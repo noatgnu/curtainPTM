@@ -9,9 +9,10 @@ import {FormBuilder} from "@angular/forms";
 import {debounceTime, distinctUntilChanged, map, Observable} from "rxjs";
 
 @Component({
-  selector: 'app-sample-annotation',
-  templateUrl: './sample-annotation.component.html',
-  styleUrls: ['./sample-annotation.component.scss']
+    selector: 'app-sample-annotation',
+    templateUrl: './sample-annotation.component.html',
+    styleUrls: ['./sample-annotation.component.scss'],
+    standalone: false
 })
 export class SampleAnnotationComponent implements OnInit {
   samples: any[] = []

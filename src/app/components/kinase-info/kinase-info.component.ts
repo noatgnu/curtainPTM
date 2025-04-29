@@ -4,9 +4,10 @@ import {UniprotService} from "../../uniprot.service";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
-  selector: 'app-kinase-info',
-  templateUrl: './kinase-info.component.html',
-  styleUrls: ['./kinase-info.component.scss']
+    selector: 'app-kinase-info',
+    templateUrl: './kinase-info.component.html',
+    styleUrls: ['./kinase-info.component.scss'],
+    standalone: false
 })
 export class KinaseInfoComponent implements OnInit {
   private _name: string = ""

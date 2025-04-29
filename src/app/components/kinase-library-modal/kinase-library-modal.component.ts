@@ -4,9 +4,10 @@ import {WebService} from "../../web.service";
 import {KinaseLibraryService} from "../../kinase-library.service";
 
 @Component({
-  selector: 'app-kinase-library-modal',
-  templateUrl: './kinase-library-modal.component.html',
-  styleUrls: ['./kinase-library-modal.component.scss']
+    selector: 'app-kinase-library-modal',
+    templateUrl: './kinase-library-modal.component.html',
+    styleUrls: ['./kinase-library-modal.component.scss'],
+    standalone: false
 })
 export class KinaseLibraryModalComponent implements OnInit {
   private _data: any = {data: []}

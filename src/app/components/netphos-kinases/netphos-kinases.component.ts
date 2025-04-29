@@ -2,9 +2,10 @@ import {Component, Input, OnInit} from '@angular/core';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
-  selector: 'app-netphos-kinases',
-  templateUrl: './netphos-kinases.component.html',
-  styleUrls: ['./netphos-kinases.component.css']
+    selector: 'app-netphos-kinases',
+    templateUrl: './netphos-kinases.component.html',
+    styleUrls: ['./netphos-kinases.component.css'],
+    standalone: false
 })
 export class NetphosKinasesComponent implements OnInit {
   _data: any[] = []

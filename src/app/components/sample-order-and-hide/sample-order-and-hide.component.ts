@@ -4,9 +4,10 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {SettingsService} from "../../settings.service";
 
 @Component({
-  selector: 'app-sample-order-and-hide',
-  templateUrl: './sample-order-and-hide.component.html',
-  styleUrls: ['./sample-order-and-hide.component.scss']
+    selector: 'app-sample-order-and-hide',
+    templateUrl: './sample-order-and-hide.component.html',
+    styleUrls: ['./sample-order-and-hide.component.scss'],
+    standalone: false
 })
 export class SampleOrderAndHideComponent implements OnInit {
   samples: any = {}

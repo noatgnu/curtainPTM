@@ -3,13 +3,12 @@ import {NgbProgressbar} from "@ng-bootstrap/ng-bootstrap";
 import {DataService} from "../../../data.service";
 
 @Component({
-  selector: 'app-toast-progressbar',
-  standalone: true,
-  imports: [
-    NgbProgressbar
-  ],
-  templateUrl: './toast-progressbar.component.html',
-  styleUrl: './toast-progressbar.component.scss'
+    selector: 'app-toast-progressbar',
+    imports: [
+        NgbProgressbar
+    ],
+    templateUrl: './toast-progressbar.component.html',
+    styleUrl: './toast-progressbar.component.scss'
 })
 export class ToastProgressbarComponent {
   private _action: string = "other"

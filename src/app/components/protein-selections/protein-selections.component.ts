@@ -12,9 +12,10 @@ export interface selectionData {
 }
 
 @Component({
-  selector: 'app-protein-selections',
-  templateUrl: './protein-selections.component.html',
-  styleUrls: ['./protein-selections.component.scss']
+    selector: 'app-protein-selections',
+    templateUrl: './protein-selections.component.html',
+    styleUrls: ['./protein-selections.component.scss'],
+    standalone: false
 })
 export class ProteinSelectionsComponent implements OnInit {
   iscollapse: boolean = false

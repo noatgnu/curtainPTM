@@ -9,9 +9,10 @@ import {Settings} from "../../classes/settings";
 import {SettingsService} from "../../settings.service";
 
 @Component({
-  selector: 'app-bar-chart',
-  templateUrl: './bar-chart.component.html',
-  styleUrls: ['./bar-chart.component.scss']
+    selector: 'app-bar-chart',
+    templateUrl: './bar-chart.component.html',
+    styleUrls: ['./bar-chart.component.scss'],
+    standalone: false
 })
 export class BarChartComponent implements OnInit {
   _data: any = {}

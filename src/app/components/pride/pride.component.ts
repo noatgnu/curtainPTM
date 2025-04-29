@@ -5,9 +5,10 @@ import {DataService} from "../../data.service";
 
 
 @Component({
-  selector: 'app-pride',
-  templateUrl: './pride.component.html',
-  styleUrls: ['./pride.component.scss']
+    selector: 'app-pride',
+    templateUrl: './pride.component.html',
+    styleUrls: ['./pride.component.scss'],
+    standalone: false
 })
 export class PrideComponent implements OnInit {
   @ViewChild("projectDescription") projectDescription: ElementRef | undefined

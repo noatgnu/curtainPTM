@@ -4,13 +4,12 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {FormsModule} from "@angular/forms";
 
 @Component({
-  selector: 'app-log-file-modal',
-  standalone: true,
-  imports: [
-    FormsModule
-  ],
-  templateUrl: './log-file-modal.component.html',
-  styleUrl: './log-file-modal.component.scss'
+    selector: 'app-log-file-modal',
+    imports: [
+        FormsModule
+    ],
+    templateUrl: './log-file-modal.component.html',
+    styleUrl: './log-file-modal.component.scss'
 })
 export class LogFileModalComponent {
   selectedLogFile: number = -1;

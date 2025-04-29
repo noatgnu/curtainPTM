@@ -7,9 +7,10 @@ import {ToastService} from "../../toast.service";
 import {Options} from "ngx-qrcode-styling";
 
 @Component({
-  selector: 'app-collaborate-modal',
-  templateUrl: './collaborate-modal.component.html',
-  styleUrls: ['./collaborate-modal.component.scss']
+    selector: 'app-collaborate-modal',
+    templateUrl: './collaborate-modal.component.html',
+    styleUrls: ['./collaborate-modal.component.scss'],
+    standalone: false
 })
 export class CollaborateModalComponent implements OnInit {
   form = this.fb.group({

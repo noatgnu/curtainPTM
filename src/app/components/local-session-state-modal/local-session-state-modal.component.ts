@@ -3,9 +3,10 @@ import {SaveStateService} from "../../save-state.service";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
-  selector: 'app-local-session-state-modal',
-  templateUrl: './local-session-state-modal.component.html',
-  styleUrls: ['./local-session-state-modal.component.scss']
+    selector: 'app-local-session-state-modal',
+    templateUrl: './local-session-state-modal.component.html',
+    styleUrls: ['./local-session-state-modal.component.scss'],
+    standalone: false
 })
 export class LocalSessionStateModalComponent implements OnInit {
 

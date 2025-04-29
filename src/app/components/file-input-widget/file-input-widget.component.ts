@@ -3,9 +3,10 @@ import {fromCSV, IDataFrame} from 'data-forge';
 import {InputFile} from "../../classes/input-file";
 
 @Component({
-  selector: 'app-file-input-widget',
-  templateUrl: './file-input-widget.component.html',
-  styleUrls: ['./file-input-widget.component.scss']
+    selector: 'app-file-input-widget',
+    templateUrl: './file-input-widget.component.html',
+    styleUrls: ['./file-input-widget.component.scss'],
+    standalone: false
 })
 export class FileInputWidgetComponent implements OnInit {
   @Output() readData: EventEmitter<InputFile> =  new EventEmitter<InputFile>()

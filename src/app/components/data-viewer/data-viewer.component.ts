@@ -7,9 +7,10 @@ import {UniprotService} from "../../uniprot.service";
 import {ToastService} from "../../toast.service";
 
 @Component({
-  selector: 'app-data-viewer',
-  templateUrl: './data-viewer.component.html',
-  styleUrls: ['./data-viewer.component.scss']
+    selector: 'app-data-viewer',
+    templateUrl: './data-viewer.component.html',
+    styleUrls: ['./data-viewer.component.scss'],
+    standalone: false
 })
 export class DataViewerComponent implements OnInit {
   _data: ISeries<number, IDataFrame<number, any>> = new Series()

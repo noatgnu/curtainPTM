@@ -5,9 +5,10 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {FormBuilder, FormGroup} from "@angular/forms";
 
 @Component({
-  selector: 'app-volcano-plot-text-annotation',
-  templateUrl: './volcano-plot-text-annotation.component.html',
-  styleUrls: ['./volcano-plot-text-annotation.component.scss']
+    selector: 'app-volcano-plot-text-annotation',
+    templateUrl: './volcano-plot-text-annotation.component.html',
+    styleUrls: ['./volcano-plot-text-annotation.component.scss'],
+    standalone: false
 })
 export class VolcanoPlotTextAnnotationComponent implements OnInit {
   annotationText: any[] = []

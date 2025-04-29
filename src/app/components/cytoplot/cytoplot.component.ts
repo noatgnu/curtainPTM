@@ -15,9 +15,10 @@ import {SettingsService} from "../../settings.service";
 cytoscape.use(fcose);
 //cytoscape.use(cxtmenu);
 @Component({
-  selector: 'app-cytoplot',
-  templateUrl: './cytoplot.component.html',
-  styleUrls: ['./cytoplot.component.scss']
+    selector: 'app-cytoplot',
+    templateUrl: './cytoplot.component.html',
+    styleUrls: ['./cytoplot.component.scss'],
+    standalone: false
 })
 export class CytoplotComponent implements OnInit, AfterViewInit {
   private _dimensions = {width: 700, height: 700}

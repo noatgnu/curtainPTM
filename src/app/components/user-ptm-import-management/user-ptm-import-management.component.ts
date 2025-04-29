@@ -6,9 +6,10 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {DataService} from "../../data.service";
 
 @Component({
-  selector: 'app-user-ptm-import-management',
-  templateUrl: './user-ptm-import-management.component.html',
-  styleUrls: ['./user-ptm-import-management.component.scss']
+    selector: 'app-user-ptm-import-management',
+    templateUrl: './user-ptm-import-management.component.html',
+    styleUrls: ['./user-ptm-import-management.component.scss'],
+    standalone: false
 })
 export class UserPtmImportManagementComponent {
   form = this.fb.group({

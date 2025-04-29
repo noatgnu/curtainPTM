@@ -8,9 +8,10 @@ import {ToastService} from "../../toast.service";
 import {environment} from "../../../environments/environment";
 
 @Component({
-  selector: 'app-login-modal',
-  templateUrl: './login-modal.component.html',
-  styleUrls: ['./login-modal.component.scss']
+    selector: 'app-login-modal',
+    templateUrl: './login-modal.component.html',
+    styleUrls: ['./login-modal.component.scss'],
+    standalone: false
 })
 export class LoginModalComponent implements OnInit, OnDestroy {
   @ViewChild('orcidWidget') orcidWidget: ElementRef|undefined

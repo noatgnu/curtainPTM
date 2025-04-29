@@ -15,9 +15,10 @@ import {WebLogoComponent} from "../web-logo/web-logo.component";
 import {ColorByCategoryModalComponent} from "./color-by-category-modal/color-by-category-modal.component";
 
 @Component({
-  selector: 'app-volcano-plot',
-  templateUrl: './volcano-plot.component.html',
-  styleUrls: ['./volcano-plot.component.scss']
+    selector: 'app-volcano-plot',
+    templateUrl: './volcano-plot.component.html',
+    styleUrls: ['./volcano-plot.component.scss'],
+    standalone: false
 })
 export class VolcanoPlotComponent implements OnInit {
   settingsNav = "parameters"

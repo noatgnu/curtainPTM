@@ -2,9 +2,10 @@ import {Component, Input, OnInit} from '@angular/core';
 import {WebService} from "../../web.service";
 
 @Component({
-  selector: 'app-protein-domain-plot',
-  templateUrl: './protein-domain-plot.component.html',
-  styleUrls: ['./protein-domain-plot.component.scss']
+    selector: 'app-protein-domain-plot',
+    templateUrl: './protein-domain-plot.component.html',
+    styleUrls: ['./protein-domain-plot.component.scss'],
+    standalone: false
 })
 export class ProteinDomainPlotComponent implements OnInit {
   _data: any[] = []

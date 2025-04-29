@@ -9,9 +9,10 @@ import {UniprotService} from "../../uniprot.service";
 import {CurtainEncryption} from "curtain-web-api";
 
 @Component({
-  selector: 'app-session-settings',
-  templateUrl: './session-settings.component.html',
-  styleUrls: ['./session-settings.component.scss']
+    selector: 'app-session-settings',
+    templateUrl: './session-settings.component.html',
+    styleUrls: ['./session-settings.component.scss'],
+    standalone: false
 })
 export class SessionSettingsComponent implements OnInit {
 

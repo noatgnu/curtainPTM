@@ -4,9 +4,10 @@ import {selectionData} from "../protein-selections/protein-selections.component"
 import {ScrollService} from "../../scroll.service";
 
 @Component({
-  selector: 'app-volcano-and-cyto',
-  templateUrl: './volcano-and-cyto.component.html',
-  styleUrls: ['./volcano-and-cyto.component.scss']
+    selector: 'app-volcano-and-cyto',
+    templateUrl: './volcano-and-cyto.component.html',
+    styleUrls: ['./volcano-and-cyto.component.scss'],
+    standalone: false
 })
 export class VolcanoAndCytoComponent implements OnInit {
   @Output() selected: EventEmitter<selectionData> = new EventEmitter<selectionData>()

@@ -6,9 +6,10 @@ import {UniprotService} from "../../uniprot.service";
 import {SettingsService} from "../../settings.service";
 
 @Component({
-  selector: 'app-file-form',
-  templateUrl: './file-form.component.html',
-  styleUrls: ['./file-form.component.scss']
+    selector: 'app-file-form',
+    templateUrl: './file-form.component.html',
+    styleUrls: ['./file-form.component.scss'],
+    standalone: false
 })
 export class FileFormComponent implements OnInit {
   progressBar: any = {value: 0, text: ""}

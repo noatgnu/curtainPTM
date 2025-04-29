@@ -5,9 +5,10 @@ import {FormBuilder} from "@angular/forms";
 import {ToastService} from "../../toast.service";
 
 @Component({
-  selector: 'app-volcano-colors',
-  templateUrl: './volcano-colors.component.html',
-  styleUrls: ['./volcano-colors.component.scss']
+    selector: 'app-volcano-colors',
+    templateUrl: './volcano-colors.component.html',
+    styleUrls: ['./volcano-colors.component.scss'],
+    standalone: false
 })
 export class VolcanoColorsComponent implements OnInit {
   colorGroups: any[] = []

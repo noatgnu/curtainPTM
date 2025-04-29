@@ -8,9 +8,10 @@ import {InputFile} from "../../classes/input-file";
 import {fromCSV} from "data-forge";
 
 @Component({
-  selector: 'app-data-selection-management',
-  templateUrl: './data-selection-management.component.html',
-  styleUrls: ['./data-selection-management.component.scss']
+    selector: 'app-data-selection-management',
+    templateUrl: './data-selection-management.component.html',
+    styleUrls: ['./data-selection-management.component.scss'],
+    standalone: false
 })
 export class DataSelectionManagementComponent implements OnInit {
   fastaFileName: string = ""

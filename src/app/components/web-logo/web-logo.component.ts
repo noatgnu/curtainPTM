@@ -6,9 +6,10 @@ import {DataFrame, IDataFrame} from "data-forge";
 declare const logojs: any;
 
 @Component({
-  selector: 'app-web-logo',
-  templateUrl: './web-logo.component.html',
-  styleUrls: ['./web-logo.component.scss']
+    selector: 'app-web-logo',
+    templateUrl: './web-logo.component.html',
+    styleUrls: ['./web-logo.component.scss'],
+    standalone: false
 })
 export class WebLogoComponent implements OnInit, AfterViewInit {
   private _data: IDataFrame = new DataFrame()

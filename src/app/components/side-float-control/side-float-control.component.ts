@@ -13,9 +13,10 @@ interface Message {
 }
 
 @Component({
-  selector: 'app-side-float-control',
-  templateUrl: './side-float-control.component.html',
-  styleUrls: ['./side-float-control.component.scss']
+    selector: 'app-side-float-control',
+    templateUrl: './side-float-control.component.html',
+    styleUrls: ['./side-float-control.component.scss'],
+    standalone: false
 })
 
 export class SideFloatControlComponent implements OnInit, OnDestroy {
