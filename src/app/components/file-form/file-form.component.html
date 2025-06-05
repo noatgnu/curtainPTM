@@ -175,13 +175,13 @@
                 @if (data.differentialForm.comparison !== '') {
                   <div class="col-md-6">
                     <label for="comparisonSelect" class="form-label fw-bold">Select Comparison</label>
-                    <select multiple class="form-select" id="comparisonSelect" [(ngModel)]="data.differentialForm.comparisonSelect"
+                    <select class="form-select" id="comparisonSelect" [(ngModel)]="data.differentialForm.comparisonSelect"
                             size="4">
                       @for (val of data.differential.df.getSeries(data.differentialForm.comparison).distinct().toArray(); track val) {
                         <option [value]="val">{{val}}</option>
                       }
                     </select>
-                    <small class="text-muted d-block mt-1">Hold Ctrl/Cmd to select multiple values</small>
+
                   </div>
                 }
               </div>
