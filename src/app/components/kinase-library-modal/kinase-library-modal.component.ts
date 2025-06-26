@@ -20,8 +20,11 @@ export class KinaseLibraryModalComponent implements OnInit {
   private _directData: any[] = []
 
   @Input() set directData(value: any[]) {
+    if (!value) {
+      value = []
+    }
     this._directData = value.sort((a, b) => {
-      return b["Score Rank"] - a["Score Rank"]
+      return a["Score Rank"] - b["Score Rank"]
     })
   }
 

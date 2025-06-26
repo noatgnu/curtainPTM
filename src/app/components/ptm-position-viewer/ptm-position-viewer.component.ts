@@ -510,7 +510,7 @@ export class PtmPositionViewerComponent implements OnInit {
   toggleKinaseLibraryOpenStatus(position: number) {
 
     const ref = this.modal.open(KinaseLibraryModalComponent, {scrollable: true})
-    const sequence = this.sequences[this.sourceMap["Experimental Data"]].replace("-", "")
+    const sequence = this.sequences[this.sourceMap["Experimental Data"]].replace(/-/g, "")
     const site = sequence[position-1]
     const prefix = sequence.slice(position-11, position-1)
     const suffix = sequence.slice(position, position+10)
@@ -519,7 +519,7 @@ export class PtmPositionViewerComponent implements OnInit {
       ref.componentInstance.data = this.kinaseLibrary[position.toString()]
     } else {
       this.kinaseLib.getKinaseLibrary(ref.componentInstance.sequenceWindow).subscribe((data:any) => {
-        ref.componentInstance.directData = data["scores"]
+        ref.componentInstance.directData = data
       })
     }
 
