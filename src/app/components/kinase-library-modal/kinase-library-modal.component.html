@@ -3,7 +3,7 @@
 </div>
 <div class="modal-body">
   <p>
-    <b>Kinase Library Web-link:</b> <a href="https://kinase-library.phosphosite.org/site?s={{sequenceWindow}}&pp=false&scp=true" target="_blank">{{sequenceWindow}}</a>
+    <a href="https://kinase-library.phosphosite.org/" target="_blank">Kinase Library</a>
   </p>
   <div>
     <table class="table table-striped" *ngIf="data.data.length > 0; else nodata" >
@@ -22,9 +22,9 @@
       </thead>
       <tbody>
       <tr *ngFor="let i of data.data">
-        <td>{{i.kinase}}</td>
-        <td>{{i.percentile}}</td>
-        <td>{{i.rank}}</td>
+        <td>{{i.index}}</td>
+        <td>{{i['Percentile']}}</td>
+        <td>{{i['Score Rank']}}</td>
       </tr>
       </tbody>
     </table>

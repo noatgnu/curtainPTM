@@ -514,7 +514,7 @@ export class PtmPositionViewerComponent implements OnInit {
     const site = sequence[position-1]
     const prefix = sequence.slice(position-11, position-1)
     const suffix = sequence.slice(position, position+10)
-    ref.componentInstance.sequenceWindow = prefix + site.toLowerCase() + "*" + suffix
+    ref.componentInstance.sequenceWindow = prefix + site.toLowerCase() + suffix
     if (this.kinaseLibrary[position.toString()]) {
       ref.componentInstance.data = this.kinaseLibrary[position.toString()]
     } else {

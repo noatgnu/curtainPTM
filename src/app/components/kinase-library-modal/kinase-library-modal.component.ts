@@ -21,7 +21,7 @@ export class KinaseLibraryModalComponent implements OnInit {
 
   @Input() set directData(value: any[]) {
     this._directData = value.sort((a, b) => {
-      return b.scoreRank - a.scoreRank
+      return b["Score Rank"] - a["Score Rank"]
     })
   }
 

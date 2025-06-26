@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1749153353229,
+  "timestamp": 1750953662320,
   "index": "/index.html",
   "assetGroups": [
     {
@@ -11,15 +11,15 @@
         "ignoreVary": true
       },
       "urls": [
-        "/chunk-JEL3XU2C.js",
         "/chunk-N57AJHA5.js",
+        "/chunk-YJ6E2CMX.js",
         "/favicon.ico",
         "/index.html",
-        "/main-AC4PHU4D.js",
+        "/main-XBKYKYAU.js",
         "/manifest.webmanifest",
-        "/polyfills-TDZWUUU5.js",
+        "/polyfills-AEKGU4X7.js",
         "/scripts-UWB6B7W7.js",
-        "/styles-7XK3T7F5.css",
+        "/styles-TGMHU2YB.css",
         "/worker-L7HZJU7O.js"
       ],
       "patterns": []
@@ -128,15 +128,15 @@
     "/assets/proteinLists/pd.txt": "915c4a708c5dc7227d0b8fdc5eb51b17b2342746",
     "/assets/proteinLists/phosphatases.txt": "c350ec4656fee8be08c7dead8fdd42a0cd20e350",
     "/assets/proteinLists/pink1.txt": "6b73c270d0407981851903bae49a622c0c22e0f8",
-    "/chunk-JEL3XU2C.js": "3f81b075477c91e02b3968f4186dcec52f687506",
     "/chunk-N57AJHA5.js": "0596171feebf974cc1f5eeeef7f1e75616da8bca",
+    "/chunk-YJ6E2CMX.js": "8860e0c629fccd1dc5c6346ed18907996d6540b2",
     "/favicon.ico": "22f6a4a3bcaafafb0254e0f2fa4ceb89e505e8b2",
-    "/index.html": "f441017a7559e74ab84451383afb8fcc1c5a7d9a",
-    "/main-AC4PHU4D.js": "7009b3a03435d08e0e702e89fc64d2a1ef7b6774",
+    "/index.html": "754eccca150f02517eb6fda5dfb93cdb5dba8019",
+    "/main-XBKYKYAU.js": "1ad1fcbe7bfc56c08c85393384ad5e1a3c7e68ba",
     "/manifest.webmanifest": "0eb74bee05d08791252872d45422389a4c8ede7e",
-    "/polyfills-TDZWUUU5.js": "cc19aa84b795bbafde22b3dbf783c86defea20f2",
+    "/polyfills-AEKGU4X7.js": "820e0e72beb4be04a3d24fc0fe09a6a97d4ff62e",
     "/scripts-UWB6B7W7.js": "c19c2e37f277ce31484f2afac301a172646f6b25",
-    "/styles-7XK3T7F5.css": "bb21bdebe5daa651c4551729c1f261b6a4c667ba",
+    "/styles-TGMHU2YB.css": "06e06db28f78bb11ad010023d20e43626d09443d",
     "/worker-L7HZJU7O.js": "0aed257e7520924b885879668adb5cd37236b6d3"
   },
   "navigationUrls": [
