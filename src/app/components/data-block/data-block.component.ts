@@ -98,11 +98,41 @@ export class DataBlockComponent implements OnInit {
       };
 
       if (this.dataService.differentialForm.position !== "" && this.dataService.differentialForm.position !== undefined) {
-        items["position"] = r[this.dataService.differentialForm.position]
-        if (this.settingsService.settings.variantCorrection[this.accessionID]){
-          items["residue"] = this.allSequences[this.settingsService.settings.variantCorrection[this.accessionID]][r[this.dataService.differentialForm.position]-1]
+        const positions = Array.isArray(r[this.dataService.differentialForm.position]) 
+          ? r[this.dataService.differentialForm.position] 
+          : [r[this.dataService.differentialForm.position]]
+        
+        const peptideSequences = Array.isArray(r[this.dataService.differentialForm.peptideSequence])
+          ? r[this.dataService.differentialForm.peptideSequence]
+          : [r[this.dataService.differentialForm.peptideSequence]]
+        
+        const positionsInPeptide = Array.isArray(r[this.dataService.differentialForm.positionPeptide])
+          ? r[this.dataService.differentialForm.positionPeptide]
+          : [r[this.dataService.differentialForm.positionPeptide]]
+
+        if (positions.length > 1 && peptideSequences.length > 0 && positionsInPeptide.length > 0) {
+          // Multiple modifications - create residue+position pairs
+          const ptmParts: string[] = []
+          for (let i = 0; i < positions.length; i++) {
+            const position = positions[i]
+            const positionInPeptide = positionsInPeptide[i] || positionsInPeptide[0]
+            const peptide = peptideSequences[i] || peptideSequences[0]
+            
+            if (position && positionInPeptide && peptide && positionInPeptide > 0 && positionInPeptide <= peptide.length) {
+              const residue = peptide[positionInPeptide - 1]
+              ptmParts.push(`${residue}${position}`)
+            }
+          }
+          items["position"] = ptmParts.join(';')
+          items["residue"] = ''
         } else {
-          items["residue"] = this.allSequences[this.accessionID][r[this.dataService.differentialForm.position]-1]
+          // Single modification or fallback
+          items["position"] = positions[0]
+          if (this.settingsService.settings.variantCorrection[this.accessionID]){
+            items["residue"] = this.allSequences[this.settingsService.settings.variantCorrection[this.accessionID]][positions[0]-1]
+          } else {
+            items["residue"] = this.allSequences[this.accessionID][positions[0]-1]
+          }
         }
       }
       if (this.dataService.differentialForm.score !== "" && this.dataService.differentialForm.score !== undefined) {

@@ -2,6 +2,16 @@
   <h5 class="modal-title">Web Logo</h5>
 </div>
 <div class="modal-body">
+  @if (availablePositions.length > 1) {
+    <div class="mb-3">
+      <label for="positionSelect" class="form-label">Select Position:</label>
+      <select id="positionSelect" class="form-select" [value]="selectedPositionIndex" (change)="onPositionChange($event)">
+        @for (pos of availablePositions; track pos; let i = $index) {
+          <option [value]="i">Position {{pos}}</option>
+        }
+      </select>
+    </div>
+  }
   <div id="logo" style="width:700px" #logoElement></div>
 </div>
 <div class="modal-footer">

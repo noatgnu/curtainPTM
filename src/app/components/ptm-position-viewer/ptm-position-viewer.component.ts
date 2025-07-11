@@ -130,12 +130,15 @@ export class PtmPositionViewerComponent implements OnInit {
 
     this.unidMap["Experimental Data"] = {}
     for (const u of this._data.unidList) {
-      if (!this.unidMap["Experimental Data"][u.position-1]) {
-        this.unidMap["Experimental Data"][u.position-1] = []
-      }
-      this.unidMap["Experimental Data"][u.position-1].push(u)
-      if (u.significant) {
-        this.significantPos.push(u.position-1)
+      const positions = this.getAllArrayValues(u.position)
+      for (const position of positions) {
+        if (!this.unidMap["Experimental Data"][position-1]) {
+          this.unidMap["Experimental Data"][position-1] = []
+        }
+        this.unidMap["Experimental Data"][position-1].push(u)
+        if (u.significant) {
+          this.significantPos.push(position-1)
+        }
       }
     }
     if (this._data.accessionID) {
@@ -524,5 +527,12 @@ export class PtmPositionViewerComponent implements OnInit {
     }
 
 
+  }
+
+  getAllArrayValues(value: any): number[] {
+    if (Array.isArray(value)) {
+      return value.filter(v => typeof v === 'number' && !isNaN(v))
+    }
+    return typeof value === 'number' && !isNaN(value) ? [value] : []
   }
 }

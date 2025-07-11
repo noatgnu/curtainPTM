@@ -11,18 +11,22 @@
         <p>
           <b>Variant: <span class="badge bg-danger" (click)="openVariantSelectionModal()">{{sourceMap["Experimental Data"]}}<br></span></b>
         </p>
-        <ng-container *ngIf="dataService.fetchUniProt && uni">
+        @if (dataService.fetchUniProt && uni) {
           <p>
             <b>UniProt Accession:</b> {{uni["Entry"]}}<br>
           </p>
           <p>
             <b>Protein names:</b> {{uni["Protein names"]}}<br>
           </p>
-          <ul *ngIf="uni['Subcellular location [CC]']">
-            <b>Subcellular location:</b>
-            <li *ngFor="let subCell of uni['Subcellular location [CC]']">{{subCell}}</li>
-          </ul>
-        </ng-container>
+          @if (uni['Subcellular location [CC]']) {
+            <ul>
+              <b>Subcellular location:</b>
+              @for (subCell of uni['Subcellular location [CC]']; track subCell) {
+                <li>{{subCell}}</li>
+              }
+            </ul>
+          }
+        }
         <!--<div class="form-check">
           <input type="checkbox" [(ngModel)]="profileComparisonToggle" (change)="profileCompare()" class="form-check-input">
           <label class="form-check-label">Include in profile comparison</label>
@@ -33,12 +37,19 @@
         </div>-->
         <p>PTM identified:</p>
         <ul>
-          <li *ngFor="let u of unidList">
-            <span (click)="scrollTop(u.id)"
-                  [ngClass]="{'badge bg-success': dataService.selectedMap[u.id]}">
-              {{u.residue}}{{u.position}} {{u.id}}
-            </span>
-          </li>
+          @for (u of unidList; track u.id) {
+            <li>
+              <span (click)="scrollTop(u.id)"
+                    [ngClass]="{'badge bg-success': dataService.selectedMap[u.id]}">
+                @if (u.residue) {
+                  {{u.residue}}{{u.position}}
+                } @else {
+                  {{u.position}}
+                }
+                {{u.id}}
+              </span>
+            </li>
+          }
         </ul>
       </div>
       <!--        <div class="card-footer">
@@ -53,29 +64,37 @@
     <div class="card border-dark">
       <div class="card-body">
         <ul ngbNav #nav="ngbNav" [(activeId)]="active" class="nav-tabs">
-          <li [ngbNavItem]="1" *ngIf="uni">
-            <a ngbNavLink>Protein Information</a>
-            <ng-template ngbNavContent>
-              <app-protein-information [data]="uni"></app-protein-information>
-            </ng-template>
-          </li>
+          @if (uni) {
+            <li [ngbNavItem]="1">
+              <a ngbNavLink>Protein Information</a>
+              <ng-template ngbNavContent>
+                <app-protein-information [data]="uni"></app-protein-information>
+              </ng-template>
+            </li>
+          }
           <li [ngbNavItem]="2">
             <a ngbNavLink>Raw Data Distribution</a>
             <ng-template ngbNavContent>
-              <app-raw-data [data]="unidList" [toggle]="toggled" *ngIf="error.length == 0"></app-raw-data>
-              <div *ngIf="error.length > 0">
-                <p class="text-danger">Error: {{error}}</p>
-              </div>
+              @if (error.length == 0) {
+                <app-raw-data [data]="unidList" [toggle]="toggled"></app-raw-data>
+              }
+              @if (error.length > 0) {
+                <div>
+                  <p class="text-danger">Error: {{error}}</p>
+                </div>
+              }
             </ng-template>
           </li>
-          <li [ngbNavItem]="3" *ngIf="dataService.differentialForm.position !== '' && dataService.differentialForm.position !== null && dataService.differentialForm.position !== undefined">
-            <a ngbNavLink>PTM Position Viewer</a>
-            <ng-template ngbNavContent>
-              <div class="container-fluid">
-                <app-ptm-position-viewer [data]="{unidList: unidList, differential: _data, sequences: allSequences, accessionID: accessionID, sourceMap: sourceMap, aligned: aligned}"></app-ptm-position-viewer>
-              </div>
-            </ng-template>
-          </li>
+          @if (dataService.differentialForm.position !== '' && dataService.differentialForm.position !== null && dataService.differentialForm.position !== undefined) {
+            <li [ngbNavItem]="3">
+              <a ngbNavLink>PTM Position Viewer</a>
+              <ng-template ngbNavContent>
+                <div class="container-fluid">
+                  <app-ptm-position-viewer [data]="{unidList: unidList, differential: _data, sequences: allSequences, accessionID: accessionID, sourceMap: sourceMap, aligned: aligned}"></app-ptm-position-viewer>
+                </div>
+              </ng-template>
+            </li>
+          }
         </ul>
         <div [ngbNavOutlet]="nav" class="mt-2"></div>
       </div>

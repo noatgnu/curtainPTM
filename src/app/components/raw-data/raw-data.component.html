@@ -44,10 +44,22 @@
         </ng-container>
       </td>
       <td>
-        {{positionMap[d[dataService.differentialForm.primaryIDs]].residue}}
+        @if (getModifiedResidues(d).length > 1) {
+          @for (residue of getModifiedResidues(d); track residue; let i = $index) {
+            <div>{{residue}}</div>
+          }
+        } @else {
+          {{getModifiedResidues(d)[0] || positionMap[d[dataService.differentialForm.primaryIDs]].residue}}
+        }
       </td>
       <td>
-        {{d[dataService.differentialForm.position]}}
+        @if (isArray(d[dataService.differentialForm.position])) {
+          @for (pos of d[dataService.differentialForm.position]; track pos) {
+            <div>{{pos}}</div>
+          }
+        } @else {
+          {{d[dataService.differentialForm.position]}}
+        }
       </td>
       <td>
         {{d[dataService.differentialForm.foldChange]}}
@@ -56,17 +68,58 @@
         {{d[dataService.differentialForm.significant]}}
       </td>
       <td style="word-wrap: break-word;min-width: 160px;max-width: 160px;">
-        <p *ngFor="let s of d[dataService.differentialForm.sequence].split(';')">
-          <span>{{s.slice(0, (s.length-1)/2)}}</span>
-          <span class="text-danger">{{s[(s.length-1)/2]}}</span>
-          <span>{{s.slice((s.length+1)/2, s.length)}}</span>
-          <br>
-        </p>
+        @if (isArray(d[dataService.differentialForm.sequence])) {
+          @for (s of d[dataService.differentialForm.sequence]; track s) {
+            <div>
+              <span>{{s.slice(0, getSequenceWindowCenter(s))}}</span>
+              <span class="text-danger">{{s[getSequenceWindowCenter(s)]}}</span>
+              <span>{{s.slice(getSequenceWindowCenter(s) + 1, s.length)}}</span>
+            </div>
+          }
+        } @else {
+          @for (s of getSequenceArray(d[dataService.differentialForm.sequence]); track s) {
+            <div>
+              <span>{{s.slice(0, getSequenceWindowCenter(s))}}</span>
+              <span class="text-danger">{{s[getSequenceWindowCenter(s)]}}</span>
+              <span>{{s.slice(getSequenceWindowCenter(s) + 1, s.length)}}</span>
+            </div>
+          }
+        }
       </td>
       <td style="word-wrap: break-word;min-width: 160px;max-width: 160px;">
-        <span>{{d[dataService.differentialForm.peptideSequence].slice(0, d[dataService.differentialForm.positionPeptide]-1)}}</span>
-        <span class="text-danger">{{d[dataService.differentialForm.peptideSequence][d[dataService.differentialForm.positionPeptide]-1]}}</span>
-        <span>{{d[dataService.differentialForm.peptideSequence].slice(d[dataService.differentialForm.positionPeptide], d[dataService.differentialForm.peptideSequence].length)}}</span>
+        @if (isArray(d[dataService.differentialForm.peptideSequence])) {
+          @for (peptide of d[dataService.differentialForm.peptideSequence]; track peptide; let i = $index) {
+            <div>
+              @if (isArray(d[dataService.differentialForm.positionPeptide])) {
+                @for (segment of renderPeptideWithHighlights(peptide, d[dataService.differentialForm.positionPeptide]).segments; track segment.text + segment.isHighlighted) {
+                  @if (segment.isHighlighted) {
+                    <span class="text-danger">{{segment.text}}</span>
+                  } @else {
+                    <span>{{segment.text}}</span>
+                  }
+                }
+              } @else {
+                <span>{{peptide.slice(0, d[dataService.differentialForm.positionPeptide]-1)}}</span>
+                <span class="text-danger">{{peptide[d[dataService.differentialForm.positionPeptide]-1]}}</span>
+                <span>{{peptide.slice(d[dataService.differentialForm.positionPeptide], peptide.length)}}</span>
+              }
+            </div>
+          }
+        } @else {
+          @if (isArray(d[dataService.differentialForm.positionPeptide])) {
+            @for (segment of renderPeptideWithHighlights(d[dataService.differentialForm.peptideSequence], d[dataService.differentialForm.positionPeptide]).segments; track segment.text + segment.isHighlighted) {
+              @if (segment.isHighlighted) {
+                <span class="text-danger">{{segment.text}}</span>
+              } @else {
+                <span>{{segment.text}}</span>
+              }
+            }
+          } @else {
+            <span>{{d[dataService.differentialForm.peptideSequence].slice(0, d[dataService.differentialForm.positionPeptide]-1)}}</span>
+            <span class="text-danger">{{d[dataService.differentialForm.peptideSequence][d[dataService.differentialForm.positionPeptide]-1]}}</span>
+            <span>{{d[dataService.differentialForm.peptideSequence].slice(d[dataService.differentialForm.positionPeptide], d[dataService.differentialForm.peptideSequence].length)}}</span>
+          }
+        }
       </td>
       <td>
         {{d[dataService.differentialForm.score] | number}}

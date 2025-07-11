@@ -228,10 +228,10 @@ export class FileFormComponent implements OnInit {
       pMax: sign.max()
     }
     this.data.currentDF = currentDF
-    const numberedPosition = new Series(this.convertToNumber(
+    const numberedPosition = new Series(
       this.data.currentDF.getSeries(
         this.data.differentialForm.position
-      ).toArray())
+      ).toArray().map(val => this.parseArrayField(val, 'number'))
     )
 
     this.data.currentDF = this.data.currentDF.withSeries(
@@ -242,10 +242,9 @@ export class FileFormComponent implements OnInit {
     this.data.currentDF = this.data.currentDF.withSeries(
       this.data.differentialForm.positionPeptide,
       new Series(
-        this.convertToNumber(
-          this.data.currentDF.getSeries(
-            this.data.differentialForm.positionPeptide
-          ).bake().toArray()))).bake()
+        this.data.currentDF.getSeries(
+          this.data.differentialForm.positionPeptide
+        ).bake().toArray().map(val => this.parseArrayField(val, 'number')))).bake()
 
 
     this.data.conditions = conditions
@@ -264,7 +263,23 @@ export class FileFormComponent implements OnInit {
       this.data.currentDF = this.data.currentDF.withSeries(this.data.differentialForm.significant, new Series(this.log10Convert(this.data.currentDF.getSeries(this.data.differentialForm.significant).toArray()))).bake()
     }
     this.updateProgressBar(100, "Processed significant")
-    this.data.currentDF = this.data.currentDF.withSeries(this.data.differentialForm.peptideSequence, new Series(this.parseSequence())).bake()
+    this.data.currentDF = this.data.currentDF.withSeries(
+      this.data.differentialForm.peptideSequence, 
+      new Series(
+        this.data.currentDF.getSeries(this.data.differentialForm.peptideSequence)
+          .toArray().map(val => this.parseArrayField(val, 'string', true))
+      )
+    ).bake()
+    
+    if (this.data.differentialForm.sequence && this.data.differentialForm.sequence !== '') {
+      this.data.currentDF = this.data.currentDF.withSeries(
+        this.data.differentialForm.sequence,
+        new Series(
+          this.data.currentDF.getSeries(this.data.differentialForm.sequence)
+            .toArray().map(val => this.parseArrayField(val, 'string'))
+        )
+      ).bake()
+    }
 
     this.data.primaryIDsList = this.data.currentDF.getSeries(this.data.differentialForm.primaryIDs).bake().distinct().toArray()
     this.data.accessionList = this.data.currentDF.getSeries(this.data.differentialForm.accession).bake().distinct().toArray()
@@ -420,6 +435,49 @@ export class FileFormComponent implements OnInit {
       }
       return seq
     })
+  }
+
+  parseArrayField(value: string, type: 'number' | 'string', cleanSequence: boolean = false): any {
+    if (!value || value === '') {
+      return type === 'number' ? [] : []
+    }
+    
+    const parts = value.split(';').map(part => part.trim()).filter(part => part !== '')
+    
+    if (parts.length === 1) {
+      if (type === 'number') {
+        const num = Number(parts[0])
+        return isNaN(num) ? [parts[0]] : num
+      } else {
+        return cleanSequence ? this.parseSequenceSingle(parts[0]) : parts[0]
+      }
+    }
+    
+    if (type === 'number') {
+      return parts.map(part => {
+        const num = Number(part)
+        return isNaN(num) ? part : num
+      })
+    } else {
+      return cleanSequence ? parts.map(part => this.parseSequenceSingle(part)) : parts
+    }
+  }
+
+  parseSequenceSingle(v: string): string {
+    let count = 0
+    let seq = ""
+    for (const a of v) {
+      if (["(", "[", "{"].includes(a)) {
+        count = count + 1
+      }
+      if (count === 0) {
+        seq = seq + a
+      }
+      if ([")", "]", "}"].includes(a)) {
+        count = count - 1
+      }
+    }
+    return seq
   }
 
   handleFileLoadingProgress(progress:number, fileType: string) {

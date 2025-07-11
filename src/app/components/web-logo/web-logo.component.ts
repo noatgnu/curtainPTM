@@ -14,9 +14,29 @@ declare const logojs: any;
 export class WebLogoComponent implements OnInit, AfterViewInit {
   private _data: IDataFrame = new DataFrame()
   countMatrix: number[][] = []
+  availablePositions: number[] = []
+  selectedPositionIndex: number = 0
   @ViewChild("logoElement") logoElement: ElementRef|undefined
   @Input() set data(value: IDataFrame) {
     this._data = value
+    this.extractAvailablePositions()
+    this.generateWebLogo()
+  }
+
+  extractAvailablePositions() {
+    const positionSet = new Set<number>()
+    for (const r of this._data) {
+      const positions = this.getAllArrayValues(r[this.dataService.differentialForm.position])
+      positions.forEach(pos => positionSet.add(pos))
+    }
+    this.availablePositions = Array.from(positionSet).sort((a, b) => a - b)
+    this.selectedPositionIndex = 0
+  }
+
+  generateWebLogo() {
+    const selectedPosition = this.availablePositions[this.selectedPositionIndex]
+    if (selectedPosition === undefined) return
+    
     const pos: any = {}
     if (this._data.count() > 0) {
       for (let i = 1; i < 12; i++) {
@@ -51,17 +71,20 @@ export class WebLogoComponent implements OnInit, AfterViewInit {
         if (r[this.dataService.differentialForm.accession].indexOf("-") !== -1) {
           noSeq.push(r)
         } else {
+          const positions = this.getAllArrayValues(r[this.dataService.differentialForm.position])
+          if (!positions.includes(selectedPosition)) continue
+          
           const uni = this.uniprot.getUniprotFromAcc(r[this.dataService.differentialForm.accession])
-          const aa = uni["Sequence"][r[this.dataService.differentialForm.position]-1]
+          const aa = uni["Sequence"][selectedPosition-1]
 
           const seqLength = uni["Sequence"].length
-          const seq = uni["Sequence"].slice(r[this.dataService.differentialForm.position] -6, r[this.dataService.differentialForm.position] + 5)
+          const seq = uni["Sequence"].slice(selectedPosition -6, selectedPosition + 5)
           for (let i =0; i< seq.length; i++) {
             const aa = seq[i]
             if (aa in pos[i + 1]) {
               pos[i + 1][aa] += 1
             } else {
-              console.log(aa, r[this.dataService.differentialForm.position] -1 + i)
+              console.log(aa, selectedPosition -1 + i)
               console.log(uni)
             }
           }
@@ -161,6 +184,12 @@ export class WebLogoComponent implements OnInit, AfterViewInit {
     this.modal.dismiss()
   }
 
+  onPositionChange(event: Event) {
+    const target = event.target as HTMLSelectElement
+    this.selectedPositionIndex = parseInt(target.value)
+    this.generateWebLogo()
+  }
+
   downloadSVG() {
     if (this.logoElement) {
       console.log(this.logoElement.nativeElement.innerHTML)
@@ -175,6 +204,13 @@ export class WebLogoComponent implements OnInit, AfterViewInit {
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url)
     }
+  }
+
+  getAllArrayValues(value: any): number[] {
+    if (Array.isArray(value)) {
+      return value.filter(v => typeof v === 'number' && !isNaN(v))
+    }
+    return typeof value === 'number' && !isNaN(value) ? [value] : []
   }
 
 }

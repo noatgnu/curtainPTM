@@ -242,10 +242,10 @@ export class VolcanoPlotComponent implements OnInit {
         this.dataService.differentialForm.positionPeptide !== "" &&
         this.dataService.differentialForm.peptideSequence !== ""
       ) {
-        const position = r[this.dataService.differentialForm.position]
-        const positionInPeptide = r[this.dataService.differentialForm.positionPeptide]
-        const peptide = r[this.dataService.differentialForm.peptideSequence]
-        text = `${geneNames}(${peptide[positionInPeptide-1]}${position})(${primaryID})`
+        const ptmString = this.buildPTMString(r)
+        if (ptmString) {
+          text = `${geneNames}(${ptmString})(${primaryID})`
+        }
       } else if (geneNames !== "") {
         text = geneNames + "(" + primaryID + ")"
       }
@@ -617,10 +617,10 @@ export class VolcanoPlotComponent implements OnInit {
         this.dataService.differentialForm.positionPeptide !== "" &&
         this.dataService.differentialForm.peptideSequence !== ""
       ) {
-        const position = a[this.dataService.differentialForm.position]
-        const positionInPeptide = a[this.dataService.differentialForm.positionPeptide]
-        const peptide = a[this.dataService.differentialForm.peptideSequence]
-        text = `${ uni["Gene Names"]}(${peptide[positionInPeptide-1]}${position})`
+        const ptmString = this.buildPTMString(a)
+        if (ptmString) {
+          text = `${ uni["Gene Names"]}(${ptmString})`
+        }
       }
 
       if (!this.annotated[title]) {
@@ -830,5 +830,42 @@ export class VolcanoPlotComponent implements OnInit {
         this.drawVolcano()
       }
     })
+  }
+
+  getFirstArrayValue(value: any): any {
+    if (Array.isArray(value)) {
+      return value.length > 0 ? value[0] : null
+    }
+    return value
+  }
+
+  buildPTMString(row: any): string {
+    const positions = Array.isArray(row[this.dataService.differentialForm.position]) 
+      ? row[this.dataService.differentialForm.position] 
+      : [row[this.dataService.differentialForm.position]]
+    
+    const positionsInPeptide = Array.isArray(row[this.dataService.differentialForm.positionPeptide])
+      ? row[this.dataService.differentialForm.positionPeptide]
+      : [row[this.dataService.differentialForm.positionPeptide]]
+    
+    const peptideSequences = Array.isArray(row[this.dataService.differentialForm.peptideSequence])
+      ? row[this.dataService.differentialForm.peptideSequence]
+      : [row[this.dataService.differentialForm.peptideSequence]]
+
+    const ptmParts: string[] = []
+    
+    // Handle multiple modifications
+    for (let i = 0; i < positions.length; i++) {
+      const position = positions[i]
+      const positionInPeptide = positionsInPeptide[i] || positionsInPeptide[0]
+      const peptide = peptideSequences[i] || peptideSequences[0]
+      
+      if (position && positionInPeptide && peptide && positionInPeptide > 0 && positionInPeptide <= peptide.length) {
+        const residue = peptide[positionInPeptide - 1]
+        ptmParts.push(`${residue}${position}`)
+      }
+    }
+    
+    return ptmParts.join(';')
   }
 }

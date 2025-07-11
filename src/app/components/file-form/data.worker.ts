@@ -18,7 +18,7 @@ addEventListener('message', (data: MessageEvent<any>) => {
 
       if (data.data.differentialForm._comparisonSelect === "" || data.data.differentialForm._comparisonSelect === undefined) {
         if (df.getColumnNames().includes(data.data.differentialForm._comparison)) {
-          data.data.differentialForm._comparisonSelect = data.data.differential.df.first()[data.data.differentialForm._comparison]
+          data.data.differentialForm._comparisonSelect = df.first()[data.data.differentialForm._comparison]
         } else {
           data.data.differentialForm._comparison = "CurtainSetComparison"
           data.data.differentialForm._comparisonSelect = "1"
@@ -28,8 +28,8 @@ addEventListener('message', (data: MessageEvent<any>) => {
 
       }
       const store: any[] = df.toArray().map((r: any) => {
-        r[data.data.differentialForm._position] = Number(r[data.data.differentialForm._position])
-        r[data.data.differentialForm._positionPeptide] = Number(r[data.data.differentialForm._positionPeptide])
+        r[data.data.differentialForm._position] = parseArrayField(r[data.data.differentialForm._position], 'number')
+        r[data.data.differentialForm._positionPeptide] = parseArrayField(r[data.data.differentialForm._positionPeptide], 'number')
         r[data.data.differentialForm._foldChange] = Number(r[data.data.differentialForm._foldChange])
         r[data.data.differentialForm._score] = Number(r[data.data.differentialForm._score])
         r[data.data.differentialForm._significant] = Number(r[data.data.differentialForm._significant])
@@ -51,7 +51,10 @@ addEventListener('message', (data: MessageEvent<any>) => {
         if (data.data.differentialForm._transformSignificant) {
           r[data.data.differentialForm._significant] = -Math.log10(r[data.data.differentialForm._significant])
         }
-        r[data.data.differentialForm._peptideSequence] = parseSequenceSingle(r[data.data.differentialForm._peptideSequence])
+        r[data.data.differentialForm._peptideSequence] = parseArrayField(r[data.data.differentialForm._peptideSequence], 'string', true)
+        if (data.data.differentialForm._sequence) {
+          r[data.data.differentialForm._sequence] = parseArrayField(r[data.data.differentialForm._sequence], 'string')
+        }
         return r
       })
 
@@ -229,4 +232,30 @@ function parseSequenceSingle(v: string) {
     }
   }
   return seq
+}
+
+function parseArrayField(value: string, type: 'number' | 'string', cleanSequence: boolean = false): any {
+  if (!value || value === '') {
+    return type === 'number' ? [] : []
+  }
+  
+  const parts = value.split(';').map(part => part.trim()).filter(part => part !== '')
+  
+  if (parts.length === 1) {
+    if (type === 'number') {
+      const num = Number(parts[0])
+      return isNaN(num) ? [parts[0]] : num
+    } else {
+      return cleanSequence ? parseSequenceSingle(parts[0]) : parts[0]
+    }
+  }
+  
+  if (type === 'number') {
+    return parts.map(part => {
+      const num = Number(part)
+      return isNaN(num) ? part : num
+    })
+  } else {
+    return cleanSequence ? parts.map(part => parseSequenceSingle(part)) : parts
+  }
 }
