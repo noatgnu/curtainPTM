@@ -4,7 +4,7 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {ReactiveFormsModule} from "@angular/forms";
 import {PlotlyModule} from "angular-plotly.js";
 import * as PlotlyJS from "plotly.js-dist-min";
-PlotlyModule.plotlyjs = PlotlyJS;
+
 @Component({
   selector: 'app-curtain-stats-summary',
   imports: [

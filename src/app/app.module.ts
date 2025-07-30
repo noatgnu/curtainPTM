@@ -15,9 +15,9 @@ import {VolcanoPlotComponent} from "./components/volcano-plot/volcano-plot.compo
 import {BatchSearchComponent} from "./components/batch-search/batch-search.component";
 import {ProteinSelectionsComponent} from "./components/protein-selections/protein-selections.component";
 import {FdrCurveComponent} from "./components/fdr-curve/fdr-curve.component";
-import {PlotlyModule, PlotlyViaCDNModule} from "angular-plotly.js";
+import {PlotlyModule} from "angular-plotly.js";
 import * as PlotlyJS from 'plotly.js-dist-min';
-import {ColorPickerModule} from "ngx-color-picker";
+import {ColorPickerDirective} from "ngx-color-picker";
 import {CytoplotComponent} from "./components/cytoplot/cytoplot.component";
 import {VolcanoAndCytoComponent} from "./components/volcano-and-cyto/volcano-and-cyto.component";
 import {NetworkInteractionsComponent} from "./components/network-interactions/network-interactions.component";
@@ -62,7 +62,7 @@ import {ShapesComponent} from "./components/volcano-plot/shapes/shapes.component
 import { NearbyPointsModalComponent } from './components/nearby-points-modal/nearby-points-modal.component';
 //PlotlyViaCDNModule.setPlotlyVersion('latest');
 //PlotlyViaCDNModule.setPlotlyBundle('basic');
-PlotlyModule.plotlyjs = PlotlyJS;
+
 @NgModule({ declarations: [
         AppComponent,
         HomeComponent,
@@ -107,18 +107,18 @@ PlotlyModule.plotlyjs = PlotlyJS;
         SampleConditionAssignmentModalComponent,
         UserPtmImportManagementComponent,
         EncryptionSettingsComponent,
-        NearbyPointsModalComponent
+        NearbyPointsModalComponent,
+
     ],
     bootstrap: [AppComponent], imports: [BrowserModule,
         AppRoutingModule,
         NgbModule,
         FormsModule,
-        PlotlyModule,
-        //PlotlyViaCDNModule,
-        ColorPickerModule,
         //ContextMenuModule,
         NgxPrintModule,
         QuillModule.forRoot(),
+        PlotlyModule.forRoot(PlotlyJS),
+        ColorPickerDirective,
         ReactiveFormsModule,
         AccountsModule,
     NgbDropdownModule,

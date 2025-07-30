@@ -1,13 +1,13 @@
 import {Component, EventEmitter, Output} from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule} from "@angular/forms";
 import {SettingsService} from "../../../settings.service";
-import {ColorPickerModule} from "ngx-color-picker";
+import {ColorPickerDirective} from "ngx-color-picker";
 import {DataService} from "../../../data.service";
 
 @Component({
     selector: 'app-shapes',
     imports: [
-        ColorPickerModule,
+        ColorPickerDirective,
         ReactiveFormsModule
     ],
     templateUrl: './shapes.component.html',
