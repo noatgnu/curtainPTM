@@ -6,28 +6,32 @@
     <a href="https://kinase-library.phosphosite.org/" target="_blank">Kinase Library</a>
   </p>
   <div>
-    <table class="table table-striped" *ngIf="directData.length > 0" >
-      <thead>
-      <tr>
-        <th scope="col">
-          Kinase
-        </th>
-        <th scope="col">
-          Score
-        </th>
-        <th scope="col">
-          Rank
-        </th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr *ngFor="let i of directData">
-        <td>{{i.index}}</td>
-        <td>{{i["Score"]}}</td>
-        <td>{{i["Score Rank"]}}</td>
-      </tr>
-      </tbody>
-    </table>
+    @if (directData.length > 0) {
+      <table class="table table-striped">
+        <thead>
+        <tr>
+          <th scope="col">
+            Kinase
+          </th>
+          <th scope="col">
+            Score
+          </th>
+          <th scope="col">
+            Rank
+          </th>
+        </tr>
+        </thead>
+        <tbody>
+        @for (i of directData; track i) {
+          <tr>
+            <td>{{i.index}}</td>
+            <td>{{i["Score"]}}</td>
+            <td>{{i["Score Rank"]}}</td>
+          </tr>
+        }
+        </tbody>
+      </table>
+    }
   </div>
 </div>
 <div class="modal-footer">

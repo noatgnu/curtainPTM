@@ -34,7 +34,7 @@
     </div>
   </div>
 
-  <ng-container *ngFor="let c of condition">
+  @for (c of condition; track c) {
     <div>
       <div class="row mt-2">
         <div class="col-4">
@@ -71,7 +71,7 @@
         </tr>
         </thead>
         <tbody>
-        <ng-container *ngFor="let s of samples[c]">
+        @for (s of samples[c]; track s) {
           <tr>
             <td>{{s}}</td>
             <td>
@@ -94,11 +94,11 @@
               </div>
             </td>
           </tr>
-        </ng-container>
+        }
         </tbody>
       </table>
     </div>
-  </ng-container>
+  }
 </div>
 <div class="modal-footer">
   <button class="btn btn-primary" (click)="submit()">

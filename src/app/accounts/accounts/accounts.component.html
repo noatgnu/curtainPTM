@@ -4,7 +4,7 @@
 <div class="modal-body">
   <p>
     <b>Username: </b>{{accounts.curtainAPI.user.username}}<br>
-    <b>Curtain Link Limits: </b><span *ngIf="accounts.curtainAPI.user.curtainLinkLimit === 0">infinite</span><span *ngIf="accounts.curtainAPI.user.curtainLinkLimit > 0">{{accounts.curtainAPI.user.curtainLinkLimit}}</span> <span class="text-danger" *ngIf="accounts.curtainAPI.user.curtainLinkLimitExceeded">- Limit Exceed</span> <br>
+    <b>Curtain Link Limits: </b>@if (accounts.curtainAPI.user.curtainLinkLimit === 0) {<span>infinite</span>}@if (accounts.curtainAPI.user.curtainLinkLimit > 0) {<span>{{accounts.curtainAPI.user.curtainLinkLimit}}</span>} @if (accounts.curtainAPI.user.curtainLinkLimitExceeded) {<span class="text-danger">- Limit Exceed</span>} <br>
     <b>Total Curtain Sessions: </b> {{accounts.curtainAPI.user.totalCurtain}}
   </p>
   <form [formGroup]="form" (submit)="submit()">
@@ -14,7 +14,7 @@
     </div>
     <button class="btn btn-primary mt-1 mb-1" type="submit">Search</button>
   </form>
-  <ng-container *ngIf="totalItems > 0">
+  @if (totalItems > 0) {
     <ngb-pagination [collectionSize]="totalItems" [(page)]="currentPage" [maxSize]="5" [boundaryLinks]="true" class="mt-2" (pageChange)="submit($event)"></ngb-pagination>
     <table class="table table-striped">
       <thead>
@@ -51,7 +51,7 @@
 
       </thead>
       <tbody>
-      <ng-container *ngFor="let d of data.results">
+      @for (d of data.results; track d.link_id) {
         <tr>
           <td>
             <input type="checkbox" class="form-check-input" [(ngModel)]="selectedLinks[d.link_id]" (click)="addOrRemoveFromSelected(d.link_id)">
@@ -64,27 +64,31 @@
             <div [innerHTML]="d.description"></div>
           </td>
           <td>
-            <p *ngIf="d.enable">Public</p>
-            <p *ngIf="!d.enable">Private</p>
+            @if (d.enable) {<p>Public</p>}
+            @if (!d.enable) {<p>Private</p>}
           </td>
           <td>
             <button class="btn btn-sm btn-outline-primary" style="margin-right: 2px" (click)="viewDescription(d.link_id)">Details</button>
-            <button class="btn btn-sm btn-outline-danger" *ngIf="accounts.curtainAPI.user.canDelete" (click)="deleteLink(d.link_id)">Rm</button>
+            @if (accounts.curtainAPI.user.canDelete) {<button class="btn btn-sm btn-outline-danger" (click)="deleteLink(d.link_id)">Rm</button>}
           </td>
         </tr>
-        <tr *ngIf="descriptionTrigger[d.link_id]" class="table-light">
-          <td [colSpan]="3">
-            <ul>
-              <b>Owners:</b>
-              <li *ngFor="let o of d.owners">{{o.username}}</li>
-            </ul>
-          </td>
-        </tr>
+        @if (descriptionTrigger[d.link_id]) {
+          <tr class="table-light">
+            <td [colSpan]="3">
+              <ul>
+                <b>Owners:</b>
+                @for (o of d.owners; track o.username) {
+                  <li>{{o.username}}</li>
+                }
+              </ul>
+            </td>
+          </tr>
+        }
         <tr></tr>
-      </ng-container>
+      }
 
       </tbody>
     </table>
-  </ng-container>
+  }
 
 </div>

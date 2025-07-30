@@ -58,36 +58,50 @@
       <div #collapse="ngbCollapse" [(ngbCollapse)]="iscollapsed">
         <div class="accordion-body">
           <div class="row">
-            <div class="col-3" *ngIf="testType==='ANOVA'">
-              <label for="condition{{_data[dataService.rawForm.primaryIDs]}}">Select conditions</label>
-              <select multiple [(ngModel)]="selectedConditions" class="form-control" id="condition{{_data[dataService.rawForm.primaryIDs]}}">
-                <option [value]="c" *ngFor="let c of dataService.conditions">
-                  {{c}}
-                </option>
-              </select>
-            </div>
-            <div class="col-3" *ngIf="testType==='TTest'">
-              <label for="conditionA{{_data[dataService.rawForm.primaryIDs]}}">Condition A</label>
-              <select [(ngModel)]="conditionA" class="form-control" id="conditionA{{_data[dataService.rawForm.primaryIDs]}}">
-                <option [value]="c" *ngFor="let c of dataService.conditions">
-                  {{c}}
-                </option>
-              </select>
-            </div>
-            <div class="col-3" *ngIf="testType==='TTest'">
-              <label for="conditionB{{_data[dataService.rawForm.primaryIDs]}}">Condition B</label>
-              <select [(ngModel)]="conditionB" class="form-control" id="conditionB{{_data[dataService.rawForm.primaryIDs]}}">
-                <option [value]="c" *ngFor="let c of dataService.conditions">
-                  {{c}}
-                </option>
-              </select>
-            </div>
+            @if (testType==='ANOVA') {
+              <div class="col-3">
+                <label for="condition{{_data[dataService.rawForm.primaryIDs]}}">Select conditions</label>
+                <select multiple [(ngModel)]="selectedConditions" class="form-control" id="condition{{_data[dataService.rawForm.primaryIDs]}}">
+                  @for (c of dataService.conditions; track c) {
+                    <option [value]="c">
+                      {{c}}
+                    </option>
+                  }
+                </select>
+              </div>
+            }
+            @if (testType==='TTest') {
+              <div class="col-3">
+                <label for="conditionA{{_data[dataService.rawForm.primaryIDs]}}">Condition A</label>
+                <select [(ngModel)]="conditionA" class="form-control" id="conditionA{{_data[dataService.rawForm.primaryIDs]}}">
+                  @for (c of dataService.conditions; track c) {
+                    <option [value]="c">
+                      {{c}}
+                    </option>
+                  }
+                </select>
+              </div>
+            }
+            @if (testType==='TTest') {
+              <div class="col-3">
+                <label for="conditionB{{_data[dataService.rawForm.primaryIDs]}}">Condition B</label>
+                <select [(ngModel)]="conditionB" class="form-control" id="conditionB{{_data[dataService.rawForm.primaryIDs]}}">
+                  @for (c of dataService.conditions; track c) {
+                    <option [value]="c">
+                      {{c}}
+                    </option>
+                  }
+                </select>
+              </div>
+            }
             <div class="col-3">
               <label for="testType{{_data[dataService.rawForm.primaryIDs]}}">Test Type</label>
               <select [(ngModel)]="testType" class="form-control" id="testType{{_data[dataService.rawForm.primaryIDs]}}">
-                <option [value]="d" *ngFor="let d of dataService.dataTestTypes">
-                  {{d}}
-                </option>
+                @for (d of dataService.dataTestTypes; track d) {
+                  <option [value]="d">
+                    {{d}}
+                  </option>
+                }
               </select>
             </div>
           </div>
@@ -96,7 +110,8 @@
               <button class="btn btn-primary" (click)="performTest()">Perform Test</button>
             </div>
           </div>
-          <table *ngIf="selectedConditions.length > 0 && comparisons.length > 0" class="mt-2 table table-striped table-bordered">
+          @if (selectedConditions.length > 0 && comparisons.length > 0) {
+            <table class="mt-2 table table-striped table-bordered">
             <thead>
             <tr>
               <th scope="col">
@@ -108,15 +123,20 @@
             </tr>
             </thead>
             <tbody>
-            <ng-container *ngFor="let c of comparisons">
+            @for (c of comparisons; track c) {
               <tr>
                 <td>{{c.conditions.join(",")}}</td>
-                <td *ngIf="testType==='ANOVA'">{{c.comparison.f | number}}</td>
-                <td *ngIf="testType==='TTest'">{{c.comparison.p_value | number}}</td>
+                @if (testType==='ANOVA') {
+                  <td>{{c.comparison.f | number}}</td>
+                }
+                @if (testType==='TTest') {
+                  <td>{{c.comparison.p_value | number}}</td>
+                }
               </tr>
-            </ng-container>
+            }
             </tbody>
           </table>
+          }
         </div>
       </div>
     </div>

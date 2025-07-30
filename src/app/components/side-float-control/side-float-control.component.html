@@ -1,41 +1,45 @@
-<div *ngIf="toggleChatPanel" class="card" style="position: fixed; z-index: 1030; bottom: 110px; left: 50px; min-width: 200px; max-width: 400px; min-height: 400px; max-height: 400px">
+@if (toggleChatPanel) {
+  <div class="card" style="position: fixed; z-index: 1030; bottom: 110px; left: 50px; min-width: 200px; max-width: 400px; min-height: 400px; max-height: 400px">
   <div class="card-body d-flex flex-column justify-content-between">
     <div (drop)="handleDrop($event)" (dragover)="handleDragOver($event)" class="p-1 d-flex flex-column-reverse" style="overflow-y: auto; height: 300px" #chatbox>
       <div></div>
-      <div *ngFor="let m of messagesList">
-        <ng-container *ngIf="m.requestType==='push-state-all-force'">
-          <span class="text-danger">State updated</span> <br>
-        </ng-container>
-        <ng-container *ngIf="m.requestType==='push-state-all'">
-          <span class="badge bg-info" (click)="loadSentState(m.message.data)">Click to load save state</span> <br>
-        </ng-container>
-        <ng-container *ngIf="m.requestType==='chat'">
-          {{m.message.message}} <br>
-        </ng-container>
-        <ng-container *ngIf="m.requestType==='chat-selection-group'">
-          <span class="badge bg-danger" (click)="searchChatSelectionGroup(m.message)">{{m.message.title}}</span> <br>
-        </ng-container>
-        <ng-container *ngIf="m.requestType==='chat-selection-single'">
-          <span class="badge bg-danger" (click)="searchChatSelectionSingle(m.message)">{{m.message.title}}</span> <br>
-        </ng-container>
-        <ng-container *ngIf="m.requestType==='chat-system'">
-          {{m.message.message}}<br>
-        </ng-container>
-        <ng-container *ngIf="m.requestType.startsWith('chat-system-save-state')">
-          <ng-container *ngIf="m.requestType.endsWith('all'); else saveMessage">
-            <ul>
-              Available States:
-              <li *ngFor="let s of m.message.message.data">
-                <span class="badge bg-info" (click)="loadStateDirect(s)">{{s}}</span>
-              </li>
-            </ul>
-          </ng-container>
-          <ng-template #saveMessage>
+      @for (m of messagesList; track m) {
+        <div>
+          @if (m.requestType==='push-state-all-force') {
+            <span class="text-danger">State updated</span> <br>
+          }
+          @if (m.requestType==='push-state-all') {
+            <span class="badge bg-info" (click)="loadSentState(m.message.data)">Click to load save state</span> <br>
+          }
+          @if (m.requestType==='chat') {
+            {{m.message.message}} <br>
+          }
+          @if (m.requestType==='chat-selection-group') {
+            <span class="badge bg-danger" (click)="searchChatSelectionGroup(m.message)">{{m.message.title}}</span> <br>
+          }
+          @if (m.requestType==='chat-selection-single') {
+            <span class="badge bg-danger" (click)="searchChatSelectionSingle(m.message)">{{m.message.title}}</span> <br>
+          }
+          @if (m.requestType==='chat-system') {
             {{m.message.message}}<br>
-          </ng-template>
-        </ng-container>
-        <small class="text-sm-end text-muted" style="font-size: 10px">{{senderMap[m.senderID]}} - {{m.message.timestamp|date:'short'}}</small>
-      </div>
+          }
+          @if (m.requestType.startsWith('chat-system-save-state')) {
+            @if (m.requestType.endsWith('all')) {
+              <ul>
+                Available States:
+                @for (s of m.message.message.data; track s) {
+                  <li>
+                    <span class="badge bg-info" (click)="loadStateDirect(s)">{{s}}</span>
+                  </li>
+                }
+              </ul>
+            } @else {
+              {{m.message.message}}<br>
+            }
+          }
+          <small class="text-sm-end text-muted" style="font-size: 10px">{{senderMap[m.senderID]}} - {{m.message.timestamp|date:'short'}}</small>
+        </div>
+      }
     </div>
     <div class="p-1">
       <form #chatForm="ngForm" (ngSubmit)="sendMessage()" [formGroup]="form">
@@ -52,8 +56,8 @@
       </form>
     </div>
   </div>
-</div>
-
+  </div>
+}
 
 <div class="float-start" style="position: fixed; z-index: 1030; bottom: 50px; left: 50px">
   <div class="d-flex">
@@ -62,10 +66,12 @@
         <span class="bi bi-chat"></span>
       </button>
     </div>
-    <div class="p-2" *ngIf="data.instructorMode">
-      <button class="btn btn-sm btn-outline-danger" (click)="forcePushState()">
-        <span class="bi bi-arrow-up-right"></span>
-      </button>
-    </div>
+    @if (data.instructorMode) {
+      <div class="p-2">
+        <button class="btn btn-sm btn-outline-danger" (click)="forcePushState()">
+          <span class="bi bi-arrow-up-right"></span>
+        </button>
+      </div>
+    }
   </div>
 </div>

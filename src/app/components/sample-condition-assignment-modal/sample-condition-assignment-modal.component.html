@@ -12,12 +12,14 @@
     </tr>
     </thead>
     <tbody>
-    <tr *ngFor="let s of samples">
-      <td><b>{{s}}</b></td>
-      <td>
-        <input type="text" [(ngModel)]="sampleMap[s].condition" style="width: 350px" class="form-control">
-      </td>
-    </tr>
+    @for (s of samples; track s) {
+      <tr>
+        <td><b>{{s}}</b></td>
+        <td>
+          <input type="text" [(ngModel)]="sampleMap[s].condition" style="width: 350px" class="form-control">
+        </td>
+      </tr>
+    }
     </tbody>
   </table>
 </div>

@@ -3,12 +3,14 @@
 <app-pride></app-pride>
 <app-file-form (finished)="handleFinish($event)"></app-file-form>
 <app-protein-selections (searchResult)="handleSearch($event)"></app-protein-selections>
-<ng-container *ngIf="finished">
+@if (finished) {
   <app-volcano-and-cyto (selected)="handleSearch($event)"></app-volcano-and-cyto>
-</ng-container>
+}
 
-<ng-container *ngIf="differentialFiltered.count() > 0">
+@if (differentialFiltered.count() > 0) {
   <app-data-viewer [data]="differentialFiltered"></app-data-viewer>
-</ng-container>
+}
 
-<app-side-float-control (searchChatSelection)="handleSearch($event)" *ngIf="finished"></app-side-float-control>
+@if (finished) {
+  <app-side-float-control (searchChatSelection)="handleSearch($event)"></app-side-float-control>
+}

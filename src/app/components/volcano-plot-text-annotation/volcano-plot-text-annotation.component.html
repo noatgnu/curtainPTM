@@ -35,7 +35,8 @@
     </tr>
     </thead>
     <tbody>
-    <tr *ngFor="let a of annotationText">
+    @for (a of annotationText; track a) {
+      <tr>
       <td>
         {{a.title}}
       </td>
@@ -63,10 +64,11 @@
       <td>
         <input class="col-12" [(colorPicker)]="a.data.font.color" [style.background]="a.data.font.color">
       </td>
-    </tr>
+      </tr>
+    }
     </tbody>
   </table>-->
-  <ng-container *ngFor="let f of forms">
+  @for (f of forms; track f.value['annotationID']) {
     <form [formGroup]="f">
       <h5>{{f.value["annotationID"]}}</h5>
       <div class="d-flex">
@@ -135,7 +137,7 @@
       </div>
     </form>
     <hr>
-  </ng-container>
+  }
 </div>
 <div class="modal-footer">
   <button class="btn btn-primary" (click)="modal.close(forms)">Submit</button>

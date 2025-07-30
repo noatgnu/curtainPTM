@@ -1,6 +1,5 @@
-<ng-container *ngIf="label.length>15">
+@if (label.length>15) {
   <span class="badge bg-danger" draggable="true"  (dragstart)="handleDragStart($event)" [ngbTooltip]="label">{{label.slice(0,15)}}</span>
-</ng-container>
-<ng-container *ngIf="label.length<=15">
+} @else {
   <span class="badge bg-danger" draggable="true"  (dragstart)="handleDragStart($event)" [ngbTooltip]="label">{{label}}</span>
-</ng-container>
+}

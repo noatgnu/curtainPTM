@@ -27,9 +27,11 @@
             <option value="All selected">
               All selected
             </option>
-            <option *ngFor="let o of dataService.selectOperationNames" [value]="o">
-              {{o}}
-            </option>
+            @for (o of dataService.selectOperationNames; track o) {
+              <option [value]="o">
+                {{o}}
+              </option>
+            }
           </select>
         </div>
       </div>
@@ -44,38 +46,33 @@
   </div>-->
   <hr>
 
-  <ng-container *ngIf="ready; else notready">
-    <div *ngIf="displaySeries.count() > 0; else noData">
+  @if (ready) {
+    @if (displaySeries.count() > 0) {
       <ngb-pagination [(page)]="dataService.page" [boundaryLinks]="true" [maxSize]="10" [rotate]="true" [pageSize]="dataService.pageSize" [collectionSize]="displaySeries.count()"></ngb-pagination>
       <hr>
-      <ng-container *ngFor="let r of displaySeries.toArray()|slice: (dataService.page-1) * dataService.pageSize: dataService.page* dataService.pageSize">
+      @for (r of displaySeries.toArray()|slice: (dataService.page-1) * dataService.pageSize: dataService.page* dataService.pageSize; track r) {
         <app-data-block [data]="r"></app-data-block>
         <hr>
-      </ng-container>
+      }
 
       <ngb-pagination [(page)]="dataService.page" [boundaryLinks]="true" [maxSize]="10" [rotate]="true" [pageSize]="dataService.pageSize" [collectionSize]="displaySeries.count()"></ngb-pagination>
-    </div>
-  </ng-container>
-
-  <ng-template #noData>
-    <div class="card">
-      <div class="card-body">
-        <h5 class="card-title">No data found</h5>
-        <p class="card-text">Please try a different search term.</p>
+    } @else {
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">No data found</h5>
+          <p class="card-text">Please try a different search term.</p>
+        </div>
+      </div>
+    }
+  } @else {
+    <div class="container-fluid mt-4">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Not ready</h5>
+          <p class="card-text">Please wait for the data to be loaded.</p>
+        </div>
       </div>
     </div>
-  </ng-template>
-
+  }
 
 </div>
-
-<ng-template #notready>
-  <div class="container-fluid mt-4">
-    <div class="card">
-      <div class="card-body">
-        <h5 class="card-title">Not ready</h5>
-        <p class="card-text">Please wait for the data to be loaded.</p>
-      </div>
-    </div>
-  </div>
-</ng-template>

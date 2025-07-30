@@ -11,7 +11,7 @@
     </div>
     <small class="form-text text-muted">If enabled, all of user imported data as well as selection settings and uniprot metadata will be encrypted before being sent to the server. This would ensure that no one but the holder of the private key can decrypt and view the session. It is the responsibility of the user to keep the private key safe or the data would be unrecoverable. This would also disable the function that allow comparing data from different sessions with this data.</small>
 
-    <ng-container *ngIf="enabled">
+    @if (enabled) {
       <div class="input-group mb-3">
         <input type="file" class="form-control" id="publicKey" (change)="handleFileImport($event, 'Public Key')">
         <label class="input-group-text" for="publicKey">Public Key</label>
@@ -32,7 +32,7 @@
           Save private key to browser local storage to be used as default
         </label>
       </div>
-    </ng-container>
+    }
     <div class="alert alert-info">
       <p>Encryption is done entirely on the client-side where the browser will generate a AES-GCM key 256-bit length. This key will be use to encrypt the data before saving on Curtain server. Then the key will also be encrypted using the provided public key. The encrypted key would also be saved on the server together with the data. Due to the encrypted nature of the key, Curtain will be unable to utilize it without the private key thus the session will only be decrypted and viewable on the web browser with the appropriate private key.</p>
     </div>
@@ -43,7 +43,7 @@
 </div>
 <div class="modal-footer">
   <button type="button" class="btn btn-warning" (click)="generateKeys()">Generate RSA Key Pair</button>
-  <button type="button" class="btn btn-danger" (click)="testEncryption()" *ngIf="private_key&&public_key">Test</button>
+  @if (private_key&&public_key) {<button type="button" class="btn btn-danger" (click)="testEncryption()">Test</button>}
   <button type="button" class="btn btn-primary" (click)="save()">Save</button>
   <button type="button" class="btn btn-danger" (click)="clearKeys()">Remove Keys From Browser</button>
   <button type="button" class="btn btn-secondary" (click)="cancel()">Cancel</button>

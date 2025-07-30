@@ -7,7 +7,7 @@
   <div class="alert alert-warning">
     <p>The local states in this section include settings like color, searched primary ids, annotation text without the imported data. They can be loaded independently of the session they are associated with. These states are stored within the browser local storage and can be retrieve and load indepedently as files.</p>
   </div>
-  <ng-container *ngFor="let s of states">
+  @for (s of states; track s.id) {
     <div class="card mb-2">
       <div class="card-body">
         <p>
@@ -29,7 +29,7 @@
         </div>
       </div>
     </div>
-  </ng-container>
+  }
   <input type="file" (change)="loadFromFile($event)" style="display: none" #fileInput [hidden]="true">
 </div>
 <div class="modal-footer">

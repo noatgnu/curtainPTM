@@ -6,7 +6,9 @@
     <div class="form-group">
       <label for="isoforms">Isoforms</label>
       <select id="isoforms" formControlName="isoforms" class="form-control">
-        <option *ngFor="let i of data" [value]="i">{{i}}</option>
+        @for (i of data; track i) {
+          <option [value]="i">{{i}}</option>
+        }
       </select>
     </div>
     <hr>

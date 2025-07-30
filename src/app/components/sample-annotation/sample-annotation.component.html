@@ -17,22 +17,30 @@
   </div>
   <div class="form-group mb-2">
     <label><b>Organisms</b></label>
-    <input type="text" class="form-control mb-2" *ngFor="let o of project.organisms" [(ngModel)]="o.name" [ngbTypeahead]="searchTypeAheadSpecies">
+    @for (o of project.organisms; track o) {
+      <input type="text" class="form-control mb-2" [(ngModel)]="o.name" [ngbTypeahead]="searchTypeAheadSpecies">
+    }
     <button class="btn btn-sm btn-outline-primary" (click)="addOrganism()">+</button>
   </div>
   <div class="form-group mb-2">
     <label><b>Organism Parts</b></label>
-    <input type="text" class="form-control mb-2" *ngFor="let o of project.organismParts" [(ngModel)]="o.name" [ngbTypeahead]="searchTypeAheadTissue">
+    @for (o of project.organismParts; track o) {
+      <input type="text" class="form-control mb-2" [(ngModel)]="o.name" [ngbTypeahead]="searchTypeAheadTissue">
+    }
     <button class="btn btn-sm btn-outline-primary" (click)="addOrganismPart()">+</button>
   </div>
   <div class="form-group mb-2">
     <label><b>Diseases</b></label>
-    <input type="text" class="form-control mb-2" *ngFor="let a of project.diseases" [(ngModel)]="a.name" [ngbTypeahead]="searchTypeAheadDisease">
+    @for (a of project.diseases; track a) {
+      <input type="text" class="form-control mb-2" [(ngModel)]="a.name" [ngbTypeahead]="searchTypeAheadDisease">
+    }
     <button class="btn btn-sm btn-outline-primary" (click)="addDiseases()">+</button>
   </div>
   <div class="form-group mb-2">
     <label><b>Cell types</b></label>
-    <input type="text" class="form-control mb-2" *ngFor="let a of project.cellTypes" [(ngModel)]="a.name" [ngbTypeahead]="searchTypeAheadCellType">
+    @for (a of project.cellTypes; track a) {
+      <input type="text" class="form-control mb-2" [(ngModel)]="a.name" [ngbTypeahead]="searchTypeAheadCellType">
+    }
     <button class="btn btn-sm btn-outline-primary" (click)="addCellTypes()">+</button>
   </div>
   <div class="form-group mb-2">
@@ -45,42 +53,58 @@
   </div>
   <div class="form-group mb-2">
     <label><b>Instruments</b></label>
-    <input type="text" class="form-control mb-2" *ngFor="let i of project.instruments" [(ngModel)]="i.name" [ngbTypeahead]="searchTypeAheadInstrument">
+    @for (i of project.instruments; track i) {
+      <input type="text" class="form-control mb-2" [(ngModel)]="i.name" [ngbTypeahead]="searchTypeAheadInstrument">
+    }
     <button class="btn btn-sm btn-outline-primary" (click)="addInstruments()">+</button>
   </div>
   <div class="form-group mb-2">
     <label><b>Qualification Methods</b></label>
-    <input type="text" class="form-control mb-2" *ngFor="let i of project.quantificationMethods" [(ngModel)]="i.name" [ngbTypeahead]="searchTypeAheadQuantification">
+    @for (i of project.quantificationMethods; track i) {
+      <input type="text" class="form-control mb-2" [(ngModel)]="i.name" [ngbTypeahead]="searchTypeAheadQuantification">
+    }
     <button class="btn btn-sm btn-outline-primary" (click)="addQuantificationMethods()">+</button>
   </div>
   <div class="form-group mb-2">
     <label><b>Experiment Types</b></label>
-    <input type="text" class="form-control mb-2" *ngFor="let i of project.msMethods"  [(ngModel)]="i.name" [ngbTypeahead]="searchTypeAheadMSMethod">
+    @for (i of project.msMethods; track i) {
+      <input type="text" class="form-control mb-2" [(ngModel)]="i.name" [ngbTypeahead]="searchTypeAheadMSMethod">
+    }
     <button class="btn btn-sm btn-outline-primary" (click)="addExperimentTypes()">+</button>
   </div>
   <div class="form-group mb-2">
     <label><b>Detected PTM</b></label>
-    <input type="text" class="form-control mb-2" *ngFor="let p of project.identifiedPTMStrings" [(ngModel)]="p.name" [ngbTypeahead]="searchTypeAheadModification">
+    @for (p of project.identifiedPTMStrings; track p) {
+      <input type="text" class="form-control mb-2" [(ngModel)]="p.name" [ngbTypeahead]="searchTypeAheadModification">
+    }
     <button class="btn btn-sm btn-outline-primary" (click)="addPTMs()">+</button>
   </div>
   <div class="form-group mb-2">
     <label><b>Project Tags</b></label>
-    <input type="text" class="form-control mb-2" *ngFor="let i of project.projectTags" [(ngModel)]="i.name" [ngbTypeahead]="searchTypeAheadProjectTag">
+    @for (i of project.projectTags; track i) {
+      <input type="text" class="form-control mb-2" [(ngModel)]="i.name" [ngbTypeahead]="searchTypeAheadProjectTag">
+    }
     <button class="btn btn-sm btn-outline-primary" (click)="addProjectTags()">+</button>
   </div>
   <div class="form-group mb-2">
     <label><b>Software</b></label>
-    <input type="text" class="form-control mb-2" *ngFor="let a of project.softwares" [(ngModel)]="a.name">
+    @for (a of project.softwares; track a) {
+      <input type="text" class="form-control mb-2" [(ngModel)]="a.name">
+    }
     <button class="btn btn-sm btn-outline-primary" (click)="addSoftwares()">+</button>
   </div>
   <div class="form-group mb-2">
     <label><b>Affiliations</b></label>
-    <input type="text" class="form-control mb-2" *ngFor="let a of project.affiliations" [(ngModel)]="a.name">
+    @for (a of project.affiliations; track a) {
+      <input type="text" class="form-control mb-2" [(ngModel)]="a.name">
+    }
     <button class="btn btn-sm btn-outline-primary" (click)="addAffiliations()">+</button>
   </div>
   <div class="form-group mb-2">
     <label><b>Authors</b></label>
-    <input type="text" class="form-control mb-2" *ngFor="let a of project.authors" [(ngModel)]="a.name">
+    @for (a of project.authors; track a) {
+      <input type="text" class="form-control mb-2" [(ngModel)]="a.name">
+    }
     <button class="btn btn-sm btn-outline-primary" (click)="addAuthors()">+</button>
   </div>
   <table class="table table-hover">
@@ -95,14 +119,16 @@
     </tr>
     </thead>
     <tbody>
-    <tr *ngFor="let s of samples">
-      <td>
-        {{s}}
-      </td>
-      <td>
-        <textarea class="form-control" [(ngModel)]="project.sampleAnnotations[s]" style="width: 100%"></textarea>
-      </td>
-    </tr>
+    @for (s of samples; track s) {
+      <tr>
+        <td>
+          {{s}}
+        </td>
+        <td>
+          <textarea class="form-control" [(ngModel)]="project.sampleAnnotations[s]" style="width: 100%"></textarea>
+        </td>
+      </tr>
+    }
     </tbody>
   </table>
 </div>

@@ -18,7 +18,8 @@
     </div>
     <button type="submit" class="btn btn-sm btn-primary" [disabled]="!form.valid" >Import Database</button>
   </form>
-  <div class="card mt-2" *ngIf="datasetList.length>0">
+  @if (datasetList.length>0) {
+    <div class="card mt-2">
     <div class="card-body">
       <h5 class="card-title">Imported Data</h5>
       <table class="table table-striped">
@@ -29,15 +30,19 @@
         </tr>
         </thead>
         <tbody>
-        <tr *ngFor="let d of datasetList">
-          <td>{{d}}</td>
-          <td>
-            <button class="btn btn-sm btn-danger" (click)="deleteDataset(d)">Delete</button>
-          </td>
-        </tr>
+        @for (d of datasetList; track d) {
+          <tr>
+            <td>{{d}}</td>
+            <td>
+              <button class="btn btn-sm btn-danger" (click)="deleteDataset(d)">Delete</button>
+            </td>
+          </tr>
+        }
+        </tbody>
       </table>
     </div>
-  </div>
+    </div>
+  }
 </div>
 <div class="modal-footer">
   <button type="button" class="btn btn-secondary" (click)="cancel()">Close</button>

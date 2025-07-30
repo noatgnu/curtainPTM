@@ -141,62 +141,61 @@
       </table>
     </form>
 
-    <table class="table table-bordered table-striped mt-2" *ngIf="edgeDataViewer[edgeDataSource]">
-      <thead>
-      <tr>
-        <th scope="col">
-          Properties
-        </th>
-        <th scope="col">
-          Values
-        </th>
-      </tr>
-      </thead>
-      <tbody>
-      <ng-container *ngIf="edgeDataSource==='stringdb';else interactome">
+    @if (edgeDataViewer[edgeDataSource]) {
+      <table class="table table-bordered table-striped mt-2">
+        <thead>
         <tr>
-          <td>Node A</td>
-          <td>{{edgeDataViewer[edgeDataSource]["preferredName_A"]}}</td>
+          <th scope="col">
+            Properties
+          </th>
+          <th scope="col">
+            Values
+          </th>
         </tr>
-        <tr>
-          <td>Node B</td>
-          <td>{{edgeDataViewer[edgeDataSource]["preferredName_B"]}}</td>
-        </tr>
-        <tr>
-          <td><span ngbTooltip="coexpression score (derived from similar pattern of mRNA expression measured by DNA arrays and similar technologies)">A-score</span></td>
-          <td>{{edgeDataViewer[edgeDataSource]["ascore"]}}</td>
-        </tr>
-        <tr>
-          <td><span ngbTooltip="database score (derived from curated data of various databases)">D-score</span></td>
-          <td>{{edgeDataViewer[edgeDataSource]["dscore"]}}</td>
-        </tr>
-        <tr>
-          <td><span ngbTooltip="experimental score (derived from experimental data, such as, affinity chromatography)">E-score</span></td>
-          <td>{{edgeDataViewer[edgeDataSource]["escore"]}}</td>
-        </tr>
-        <tr>
-          <td><span ngbTooltip="fusion score (derived from fused proteins in other species)">F-score</span></td>
-          <td>{{edgeDataViewer[edgeDataSource]["fscore"]}}</td>
-        </tr>
-        <tr>
-          <td><span ngbTooltip="neighborhood score, (computed from the inter-gene nucleotide count)">N-score</span></td>
-          <td>{{edgeDataViewer[edgeDataSource]["nscore"]}}</td>
-        </tr>
-        <tr>
-          <td><span ngbTooltip="cooccurence score of the phyletic profile (derived from similar absence/presence patterns of genes)">P-score</span></td>
-          <td>{{edgeDataViewer[edgeDataSource]["pscore"]}}</td>
-        </tr>
-        <tr>
-          <td><span ngbTooltip="textmining score (derived from the co-occurrence of gene/protein names in abstracts)">T-score</span></td>
-          <td>{{edgeDataViewer[edgeDataSource]["tscore"]}}</td>
-        </tr>
-        <tr>
-          <td><span ngbTooltip="combined score is computed by combining the probabilities from the different evidence channels and corrected for the probability of randomly observing an interaction">Score</span></td>
-          <td>{{edgeDataViewer[edgeDataSource]["score"]}}</td>
-        </tr>
-      </ng-container>
-      <ng-template #interactome>
-        <ng-container>
+        </thead>
+        <tbody>
+        @if (edgeDataSource==='stringdb') {
+          <tr>
+            <td>Node A</td>
+            <td>{{edgeDataViewer[edgeDataSource]["preferredName_A"]}}</td>
+          </tr>
+          <tr>
+            <td>Node B</td>
+            <td>{{edgeDataViewer[edgeDataSource]["preferredName_B"]}}</td>
+          </tr>
+          <tr>
+            <td><span ngbTooltip="coexpression score (derived from similar pattern of mRNA expression measured by DNA arrays and similar technologies)">A-score</span></td>
+            <td>{{edgeDataViewer[edgeDataSource]["ascore"]}}</td>
+          </tr>
+          <tr>
+            <td><span ngbTooltip="database score (derived from curated data of various databases)">D-score</span></td>
+            <td>{{edgeDataViewer[edgeDataSource]["dscore"]}}</td>
+          </tr>
+          <tr>
+            <td><span ngbTooltip="experimental score (derived from experimental data, such as, affinity chromatography)">E-score</span></td>
+            <td>{{edgeDataViewer[edgeDataSource]["escore"]}}</td>
+          </tr>
+          <tr>
+            <td><span ngbTooltip="fusion score (derived from fused proteins in other species)">F-score</span></td>
+            <td>{{edgeDataViewer[edgeDataSource]["fscore"]}}</td>
+          </tr>
+          <tr>
+            <td><span ngbTooltip="neighborhood score, (computed from the inter-gene nucleotide count)">N-score</span></td>
+            <td>{{edgeDataViewer[edgeDataSource]["nscore"]}}</td>
+          </tr>
+          <tr>
+            <td><span ngbTooltip="cooccurence score of the phyletic profile (derived from similar absence/presence patterns of genes)">P-score</span></td>
+            <td>{{edgeDataViewer[edgeDataSource]["pscore"]}}</td>
+          </tr>
+          <tr>
+            <td><span ngbTooltip="textmining score (derived from the co-occurrence of gene/protein names in abstracts)">T-score</span></td>
+            <td>{{edgeDataViewer[edgeDataSource]["tscore"]}}</td>
+          </tr>
+          <tr>
+            <td><span ngbTooltip="combined score is computed by combining the probabilities from the different evidence channels and corrected for the probability of randomly observing an interaction">Score</span></td>
+            <td>{{edgeDataViewer[edgeDataSource]["score"]}}</td>
+          </tr>
+        } @else {
           <tr>
             <td>Node A</td>
             <td>{{edgeDataViewer[edgeDataSource]["interactor_A"]["protein_gene_name"]}}</td>
@@ -209,10 +208,10 @@
             <td>Score</td>
             <td>{{edgeDataViewer[edgeDataSource]["score"]}}</td>
           </tr>
-        </ng-container>
-      </ng-template>
-      </tbody>
-    </table>
+        }
+        </tbody>
+      </table>
+    }
   </div>
   <div class="col-9">
     <app-cytoplot #cytoplot [drawData]="result" [dimensions]="{width: 1200, height: 700}" (clickedID)="handleSelect($event)" (ready)="saveNetwork()"></app-cytoplot>

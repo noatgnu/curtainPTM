@@ -54,14 +54,18 @@
           <label for="category">Builtin category</label>
           <select class="form-control" id="category" formControlName="category">
             <option></option>
-            <option *ngFor="let c of categories">{{c}}</option>
+            @for (c of categories; track c) {
+              <option>{{c}}</option>
+            }
           </select>
         </div>
         <div class="form-group">
           <label for="subcategory">Builtin sub-category</label>
           <select class="form-control" id="subcategory" formControlName="subcategory">
             <option></option>
-            <option *ngFor="let c of subcategories" [value]="c.id">{{c.name}}</option>
+            @for (c of subcategories; track c.id) {
+              <option [value]="c.id">{{c.name}}</option>
+            }
           </select>
         </div>
       </form>
@@ -96,7 +100,7 @@
       <label for="advancedBatch" class="form-check-label">Enable search within fold change and significant values range</label>
     </div>
   </div>
-  <ng-container *ngIf="params.enableAdvanced">
+  @if (params.enableAdvanced) {
     <div class="row mt-2">
       <div class="form-check">
         <input type="checkbox" id="searchLeft" class="form-check-input" [(ngModel)]="params.searchLeft">
@@ -139,7 +143,7 @@
         <input [(ngModel)]="params.maxP" id="maxP" type="number" class="form-control">
       </div>
     </div>
-  </ng-container>
+  }
 
 </div>
 <div class="modal-footer">
@@ -147,10 +151,17 @@
   <button class="btn btn-danger" (click)="close()">Close</button>
 </div>
 <ng-template #rt let-r="result" let-t="term">
-  <div *ngIf="r.default" style="color: #850000">
-    <ngb-highlight [result]="r.name" [term]="t"></ngb-highlight><span> </span><ngb-highlight *ngIf="r.data !== ''" [result]="r.data" [term]="t"></ngb-highlight>
-  </div>
-  <div *ngIf="!r.default" style="color: #9933ff">
-    <ngb-highlight [result]="r.name" [term]="t"></ngb-highlight><span> </span><ngb-highlight *ngIf="r.data !== ''" [result]="r.data" [term]="t"></ngb-highlight>
-  </div>
+  @if (r.default) {
+    <div style="color: #850000">
+      <ngb-highlight [result]="r.name" [term]="t"></ngb-highlight><span> </span>@if (r.data !== '') {
+        <ngb-highlight [result]="r.data" [term]="t"></ngb-highlight>
+      }
+    </div>
+  } @else {
+    <div style="color: #9933ff">
+      <ngb-highlight [result]="r.name" [term]="t"></ngb-highlight><span> </span>@if (r.data !== '') {
+        <ngb-highlight [result]="r.data" [term]="t"></ngb-highlight>
+      }
+    </div>
+  }
 </ng-template>

@@ -59,6 +59,7 @@ import { UserPtmImportManagementComponent } from './components/user-ptm-import-m
 import { EncryptionSettingsComponent } from './components/encryption-settings/encryption-settings.component';
 import {ToastProgressbarComponent} from "./components/toast-container/toast-progressbar/toast-progressbar.component";
 import {ShapesComponent} from "./components/volcano-plot/shapes/shapes.component";
+import { NearbyPointsModalComponent } from './components/nearby-points-modal/nearby-points-modal.component';
 //PlotlyViaCDNModule.setPlotlyVersion('latest');
 //PlotlyViaCDNModule.setPlotlyBundle('basic');
 PlotlyModule.plotlyjs = PlotlyJS;
@@ -105,7 +106,8 @@ PlotlyModule.plotlyjs = PlotlyJS;
         ProfilePlotComponent,
         SampleConditionAssignmentModalComponent,
         UserPtmImportManagementComponent,
-        EncryptionSettingsComponent
+        EncryptionSettingsComponent,
+        NearbyPointsModalComponent
     ],
     bootstrap: [AppComponent], imports: [BrowserModule,
         AppRoutingModule,

@@ -11,18 +11,22 @@
       <input class="form-check-input" type="checkbox" formControlName="update_content" id="updateContent">
       <label class="form-check-label" for="updateContent">Update Session Content</label>
     </div>
-    <ul *ngIf="owners.length>0">Owners:
-      <li *ngFor="let o of owners">
-        {{o.username}}
-      </li>
-    </ul>
+    @if (owners.length>0) {
+      <ul>Owners:
+        @for (o of owners; track o.username) {
+          <li>
+            {{o.username}}
+          </li>
+        }
+      </ul>
+    }
 
     <div class="form-group">
       <label for="addOwner">Adding Owner</label>
       <input type="text" id="addOwner" formControlName="additionalOwner" class="form-control">
     </div>
     <button class="btn btn-sm btn-primary mt-1" (click)="addOwner()">Add</button>
-    <ng-container *ngIf="form.value['enable']===false">
+    @if (form.value['enable']===false) {
       <hr>
       <button class="btn btn-sm btn-primary" (click)="generateTemporarySession()">
         Generate Temporary Session
@@ -31,10 +35,11 @@
         <input type="number" min="1" formControlName="temporary_link_lifetime" class="form-control" id="temporary_lifetime">
         <label class="input-group-text" for="temporary_lifetime">Link Lifetime (days)</label>
       </div>
-
-    </ng-container>
+    }
   </form>
-  <textarea rows="5" disabled [ngModel]="temporaryLink" class="form-control mt-2" readonly *ngIf="temporaryLink!==''"></textarea>
+  @if (temporaryLink!=='') {
+    <textarea rows="5" disabled [ngModel]="temporaryLink" class="form-control mt-2" readonly></textarea>
+  }
 </div>
 <div class="modal-footer">
   <button class="btn btn-primary" (click)="submit()">Update</button>

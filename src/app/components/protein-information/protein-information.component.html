@@ -4,7 +4,8 @@
 </p>
 <app-protein-domain-plot [data]="_data"></app-protein-domain-plot>
 <div class="mt-2">
-  <table class="table table-bordered" *ngIf="_data['Domain [FT]'].length > 0">
+  @if (_data['Domain [FT]'].length > 0) {
+    <table class="table table-bordered">
     <thead>
     <tr>
       <th scope="col">
@@ -19,23 +20,28 @@
     </tr>
     </thead>
     <tbody>
-    <tr *ngFor="let d of _data['Domain [FT]']">
-      <td>
-        {{d.start}}
-      </td>
-      <td>
-        {{d.end}}
-      </td>
-      <td>
-        {{d.name}}
-      </td>
-    </tr>
+    @for (d of _data['Domain [FT]']; track d) {
+      <tr>
+        <td>
+          {{d.start}}
+        </td>
+        <td>
+          {{d.end}}
+        </td>
+        <td>
+          {{d.name}}
+        </td>
+      </tr>
+    }
   </table>
+  }
 </div>
 
-<div class="mt-4" *ngIf="diseases.length > 0 || pharmaUse.length > 0 || _data['Mutagenesis'].length">
+@if (diseases.length > 0 || pharmaUse.length > 0 || _data['Mutagenesis'].length) {
+  <div class="mt-4">
   <div class="accordion">
-    <div class="accordion-item" *ngIf="diseases.length > 0">
+    @if (diseases.length > 0) {
+      <div class="accordion-item">
       <h2 class="accordion-header">
         <button [ngClass]="{'accordion-button': true, 'collapsed': isDiseaseCollapse}" type="button" (click)="isDiseaseCollapse=!isDiseaseCollapse">
           Involvement in Diseases (UniProt)
@@ -43,17 +49,23 @@
       </h2>
       <div #collapse="ngbCollapse" [(ngbCollapse)]="isDiseaseCollapse">
         <div class="accordion-body">
-          <div *ngIf="diseases.length > 0">
-            <ul>
-              <li *ngFor="let d of diseases">
-                {{d}}
-              </li>
-            </ul>
-          </div>
+          @if (diseases.length > 0) {
+            <div>
+              <ul>
+                @for (d of diseases; track d) {
+                  <li>
+                    {{d}}
+                  </li>
+                }
+              </ul>
+            </div>
+          }
         </div>
       </div>
     </div>
-    <div class="accordion-item" *ngIf="pharmaUse.length > 0">
+    }
+    @if (pharmaUse.length > 0) {
+      <div class="accordion-item">
       <h2 class="accordion-header">
         <button [ngClass]="{'accordion-button': true, 'collapsed': isPharmaUseCollapse}" type="button" (click)="isPharmaUseCollapse=!isPharmaUseCollapse">
           Pharmaceutical use (UniProt)
@@ -61,17 +73,23 @@
       </h2>
       <div #collapse="ngbCollapse" [(ngbCollapse)]="isPharmaUseCollapse">
         <div class="accordion-body">
-          <div *ngIf="pharmaUse.length > 0">
-            <ul>
-              <li *ngFor="let d of pharmaUse">
-                {{d}}
-              </li>
-            </ul>
-          </div>
+          @if (pharmaUse.length > 0) {
+            <div>
+              <ul>
+                @for (d of pharmaUse; track d) {
+                  <li>
+                    {{d}}
+                  </li>
+                }
+              </ul>
+            </div>
+          }
         </div>
       </div>
     </div>
-    <div class="accordion-item" *ngIf="_data['Mutagenesis'].length > 0">
+    }
+    @if (_data['Mutagenesis'].length > 0) {
+      <div class="accordion-item">
       <h2 class="accordion-header">
         <button [ngClass]="{'accordion-button': true, 'collapsed': isMutagenesisCollapse}" type="button" (click)="isMutagenesisCollapse=!isMutagenesisCollapse">
           Mutagenesis (UniProt)
@@ -79,16 +97,22 @@
       </h2>
       <div #collapse="ngbCollapse" [(ngbCollapse)]="isMutagenesisCollapse">
         <div class="accordion-body">
-          <div *ngIf="_data['Mutagenesis'].length > 0">
-            <ul>
-              <li *ngFor="let d of _data['Mutagenesis']">
-                <b class="text-danger">{{d.position}}</b> - {{d.note}}
-              </li>
-            </ul>
-          </div>
+          @if (_data['Mutagenesis'].length > 0) {
+            <div>
+              <ul>
+                @for (d of _data['Mutagenesis']; track d) {
+                  <li>
+                    <b class="text-danger">{{d.position}}</b> - {{d.note}}
+                  </li>
+                }
+              </ul>
+            </div>
+          }
         </div>
       </div>
     </div>
+    }
   </div>
-</div>
+  </div>
+}
 

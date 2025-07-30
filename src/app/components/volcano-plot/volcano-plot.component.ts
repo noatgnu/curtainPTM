@@ -13,6 +13,7 @@ import {
 } from "../volcano-plot-text-annotation/volcano-plot-text-annotation.component";
 import {WebLogoComponent} from "../web-logo/web-logo.component";
 import {ColorByCategoryModalComponent} from "./color-by-category-modal/color-by-category-modal.component";
+import {NearbyPointsModalComponent} from "../nearby-points-modal/nearby-points-modal.component";
 
 @Component({
     selector: 'app-volcano-plot',
@@ -23,6 +24,7 @@ import {ColorByCategoryModalComponent} from "./color-by-category-modal/color-by-
 export class VolcanoPlotComponent implements OnInit {
   settingsNav = "parameters"
   editMode: boolean = false
+  explorerMode: boolean = false
   @Output() selected: EventEmitter<selectionData> = new EventEmitter<selectionData>()
   revision: number = 0
   isVolcanoParameterCollapsed: boolean = false
@@ -572,6 +574,13 @@ export class VolcanoPlotComponent implements OnInit {
       for (const p of e["points"]) {
         selected.push(p.data.primaryIDs[p.pointNumber])
       }
+      
+      // If explorer mode is enabled and only one point is selected, open nearby points modal
+      if (this.explorerMode && selected.length === 1) {
+        this.openNearbyPointsModal(e);
+        return;
+      }
+      
       if (selected.length === 1) {
         this.selected.emit(
           {
@@ -600,6 +609,152 @@ export class VolcanoPlotComponent implements OnInit {
     ref.componentInstance.closed.subscribe(() => {
       this.drawVolcano()
     })
+  }
+
+  openNearbyPointsModal(clickEvent: any) {
+    if (!clickEvent.points || clickEvent.points.length === 0) {
+      return;
+    }
+
+    const point = clickEvent.points[0];
+    const primaryId = point.data.primaryIDs[point.pointNumber];
+    
+    // Find the full data for this point
+    const fullData = this.dataService.currentDF.where(r => 
+      r[this.dataService.differentialForm.primaryIDs] === primaryId
+    ).first();
+
+    if (!fullData) {
+      return;
+    }
+
+    // Get gene name
+    let geneName = '';
+    if (this.dataService.fetchUniProt) {
+      const uniprotData = this.uniprot.getUniprotFromAcc(primaryId);
+      if (uniprotData && uniprotData['Gene Names']) {
+        geneName = uniprotData['Gene Names'];
+      }
+    } else if (this.dataService.differentialForm.geneNames !== '') {
+      geneName = fullData[this.dataService.differentialForm.geneNames];
+    }
+
+    // Determine trace group and color for target point (same logic as nearby points)
+    let targetTraceGroup = 'Background';
+    let targetTraceColor = '#a4a2a2';
+    
+    if (this.dataService.selectedMap[primaryId]) {
+      // For selected points, use the first group name
+      for (const groupName in this.dataService.selectedMap[primaryId]) {
+        targetTraceGroup = groupName;
+        break;
+      }
+    } else if (!this.settings.settings.backGroundColorGrey) {
+      const significanceGroup = this.dataService.significantGroup(
+        fullData[this.dataService.differentialForm.foldChange],
+        fullData[this.dataService.differentialForm.significant]
+      );
+      targetTraceGroup = significanceGroup[0];
+    }
+
+    // Get color from settings
+    if (this.settings.settings.colorMap && this.settings.settings.colorMap[targetTraceGroup]) {
+      targetTraceColor = this.settings.settings.colorMap[targetTraceGroup];
+    }
+
+    // Create target point object
+    const targetPoint = {
+      primaryId: primaryId,
+      geneName: geneName,
+      foldChange: fullData[this.dataService.differentialForm.foldChange],
+      significance: fullData[this.dataService.differentialForm.significant],
+      distance: 0,
+      comparison: fullData[this.dataService.differentialForm.comparison] || '',
+      traceGroup: targetTraceGroup,
+      traceColor: targetTraceColor,
+      text: point.text || primaryId,
+      residue: this.getModifiedResidue(fullData) || '',
+      position: fullData[this.dataService.differentialForm.position] || 0,
+      sequenceWindow: fullData[this.dataService.differentialForm.sequence] || '',
+      peptideSequence: fullData[this.dataService.differentialForm.peptideSequence] || '',
+      positionPeptide: fullData[this.dataService.differentialForm.positionPeptide] || 0,
+      localizationScore: fullData[this.dataService.differentialForm.score] || 0,
+      ...fullData // Include all original data
+    };
+
+    // Open the modal
+    const ref = this.modal.open(NearbyPointsModalComponent, { 
+      size: 'xl', 
+      scrollable: true,
+      windowClass: 'modal-extra-large'
+    });
+    
+    ref.componentInstance.targetPoint = targetPoint;
+    ref.componentInstance.nearbyPoints = []; // Will be calculated by the modal
+
+    // Handle modal result
+    ref.result.then((result) => {
+      if (result && result.action) {
+        switch (result.action) {
+          case 'select':
+            this.selected.emit({
+              data: result.data,
+              title: result.title || 'Selected from nearby points'
+            });
+            break;
+          case 'annotate':
+            // Handle single annotation
+            this.dataService.annotationService.next({
+              id: result.data[0],
+              remove: false
+            });
+            break;
+          case 'annotateMultiple':
+            // Handle multiple annotations
+            this.dataService.annotationService.next({
+              id: result.data,
+              remove: false
+            });
+            break;
+          case 'createSelection':
+            // Handle new selection creation
+            this.selected.emit({
+              data: result.data,
+              title: result.title
+            });
+            break;
+          case 'addToSelection':
+            // Handle adding to existing selection
+            this.selected.emit({
+              data: result.data,
+              title: result.existingSelection
+            });
+            break;
+        }
+      }
+    }).catch(() => {
+      // Modal dismissed
+    });
+  }
+
+  getModifiedResidue(data: any): string {
+    const peptideSequences = Array.isArray(data[this.dataService.differentialForm.peptideSequence]) 
+      ? data[this.dataService.differentialForm.peptideSequence] 
+      : [data[this.dataService.differentialForm.peptideSequence]];
+    
+    const positionsInPeptide = Array.isArray(data[this.dataService.differentialForm.positionPeptide])
+      ? data[this.dataService.differentialForm.positionPeptide]
+      : [data[this.dataService.differentialForm.positionPeptide]];
+
+    for (let i = 0; i < peptideSequences.length; i++) {
+      const peptide = peptideSequences[i];
+      const position = positionsInPeptide[i] || positionsInPeptide[0] || 1;
+      if (peptide && position > 0 && position <= peptide.length) {
+        return peptide[position - 1];
+      }
+    }
+    
+    return '';
   }
 
   async annotateDataPoints(data: string[]) {

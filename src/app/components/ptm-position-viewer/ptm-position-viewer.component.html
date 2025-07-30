@@ -2,36 +2,42 @@
   <div class="col-3">
     <label for="modTypes">Modification types for UniProt</label>
     <select multiple id="modTypes" [(ngModel)]="selectedUniProt" class="form-control">
-      <option *ngFor="let m of uniMods" [value]="m">
-        {{m}}
-      </option>
+      @for (m of uniMods; track m) {
+        <option [value]="m">
+          {{m}}
+        </option>
+      }
     </select>
   </div>
   <div class="col-3">
     <label for="db">Select Databases</label>
     <select multiple id="db" class="form-control" [(ngModel)]="dbSelected">
-      <ng-container *ngFor="let d of ptm.databases">
-        <option [value]="d.name" *ngIf="availableDB.includes(d.name)">
-          {{d.name}}
-        </option>
-      </ng-container>
+      @for (d of ptm.databases; track d) {
+        @if (availableDB.includes(d.name)) {
+          <option [value]="d.name">
+            {{d.name}}
+          </option>
+        }
+      }
     </select>
   </div>
 </div>
 
 <div class="row mt-2">
-  <ng-container *ngFor="let a of availableDB">
-    <div class="col-3" *ngIf="sourceMap[a]">
-      <label>{{a}}</label>
-      <select class="form-control" [(ngModel)]="sourceMap[a]">
-        <ng-container *ngFor="let o of accOptions[a]">
-          <option [value]="o">
-            {{o}}
-          </option>
-        </ng-container>
-      </select>
-    </div>
-  </ng-container>
+  @for (a of availableDB; track a) {
+    @if (sourceMap[a]) {
+      <div class="col-3">
+        <label>{{a}}</label>
+        <select class="form-control" [(ngModel)]="sourceMap[a]">
+          @for (o of accOptions[a]; track o) {
+            <option [value]="o">
+              {{o}}
+            </option>
+          }
+        </select>
+      </div>
+    }
+  }
 </div>
 
 <div class="row mt-2">
@@ -44,25 +50,30 @@
 </div>
 
 
-<div *ngFor="let g of graphData" class="row mt-2">
-  <plotly-plot divId="{{divIDMap[g.name]}}" (relayout)="updateBoundary($event)" [data]="[g]" [layout]="graphLayout[g.name]"
-               [style]="{'max-width': '1200px', 'width': '100%', 'height': '200px'}"
-               [updateOnLayoutChange]="true" [updateOnDataChange]="true"></plotly-plot>
-</div>
+@for (g of graphData; track g) {
+  <div class="row mt-2">
+    <plotly-plot divId="{{divIDMap[g.name]}}" (relayout)="updateBoundary($event)" [data]="[g]" [layout]="graphLayout[g.name]"
+                 [style]="{'max-width': '1200px', 'width': '100%', 'height': '200px'}"
+                 [updateOnLayoutChange]="true" [updateOnDataChange]="true"></plotly-plot>
+  </div>
+}
 
-<table class="table table-hover mt-2" *ngIf="alignedMap['Experimental Data']">
+@if (alignedMap['Experimental Data']) {
+  <table class="table table-hover mt-2">
   <thead>
   <tr>
     <th scope="col" style="word-wrap: break-word;min-width: 160px;max-width: 160px;">
       Experimental Data Aligned Position (Original Position)
     </th>
-    <th scope="col" *ngFor="let g of graphData">
-      {{g.name}}
-    </th>
+    @for (g of graphData; track g) {
+      <th scope="col">
+        {{g.name}}
+      </th>
+    }
   </tr>
   </thead>
   <tbody>
-  <ng-container *ngFor="let d of alignedMap['Experimental Data']">
+  @for (d of alignedMap['Experimental Data']; track d) {
     <tr [ngClass]="{'table-success': dataService.selectedMap[d.id]}">
       <td style="word-wrap: break-word;min-width: 160px;max-width: 160px;">
         {{d.alignedPosition+1}} ({{d.actualPosition+1}})
@@ -70,27 +81,40 @@
         <span class="badge bg-danger" style="margin-left: 2px" (click)="toggleKinaseLibraryOpenStatus(d.actualPosition+1)">Kinase Library</span>
 
       </td>
-      <td *ngFor="let g of graphData">
-        <span>{{g.x[d.alignedPosition].split(".")[0]}}</span>
-        <span *ngIf="alignedPosition[d.alignedPosition][g.name]">({{alignedPosition[d.alignedPosition][g.name].actualPosition+1}})</span>
-        <span *ngIf="g.name === 'PhosphoSite Plus (Phosphorylation)' && alignedPosition[d.alignedPosition][g.name]">
-          <ng-container *ngIf="alignedPosition[d.alignedPosition][g.name].kinases.length > 0">
-            <span placement="top" ngbTooltip="Kinase" class="badge bg-danger ml-2" *ngFor="let k of alignedPosition[d.alignedPosition][g.name].kinases" (click)="openKinaseInfo(k)">{{k.kinase}}</span>
-          </ng-container>
-        </span>
-        <ng-container *ngIf="g.name === 'UniProt' && alignedPosition[d.alignedPosition][g.name]">
-          <ng-container *ngIf="alignedPosition[d.alignedPosition][g.name].diseases">
-            <span class="badge bg-info ml-2" *ngFor="let d of alignedPosition[d.alignedPosition][g.name].diseases">{{d.disease}}</span>
-          </ng-container>
-        </ng-container>
-      </td>
+      @for (g of graphData; track g) {
+        <td>
+          <span>{{g.x[d.alignedPosition].split(".")[0]}}</span>
+          @if (alignedPosition[d.alignedPosition][g.name]) {
+            <span>({{alignedPosition[d.alignedPosition][g.name].actualPosition+1}})</span>
+          }
+          @if (g.name === 'PhosphoSite Plus (Phosphorylation)' && alignedPosition[d.alignedPosition][g.name]) {
+            <span>
+              @if (alignedPosition[d.alignedPosition][g.name].kinases.length > 0) {
+                @for (k of alignedPosition[d.alignedPosition][g.name].kinases; track k) {
+                  <span placement="top" ngbTooltip="Kinase" class="badge bg-danger ml-2" (click)="openKinaseInfo(k)">{{k.kinase}}</span>
+                }
+              }
+            </span>
+          }
+          @if (g.name === 'UniProt' && alignedPosition[d.alignedPosition][g.name]) {
+            @if (alignedPosition[d.alignedPosition][g.name].diseases) {
+              @for (disease of alignedPosition[d.alignedPosition][g.name].diseases; track disease) {
+                <span class="badge bg-info ml-2">{{disease.disease}}</span>
+              }
+            }
+          }
+        </td>
+      }
     </tr>
-  </ng-container>
+  }
 
   </tbody>
 </table>
+}
 
-<p *ngIf="showPSPLink">
-  PhosphoSitePlus link for <a href="https://www.phosphosite.org/uniprotAccAction?id={{uni['Entry']}}">{{uni["Entry"]}}</a>
-</p>
+@if (showPSPLink) {
+  <p>
+    PhosphoSitePlus link for <a href="https://www.phosphosite.org/uniprotAccAction?id={{uni['Entry']}}">{{uni["Entry"]}}</a>
+  </p>
+}
 

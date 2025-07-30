@@ -1,20 +1,26 @@
 <div class="modal-header">
-  <h3 class="modal-title" *ngIf="_uni">Kinase {{_uni["Gene Names"]}}</h3>
+  @if (_uni) {
+    <h3 class="modal-title">Kinase {{_uni["Gene Names"]}}</h3>
+  }
 </div>
 <div class="modal-body">
-  <p *ngIf="_uni && otherUni['proteinDescription']">
-    <b>UniProt Acc:</b> {{_uni["Entry"]}}<br>
-    <b>Gene name:</b> {{_uni["Gene Names"]}}<br>
-    <b>Protein names:</b> {{otherUni["proteinDescription"]["recommendedName"]["fullName"]["value"]}}<br>
+  @if (_uni && otherUni['proteinDescription']) {
+    <p>
+      <b>UniProt Acc:</b> {{_uni["Entry"]}}<br>
+      <b>Gene name:</b> {{_uni["Gene Names"]}}<br>
+      <b>Protein names:</b> {{otherUni["proteinDescription"]["recommendedName"]["fullName"]["value"]}}<br>
     </p>
+  }
   <b>Functional description:</b>
   <div style="max-height: 300px; overflow-y: auto">
     <ul>
-      <ng-container *ngFor="let f of _uni['Function [CC]'].split('. ')">
-        <li *ngIf="!f.startsWith('{')">
-          {{f.replace('FUNCTION: ', '').replace('; ', '')}}
-        </li>
-      </ng-container>
+      @for (f of _uni['Function [CC]'].split('. '); track f) {
+        @if (!f.startsWith('{')) {
+          <li>
+            {{f.replace('FUNCTION: ', '').replace('; ', '')}}
+          </li>
+        }
+      }
     </ul>
   </div>
 </div>
