@@ -175,6 +175,8 @@ export class PtmPositionViewerComponent implements OnInit {
       this.dataService.dbIDMap[this.accessionID][labels[i]] = this.sourceMap[labels[i]]
       this.currentLayout[labels[i]] = [0,0]
       this.divIDMap[labels[i]] = labels[i].replace(/\s/g, "") + this.sourceMap[labels[i]]
+      console.log(labels[i])
+      console.log(this.sourceMap[labels[i]])
       this.graphLayout[labels[i]] = {
         xaxis: {
           showticklabels: false,
@@ -186,10 +188,15 @@ export class PtmPositionViewerComponent implements OnInit {
           range: [0,1.3],
           visible: false,
           fixedrange: true
-        }, title: labels[i] + " <b>"  + this.sourceMap[labels[i]] + "</b>",
+        },
+        title: {
+          text: labels[i] + (this.sourceMap[labels[i]] ? " <b>" + this.sourceMap[labels[i]] + "</b>" : ""),
+          font: { size: 14 }
+        },
         margin: {t: 25, b: 25, r: 25, l: 25},
         hovermode: false
       }
+      console.log(this.graphLayout[labels[i]]["title"])
       temp[labels[i]] = {
         x: [],
         y: [],

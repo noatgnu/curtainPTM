@@ -97,7 +97,7 @@
           <div ngbDropdownMenu aria-labelledby="plot-dropdown">
             @if (finished) {
               <h6 class="dropdown-header">Data Visualization</h6>
-              <button>
+              <button ngbDropdownItem>
                 Profile Plot <span class="badge bg-secondary ms-1">{{settings.settings.selectedComparison.length}}</span>
               </button>
               <button ngbDropdownItem (click)="getSelectedList()">Get Selected Protein List</button>
