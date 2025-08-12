@@ -198,10 +198,22 @@ export class VolcanoPlotComponent implements OnInit {
       this.graphLayout.yaxis.range[1] = this.settings.settings.volcanoAxis.maxY
     }
     if (this.settings.settings.volcanoAxis.x) {
-      this.graphLayout.xaxis.title = `<b>${this.settings.settings.volcanoAxis.x}</b>`
+      this.graphLayout.xaxis.title = {
+        text: `<b>${this.settings.settings.volcanoAxis.x}</b>`,
+        font: {
+          size: 16,
+          family: this.settings.settings.plotFontFamily
+        }
+      }
     }
     if (this.settings.settings.volcanoAxis.y) {
-      this.graphLayout.yaxis.title = `<b>${this.settings.settings.volcanoAxis.y}</b>`
+      this.graphLayout.yaxis.title = {
+        text: `<b>${this.settings.settings.volcanoAxis.y}</b>`,
+        font: {
+          size: 16,
+          family: this.settings.settings.plotFontFamily
+        }
+      }
     }
     temp["Background"] = {
       x:[],
@@ -574,13 +586,13 @@ export class VolcanoPlotComponent implements OnInit {
       for (const p of e["points"]) {
         selected.push(p.data.primaryIDs[p.pointNumber])
       }
-      
+
       // If explorer mode is enabled and only one point is selected, open nearby points modal
       if (this.explorerMode && selected.length === 1) {
         this.openNearbyPointsModal(e);
         return;
       }
-      
+
       if (selected.length === 1) {
         this.selected.emit(
           {
@@ -618,9 +630,9 @@ export class VolcanoPlotComponent implements OnInit {
 
     const point = clickEvent.points[0];
     const primaryId = point.data.primaryIDs[point.pointNumber];
-    
+
     // Find the full data for this point
-    const fullData = this.dataService.currentDF.where(r => 
+    const fullData = this.dataService.currentDF.where(r =>
       r[this.dataService.differentialForm.primaryIDs] === primaryId
     ).first();
 
@@ -642,7 +654,7 @@ export class VolcanoPlotComponent implements OnInit {
     // Determine trace group and color for target point (same logic as nearby points)
     let targetTraceGroup = 'Background';
     let targetTraceColor = '#a4a2a2';
-    
+
     if (this.dataService.selectedMap[primaryId]) {
       // For selected points, use the first group name
       for (const groupName in this.dataService.selectedMap[primaryId]) {
@@ -683,12 +695,12 @@ export class VolcanoPlotComponent implements OnInit {
     };
 
     // Open the modal
-    const ref = this.modal.open(NearbyPointsModalComponent, { 
-      size: 'xl', 
+    const ref = this.modal.open(NearbyPointsModalComponent, {
+      size: 'xl',
       scrollable: true,
       windowClass: 'modal-extra-large'
     });
-    
+
     ref.componentInstance.targetPoint = targetPoint;
     ref.componentInstance.nearbyPoints = []; // Will be calculated by the modal
 
@@ -738,10 +750,10 @@ export class VolcanoPlotComponent implements OnInit {
   }
 
   getModifiedResidue(data: any): string {
-    const peptideSequences = Array.isArray(data[this.dataService.differentialForm.peptideSequence]) 
-      ? data[this.dataService.differentialForm.peptideSequence] 
+    const peptideSequences = Array.isArray(data[this.dataService.differentialForm.peptideSequence])
+      ? data[this.dataService.differentialForm.peptideSequence]
       : [data[this.dataService.differentialForm.peptideSequence]];
-    
+
     const positionsInPeptide = Array.isArray(data[this.dataService.differentialForm.positionPeptide])
       ? data[this.dataService.differentialForm.positionPeptide]
       : [data[this.dataService.differentialForm.positionPeptide]];
@@ -753,7 +765,7 @@ export class VolcanoPlotComponent implements OnInit {
         return peptide[position - 1];
       }
     }
-    
+
     return '';
   }
 
@@ -995,32 +1007,32 @@ export class VolcanoPlotComponent implements OnInit {
   }
 
   buildPTMString(row: any): string {
-    const positions = Array.isArray(row[this.dataService.differentialForm.position]) 
-      ? row[this.dataService.differentialForm.position] 
+    const positions = Array.isArray(row[this.dataService.differentialForm.position])
+      ? row[this.dataService.differentialForm.position]
       : [row[this.dataService.differentialForm.position]]
-    
+
     const positionsInPeptide = Array.isArray(row[this.dataService.differentialForm.positionPeptide])
       ? row[this.dataService.differentialForm.positionPeptide]
       : [row[this.dataService.differentialForm.positionPeptide]]
-    
+
     const peptideSequences = Array.isArray(row[this.dataService.differentialForm.peptideSequence])
       ? row[this.dataService.differentialForm.peptideSequence]
       : [row[this.dataService.differentialForm.peptideSequence]]
 
     const ptmParts: string[] = []
-    
+
     // Handle multiple modifications
     for (let i = 0; i < positions.length; i++) {
       const position = positions[i]
       const positionInPeptide = positionsInPeptide[i] || positionsInPeptide[0]
       const peptide = peptideSequences[i] || peptideSequences[0]
-      
+
       if (position && positionInPeptide && peptide && positionInPeptide > 0 && positionInPeptide <= peptide.length) {
         const residue = peptide[positionInPeptide - 1]
         ptmParts.push(`${residue}${position}`)
       }
     }
-    
+
     return ptmParts.join(';')
   }
 }
