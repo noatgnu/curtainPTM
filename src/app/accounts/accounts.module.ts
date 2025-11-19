@@ -7,9 +7,10 @@ import {
   NgbDropdown,
   NgbDropdownItem,
   NgbDropdownMenu,
-  NgbDropdownToggle,
+  NgbDropdownToggle, NgbNav, NgbNavContent, NgbNavItem, NgbNavLink, NgbNavOutlet,
   NgbPaginationModule
 } from "@ng-bootstrap/ng-bootstrap";
+import {UserListsManagementComponent} from "./user-lists-management/user-lists-management.component";
 
 
 @NgModule({
@@ -26,6 +27,12 @@ import {
     NgbDropdownToggle,
     NgbDropdownMenu,
     NgbDropdownItem,
+    NgbNav,
+    NgbNavItem,
+    NgbNavLink,
+    NgbNavContent,
+    NgbNavOutlet,
+    UserListsManagementComponent
   ],
   providers: [
   ]

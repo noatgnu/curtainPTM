@@ -1,0 +1,58 @@
+.table-responsive {
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.table {
+  margin-bottom: 0;
+}
+
+.text-truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card {
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.badge {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.btn-group-sm .btn {
+  padding: 0.25rem 0.5rem;
+}
+
+.spinner-border-sm {
+  width: 1rem;
+  height: 1rem;
+  border-width: 0.15rem;
+}
+
+.form-check-input {
+  cursor: pointer;
+}
+
+.form-check-input:hover {
+  border-color: #0d6efd;
+}
+
+thead th {
+  position: sticky;
+  top: 0;
+  background-color: #f8f9fa;
+  z-index: 10;
+}
+
+.dropdown-menu {
+  min-width: 250px;
+}
+
+.modal-body {
+  max-height: 80vh;
+  overflow-y: auto;
+}

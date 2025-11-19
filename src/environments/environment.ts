@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  apiURL: "https://celsus.muttsu.xyz/",
+  apiURL: "http://localhost:8000/",
   //apiURL: "https://celsus2.cap2.erymonite.com/",
   //apiURL: "http://127.0.0.1:8000/",
   google: "101803197167-s9fb349oeqhjmvs5afn9idopgipnlvtk.apps.googleusercontent.com",

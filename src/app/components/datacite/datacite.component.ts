@@ -761,4 +761,17 @@ export class DataciteComponent {
   removeDescription(index: number) {
     this.dataCiteForm.controls.descriptions.removeAt(index);
   }
+
+  addAlternateIdentifier() {
+    this.dataCiteForm.controls.alternateIdentifiers.push(this.fb.group({
+      alternateIdentifier: ['', Validators.required],
+      alternateIdentifierType: ['', Validators.required]
+    }))
+  }
+
+  removeAlternateIdentifier(index: number) {
+    if (index > 0 && this.dataCiteForm.controls.alternateIdentifiers.length > 1) {
+      this.dataCiteForm.controls.alternateIdentifiers.removeAt(index);
+    }
+  }
 }

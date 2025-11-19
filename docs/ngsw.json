@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1754994589682,
+  "timestamp": 1763557961048,
   "index": "/index.html",
   "assetGroups": [
     {
@@ -11,16 +11,16 @@
         "ignoreVary": true
       },
       "urls": [
+        "/chunk-GEW536EM.js",
         "/chunk-N57AJHA5.js",
-        "/chunk-YJ6E2CMX.js",
         "/favicon.ico",
         "/index.html",
-        "/main-FWQW5CPK.js",
+        "/main-Q25RADLF.js",
         "/manifest.webmanifest",
-        "/polyfills-C6EBGTQC.js",
-        "/scripts-X7YPGJEC.js",
-        "/styles-FWLVCYTJ.css",
-        "/worker-UP6HA4QH.js"
+        "/polyfills-JXWSKCBO.js",
+        "/scripts-B3TLMR3Q.js",
+        "/styles-ALIAULSO.css",
+        "/worker-QXJKH3QK.js"
       ],
       "patterns": []
     },
@@ -128,16 +128,16 @@
     "/assets/proteinLists/pd.txt": "915c4a708c5dc7227d0b8fdc5eb51b17b2342746",
     "/assets/proteinLists/phosphatases.txt": "c350ec4656fee8be08c7dead8fdd42a0cd20e350",
     "/assets/proteinLists/pink1.txt": "6b73c270d0407981851903bae49a622c0c22e0f8",
+    "/chunk-GEW536EM.js": "60e1daa2afbfab2259fd0ae9b03e2b0cab550f28",
     "/chunk-N57AJHA5.js": "0596171feebf974cc1f5eeeef7f1e75616da8bca",
-    "/chunk-YJ6E2CMX.js": "8860e0c629fccd1dc5c6346ed18907996d6540b2",
     "/favicon.ico": "22f6a4a3bcaafafb0254e0f2fa4ceb89e505e8b2",
-    "/index.html": "72fb54a378e1c407a2f5d1cd1d30d8448ff8896d",
-    "/main-FWQW5CPK.js": "52f67609a932cb6879e9fd821a4ee820c50c67bd",
+    "/index.html": "2e93bd7d9ebd2ea018c0f40fd1822a077f35c707",
+    "/main-Q25RADLF.js": "3541b7177f6dc17204c3b959414f4d64b8f16dfb",
     "/manifest.webmanifest": "0eb74bee05d08791252872d45422389a4c8ede7e",
-    "/polyfills-C6EBGTQC.js": "820e0e72beb4be04a3d24fc0fe09a6a97d4ff62e",
-    "/scripts-X7YPGJEC.js": "9dfdcf708da5e4b4f6f833ece0e1a7595b6a1029",
-    "/styles-FWLVCYTJ.css": "76cbfbb856a39c8963775c46522f0800945c693a",
-    "/worker-UP6HA4QH.js": "2084bd0301aaecdc31b5efa73a68734d44ae837b"
+    "/polyfills-JXWSKCBO.js": "666124c1a3df4ed7eb66e54da096791013fab792",
+    "/scripts-B3TLMR3Q.js": "8f72214d8beb6c59d3bb039c2aabc6f69e11f9da",
+    "/styles-ALIAULSO.css": "3a4f7715ad6ddf890fc64ae0b4135c7caf6366fd",
+    "/worker-QXJKH3QK.js": "d1678d6796f00e4f90b48c272ef22ac0c174e29d"
   },
   "navigationUrls": [
     {

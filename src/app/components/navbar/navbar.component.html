@@ -109,6 +109,26 @@
         </div>
       </div>
 
+      @if (accounts.curtainAPI.user.loginStatus) {
+        <div class="me-2">
+          <div display="dynamic" ngbDropdown>
+            <button class="btn btn-outline-primary" id="dropdownAccount" ngbDropdownToggle>
+              <i class="bi bi-person-circle"></i> Account
+            </button>
+            <div ngbDropdownMenu aria-labelledby="dropdownAccount" class="dropdown-menu-end">
+              <h6 class="dropdown-header">Account Management</h6>
+              <button ngbDropdownItem (click)="openAccountModal()">
+                <i class="bi bi-person"></i> My Account
+              </button>
+              <div class="dropdown-divider"></div>
+              <button ngbDropdownItem (click)="accounts.logout()">
+                <i class="bi bi-box-arrow-right"></i> Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+
       <div>
         <div display="dynamic" ngbDropdown>
           <button class="btn btn-outline-primary" id="dropdownSession" ngbDropdownToggle>
@@ -120,7 +140,7 @@
               </span>
             }
           </button>
-          <div ngbDropdownMenu aria-labelledby="dropdownSession" class="dropdown-menu-end">
+          <div ngbDropdownMenu aria-labelledby="dropdownSession" class="dropdown-menu-end" style="max-height: 80vh; overflow-y: auto;">
             <h6 class="dropdown-header">Project Data</h6>
             <button ngbDropdownItem (click)="openAnnotation()">Project Annotation</button>
             <button ngbDropdownItem (click)="openLogFileModal()">Log File</button>
@@ -172,14 +192,6 @@
             </button>
             <button ngbDropdownItem (click)="openCollaborateModal()">Collaborate</button>
             <button ngbDropdownItem (click)="openEncryptionSettings()">Encryption Settings</button>
-
-            @if (accounts.curtainAPI.user.loginStatus) {
-              <div class="dropdown-divider"></div>
-              <h6 class="dropdown-header">Account</h6>
-              <button ngbDropdownItem (click)="openAccountModal()">My Account</button>
-              <!--<button ngbDropdownItem (click)="openAPIKeyModal()">API Keys</button>-->
-              <button ngbDropdownItem (click)="accounts.logout()">Logout</button>
-            }
 
             <div class="dropdown-divider"></div>
             <h6 class="dropdown-header">Help & Resources</h6>

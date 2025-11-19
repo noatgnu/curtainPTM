@@ -1,0 +1,229 @@
+<div class="container-fluid">
+  @if (isLoading()) {
+    <div class="d-flex justify-content-center align-items-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  }
+
+  <div class="card mb-3 shadow-sm">
+    <div class="card-body">
+      <h6 class="card-subtitle mb-3 text-muted">Search User's Lists</h6>
+      <form [formGroup]="searchForm" (submit)="submit()">
+        <div class="row g-2">
+          <div class="col-md-10">
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-search"></i></span>
+              <input
+                type="text"
+                formControlName="searchTerm"
+                class="form-control"
+                placeholder="Search by name or data..."
+                [disabled]="isLoading()">
+            </div>
+          </div>
+          <div class="col-md-2">
+            <button
+              class="btn btn-primary w-100"
+              type="submit"
+              [disabled]="isLoading()">
+              <i class="bi bi-search me-1"></i>Search
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  @if (totalItems() > 0) {
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div>
+        @if (selectedCount() > 0) {
+          <span class="badge bg-primary">{{selectedCount()}} Selected</span>
+        } @else {
+          <small class="text-muted">{{totalItems()}} Total Lists</small>
+        }
+      </div>
+      <ngb-pagination
+        [collectionSize]="totalItems()"
+        [page]="currentPage()"
+        [maxSize]="5"
+        [boundaryLinks]="true"
+        [size]="'sm'"
+        [disabled]="isLoading()"
+        (pageChange)="submit($event)">
+      </ngb-pagination>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead class="table-light">
+        <tr>
+          <th scope="col" style="width: 50px;">
+            <input
+              type="checkbox"
+              class="form-check-input"
+              [checked]="selectedCount() === data.results.length && data.results.length > 0"
+              [indeterminate]="selectedCount() > 0 && selectedCount() < data.results.length"
+              (change)="toggleSelectAll()"
+              [disabled]="isLoading()">
+          </th>
+          <th scope="col">Name</th>
+          <th scope="col">Category</th>
+          <th scope="col">Items</th>
+          <th scope="col">Created</th>
+          <th scope="col" style="width: 180px;">
+            <button
+              class="btn btn-outline-danger btn-sm"
+              [disabled]="selectedCount() === 0 || isLoading()"
+              (click)="removeSelectedLists()">
+              <i class="bi bi-trash me-1"></i>Delete Selected
+            </button>
+          </th>
+        </tr>
+        </thead>
+        <tbody>
+        @for (list of data.results; track list.id) {
+          <tr [class.table-active]="selectedLists[list.id]">
+            <td>
+              <input
+                type="checkbox"
+                class="form-check-input"
+                [(ngModel)]="selectedLists[list.id]"
+                (click)="toggleSelection(list.id)"
+                [disabled]="isLoading()">
+            </td>
+            <td>
+              <strong>{{list.name}}</strong>
+              @if (expandedList()[list.id]) {
+                <div class="text-muted small mt-1">
+                  Preview: {{getPreview(list.data)}}
+                </div>
+              }
+            </td>
+            <td>
+              <span class="badge bg-info text-dark">User's Lists</span>
+            </td>
+            <td>
+              <span class="badge bg-secondary">{{getLineCount(list.data)}} items</span>
+            </td>
+            <td>
+              <small class="text-muted">
+                <i class="bi bi-calendar3 me-1"></i>{{list.created | date:'short'}}
+              </small>
+            </td>
+            <td>
+              <div class="btn-group btn-group-sm">
+                <button
+                  class="btn btn-outline-primary btn-sm"
+                  (click)="toggleListExpansion(list.id)"
+                  [disabled]="isLoading()"
+                  [attr.aria-expanded]="expandedList()[list.id]">
+                  <i class="bi" [class.bi-chevron-down]="!expandedList()[list.id]" [class.bi-chevron-up]="expandedList()[list.id]"></i>
+                  Details
+                </button>
+                @if (!editingList()[list.id]) {
+                  <button
+                    class="btn btn-outline-secondary btn-sm"
+                    (click)="startEditing(list)"
+                    [disabled]="isLoading()">
+                    <i class="bi bi-pencil"></i>
+                    Edit
+                  </button>
+                }
+                <button
+                  class="btn btn-outline-danger btn-sm"
+                  (click)="deleteList(list.id)"
+                  [disabled]="isLoading()">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          @if (expandedList()[list.id]) {
+            <tr class="table-light">
+              <td [colSpan]="6">
+                <div class="p-3 bg-white rounded">
+                  @if (editingList()[list.id]) {
+                    <div class="mb-3">
+                      <label class="form-label fw-bold">
+                        <i class="bi bi-tag me-2"></i>List Name
+                      </label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        [(ngModel)]="editForms[list.id].name"
+                        placeholder="Enter list name"
+                        required>
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label fw-bold">
+                        <i class="bi bi-list-ul me-2"></i>List Data
+                        <small class="text-muted">(one item per line)</small>
+                      </label>
+                      <textarea
+                        class="form-control font-monospace"
+                        [(ngModel)]="editForms[list.id].data"
+                        rows="10"
+                        placeholder="Enter list data (one item per line)"
+                        required
+                        style="font-size: 0.85rem;"></textarea>
+                      <div class="form-text">
+                        {{getLineCount(editForms[list.id].data)}} items
+                      </div>
+                    </div>
+                    <div class="d-flex gap-2">
+                      <button
+                        class="btn btn-primary"
+                        (click)="saveList(list.id)"
+                        [disabled]="isLoading() || !editForms[list.id].name || !editForms[list.id].data">
+                        <i class="bi bi-check-circle me-1"></i>Save Changes
+                      </button>
+                      <button
+                        class="btn btn-secondary"
+                        (click)="cancelEditing(list.id)"
+                        [disabled]="isLoading()">
+                        <i class="bi bi-x-circle me-1"></i>Cancel
+                      </button>
+                    </div>
+                  } @else {
+                    <div class="mb-2">
+                      <strong class="text-muted d-block mb-2">
+                        <i class="bi bi-list-ul me-2"></i>List Data
+                      </strong>
+                      <pre class="border rounded p-2 bg-light" style="max-height: 300px; overflow-y: auto; font-size: 0.85rem;">{{list.data}}</pre>
+                    </div>
+                    <div class="mt-2">
+                      <small class="text-muted">
+                        <strong>ID:</strong> {{list.id}} |
+                        <strong>User ID:</strong> {{list.user}}
+                      </small>
+                    </div>
+                  }
+                </div>
+              </td>
+            </tr>
+          }
+        }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="d-flex justify-content-center mt-3">
+      <ngb-pagination
+        [collectionSize]="totalItems()"
+        [page]="currentPage()"
+        [maxSize]="5"
+        [boundaryLinks]="true"
+        [disabled]="isLoading()"
+        (pageChange)="submit($event)">
+      </ngb-pagination>
+    </div>
+  } @else {
+    <div class="text-center py-5">
+      <i class="bi bi-inbox display-1 text-muted"></i>
+      <p class="text-muted mt-3">No data filter lists found. Try adjusting your search criteria.</p>
+    </div>
+  }
+</div>

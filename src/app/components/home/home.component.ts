@@ -86,7 +86,7 @@ export class HomeComponent implements OnInit {
                 this.loadingDataCite = false
                 this.doiMetadata = data
                 if (data.data.attributes.alternateIdentifiers.length > 0) {
-                  this.getDOISessionData(data.data.attributes.alternateIdentifiers[0]["alternateIdentifier"], params["settings"]).then()
+                  this.tryAlternateIdentifiers(data.data.attributes.alternateIdentifiers, params["settings"], data.data.attributes.alternateIdentifiers.length - 1).then()
                 }
 
               })
@@ -159,26 +159,39 @@ export class HomeComponent implements OnInit {
     })
   }
 
-  async getDOISessionData(url: string, doiLink: string) {
-    this.toast.show("Initialization", "Downloading data from DOI link", undefined, undefined, "download").then()
-    try {
-      const data =  await this.accounts.curtainAPI.postSettings("", "", this.onDownloadProgress, url)
-      if (data.data) {
-        this.restoreSettings(data.data).then(() => {
-          this.uniqueLink = location.origin + "/#/" + encodeURIComponent(doiLink)
-          this.settings.settings.currentID = doiLink
-          if (this.data.session) {
-            this.data.session.permanent = true
-          }
-          this.data.restoreTrigger.next(true)
-        })
-      }
-    } catch (e) {
-      console.log(e)
-      this.toast.show("Initialization", "Error: DOI link is not valid").then()
+  async tryAlternateIdentifiers(alternateIdentifiers: any[], doiLink: string, index: number) {
+    if (index < 0) {
+      this.toast.show("Initialization", "Error: No valid alternate identifier found in DOI").then()
       this.data.downloadProgress.next(100)
+      return
     }
 
+    const url = alternateIdentifiers[index]["alternateIdentifier"]
+    this.toast.show("Initialization", `Trying alternate identifier ${index + 1} of ${alternateIdentifiers.length}`, undefined, undefined, "download").then()
+
+    try {
+      await this.getDOISessionData(url, doiLink)
+    } catch (e) {
+      console.log(`Failed to load from alternate identifier ${index + 1}:`, e)
+      await this.tryAlternateIdentifiers(alternateIdentifiers, doiLink, index - 1)
+    }
+  }
+
+  async getDOISessionData(url: string, doiLink: string) {
+    this.toast.show("Initialization", "Downloading data from DOI link", undefined, undefined, "download").then()
+    const data =  await this.accounts.curtainAPI.postSettings("", "", this.onDownloadProgress, url)
+    if (data.data) {
+      this.restoreSettings(data.data).then(() => {
+        this.uniqueLink = location.origin + "/#/" + encodeURIComponent(doiLink)
+        this.settings.settings.currentID = doiLink
+        if (this.data.session) {
+          this.data.session.permanent = true
+        }
+        this.data.restoreTrigger.next(true)
+      })
+    } else {
+      throw new Error("No data returned from alternate identifier")
+    }
   }
 
   async getSessionData(id: string, token: string = "") {

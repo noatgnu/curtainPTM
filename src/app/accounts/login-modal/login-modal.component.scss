@@ -1,0 +1,82 @@
+.modal-header {
+  .modal-title {
+    font-weight: 600;
+  }
+}
+
+.form-control {
+  &:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+  }
+}
+
+.password-toggle {
+  border: none;
+  background: transparent;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+
+  &:hover {
+    color: #0d6efd !important;
+  }
+
+  &:focus {
+    box-shadow: none;
+  }
+}
+
+.position-relative input {
+  padding-right: 3rem;
+}
+
+.btn-primary {
+  font-weight: 600;
+}
+
+.divider {
+  position: relative;
+  text-align: center;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #dee2e6;
+  }
+
+  .divider-text {
+    position: relative;
+    display: inline-block;
+    background: white;
+    padding: 0 1rem;
+    color: #6c757d;
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+}
+
+.orcid-button {
+  border: 2px solid #a6ce39;
+  color: #5d7a1f;
+  font-weight: 600;
+
+  &:hover:not(.disabled) {
+    background-color: #a6ce39;
+    border-color: #a6ce39;
+    color: white;
+  }
+
+  &.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.orcid-icon {
+  display: inline-block;
+  vertical-align: middle;
+}
