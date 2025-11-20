@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import {SettingsService} from "../../settings.service";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {FormsModule} from "@angular/forms";
@@ -12,7 +12,7 @@ import {FormsModule} from "@angular/forms";
     styleUrl: './log-file-modal.component.scss'
 })
 export class LogFileModalComponent {
-  selectedLogFile: number = -1;
+  selectedLogFile = signal(-1);
 
   constructor(public settings: SettingsService, private activeModal: NgbActiveModal) {
   }
@@ -37,7 +37,7 @@ export class LogFileModalComponent {
   }
 
   removeLogFile(index: number) {
-    this.selectedLogFile = -1
+    this.selectedLogFile.set(-1)
     this.settings.settings.extraData.splice(index, 1)
   }
 

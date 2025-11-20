@@ -1,0 +1,63 @@
+<div class="modal-header">
+  <h4 class="modal-title">
+    <i class="bi bi-save me-2"></i>Save Session
+  </h4>
+  <button type="button" class="btn-close" (click)="cancel()"></button>
+</div>
+
+<div class="modal-body">
+  @if (siteProperties.allow_user_set_permanent) {
+    <div class="form-check form-switch mb-3">
+      <input
+        class="form-check-input"
+        type="checkbox"
+        id="permanentSwitch"
+        [(ngModel)]="permanent">
+      <label class="form-check-label" for="permanentSwitch">
+        <strong>Permanent Session</strong>
+        <div class="form-text">
+          Permanent sessions never expire and remain available indefinitely.
+        </div>
+      </label>
+    </div>
+  }
+
+  @if (!permanent()) {
+    <div class="mb-3">
+      <label for="expiryDuration" class="form-label">
+        <strong>Session Expiry Duration</strong>
+      </label>
+      <select
+        id="expiryDuration"
+        class="form-select"
+        [(ngModel)]="expiryDuration">
+        @for (option of siteProperties.expiry_duration_options; track option) {
+          <option [value]="option">
+            {{option}} {{option === 1 ? 'month' : 'months'}}
+          </option>
+        }
+      </select>
+      <div class="form-text">
+        Session will automatically expire after the selected duration.
+      </div>
+    </div>
+  }
+
+  <div class="alert alert-info">
+    <i class="bi bi-info-circle me-2"></i>
+    @if (permanent()) {
+      <strong>Permanent session:</strong> Your session will be saved permanently and never expire.
+    } @else {
+      <strong>Temporary session:</strong> Your session will expire in {{expiryDuration()}} {{expiryDuration() === 1 ? 'month' : 'months'}}.
+    }
+  </div>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="cancel()">
+    <i class="bi bi-x-circle me-1"></i>Cancel
+  </button>
+  <button type="button" class="btn btn-primary" (click)="save()">
+    <i class="bi bi-check-circle me-1"></i>Save Session
+  </button>
+</div>

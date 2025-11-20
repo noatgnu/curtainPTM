@@ -30,7 +30,12 @@ export class AccountsService {
           config.url === this.curtainAPI.logoutURL ||
           config.url === this.curtainAPI.userInfoURL ||
           config.url.startsWith(this.curtainAPI.baseURL + "curtain/") ||
-          config.url.startsWith(this.curtainAPI.baseURL + "data_filter_list/")) {
+          config.url.startsWith(this.curtainAPI.baseURL + "data_filter_list/") ||
+          config.url.startsWith(this.curtainAPI.baseURL + "api_key/") ||
+          config.url.startsWith(this.curtainAPI.baseURL + "permanent-link-requests/") ||
+          config.url.startsWith(this.curtainAPI.baseURL + "curtain-chunked-upload/") ||
+          config.url.startsWith(this.curtainAPI.baseURL + "stats/summary/") ||
+          config.url.startsWith(this.curtainAPI.baseURL + "job/")) {
           if (this.curtainAPI.user.loginStatus) {
             config.headers["Authorization"] = "Bearer " + this.curtainAPI.user.access_token;
           }

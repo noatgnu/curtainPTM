@@ -1,0 +1,104 @@
+<div class="modal-header">
+  <h5 class="modal-title">Request Session Changes</h5>
+  <button type="button" class="btn-close" (click)="close()"></button>
+</div>
+
+<div class="modal-body">
+  @if (!data.session?.permanent) {
+    <div class="mb-4">
+      <h6>Submit a New Request</h6>
+      <form [formGroup]="form" (ngSubmit)="submitRequest()">
+        <div class="mb-3">
+          <label class="form-label">Request Type</label>
+          <select class="form-select" formControlName="request_type">
+            <option value="permanent">Make Session Permanent</option>
+            <option value="extend">Extend Expiry Date</option>
+          </select>
+        </div>
+
+        @if (form.get('request_type')?.value === 'extend') {
+          <div class="mb-3">
+            <label class="form-label">Extend By (Months)</label>
+            <select class="form-select" formControlName="requested_expiry_months">
+              <option [value]="null">Select duration</option>
+              @for (option of expiryOptions; track option) {
+                <option [value]="option">{{option}} months</option>
+              }
+            </select>
+            @if (form.get('requested_expiry_months')?.invalid && form.get('requested_expiry_months')?.touched) {
+              <div class="text-danger small mt-1">Please select a duration</div>
+            }
+          </div>
+        }
+
+        <div class="mb-3">
+          <label class="form-label">Reason for Request</label>
+          <textarea class="form-control" formControlName="reason" rows="3"
+                    placeholder="Please explain why you need this change..."></textarea>
+          @if (form.get('reason')?.invalid && form.get('reason')?.touched) {
+            <div class="text-danger small mt-1">Reason is required</div>
+          }
+        </div>
+
+        <button type="submit" class="btn btn-primary" [disabled]="form.invalid">
+          Submit Request
+        </button>
+      </form>
+    </div>
+  } @else {
+    <ngb-alert type="info" [dismissible]="false">
+      This session is already permanent.
+    </ngb-alert>
+  }
+
+  <div class="mt-4">
+    <h6>Your Requests</h6>
+    @if (loading()) {
+      <div class="text-center p-3">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    } @else {
+      @if (existingRequests().length > 0) {
+        <div class="list-group">
+          @for (request of existingRequests(); track request.id) {
+            <div class="list-group-item">
+              <div class="d-flex justify-content-between align-items-start">
+                <div class="flex-grow-1">
+                  <h6 class="mb-1">
+                    {{getRequestTypeLabel(request.request_type)}}
+                    @if (request.request_type === 'extend' && request.requested_expiry_months) {
+                      <span class="text-muted">({{request.requested_expiry_months}} months)</span>
+                    }
+                  </h6>
+                  <p class="mb-1 text-muted small">{{request.reason}}</p>
+                  <small class="text-muted">
+                    Requested: {{request.requested_at | date:'short'}}
+                    @if (request.reviewed_at) {
+                      | Reviewed: {{request.reviewed_at | date:'short'}}
+                    }
+                  </small>
+                  @if (request.admin_notes) {
+                    <div class="mt-2">
+                      <small class="text-muted"><strong>Admin Notes:</strong> {{request.admin_notes}}</small>
+                    </div>
+                  }
+                </div>
+                <span class="badge {{getStatusBadgeClass(request.status)}}">
+                  {{request.status}}
+                </span>
+              </div>
+            </div>
+          }
+        </div>
+      } @else {
+        <p class="text-muted">No requests found for this session.</p>
+      }
+    }
+  </div>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="close()">Close</button>
+</div>

@@ -65,7 +65,7 @@
               <button ngbDropdownItem (click)="openDataciteAdminManagement()">
                 Submitted DOI @if (data.draftDataCiteCount > 0) {<span class="badge bg-danger ms-1">{{data.draftDataCiteCount}}</span>}
               </button>
-              @if (finished && gdprAccepted && data.session) {
+              @if (finished && gdprAccepted() && data.session) {
                 <button ngbDropdownItem (click)="openDataciteDOI()" [disabled]="!data.session">
                   {{data.session.data_cite ? 'View DOI Form' : 'Register DOI (Beta)'}}
                 </button>
@@ -151,16 +151,18 @@
             }
 
             @if (finished) {
-              @if(gdprAccepted) {
+              @if(gdprAccepted()) {
                 <button ngbDropdownItem (click)="saveSession()" [disabled]="data.tempLink">
-                  Save Temporary Session
-                </button>
-                <button ngbDropdownItem (click)="saveSession(true)" [disabled]="data.tempLink">
-                  Save Permanent Session
+                  <i class="bi bi-save me-1"></i>Save Session
                 </button>
                 @if (accounts.curtainAPI.user.loginStatus && data.session) {
                   <button ngbDropdownItem (click)="openDataciteDOI()">
                     {{data.session.data_cite ? 'View DOI Form' : 'Register DOI (Beta)'}}
+                  </button>
+                }
+                @if (accounts.curtainAPI.user.loginStatus && data.session && !data.session.permanent) {
+                  <button ngbDropdownItem (click)="openPermanentLinkRequestModal()">
+                    <i class="bi bi-clock-history me-1"></i>Request Session Change
                   </button>
                 }
               } @else {
@@ -219,7 +221,7 @@
 </nav>
 
 <div class="container mt-5 pt-3">
-  @if (showAlert) {
+  @if (showAlert()) {
     <ngb-alert type="warning" [dismissible]="true" (closed)="closeGDPR()">
       <h5><i class="bi bi-shield-check"></i> GDPR Statement</h5>
       <p>
@@ -234,6 +236,13 @@
         <input type="checkbox" class="form-check-input" [(ngModel)]="gdprAccepted" style="border-color: red">
         <label class="form-check-label"><strong>I have read and accepted the GDPR statement (Enable Session Saving)</strong></label>
       </div>
+    </ngb-alert>
+  }
+
+  @if (currentAnnouncement()) {
+    <ngb-alert [type]="getAnnouncementClass(currentAnnouncement()!.announcement_type)" [dismissible]="true" (closed)="dismissAnnouncement(currentAnnouncement()!.id)">
+      <h5><i class="bi bi-megaphone-fill me-2"></i>{{currentAnnouncement()!.title}}</h5>
+      <p>{{currentAnnouncement()!.content}}</p>
     </ngb-alert>
   }
 </div>

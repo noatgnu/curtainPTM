@@ -16,10 +16,9 @@ import {LoginModalComponent} from "../../accounts/login-modal/login-modal.compon
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {AccountsService} from "../../accounts/accounts.service";
 import {WebsocketService} from "../../websocket.service";
-import {arrayBufferToBase64String, base64ToArrayBuffer, reviver, saveToLocalStorage} from "curtain-web-api";
+import {arrayBufferToBase64String, base64ToArrayBuffer, reviver, saveToLocalStorage, decryptAESData, decryptAESKey, importAESKey} from "curtain-web-api";
 import {PtmDiseasesService} from "../../ptm-diseases.service";
 import {EncryptionSettingsComponent} from "../encryption-settings/encryption-settings.component";
-import {decryptAESData, decryptAESKey, importAESKey} from "curtain-web-api/build/classes/curtain-encryption";
 
 @Component({
     selector: 'app-home',
@@ -261,7 +260,7 @@ export class HomeComponent implements OnInit {
 
   async initialize() {
     await this.data.getKey()
-    await this.accounts.curtainAPI.getSiteProperties()
+    await this.web.loadSiteProperties(this.accounts.curtainAPI)
     await this.accounts.curtainAPI.user.loadFromDB()
   }
 

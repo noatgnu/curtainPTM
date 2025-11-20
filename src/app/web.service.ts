@@ -8,13 +8,18 @@ import {PlmdService} from "./plmd.service";
 import {CarbonyldbService} from "./carbonyldb.service";
 import {environment} from "../environments/environment";
 import {DataCiteMetadata} from "./data-cite-metadata";
+import {SiteProperties} from "curtain-web-api";
+
 @Injectable({
   providedIn: 'root'
 })
 export class WebService {
   dataciteURL: string = environment.datacite
-  siteProperties: any = {
-    non_user_post: true
+  siteProperties: SiteProperties = {
+    non_user_post: true,
+    allow_user_set_permanent: true,
+    expiry_duration_options: [1, 3, 6, 12],
+    default_expiry_duration_months: 6
   }
   links = new CurtainLink()
   filters: any = {
@@ -39,6 +44,17 @@ export class WebService {
     mTOR: {filename: "mtor.txt", name: "mTOR Pathway"}
   }
   constructor(private http: HttpClient, private plotly: PlotlyService) { }
+
+  async loadSiteProperties(curtainAPI: any) {
+    try {
+      const response = await curtainAPI.getSiteProperties();
+      if (response.data) {
+        this.siteProperties = response.data;
+      }
+    } catch (error) {
+      console.warn('Failed to load site properties, using defaults:', error);
+    }
+  }
 
   async getFilter(categoryName: string) {
     if (this.filters[categoryName]) {

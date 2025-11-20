@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, signal, effect} from '@angular/core';
 import {WebService} from "../../web.service";
 import {DataService} from "../../data.service";
 import {ScrollService} from "../../scroll.service";
@@ -26,12 +26,13 @@ import {
 } from "../sample-condition-assignment-modal/sample-condition-assignment-modal.component";
 import {UserPtmImportManagementComponent} from "../user-ptm-import-management/user-ptm-import-management.component";
 import {EncryptionSettingsComponent} from "../encryption-settings/encryption-settings.component";
-import {CurtainEncryption, saveToLocalStorage} from "curtain-web-api";
+import {CurtainEncryption, saveToLocalStorage, replacer, Announcement} from "curtain-web-api";
 import {PrimaryIdExportModalComponent} from "../primary-id-export-modal/primary-id-export-modal.component";
 import {LogFileModalComponent} from "../log-file-modal/log-file-modal.component";
 import {DataCiteCurtain} from "../../data-cite-metadata";
 import {DataciteAdminManagementComponent} from "../datacite-admin-management/datacite-admin-management.component";
 import {DataciteComponent} from "../datacite/datacite.component";
+import {PermanentLinkRequestModalComponent} from "../permanent-link-request-modal/permanent-link-request-modal.component";
 
 @Component({
     selector: 'app-navbar',
@@ -50,17 +51,11 @@ export class NavbarComponent implements OnInit {
   progressEvent: any = {}
   subscription: Subscription = new Subscription();
   @Input() permanent: boolean = false
-  showAlert: boolean = true;
-  _gdprAccepted: boolean = false
-
-  get gdprAccepted(): boolean {
-    return this._gdprAccepted
-  }
-
-  set gdprAccepted(value: boolean) {
-    this._gdprAccepted = value
-    localStorage.setItem("CurtainGDPR", value.toString())
-  }
+  showAlert = signal(true);
+  gdprAccepted = signal(false);
+  currentAnnouncement = signal<Announcement | null>(null);
+  dismissedAnnouncementIds: Set<number> = this.loadDismissedAnnouncements()
+  GDPR = signal(false);
 
   constructor(
     public web: WebService,
@@ -81,36 +76,108 @@ export class NavbarComponent implements OnInit {
     })
 
     if (localStorage.getItem("CurtainGDPR") === "true") {
-      this.GDPR = true
-      this.gdprAccepted = true
+      this.GDPR.set(true)
+      this.gdprAccepted.set(true)
     } else {
-      this.GDPR = false
-      this.gdprAccepted = false
+      this.GDPR.set(false)
+      this.gdprAccepted.set(false)
     }
+
+    effect(() => {
+      localStorage.setItem("CurtainGDPR", this.gdprAccepted().toString())
+    })
   }
 
   ngOnInit(): void {
+    this.loadAnnouncements()
   }
 
-  saveSession(permanent: boolean = false) {
-    this.toast.show("User information", "Saving session data").then()
+  loadAnnouncements() {
+    this.accounts.curtainAPI.getAnnouncements(1, 0).then((response) => {
+      if (response.data && response.data.results.length > 0) {
+        const announcements = response.data.results.filter(
+          a => a.is_active && !this.dismissedAnnouncementIds.has(a.id)
+        )
+        if (announcements.length > 0) {
+          this.currentAnnouncement.set(announcements[0])
+        }
+      }
+    }).catch(err => {
+      console.error('Failed to load announcements:', err)
+    })
+  }
+
+  dismissAnnouncement(id: number) {
+    this.dismissedAnnouncementIds.add(id)
+    this.saveDismissedAnnouncements()
+    this.currentAnnouncement.set(null)
+  }
+
+  loadDismissedAnnouncements(): Set<number> {
+    const stored = localStorage.getItem('CurtainDismissedAnnouncements')
+    if (stored) {
+      try {
+        const ids = JSON.parse(stored)
+        return new Set(ids)
+      } catch (e) {
+        return new Set()
+      }
+    }
+    return new Set()
+  }
+
+  saveDismissedAnnouncements() {
+    const ids = Array.from(this.dismissedAnnouncementIds)
+    localStorage.setItem('CurtainDismissedAnnouncements', JSON.stringify(ids))
+  }
+
+  getAnnouncementClass(type: string): string {
+    switch (type) {
+      case 'warning':
+        return 'warning'
+      case 'error':
+        return 'danger'
+      case 'success':
+        return 'success'
+      case 'info':
+        return 'info'
+      case 'maintenance':
+        return 'dark'
+      default:
+        return 'primary'
+    }
+  }
+
+  async saveSession() {
     if (!this.accounts.curtainAPI.user.loginStatus) {
-      if (this.web.siteProperties.non_user_post) {
-        this.saving(permanent);
-      } else {
+      if (!this.web.siteProperties.non_user_post) {
         this.toast.show("User information", "Please login before saving data session").then()
+        return;
       }
     } else {
-      if (!this.accounts.curtainAPI.user.curtainLinkLimitExceeded ) {
-        this.saving(permanent);
-      } else {
+      if (this.accounts.curtainAPI.user.curtainLinkLimitExceeded) {
         this.toast.show("User information", "Curtain link limit exceed").then()
+        return;
       }
     }
 
+    const { SessionSaveModalComponent } = await import('../session-save-modal/session-save-modal.component');
+    const modalRef = this.modal.open(SessionSaveModalComponent, {
+      backdrop: 'static',
+      size: 'md'
+    });
+    modalRef.componentInstance.siteProperties = this.web.siteProperties;
+
+    try {
+      const result = await modalRef.result;
+      this.toast.show("User information", "Saving session data").then()
+      this.saving(result.permanent, result.expiryDuration);
+    } catch (error) {
+      console.log('Modal dismissed');
+    }
   }
 
-  private saving(permanent: boolean) {
+  private async saving(permanent: boolean, expiryDuration?: number) {
     const extraData: any = {
       uniprot: {
         results: this.uniprot.results,
@@ -154,7 +221,55 @@ export class NavbarComponent implements OnInit {
       publicKey: this.data.public_key,
     }
     this.toast.show("User information", "Uploading session data", undefined, undefined, "upload").then()
-    this.accounts.curtainAPI.putSettings(data, !this.accounts.curtainAPI.user.loginStatus, data.settings.description, "PTM", encryption, permanent, this.onUploadProgress).then((data: any) => {
+
+    const jsonString = JSON.stringify(data, replacer)
+    const blob = new Blob([jsonString], { type: 'application/json' })
+    const file = new File([blob], 'curtain-settings.json', { type: 'application/json' })
+
+    const CHUNK_THRESHOLD = 5 * 1024 * 1024
+
+    if (file.size > CHUNK_THRESHOLD) {
+      try {
+        const response = await this.accounts.curtainAPI.uploadCurtainFileInChunks(
+          file,
+          1024 * 1024,
+          {
+            description: data.settings.description,
+            curtain_type: "PTM",
+            permanent: permanent,
+            encrypted: encryption.encrypted,
+            expiry_duration: expiryDuration,
+            enable: !this.accounts.curtainAPI.user.loginStatus,
+            onProgress: (progress: number) => {
+              this.uniprot.uniprotProgressBar.next({
+                value: progress,
+                text: `Uploading session data at ${Math.round(progress)}%`
+              })
+              this.data.uploadProgress.next(progress)
+            }
+          }
+        )
+
+        if (response.curtain) {
+          this.toast.show("User information", `Curtain link has been saved with unique id ${response.curtain.link_id}`).then()
+          this.settings.settings.currentID = response.curtain.link_id
+          this.uniqueLink = location.origin + "/#/" + this.settings.settings.currentID
+          this.uniprot.uniprotProgressBar.next({value: 100, text: "Session data saved"})
+          this.permanent = response.curtain.permanent
+          this.data.session = response.curtain
+          this.finished = true
+        }
+      } catch (err) {
+        console.error('Chunk upload failed, falling back to regular upload:', err)
+        this.fallbackToRegularUpload(data, encryption, permanent, expiryDuration)
+      }
+    } else {
+      this.fallbackToRegularUpload(data, encryption, permanent, expiryDuration)
+    }
+  }
+
+  private fallbackToRegularUpload(data: any, encryption: CurtainEncryption, permanent: boolean, expiryDuration?: number) {
+    this.accounts.curtainAPI.putSettings(data, !this.accounts.curtainAPI.user.loginStatus, data.settings.description, "PTM", encryption, permanent, expiryDuration, this.onUploadProgress).then((data: any) => {
       if (data.data) {
         this.toast.show("User information", `Curtain link has been saved with unique id ${data.data.link_id}`).then()
         this.settings.settings.currentID = data.data.link_id
@@ -329,11 +444,9 @@ export class NavbarComponent implements OnInit {
     })
   }
 
-  GDPR: boolean = false
-
   closeGDPR() {
-    this.GDPR = false
-    //localStorage.setItem("GDPR", "true")
+    this.GDPR.set(true)
+    this.showAlert.set(false)
   }
 
   openLogFileModal() {
@@ -367,5 +480,12 @@ export class NavbarComponent implements OnInit {
   openDataciteAdminManagement() {
     const ref = this.modal.open(DataciteAdminManagementComponent, {scrollable: true, size: "xl", backdrop: "static"})
 
+  }
+
+  openPermanentLinkRequestModal() {
+    const ref = this.modal.open(PermanentLinkRequestModalComponent, {scrollable: true, size: "lg"})
+    if (this.data.session) {
+      ref.componentInstance.curtainId = this.data.session.id
+    }
   }
 }
