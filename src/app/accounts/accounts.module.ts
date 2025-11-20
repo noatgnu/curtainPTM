@@ -3,13 +3,7 @@ import { CommonModule } from '@angular/common';
 import {AccountsComponent} from "./accounts/accounts.component";
 import {LoginModalComponent} from "./login-modal/login-modal.component";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {
-  NgbDropdown,
-  NgbDropdownItem,
-  NgbDropdownMenu,
-  NgbDropdownToggle, NgbNav, NgbNavContent, NgbNavItem, NgbNavLink, NgbNavOutlet,
-  NgbPaginationModule
-} from "@ng-bootstrap/ng-bootstrap";
+import {NgbDropdownModule, NgbNavModule, NgbPaginationModule} from "@ng-bootstrap/ng-bootstrap";
 import {UserListsManagementComponent} from "./user-lists-management/user-lists-management.component";
 
 
@@ -22,16 +16,9 @@ import {UserListsManagementComponent} from "./user-lists-management/user-lists-m
     CommonModule,
     ReactiveFormsModule,
     NgbPaginationModule,
+    NgbNavModule,
     FormsModule,
-    NgbDropdown,
-    NgbDropdownToggle,
-    NgbDropdownMenu,
-    NgbDropdownItem,
-    NgbNav,
-    NgbNavItem,
-    NgbNavLink,
-    NgbNavContent,
-    NgbNavOutlet,
+    NgbDropdownModule,
     UserListsManagementComponent
   ],
   providers: [
