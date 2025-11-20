@@ -94,8 +94,8 @@ export class AccountsService {
     })
   }
 
-  login(username: string, password: string) {
-    return this.curtainAPI.login(username, password).then((data: any) => {return data}).catch((error: any) => {
+  login(username: string, password: string, remember_me: boolean = false) {
+    return this.curtainAPI.login(username, password, remember_me).then((data: any) => {return data}).catch((error: any) => {
       this.toast.show("Login Error", "Incorrect Login Credential.").then()
       return error
     })
@@ -137,14 +137,14 @@ export class AccountsService {
   }
 
 
-  postORCIDCode(data: string) {
-    return this.curtainAPI.ORCIDLogin(data, window.location.origin+"/").then((data: any) => {return data}).catch((error: any) => {
+  postORCIDCode(data: string, remember_me: boolean = false) {
+    return this.curtainAPI.ORCIDLogin(data, window.location.origin+"/", remember_me).then((data: any) => {return data}).catch((error: any) => {
       return error
     })
   }
 
-  ORCIDLogin(data: string) {
-    return this.postORCIDCode(data).then((data:any) => {
+  ORCIDLogin(data: string, remember_me: boolean = false) {
+    return this.postORCIDCode(data, remember_me).then((data:any) => {
       return data
     }).catch((error: any) => {
       return error

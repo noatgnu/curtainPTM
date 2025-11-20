@@ -64,6 +64,22 @@
       }
     </div>
 
+    <div class="mb-3 form-check">
+      <input
+        type="checkbox"
+        class="form-check-input"
+        id="remember_me"
+        formControlName="remember_me"
+        [disabled]="isLoading">
+      <label class="form-check-label" for="remember_me">
+        @if (rememberMeDays > 0) {
+          Remember me ({{rememberMeDays}} days)
+        } @else {
+          Remember me (extended session)
+        }
+      </label>
+    </div>
+
     @if (loginError) {
       <div class="alert alert-danger d-flex align-items-center" role="alert">
         <i class="bi bi-exclamation-triangle-fill me-2"></i>

@@ -1,46 +1,164 @@
 <div class="modal-header">
-  <h5>Session Settings</h5>
+  <h5 class="modal-title">
+    <i class="bi bi-gear me-2"></i>Session Settings
+  </h5>
+  <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
 </div>
 <div class="modal-body">
   <form [formGroup]="form">
-    <div class="form-check">
-      <input class="form-check-input" type="checkbox" formControlName="enable" id="sessionEnable">
-      <label class="form-check-label" for="sessionEnable">Enable Session For Public</label>
+    <div class="card mb-3">
+      <div class="card-header">
+        <h6 class="mb-0"><i class="bi bi-eye me-2"></i>Visibility Settings</h6>
+      </div>
+      <div class="card-body">
+        <div class="form-check mb-2">
+          <input class="form-check-input" type="checkbox" formControlName="enable" id="sessionEnable">
+          <label class="form-check-label" for="sessionEnable">
+            <i class="bi bi-globe me-1"></i>Enable Session For Public
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" formControlName="update_content" id="updateContent">
+          <label class="form-check-label" for="updateContent">
+            <i class="bi bi-arrow-repeat me-1"></i>Update Session Content
+          </label>
+        </div>
+      </div>
     </div>
-    <div class="form-check">
-      <input class="form-check-input" type="checkbox" formControlName="update_content" id="updateContent">
-      <label class="form-check-label" for="updateContent">Update Session Content</label>
-    </div>
-    @if (owners.length>0) {
-      <ul>Owners:
-        @for (o of owners; track o.username) {
-          <li>
-            {{o.username}}
-          </li>
-        }
-      </ul>
-    }
 
-    <div class="form-group">
-      <label for="addOwner">Adding Owner</label>
-      <input type="text" id="addOwner" formControlName="additionalOwner" class="form-control">
+    <div class="card mb-3">
+      <div class="card-header">
+        <h6 class="mb-0"><i class="bi bi-people me-2"></i>Owner Management</h6>
+      </div>
+      <div class="card-body">
+        @if (owners.length > 0) {
+          <div class="mb-3">
+            <label class="form-label small text-muted mb-2">Current Owners:</label>
+            <div class="d-flex flex-wrap gap-2">
+              @for (o of owners; track o.username) {
+                <span class="badge bg-primary p-2 d-flex align-items-center">
+                  <i class="bi bi-person-circle me-1"></i>
+                  {{o.username}}
+                  <button
+                    type="button"
+                    class="btn-close btn-close-white ms-2"
+                    style="font-size: 0.65rem;"
+                    (click)="removeOwner(o.username)"
+                    title="Remove owner"></button>
+                </span>
+              }
+            </div>
+          </div>
+        } @else {
+          <p class="text-muted small mb-3">
+            <i class="bi bi-info-circle me-1"></i>No additional owners assigned
+          </p>
+        }
+
+        <div class="form-group">
+          <label for="addOwner" class="form-label">
+            <i class="bi bi-person-plus me-1"></i>Add New Owner
+          </label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-person"></i></span>
+            <input
+              type="text"
+              id="addOwner"
+              formControlName="additionalOwner"
+              class="form-control"
+              placeholder="Enter username">
+            <button
+              class="btn btn-primary"
+              (click)="addOwner()"
+              [disabled]="!form.value['additionalOwner']">
+              <i class="bi bi-plus-lg me-1"></i>Add
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
-    <button class="btn btn-sm btn-primary mt-1" (click)="addOwner()">Add</button>
-    @if (form.value['enable']===false) {
-      <hr>
-      <button class="btn btn-sm btn-primary" (click)="generateTemporarySession()">
-        Generate Temporary Session
-      </button>
-      <div class="input-group mt-2" style="width: 400px">
-        <input type="number" min="1" formControlName="temporary_link_lifetime" class="form-control" id="temporary_lifetime">
-        <label class="input-group-text" for="temporary_lifetime">Link Lifetime (days)</label>
+
+    @if (form.value['enable'] === false || form.value['enable'] === undefined) {
+      <div class="card">
+        <div class="card-header">
+          <h6 class="mb-0"><i class="bi bi-clock-history me-2"></i>Temporary Session</h6>
+        </div>
+        <div class="card-body">
+          <div class="input-group mb-2">
+            <span class="input-group-text">
+              <i class="bi bi-calendar-range"></i>
+            </span>
+            <input
+              type="number"
+              min="1"
+              formControlName="temporary_link_lifetime"
+              class="form-control"
+              id="temporary_lifetime"
+              placeholder="Enter number of days">
+            <span class="input-group-text">days</span>
+          </div>
+          <button class="btn btn-outline-primary w-100" (click)="generateTemporarySession()">
+            <i class="bi bi-link-45deg me-1"></i>Generate Temporary Link
+          </button>
+          @if (temporaryLink !== '') {
+            <div class="mt-3">
+              <label class="form-label small">Generated Link:</label>
+              <div class="input-group">
+                <textarea
+                  rows="3"
+                  disabled
+                  [ngModel]="temporaryLink"
+                  class="form-control font-monospace small"
+                  readonly></textarea>
+                <button
+                  class="btn btn-outline-secondary"
+                  type="button"
+                  (click)="copyTemporaryLink()"
+                  title="Copy to clipboard">
+                  <i class="bi bi-clipboard"></i>
+                </button>
+              </div>
+            </div>
+          }
+        </div>
       </div>
     }
   </form>
-  @if (temporaryLink!=='') {
-    <textarea rows="5" disabled [ngModel]="temporaryLink" class="form-control mt-2" readonly></textarea>
+
+  @if (isUpdating) {
+    <div class="card mt-3">
+      <div class="card-body">
+        <div class="d-flex align-items-center mb-2">
+          <div class="spinner-border spinner-border-sm text-primary me-2" role="status">
+            <span class="visually-hidden">Uploading...</span>
+          </div>
+          <span class="text-primary">Updating session...</span>
+        </div>
+        @if (uploadProgress > 0) {
+          <div class="progress" style="height: 20px;">
+            <div
+              class="progress-bar progress-bar-striped progress-bar-animated"
+              role="progressbar"
+              [style.width.%]="uploadProgress"
+              [attr.aria-valuenow]="uploadProgress"
+              aria-valuemin="0"
+              aria-valuemax="100">
+              {{uploadProgress | number:'1.0-0'}}%
+            </div>
+          </div>
+        }
+      </div>
+    </div>
   }
 </div>
 <div class="modal-footer">
-  <button class="btn btn-primary" (click)="submit()">Update</button>
+  <button class="btn btn-secondary" (click)="modal.dismiss()" [disabled]="isUpdating">Cancel</button>
+  <button class="btn btn-primary" (click)="submit()" [disabled]="isUpdating">
+    @if (isUpdating) {
+      <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+      Updating...
+    } @else {
+      <i class="bi bi-check-lg me-1"></i>Update Settings
+    }
+  </button>
 </div>

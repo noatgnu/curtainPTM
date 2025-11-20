@@ -19,7 +19,11 @@ export class WebService {
     non_user_post: true,
     allow_user_set_permanent: true,
     expiry_duration_options: [1, 3, 6, 12],
-    default_expiry_duration_months: 6
+    default_expiry_duration_months: 6,
+    jwt_access_token_lifetime_minutes: 60,
+    jwt_refresh_token_lifetime_days: 7,
+    jwt_remember_me_access_token_lifetime_days: 30,
+    jwt_remember_me_refresh_token_lifetime_days: 90
   }
   links = new CurtainLink()
   filters: any = {
