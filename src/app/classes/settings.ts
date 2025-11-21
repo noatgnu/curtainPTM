@@ -89,6 +89,8 @@ export class Settings {
     violinPlot: 0,
     profilePlot: 0,
   }
+  chartYAxisLimits: any = {}
+  individualYAxisLimits: any = {}
   violinPointPos: number = -2
   volcanoPlotGrid: any = {
     x: true,
@@ -109,6 +111,7 @@ export class Settings {
   }
 
   volcanoAdditionalShapes: any[] = []
+  volcanoTraceOrder: string[] = []
   volcanoPlotLegendX: number|null = null
   volcanoPlotLegendY: number|null = null
   extraData: {name: string, content: string, type: string}[] = []

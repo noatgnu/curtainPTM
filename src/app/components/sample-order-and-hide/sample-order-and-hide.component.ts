@@ -20,12 +20,24 @@ export class SampleOrderAndHideComponent implements OnInit {
     averageBarChart: 0,
     violinPlot: 0,
   }
+  chartYAxisLimits: any = {
+    barChart: { min: null, max: null },
+    averageBarChart: { min: null, max: null },
+    violinPlot: { min: null, max: null },
+  }
   violinPointPos: number = -2
   batchToggle: any = {}
   constructor(public dataService: DataService, public modal: NgbActiveModal, private settings: SettingsService) {
     for (const c in this.settings.settings.columnSize) {
       if (c in this.columnSize) {
         this.columnSize[c] = this.settings.settings.columnSize[c]
+      }
+    }
+    if (this.settings.settings.chartYAxisLimits) {
+      for (const c in this.settings.settings.chartYAxisLimits) {
+        if (c in this.chartYAxisLimits) {
+          this.chartYAxisLimits[c] = { ...this.settings.settings.chartYAxisLimits[c] }
+        }
       }
     }
     this.violinPointPos = this.settings.settings.violinPointPos
@@ -89,6 +101,9 @@ export class SampleOrderAndHideComponent implements OnInit {
     this.settings.settings.conditionOrder = this.condition
     this.settings.settings.columnSize = this.columnSize
     this.settings.settings.violinPointPos = this.violinPointPos
+    for (const c in this.chartYAxisLimits) {
+      this.settings.settings.chartYAxisLimits[c] = { ...this.chartYAxisLimits[c] }
+    }
     const sampleMap: any = {}
     for (const c of this.condition) {
       for (const s of this.settings.settings.sampleOrder[c]) {

@@ -14,6 +14,7 @@ import {
 import {WebLogoComponent} from "../web-logo/web-logo.component";
 import {ColorByCategoryModalComponent} from "./color-by-category-modal/color-by-category-modal.component";
 import {NearbyPointsModalComponent} from "../nearby-points-modal/nearby-points-modal.component";
+import {ReorderTracesModalComponent} from "./reorder-traces-modal/reorder-traces-modal.component";
 
 @Component({
     selector: 'app-volcano-plot',
@@ -440,7 +441,10 @@ export class VolcanoPlotComponent implements OnInit {
 
       this.graphLayout.shapes = cutOff
     }
-    this.graphData = graphData.reverse()
+
+    const sortedGraphData = this.sortGraphDataByOrder(graphData)
+    this.graphData = sortedGraphData.reverse()
+
     this.graphLayout.annotations = []
     if (this.settings.settings.volcanoPlotYaxisPosition.includes("left")) {
       //this.graphLayout.shapes = []
@@ -1021,7 +1025,6 @@ export class VolcanoPlotComponent implements OnInit {
 
     const ptmParts: string[] = []
 
-    // Handle multiple modifications
     for (let i = 0; i < positions.length; i++) {
       const position = positions[i]
       const positionInPeptide = positionsInPeptide[i] || positionsInPeptide[0]
@@ -1034,5 +1037,38 @@ export class VolcanoPlotComponent implements OnInit {
     }
 
     return ptmParts.join(';')
+  }
+
+  sortGraphDataByOrder(graphData: any[]): any[] {
+    const order = this.settings.settings.volcanoTraceOrder
+    if (!order || order.length === 0) {
+      return graphData
+    }
+
+    const orderedTraces: any[] = []
+    const unorderedTraces: any[] = []
+
+    order.forEach(name => {
+      const trace = graphData.find(t => t.name === name)
+      if (trace) {
+        orderedTraces.push(trace)
+      }
+    })
+
+    graphData.forEach(trace => {
+      if (!orderedTraces.find(t => t.name === trace.name)) {
+        unorderedTraces.push(trace)
+      }
+    })
+
+    return [...orderedTraces, ...unorderedTraces]
+  }
+
+  openReorderTracesModal() {
+    const ref = this.modal.open(ReorderTracesModalComponent, {scrollable: true})
+    ref.componentInstance.traces = [...this.graphData].reverse()
+    ref.closed.subscribe(() => {
+      this.drawVolcano()
+    })
   }
 }

@@ -1,14 +1,14 @@
 <div class="modal-header">
-  <div class="modal-title">
-    Assign Colors by Category
-  </div>
+  <h5 class="modal-title">Assign Colors by Category</h5>
+  <button type="button" class="btn-close" aria-label="Close" (click)="close()"></button>
 </div>
 <div class="modal-body">
   @if (data) {
     <form [formGroup]="form">
-      <div>
-        <label>Categorical value column</label>
-        <select class="form-control" formControlName="selectedColumn">
+      <div class="mb-3">
+        <label class="form-label">Select column with categorical values</label>
+        <select class="form-select" formControlName="selectedColumn">
+          <option value="" disabled>Choose a column...</option>
           @for (o of data.getColumnNames(); track o) {
             <option [value]="o">{{o}}</option>
           }
@@ -17,20 +17,49 @@
     </form>
   }
 
-
-  @for (c of categories; track c) {
-    <div>
-      <div class="form-group">
-        <label for="color{{c}}">Color for {{c}}</label>
-        <input style="width: 200px"  [(ngModel)]="categoryMap[c].color" [(colorPicker)]="categoryMap[c].color" class="form-control" [style.background-color]="categoryMap[c].color" placeholder="Select a color">
-        <small class="text-muted">Count: {{categoryMap[c].count}}</small>
+  @if (categories.length > 0) {
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <span class="text-muted">{{categories.length}} unique categories found</span>
+      <div class="btn-group btn-group-sm">
+        <button type="button" class="btn btn-outline-secondary" (click)="assignSequentialColors()">
+          Reset Colors
+        </button>
+        <button type="button" class="btn btn-outline-secondary" (click)="assignRandomColors()">
+          Random Colors
+        </button>
       </div>
-      <button type="button" class="btn btn-danger" (click)="removeGroup(c)"><i class="bi bi-trash"></i> remove {{c}}</button>
     </div>
 
+    <div class="category-list">
+      @for (cat of categories; track cat.value) {
+        <div class="card mb-2">
+          <div class="card-body p-2">
+            <div class="d-flex align-items-center gap-2">
+              <input
+                type="text"
+                class="form-control form-control-sm color-input"
+                [(ngModel)]="cat.color"
+                [(colorPicker)]="cat.color"
+                [style.background-color]="cat.color">
+              <div class="flex-grow-1">
+                <div class="fw-medium">{{cat.value}}</div>
+                <small class="text-muted">{{cat.count}} items</small>
+              </div>
+              <button type="button" class="btn btn-sm btn-outline-danger" (click)="removeCategory(cat)">
+                <i class="bi bi-x"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  } @else if (selectedColumn) {
+    <div class="alert alert-info">
+      No categories found in the selected column.
+    </div>
   }
 </div>
 <div class="modal-footer">
   <button type="button" class="btn btn-secondary" (click)="close()">Cancel</button>
-  <button type="button" class="btn btn-primary" (click)="submit()">Apply</button>
+  <button type="button" class="btn btn-primary" (click)="submit()" [disabled]="categories.length === 0">Apply</button>
 </div>

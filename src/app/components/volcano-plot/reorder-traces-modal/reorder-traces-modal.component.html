@@ -1,0 +1,50 @@
+<div class="modal-header">
+  <h5 class="modal-title">
+    <i class="bi bi-sort-down me-2"></i>Reorder Volcano Plot Traces
+  </h5>
+  <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+</div>
+
+<div class="modal-body">
+  <div class="alert alert-info">
+    <i class="bi bi-info-circle me-2"></i>
+    Drag traces to reorder them. Traces at the top will be drawn first (appear behind), traces at the bottom will be drawn last (appear in front).
+  </div>
+
+  <div
+    cdkDropList
+    class="trace-list"
+    (cdkDropListDropped)="drop($event)">
+    @for (item of traceItems; track item.name) {
+      <div class="trace-item" cdkDrag>
+        <div class="drag-handle" cdkDragHandle>
+          <i class="bi bi-grip-vertical"></i>
+        </div>
+        <div class="trace-color-indicator" [style.background-color]="item.color"></div>
+        <div class="trace-name">{{ item.name }}</div>
+        <div class="trace-order-number">
+          <span class="badge bg-secondary">{{ $index + 1 }}</span>
+        </div>
+      </div>
+    }
+  </div>
+
+  @if (traceItems.length === 0) {
+    <div class="text-center text-muted py-4">
+      <i class="bi bi-inbox"></i>
+      <p>No traces available to reorder</p>
+    </div>
+  }
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-outline-secondary" (click)="reset()">
+    <i class="bi bi-arrow-counterclockwise me-1"></i>Reset to Default
+  </button>
+  <button type="button" class="btn btn-secondary" (click)="cancel()">
+    Cancel
+  </button>
+  <button type="button" class="btn btn-primary" (click)="save()">
+    <i class="bi bi-check-lg me-1"></i>Apply Order
+  </button>
+</div>

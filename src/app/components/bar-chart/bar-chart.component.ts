@@ -1,12 +1,11 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, computed, DestroyRef, effect, inject, input, OnInit, signal} from '@angular/core';
 import {DataService} from "../../data.service";
 import {Series} from "data-forge";
 import {UniprotService} from "../../uniprot.service";
-import {PlotlyService} from "angular-plotly.js";
 import {WebService} from "../../web.service";
 import {StatsService} from "../../stats.service";
-import {Settings} from "../../classes/settings";
 import {SettingsService} from "../../settings.service";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
     selector: 'app-bar-chart',
@@ -15,7 +14,14 @@ import {SettingsService} from "../../settings.service";
     standalone: false
 })
 export class BarChartComponent implements OnInit {
-  _data: any = {}
+  private destroyRef = inject(DestroyRef)
+
+  data = input<any>()
+
+  _data = signal<any>({})
+  currentPrimaryID = signal<string>("")
+  title = signal<string>("")
+
   uni: any = {}
   comparisons: any[] = []
   conditionA: string = ""
@@ -24,44 +30,61 @@ export class BarChartComponent implements OnInit {
   conditions: string[] = []
   testType: string = "ANOVA"
   iscollapsed: boolean = true
+  isYAxisCollapsed: boolean = true
   config: any = {
     modeBarButtonsToRemove: ["toImage"]
   }
 
-
   barChartErrorType: string = "Standard Error"
 
-  @Input() set data(value: any) {
-    this._data = value.raw
-    if (this._data[this.dataService.rawForm.primaryIDs]) {
-      this.title = "<b>" + this._data[this.dataService.rawForm.primaryIDs] + "</b>"
-      if (this.dataService.fetchUniProt) {
-        this.uni = this.uniprot.getUniprotFromAcc(this._data[this.dataService.rawForm.primaryIDs])
-
-        if (this.uni["Gene Names"] !== "") {
-          this.title = "<b>" + value.position.residue + value.position.position + " "+ this.uni["Gene Names"] + "(" + this._data[this.dataService.rawForm.primaryIDs] + ")" + "</b>"
-        }
-      } else {
-        if (this.dataService.differentialForm.geneNames !== "") {
-          const result = this.dataService.currentDF.where(row => (row[this.dataService.differentialForm.primaryIDs] === this._data[this.dataService.rawForm.primaryIDs])).toArray()
-          if (result.length > 0) {
-            const diffData = result[0]
-            this.title = "<b>" + value.position.residue + value.position.position + " "+ diffData[this.dataService.differentialForm.geneNames] + "(" + this._data[this.dataService.rawForm.primaryIDs] + ")" + "</b>"
+  constructor(
+    public settings: SettingsService,
+    private stats: StatsService,
+    private web: WebService,
+    public dataService: DataService,
+    private uniprot: UniprotService
+  ) {
+    effect(() => {
+      const value = this.data()
+      if (value) {
+        this._data.set(value.raw)
+        const rawData = value.raw
+        if (rawData[this.dataService.rawForm.primaryIDs]) {
+          this.currentPrimaryID.set(rawData[this.dataService.rawForm.primaryIDs])
+          let newTitle = "<b>" + this.currentPrimaryID() + "</b>"
+          if (this.dataService.fetchUniProt) {
+            this.uni = this.uniprot.getUniprotFromAcc(rawData[this.dataService.rawForm.primaryIDs])
+            if (this.uni["Gene Names"] !== "") {
+              newTitle = "<b>" + value.position.residue + value.position.position + " " + this.uni["Gene Names"] + "(" + rawData[this.dataService.rawForm.primaryIDs] + ")" + "</b>"
+            }
+          } else {
+            if (this.dataService.differentialForm.geneNames !== "") {
+              const result = this.dataService.currentDF.where(row => (row[this.dataService.differentialForm.primaryIDs] === rawData[this.dataService.rawForm.primaryIDs])).toArray()
+              if (result.length > 0) {
+                const diffData = result[0]
+                newTitle = "<b>" + value.position.residue + value.position.position + " " + diffData[this.dataService.differentialForm.geneNames] + "(" + rawData[this.dataService.rawForm.primaryIDs] + ")" + "</b>"
+              }
+            } else {
+              newTitle = "<b>" + rawData[this.dataService.rawForm.primaryIDs] + "</b>"
+            }
           }
-        } else {
-          this.title = "<b>" + this._data[this.dataService.rawForm.primaryIDs] + "</b>"
+          this.title.set(newTitle)
+          this.drawBarChart()
+          this.graphLayout["title"] = this.title()
+          this.graphLayoutAverage["title"] = this.title()
+          this.graphLayoutViolin["title"] = this.title()
+          this.drawAverageBarChart()
         }
       }
+    })
 
-
-      this.drawBarChart()
-      this.graphLayout["title"] = this.title
-      this.graphLayoutAverage["title"] = this.title
-      this.graphLayoutViolin["title"] = this.title
-      this.drawAverageBarChart()
-    }
+    this.dataService.redrawTrigger.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(data => {
+      if (data) {
+        this.drawBarChart()
+        this.drawAverageBarChart()
+      }
+    })
   }
-  title = ""
   graph: any = {}
   graphData: any[] = []
   graphLayout: any = {
@@ -123,22 +146,9 @@ export class BarChartComponent implements OnInit {
     },
     margin: {r: 40, l: 100, b: 120, t: 100}
   }
-  constructor(private settings: SettingsService, private stats: StatsService, private web: WebService, public dataService: DataService, private uniprot: UniprotService) {
-    this.dataService.finishedProcessingData.subscribe(data => {
-      if (data) {
-
-      }
-    })
-    this.dataService.redrawTrigger.subscribe(data => {
-      if (data) {
-        this.drawBarChart()
-        this.drawAverageBarChart()
-      }
-    })
-  }
 
   download(type: string) {
-    this.web.downloadPlotlyImage('svg', type+'.svg', this._data[this.dataService.rawForm.primaryIDs]+type).then()
+    this.web.downloadPlotlyImage('svg', type+'.svg', this._data()[this.dataService.rawForm.primaryIDs]+type).then()
   }
 
   ngOnInit(): void {
@@ -173,7 +183,7 @@ export class BarChartComponent implements OnInit {
           }
         }
         graph[condition].x.push(s)
-        graph[condition].y.push(this._data[s])
+        graph[condition].y.push(this._data()[s])
       }
     }
     let currentSampleNumber: number = 0
@@ -215,6 +225,53 @@ export class BarChartComponent implements OnInit {
     }
     this.graphLayout.xaxis.tickvals = tickvals
     this.graphLayout.xaxis.ticktext = ticktext
+
+    this.applyYAxisLimits('barChart', this.graphLayout)
+  }
+
+  setIndividualLimit(chartType: string, limitType: 'min' | 'max', value: any) {
+    const primaryID = this.currentPrimaryID()
+    if (!this.settings.settings.individualYAxisLimits[primaryID]) {
+      this.settings.settings.individualYAxisLimits[primaryID] = {}
+    }
+    if (!this.settings.settings.individualYAxisLimits[primaryID][chartType]) {
+      this.settings.settings.individualYAxisLimits[primaryID][chartType] = { min: null, max: null }
+    }
+    this.settings.settings.individualYAxisLimits[primaryID][chartType][limitType] = value === '' ? null : Number(value)
+    this.drawBarChart()
+    this.drawAverageBarChart()
+  }
+
+  clearIndividualLimits() {
+    delete this.settings.settings.individualYAxisLimits[this.currentPrimaryID()]
+    this.drawBarChart()
+    this.drawAverageBarChart()
+  }
+
+  applyYAxisLimits(chartType: string, layout: any) {
+    const globalLimits = this.settings.settings.chartYAxisLimits?.[chartType]
+    const individualLimits = this.settings.settings.individualYAxisLimits?.[this.currentPrimaryID()]?.[chartType]
+
+    let minY = null
+    let maxY = null
+
+    if (globalLimits) {
+      if (globalLimits.min !== null) minY = globalLimits.min
+      if (globalLimits.max !== null) maxY = globalLimits.max
+    }
+
+    if (individualLimits) {
+      if (individualLimits.min !== null) minY = individualLimits.min
+      if (individualLimits.max !== null) maxY = individualLimits.max
+    }
+
+    if (minY !== null || maxY !== null) {
+      layout.yaxis.range = [minY ?? 0, maxY ?? layout.yaxis.range?.[1] ?? 0]
+      layout.yaxis.autorange = false
+    } else {
+      layout.yaxis.autorange = true
+      delete layout.yaxis.range
+    }
   }
 
   drawAverageBarChart() {
@@ -231,7 +288,7 @@ export class BarChartComponent implements OnInit {
         if (!graph[condition]) {
           graph[condition] = []
         }
-        graph[condition].push(this._data[s])
+        graph[condition].push(this._data()[s])
       }
     }
     for (const g in graph) {
@@ -327,6 +384,9 @@ export class BarChartComponent implements OnInit {
     this.graphLayoutViolin.xaxis.tickvals = tickVals
     this.graphLayoutViolin.xaxis.ticktext = tickText
     this.graphDataViolin = graphViolin
+
+    this.applyYAxisLimits('averageBarChart', this.graphLayoutAverage)
+    this.applyYAxisLimits('violinPlot', this.graphLayoutViolin)
   }
 
   performTest() {
@@ -353,11 +413,10 @@ export class BarChartComponent implements OnInit {
   }
 
   downloadData() {
-    console.log(this._data)
+    const rawData = this._data()
     let data: string = ""
-    data = Object.keys(this._data).join("\t") + "\n"
-    data = data+ Object.values(this._data).join("\t") + "\n"
-
-    this.web.downloadFile(this.title + ".txt", data)
+    data = Object.keys(rawData).join("\t") + "\n"
+    data = data + Object.values(rawData).join("\t") + "\n"
+    this.web.downloadFile(this.title() + ".txt", data)
   }
 }

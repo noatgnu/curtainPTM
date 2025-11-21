@@ -60,6 +60,8 @@ import { EncryptionSettingsComponent } from './components/encryption-settings/en
 import {ToastProgressbarComponent} from "./components/toast-container/toast-progressbar/toast-progressbar.component";
 import {ShapesComponent} from "./components/volcano-plot/shapes/shapes.component";
 import { NearbyPointsModalComponent } from './components/nearby-points-modal/nearby-points-modal.component';
+import {DragDropModule} from '@angular/cdk/drag-drop';
+import {ReorderTracesModalComponent} from './components/volcano-plot/reorder-traces-modal/reorder-traces-modal.component';
 //PlotlyViaCDNModule.setPlotlyVersion('latest');
 //PlotlyViaCDNModule.setPlotlyBundle('basic');
 
@@ -108,7 +110,7 @@ import { NearbyPointsModalComponent } from './components/nearby-points-modal/nea
         UserPtmImportManagementComponent,
         EncryptionSettingsComponent,
         NearbyPointsModalComponent,
-
+        ReorderTracesModalComponent,
     ],
     bootstrap: [AppComponent], imports: [BrowserModule,
         AppRoutingModule,
@@ -129,5 +131,6 @@ import { NearbyPointsModalComponent } from './components/nearby-points-modal/nea
             registrationStrategy: 'registerWhenStable:30000'
         }),
         ToastProgressbarComponent,
-        ShapesComponent], providers: [HttpClient, provideHttpClient(withInterceptorsFromDi()),] })
+        ShapesComponent,
+        DragDropModule], providers: [HttpClient, provideHttpClient(withInterceptorsFromDi()),] })
 export class AppModule { }
