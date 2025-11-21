@@ -15,11 +15,48 @@ export class SampleConditionAssignmentModalComponent implements OnInit {
   formMap: {[key: string]: FormGroup} = {}
   conditions: string[] = []
   sampleMap: {[key: string]: any} = JSON.parse(JSON.stringify(this.settings.settings.sampleMap))
+  selectedSamples: Set<string> = new Set()
+  bulkConditionName: string = ""
+
   constructor(private modal: NgbActiveModal, private settings: SettingsService, private fb: FormBuilder, public dataService: DataService) {
     this.samples = Object.keys(this.sampleMap)
   }
 
   ngOnInit(): void {
+  }
+
+  toggleSampleSelection(sample: string) {
+    if (this.selectedSamples.has(sample)) {
+      this.selectedSamples.delete(sample)
+    } else {
+      this.selectedSamples.add(sample)
+    }
+  }
+
+  selectAll() {
+    this.samples.forEach(s => this.selectedSamples.add(s))
+  }
+
+  deselectAll() {
+    this.selectedSamples.clear()
+  }
+
+  applyBulkCondition() {
+    if (this.bulkConditionName.trim() === '') return
+
+    this.selectedSamples.forEach(sample => {
+      this.sampleMap[sample].condition = this.bulkConditionName.trim()
+    })
+    this.selectedSamples.clear()
+    this.bulkConditionName = ""
+  }
+
+  copyFromAbove(currentIndex: number) {
+    if (currentIndex > 0) {
+      const previousSample = this.samples[currentIndex - 1]
+      const currentSample = this.samples[currentIndex]
+      this.sampleMap[currentSample].condition = this.sampleMap[previousSample].condition
+    }
   }
 
   close() {

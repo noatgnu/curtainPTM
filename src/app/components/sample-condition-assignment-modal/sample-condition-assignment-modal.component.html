@@ -1,22 +1,76 @@
 <div class="modal-header">
   <h5 class="modal-title">
-    Sample and condition assigment
+    Sample and condition assignment
   </h5>
+  <button type="button" class="btn-close" aria-label="Close" (click)="close()"></button>
 </div>
 <div class="modal-body">
-  <table class="table table-striped">
+  <div class="card mb-3">
+    <div class="card-body">
+      <h6 class="card-title">Bulk Assignment</h6>
+      <div class="d-flex gap-2 align-items-center">
+        <button type="button" class="btn btn-sm btn-outline-primary" (click)="selectAll()">
+          Select All
+        </button>
+        <button type="button" class="btn btn-sm btn-outline-secondary" (click)="deselectAll()">
+          Deselect All
+        </button>
+        <div class="vr"></div>
+        <input
+          type="text"
+          class="form-control form-control-sm"
+          [(ngModel)]="bulkConditionName"
+          placeholder="Condition name..."
+          style="max-width: 200px">
+        <button
+          type="button"
+          class="btn btn-sm btn-primary"
+          (click)="applyBulkCondition()"
+          [disabled]="selectedSamples.size === 0 || bulkConditionName.trim() === ''">
+          <i class="bi bi-arrow-right me-1"></i>Apply to Selected ({{selectedSamples.size}})
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <table class="table table-striped table-hover">
     <thead>
     <tr>
+      <th style="width: 40px">
+        <input
+          type="checkbox"
+          class="form-check-input"
+          [checked]="selectedSamples.size === samples.length && samples.length > 0"
+          (change)="selectedSamples.size === samples.length ? deselectAll() : selectAll()">
+      </th>
       <th>Sample</th>
       <th>Condition</th>
+      <th style="width: 100px">Actions</th>
     </tr>
     </thead>
     <tbody>
-    @for (s of samples; track s) {
-      <tr>
+    @for (s of samples; track s; let i = $index) {
+      <tr [class.table-primary]="selectedSamples.has(s)">
+        <td>
+          <input
+            type="checkbox"
+            class="form-check-input"
+            [checked]="selectedSamples.has(s)"
+            (change)="toggleSampleSelection(s)">
+        </td>
         <td><b>{{s}}</b></td>
         <td>
-          <input type="text" [(ngModel)]="sampleMap[s].condition" style="width: 350px" class="form-control">
+          <input type="text" [(ngModel)]="sampleMap[s].condition" class="form-control form-control-sm">
+        </td>
+        <td>
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-secondary"
+            (click)="copyFromAbove(i)"
+            [disabled]="i === 0"
+            title="Copy condition from above">
+            <i class="bi bi-arrow-down"></i>
+          </button>
         </td>
       </tr>
     }
