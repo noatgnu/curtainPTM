@@ -31,6 +31,7 @@ export class AccountsService {
           config.url === this.curtainAPI.userInfoURL ||
           config.url.startsWith(this.curtainAPI.baseURL + "curtain/") ||
           config.url.startsWith(this.curtainAPI.baseURL + "data_filter_list/") ||
+          config.url.startsWith(this.curtainAPI.baseURL + "datacite/") ||
           config.url.startsWith(this.curtainAPI.baseURL + "api_key/") ||
           config.url.startsWith(this.curtainAPI.baseURL + "permanent-link-requests/") ||
           config.url.startsWith(this.curtainAPI.baseURL + "curtain-chunked-upload/") ||
