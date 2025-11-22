@@ -33,7 +33,7 @@ export class ReorderTracesModalComponent implements OnInit {
       name: trace.name,
       color: this.getTraceColor(trace),
       originalIndex: index
-    })).reverse()
+    }))
   }
 
   getTraceColor(trace: any): string {
@@ -48,7 +48,7 @@ export class ReorderTracesModalComponent implements OnInit {
   }
 
   save() {
-    const order = this.traceItems.map(item => item.name).reverse()
+    const order = this.traceItems.map(item => item.name)
     this.settings.settings.volcanoTraceOrder = order
     this.modal.close(order)
   }

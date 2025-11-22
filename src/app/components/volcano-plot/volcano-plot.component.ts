@@ -443,7 +443,11 @@ export class VolcanoPlotComponent implements OnInit {
     }
 
     const sortedGraphData = this.sortGraphDataByOrder(graphData)
-    this.graphData = sortedGraphData.reverse()
+    if (!this.settings.settings.volcanoTraceOrder || this.settings.settings.volcanoTraceOrder.length === 0) {
+      this.graphData = sortedGraphData.reverse()
+    } else {
+      this.graphData = sortedGraphData
+    }
 
     this.graphLayout.annotations = []
     if (this.settings.settings.volcanoPlotYaxisPosition.includes("left")) {
@@ -1066,7 +1070,7 @@ export class VolcanoPlotComponent implements OnInit {
 
   openReorderTracesModal() {
     const ref = this.modal.open(ReorderTracesModalComponent, {scrollable: true})
-    ref.componentInstance.traces = [...this.graphData].reverse()
+    ref.componentInstance.traces = this.graphData
     ref.closed.subscribe(() => {
       this.drawVolcano()
     })
