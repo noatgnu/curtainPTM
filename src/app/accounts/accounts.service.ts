@@ -35,6 +35,7 @@ export class AccountsService {
           config.url.startsWith(this.curtainAPI.baseURL + "api_key/") ||
           config.url.startsWith(this.curtainAPI.baseURL + "permanent-link-requests/") ||
           config.url.startsWith(this.curtainAPI.baseURL + "curtain-chunked-upload/") ||
+          config.url.startsWith(this.curtainAPI.baseURL + "curtain-collections/") ||
           config.url.startsWith(this.curtainAPI.baseURL + "stats/summary/") ||
           config.url.startsWith(this.curtainAPI.baseURL + "job/")) {
           if (this.curtainAPI.user.loginStatus) {
@@ -157,6 +158,88 @@ export class AccountsService {
     return this.curtainAPI.deleteCurtainLink(link_id).then((data: any) => {
       return data
     }).catch((error: any) => {
+      return error
+    })
+  }
+
+  getCollections(page: number = 1, pageSize: number = 20, search: string = '', owned: boolean = false, linkId?: string) {
+    const params: any = {
+      limit: pageSize,
+      offset: (page - 1) * pageSize
+    }
+    if (search) {
+      params.search = search
+    }
+    if (owned) {
+      params.owned = 'true'
+    }
+    if (linkId) {
+      params.link_id = linkId
+    }
+    return this.curtainAPI.axiosInstance.get(this.curtainAPI.baseURL + 'curtain-collections/', {params}).then((response: any) => {
+      return response.data
+    }).catch((error: any) => {
+      this.toast.show("Error", "Failed to load collections.").then()
+      return error
+    })
+  }
+
+  createCollection(name: string, description: string = '') {
+    return this.curtainAPI.axiosInstance.post(this.curtainAPI.baseURL + 'curtain-collections/', {
+      name,
+      description
+    }).then((response: any) => {
+      this.toast.show("Success", "Collection created successfully.").then()
+      return response.data
+    }).catch((error: any) => {
+      this.toast.show("Error", "Failed to create collection.").then()
+      return error
+    })
+  }
+
+  updateCollection(id: number, name: string, description: string = '') {
+    return this.curtainAPI.axiosInstance.patch(this.curtainAPI.baseURL + `curtain-collections/${id}/`, {
+      name,
+      description
+    }).then((response: any) => {
+      this.toast.show("Success", "Collection updated successfully.").then()
+      return response.data
+    }).catch((error: any) => {
+      this.toast.show("Error", "Failed to update collection.").then()
+      return error
+    })
+  }
+
+  deleteCollection(id: number) {
+    return this.curtainAPI.axiosInstance.delete(this.curtainAPI.baseURL + `curtain-collections/${id}/`).then((response: any) => {
+      this.toast.show("Success", "Collection deleted successfully.").then()
+      return response.data
+    }).catch((error: any) => {
+      this.toast.show("Error", "Failed to delete collection.").then()
+      return error
+    })
+  }
+
+  addCurtainToCollection(collectionId: number, linkId: string) {
+    return this.curtainAPI.axiosInstance.post(this.curtainAPI.baseURL + `curtain-collections/${collectionId}/add_curtain/`, {
+      link_id: linkId
+    }).then((response: any) => {
+      this.toast.show("Success", "Session added to collection.").then()
+      return response.data
+    }).catch((error: any) => {
+      this.toast.show("Error", error.response?.data?.error || "Failed to add session to collection.").then()
+      return error
+    })
+  }
+
+  removeCurtainFromCollection(collectionId: number, linkId: string) {
+    return this.curtainAPI.axiosInstance.post(this.curtainAPI.baseURL + `curtain-collections/${collectionId}/remove_curtain/`, {
+      link_id: linkId
+    }).then((response: any) => {
+      this.toast.show("Success", "Session removed from collection.").then()
+      return response.data
+    }).catch((error: any) => {
+      this.toast.show("Error", error.response?.data?.error || "Failed to remove session from collection.").then()
       return error
     })
   }

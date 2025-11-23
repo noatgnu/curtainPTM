@@ -28,6 +28,13 @@ export class AccountsComponent implements OnInit, OnDestroy {
   errorMessage: string = ''
   activeTab: number = 1
 
+  collections: any[] = []
+  collectionsLoading: boolean = false
+  collectionPage: number = 1
+  totalCollections: number = 0
+  collectionSearchQuery: string = ''
+  private readonly COLLECTIONS_PER_PAGE = 20
+
   constructor(
     public accounts: AccountsService, 
     private fb: FormBuilder,
@@ -258,7 +265,98 @@ export class AccountsComponent implements OnInit, OnDestroy {
   }
 
   get allSelected(): boolean {
-    return this.data.results.length > 0 && 
+    return this.data.results.length > 0 &&
            this.data.results.every(item => this.selectedLinks[item.link_id]);
+  }
+
+  onTabChange(tabId: number): void {
+    if (tabId === 2) {
+      this.loadCollections();
+    }
+  }
+
+  async loadCollections(): Promise<void> {
+    try {
+      this.collectionsLoading = true;
+      const response = await this.accounts.getCollections(
+        this.collectionPage,
+        this.COLLECTIONS_PER_PAGE,
+        this.collectionSearchQuery,
+        true
+      );
+      this.collections = response.results || [];
+      this.totalCollections = response.count || 0;
+    } catch (error) {
+      console.error('Failed to load collections:', error);
+    } finally {
+      this.collectionsLoading = false;
+    }
+  }
+
+  searchCollections(): void {
+    this.collectionPage = 1;
+    this.loadCollections();
+  }
+
+  openCreateCollectionModal(): void {
+    const name = prompt('Enter collection name:');
+    if (name && name.trim()) {
+      const description = prompt('Enter collection description (optional):');
+      this.createCollection(name.trim(), description?.trim() || '');
+    }
+  }
+
+  async createCollection(name: string, description: string = ''): Promise<void> {
+    try {
+      this.collectionsLoading = true;
+      await this.accounts.createCollection(name, description);
+      await this.loadCollections();
+    } catch (error) {
+      console.error('Failed to create collection:', error);
+    } finally {
+      this.collectionsLoading = false;
+    }
+  }
+
+  openEditCollectionModal(collection: any): void {
+    const name = prompt('Enter new collection name:', collection.name);
+    if (name && name.trim()) {
+      const description = prompt('Enter new collection description (optional):', collection.description || '');
+      this.updateCollection(collection.id, name.trim(), description?.trim() || '');
+    }
+  }
+
+  async updateCollection(id: number, name: string, description: string = ''): Promise<void> {
+    try {
+      this.collectionsLoading = true;
+      await this.accounts.updateCollection(id, name, description);
+      await this.loadCollections();
+    } catch (error) {
+      console.error('Failed to update collection:', error);
+    } finally {
+      this.collectionsLoading = false;
+    }
+  }
+
+  confirmDeleteCollection(collection: any): void {
+    if (confirm(`Are you sure you want to delete collection "${collection.name}"?`)) {
+      this.deleteCollection(collection.id);
+    }
+  }
+
+  async deleteCollection(id: number): Promise<void> {
+    try {
+      this.collectionsLoading = true;
+      await this.accounts.deleteCollection(id);
+      await this.loadCollections();
+    } catch (error) {
+      console.error('Failed to delete collection:', error);
+    } finally {
+      this.collectionsLoading = false;
+    }
+  }
+
+  viewCollectionSessions(collection: any): void {
+    console.log('Viewing sessions for collection:', collection);
   }
 }

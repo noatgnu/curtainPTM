@@ -29,6 +29,7 @@ export class VolcanoPlotComponent implements OnInit {
   @Output() selected: EventEmitter<selectionData> = new EventEmitter<selectionData>()
   revision: number = 0
   isVolcanoParameterCollapsed: boolean = false
+  isConditionLabelsCollapsed: boolean = true
   _data: any;
   //nameToID: any = {}
   graphData: any[] = []
@@ -481,6 +482,100 @@ export class VolcanoPlotComponent implements OnInit {
     } else {
       this.graphLayout.xaxis.zerolinecolor = "#ffffff"
     }
+    if (this.settings.settings.volcanoConditionLabels.enabled) {
+      const labelY = this.settings.settings.volcanoConditionLabels.yPosition
+
+      if (this.settings.settings.volcanoConditionLabels.leftCondition) {
+        this.graphLayout.annotations.push({
+          text: this.settings.settings.volcanoConditionLabels.leftCondition,
+          xref: 'paper',
+          yref: 'paper',
+          x: this.settings.settings.volcanoConditionLabels.leftX,
+          y: labelY,
+          xanchor: 'center',
+          yanchor: 'top',
+          showarrow: false,
+          font: {
+            size: this.settings.settings.volcanoConditionLabels.fontSize,
+            family: this.settings.settings.plotFontFamily,
+            color: this.settings.settings.volcanoConditionLabels.fontColor
+          }
+        })
+      }
+
+      if (this.settings.settings.volcanoConditionLabels.rightCondition) {
+        this.graphLayout.annotations.push({
+          text: this.settings.settings.volcanoConditionLabels.rightCondition,
+          xref: 'paper',
+          yref: 'paper',
+          x: this.settings.settings.volcanoConditionLabels.rightX,
+          y: labelY,
+          xanchor: 'center',
+          yanchor: 'top',
+          showarrow: false,
+          font: {
+            size: this.settings.settings.volcanoConditionLabels.fontSize,
+            family: this.settings.settings.plotFontFamily,
+            color: this.settings.settings.volcanoConditionLabels.fontColor
+          }
+        })
+      }
+
+      if (this.settings.settings.volcanoConditionLabels.showBracket &&
+          this.settings.settings.volcanoConditionLabels.leftCondition &&
+          this.settings.settings.volcanoConditionLabels.rightCondition) {
+        const bracketY = labelY + this.settings.settings.volcanoConditionLabels.bracketHeight
+        const leftX = this.settings.settings.volcanoConditionLabels.leftX
+        const rightX = this.settings.settings.volcanoConditionLabels.rightX
+
+        if (!this.graphLayout.shapes) {
+          this.graphLayout.shapes = []
+        }
+
+        this.graphLayout.shapes.push(
+          {
+            type: 'line',
+            xref: 'paper',
+            yref: 'paper',
+            x0: leftX,
+            y0: labelY,
+            x1: leftX,
+            y1: bracketY,
+            line: {
+              color: this.settings.settings.volcanoConditionLabels.bracketColor,
+              width: this.settings.settings.volcanoConditionLabels.bracketWidth
+            }
+          },
+          {
+            type: 'line',
+            xref: 'paper',
+            yref: 'paper',
+            x0: leftX,
+            y0: bracketY,
+            x1: rightX,
+            y1: bracketY,
+            line: {
+              color: this.settings.settings.volcanoConditionLabels.bracketColor,
+              width: this.settings.settings.volcanoConditionLabels.bracketWidth
+            }
+          },
+          {
+            type: 'line',
+            xref: 'paper',
+            yref: 'paper',
+            x0: rightX,
+            y0: bracketY,
+            x1: rightX,
+            y1: labelY,
+            line: {
+              color: this.settings.settings.volcanoConditionLabels.bracketColor,
+              width: this.settings.settings.volcanoConditionLabels.bracketWidth
+            }
+          }
+        )
+      }
+    }
+
     for (const i in this.settings.settings.textAnnotation) {
       if (this.settings.settings.textAnnotation[i].showannotation === true) {
         this.annotated[this.settings.settings.textAnnotation[i].title] = this.settings.settings.textAnnotation[i].data
@@ -629,6 +724,36 @@ export class VolcanoPlotComponent implements OnInit {
     ref.componentInstance.closed.subscribe(() => {
       this.drawVolcano()
     })
+  }
+
+  autoAdjustConditionLabels() {
+    const legendY = this.settings.settings.volcanoPlotLegendY || -0.15
+    const labelY = this.settings.settings.volcanoConditionLabels.yPosition
+
+    if (legendY < 0 && labelY < 0 && Math.abs(legendY - labelY) < 0.1) {
+      this.settings.settings.volcanoConditionLabels.yPosition = legendY + 0.1
+      this.drawVolcano()
+    }
+  }
+
+  get availableConditions(): string[] {
+    const conditions = new Set<string>()
+    for (const sample in this.settings.settings.sampleMap) {
+      if (this.settings.settings.sampleMap[sample].condition) {
+        conditions.add(this.settings.settings.sampleMap[sample].condition)
+      }
+    }
+    return Array.from(conditions).sort()
+  }
+
+  selectLeftCondition(condition: string) {
+    this.settings.settings.volcanoConditionLabels.leftCondition = condition
+    this.drawVolcano()
+  }
+
+  selectRightCondition(condition: string) {
+    this.settings.settings.volcanoConditionLabels.rightCondition = condition
+    this.drawVolcano()
   }
 
   openNearbyPointsModal(clickEvent: any) {

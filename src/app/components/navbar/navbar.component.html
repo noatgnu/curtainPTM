@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top shadow-sm">
+<nav class="navbar navbar-expand-lg navbar-light fixed-top shadow-sm" style="background-color: rgba(248, 249, 250, 0.95); backdrop-filter: blur(10px);">
   <div class="container-fluid">
     <a class="navbar-brand fw-bold" href="#">Curtain<span class="text-danger">PTM</span></a>
     @if (finished && settings.settings.currentID !== '') {
@@ -129,6 +129,41 @@
         </div>
       }
 
+      @if (sessionCollections.length > 0) {
+        <div class="me-2">
+          <div display="dynamic" ngbDropdown>
+            <button class="btn btn-outline-primary" id="dropdownCollections" ngbDropdownToggle>
+              <i class="bi bi-folder2-open"></i>
+              @if (selectedCollection) {
+                {{selectedCollection.name}}
+              } @else {
+                Collections
+              }
+              <span class="badge bg-info ms-1">{{sessionCollections.length}}</span>
+            </button>
+            <div ngbDropdownMenu aria-labelledby="dropdownCollections" class="dropdown-menu-end">
+              <h6 class="dropdown-header">
+                <i class="bi bi-folder2-open me-2"></i>Select Collection
+              </h6>
+              @for (collection of sessionCollections; track collection.id) {
+                <button
+                  ngbDropdownItem
+                  (click)="selectCollection(collection.id)"
+                  [class.active]="selectedCollectionId === collection.id">
+                  <i class="bi bi-check2 me-2" [class.invisible]="selectedCollectionId !== collection.id"></i>
+                  {{collection.name}}
+                  <span class="badge bg-info ms-2">{{collection.curtain_count}}</span>
+                </button>
+              }
+              <div class="dropdown-divider"></div>
+              <button ngbDropdownItem (click)="openCollectionSessionsModal()">
+                <i class="bi bi-eye me-2"></i>View Sessions in Collection
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+
       <div>
         <div display="dynamic" ngbDropdown>
           <button class="btn btn-outline-primary" id="dropdownSession" ngbDropdownToggle>
@@ -163,6 +198,11 @@
                 @if (accounts.curtainAPI.user.loginStatus && data.session && !data.session.permanent) {
                   <button ngbDropdownItem (click)="openPermanentLinkRequestModal()">
                     <i class="bi bi-clock-history me-1"></i>Request Session Change
+                  </button>
+                }
+                @if (accounts.curtainAPI.user.loginStatus && data.session) {
+                  <button ngbDropdownItem (click)="openCollectionManagementModal()">
+                    <i class="bi bi-folder2-open me-1"></i>Manage Collections
                   </button>
                 }
               } @else {

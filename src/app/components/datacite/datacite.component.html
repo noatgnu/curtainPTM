@@ -1,4 +1,4 @@
-<div class="modal-header bg-light">
+<div class="modal-header ">
   <h5 class="modal-title d-flex align-items-center gap-2">
     DOI Registration
     @if(lock) {<span class="badge bg-secondary"><i class="bi bi-lock me-1"></i>Locked</span>}
@@ -53,7 +53,7 @@
   <form [formGroup]="dataCiteForm" class="needs-validation">
     <!-- DOI Information section -->
     <div class="card mb-3">
-      <div class="card-header bg-light d-flex justify-content-between align-items-center">
+      <div class="card-header  d-flex justify-content-between align-items-center">
         <h5 class="mb-0 d-flex align-items-center">
           <i class="bi bi-fingerprint me-2"></i>DOI Information
         </h5>
@@ -86,7 +86,7 @@
     </div>
 
     <div class="card mb-3">
-      <div class="card-header bg-light d-flex justify-content-between align-items-center">
+      <div class="card-header  d-flex justify-content-between align-items-center">
         <h5 class="mb-0 d-flex align-items-center">
           <i class="bi bi-people-fill me-2"></i>Creators
           <span class="badge bg-primary ms-2 rounded-pill">{{dataCiteForm.controls.creators.controls.length}}</span>
@@ -102,7 +102,7 @@
           <div class="d-flex flex-column gap-3" formArrayName="creators">
             @for (c of dataCiteForm.controls.creators.controls; track c; let index = $index) {
               <div class="card border-light">
-                <div class="card-header bg-light d-flex justify-content-between">
+                <div class="card-header  d-flex justify-content-between">
                   <h6 class="mb-0">Creator #{{index+1}}</h6>
                   <button class="btn btn-sm btn-outline-danger" (click)="removeCreator(index)">
                     <i class="bi bi-trash me-1"></i>Remove
@@ -149,7 +149,7 @@
                     <h6 class="mb-2">Creator's Affiliations</h6>
                     @for (a of c.controls.affiliation.controls; track a; let affIndex = $index) {
                       <div class="card mb-3">
-                        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                        <div class="card-header  d-flex justify-content-between align-items-center">
                           <span>Affiliation #{{affIndex+1}}</span>
                           @if (affIndex > 0) {
                             <button class="btn btn-sm btn-outline-danger" (click)="removeAffiliation('creators', index, affIndex)">
@@ -215,7 +215,7 @@
       </div>
     </div>
     <div class="card mb-3">
-      <div class="card-header bg-light d-flex justify-content-between align-items-center">
+      <div class="card-header  d-flex justify-content-between align-items-center">
         <h5 class="mb-0 d-flex align-items-center">
           <i class="bi bi-card-heading me-2"></i>Title
         </h5>
@@ -249,7 +249,7 @@
     </div>
     <hr>
     <div class="card mb-3">
-      <div class="card-header bg-light d-flex justify-content-between align-items-center">
+      <div class="card-header  d-flex justify-content-between align-items-center">
         <h5 class="mb-0 d-flex align-items-center">
           <i class="bi bi-journal-check me-2"></i>Publishing Information
         </h5>
@@ -294,7 +294,7 @@
       </div>
     </div>
     <div class="card mb-3">
-      <div class="card-header bg-light d-flex justify-content-between align-items-center">
+      <div class="card-header  d-flex justify-content-between align-items-center">
         <h5 class="mb-0 d-flex align-items-center">
           <i class="bi bi-tag me-2"></i>Related Subjects
           <span class="badge bg-primary ms-2 rounded-pill">{{dataCiteForm.controls.subjects.controls.length}}</span>
@@ -336,7 +336,7 @@
       </div>
     </div>
     <div class="card mb-3">
-      <div class="card-header bg-light d-flex justify-content-between align-items-center">
+      <div class="card-header  d-flex justify-content-between align-items-center">
         <h5 class="mb-0 d-flex align-items-center">
           <i class="bi bi-file-earmark-text me-2"></i>Rights and Licensing
         </h5>
@@ -370,7 +370,7 @@
     </div>
     <hr>
     <div class="card mb-3">
-      <div class="card-header bg-light d-flex justify-content-between align-items-center">
+      <div class="card-header  d-flex justify-content-between align-items-center">
         <h5 class="mb-0 d-flex align-items-center">
           <i class="bi bi-people me-2"></i>Contributors
           <span class="badge bg-primary ms-2 rounded-pill">{{dataCiteForm.controls.contributors.controls.length}}</span>
@@ -386,7 +386,7 @@
           <div class="d-flex flex-column gap-3" formArrayName="contributors">
             @for (c of dataCiteForm.controls.contributors.controls; track c; let index = $index) {
               <div class="card border-light">
-                <div class="card-header bg-light d-flex justify-content-between">
+                <div class="card-header  d-flex justify-content-between">
                   <h6 class="mb-0">Contributor #{{index+1}}</h6>
                   <button class="btn btn-sm btn-outline-danger" (click)="removeContributor(index)">
                     <i class="bi bi-trash me-1"></i>Remove
@@ -435,7 +435,7 @@
                     @for (a of c.controls.affiliation.controls; track a; let affIndex = $index) {
                       <!-- Similar structure to creator affiliations -->
                       <div class="card mb-3">
-                        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                        <div class="card-header  d-flex justify-content-between align-items-center">
                           <span>Affiliation #{{affIndex+1}}</span>
                           @if (affIndex > 0) {
                             <button class="btn btn-sm btn-outline-danger" (click)="removeAffiliation('contributors', index, affIndex)">
@@ -499,7 +499,7 @@
       </div>
     </div>
     <div class="card mb-3">
-      <div class="card-header bg-light d-flex justify-content-between align-items-center">
+      <div class="card-header  d-flex justify-content-between align-items-center">
         <h5 class="mb-0 d-flex align-items-center">
           <i class="bi bi-key me-2"></i>Alternate Identifiers
           <span class="badge bg-primary ms-2 rounded-pill">{{dataCiteForm.controls.alternateIdentifiers.controls.length}}</span>
@@ -515,7 +515,7 @@
           <div class="d-flex flex-column gap-3" formArrayName="alternateIdentifiers">
             @for (a of dataCiteForm.controls.alternateIdentifiers.controls; track a; let index = $index) {
               <div class="card border-light">
-                <div class="card-header bg-light d-flex justify-content-between">
+                <div class="card-header  d-flex justify-content-between">
                   <h6 class="mb-0">Alternate Identifier #{{index+1}}</h6>
                   @if (index > 0) {
                     <button class="btn btn-sm btn-outline-danger" (click)="removeAlternateIdentifier(index)">
@@ -528,7 +528,7 @@
                     <div class="col-md-6">
                       <label for="alternateId{{index}}" class="form-label">Alternate Identifier</label>
                       @if (index === 0) {
-                        <input id="alternateId{{index}}" class="form-control bg-light" formControlName="alternateIdentifier" readonly>
+                        <input id="alternateId{{index}}" class="form-control " formControlName="alternateIdentifier" readonly>
                         <div class="form-text">Direct data access URL (automatically set)</div>
                       } @else {
                         <input id="alternateId{{index}}" class="form-control" formControlName="alternateIdentifier" required>
@@ -538,7 +538,7 @@
                     <div class="col-md-6">
                       <label for="alternateIdType{{index}}" class="form-label">Alternate Identifier Type</label>
                       @if (index === 0) {
-                        <input id="alternateIdType{{index}}" class="form-control bg-light" formControlName="alternateIdentifierType" readonly>
+                        <input id="alternateIdType{{index}}" class="form-control " formControlName="alternateIdentifierType" readonly>
                       } @else {
                         <select id="alternateIdType{{index}}" class="form-select" formControlName="alternateIdentifierType" required>
                           <option value="">Select Type</option>
@@ -564,7 +564,7 @@
       </div>
     </div>
     <div class="card mb-3">
-      <div class="card-header bg-light d-flex justify-content-between align-items-center">
+      <div class="card-header  d-flex justify-content-between align-items-center">
         <h5 class="mb-0 d-flex align-items-center">
           <i class="bi bi-link-45deg me-2"></i>Related Identifiers
           <span class="badge bg-primary ms-2 rounded-pill">{{dataCiteForm.controls.relatedIdentifiers.controls.length}}</span>
@@ -580,7 +580,7 @@
           <div class="d-flex flex-column gap-3" formArrayName="relatedIdentifiers">
             @for (r of dataCiteForm.controls.relatedIdentifiers.controls; track r; let index = $index) {
               <div class="card border-light">
-                <div class="card-header bg-light d-flex justify-content-between">
+                <div class="card-header  d-flex justify-content-between">
                   <h6 class="mb-0">Related Resource #{{index+1}}</h6>
                   <button class="btn btn-sm btn-outline-danger" (click)="removeRelatedIdentifier(index)">
                     <i class="bi bi-trash me-1"></i>Remove
@@ -663,7 +663,7 @@
       </div>
     </div>
     <div class="card mb-3">
-      <div class="card-header bg-light d-flex justify-content-between align-items-center">
+      <div class="card-header  d-flex justify-content-between align-items-center">
         <h5 class="mb-0 d-flex align-items-center">
           <i class="bi bi-card-text me-2"></i>Descriptions
           <span class="badge bg-primary ms-2 rounded-pill">{{dataCiteForm.controls.descriptions.controls.length}}</span>
@@ -679,7 +679,7 @@
           <div class="d-flex flex-column gap-3" formArrayName="descriptions">
             @for (d of dataCiteForm.controls.descriptions.controls; track d; let index = $index) {
               <div class="card border-light">
-                <div class="card-header bg-light d-flex justify-content-between">
+                <div class="card-header  d-flex justify-content-between">
                   <h6 class="mb-0">Description #{{index+1}}</h6>
                   <button class="btn btn-sm btn-outline-danger" (click)="removeDescription(index)">
                     <i class="bi bi-trash me-1"></i>Remove
@@ -718,7 +718,7 @@
       </div>
     </div>
     <div class="card mb-3">
-      <div class="card-header bg-light d-flex justify-content-between align-items-center">
+      <div class="card-header  d-flex justify-content-between align-items-center">
         <h5 class="mb-0 d-flex align-items-center">
           <i class="bi bi-cash-coin me-2"></i>Funding References
           <span class="badge bg-primary ms-2 rounded-pill">{{dataCiteForm.controls.fundingReferences.controls.length}}</span>
@@ -733,7 +733,7 @@
           <div class="d-flex flex-column gap-3" formArrayName="fundingReferences">
             @for (f of dataCiteForm.controls.fundingReferences.controls; track f; let index = $index) {
               <div class="card border-light">
-                <div class="card-header bg-light d-flex justify-content-between">
+                <div class="card-header  d-flex justify-content-between">
                   <h6 class="mb-0">Funding Reference #{{index+1}}</h6>
                   <button class="btn btn-sm btn-outline-danger" (click)="removeFundingReference(index)">
                     <i class="bi bi-trash me-1"></i>Remove
@@ -815,7 +815,7 @@
       </div>
     </div>
     <div class="card mb-3">
-      <div class="card-header bg-light d-flex justify-content-between align-items-center">
+      <div class="card-header  d-flex justify-content-between align-items-center">
         <h5 class="mb-0 d-flex align-items-center">
           <i class="bi bi-info-circle me-2"></i>Additional Required Information
         </h5>
@@ -854,7 +854,7 @@
   <div class="container-fluid p-0">
     @if (accountsService.isOwner) {
       <form [formGroup]="form_additional_data" class="mb-3">
-        <div class="card bg-light">
+        <div class="card ">
           <div class="card-body">
             <h6 class="mb-2">Publication Confirmations</h6>
             <div class="form-check mb-2">

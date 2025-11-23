@@ -28,11 +28,18 @@ import {UserPtmImportManagementComponent} from "../user-ptm-import-management/us
 import {EncryptionSettingsComponent} from "../encryption-settings/encryption-settings.component";
 import {CurtainEncryption, saveToLocalStorage, replacer, Announcement} from "curtain-web-api";
 import {PrimaryIdExportModalComponent} from "../primary-id-export-modal/primary-id-export-modal.component";
+import {AreYouSureClearModalComponent} from "../are-you-sure-clear-modal/are-you-sure-clear-modal.component";
 import {LogFileModalComponent} from "../log-file-modal/log-file-modal.component";
 import {DataCiteCurtain} from "../../data-cite-metadata";
 import {DataciteAdminManagementComponent} from "../datacite-admin-management/datacite-admin-management.component";
 import {DataciteComponent} from "../datacite/datacite.component";
 import {PermanentLinkRequestModalComponent} from "../permanent-link-request-modal/permanent-link-request-modal.component";
+import {
+  CollectionManagementModalComponent
+} from "../collection-management-modal/collection-management-modal.component";
+import {
+  CollectionSessionsViewerModalComponent
+} from "../collection-sessions-viewer-modal/collection-sessions-viewer-modal.component";
 
 @Component({
     selector: 'app-navbar',
@@ -56,6 +63,10 @@ export class NavbarComponent implements OnInit {
   currentAnnouncement = signal<Announcement | null>(null);
   dismissedAnnouncementIds: Set<number> = this.loadDismissedAnnouncements()
   GDPR = signal(false);
+
+  sessionCollections: any[] = []
+  selectedCollectionId: number | null = null
+  loadingCollections: boolean = false
 
   constructor(
     public web: WebService,
@@ -90,6 +101,15 @@ export class NavbarComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadAnnouncements()
+    if (this.data.session && this.data.session.link_id) {
+      this.loadSessionCollections(this.data.session.link_id)
+    }
+  }
+
+  ngOnChanges(): void {
+    if (this.data.session && this.data.session.link_id) {
+      this.loadSessionCollections(this.data.session.link_id)
+    }
   }
 
   loadAnnouncements() {
@@ -288,15 +308,62 @@ export class NavbarComponent implements OnInit {
     this.data.uploadProgress.next(progressEvent.progress * 100)
   }
   clearSelections() {
-    //this.data.clear()
-    this.data.selected = []
-    this.data.selectedGenes = []
-    this.data.selectedMap = {}
-    this.data.selectOperationNames = []
-    this.data.selectedAccessions = []
-    this.settings.settings.textAnnotation = {}
-    this.data.annotatedData = {}
-    this.data.dataClear.next(true)
+    const rememberClearSettings = localStorage.getItem("curtainRememberClearSettings")
+    if (rememberClearSettings === "true") {
+      const savedSettings = localStorage.getItem('curtainClearSettingsSelection')
+      let settingsToClear: {[key: string]: boolean} = {}
+      if (savedSettings) {
+        try {
+          settingsToClear = JSON.parse(savedSettings)
+        } catch (e) {
+          console.error('Failed to parse saved clear settings:', e)
+        }
+      }
+      if (settingsToClear['selections']) {
+        this.data.selected = []
+        this.data.selectedGenes = []
+        this.data.selectedAccessions = []
+      }
+      if (settingsToClear['selectionOperations']) {
+        this.data.selectedMap = {}
+        this.data.selectOperationNames = []
+      }
+      if (settingsToClear['textAnnotation']) {
+        this.settings.settings.textAnnotation = {}
+      }
+      if (settingsToClear['volcanoShapes']) {
+        this.settings.settings.volcanoAdditionalShapes = []
+      }
+      if (settingsToClear['annotatedData']) {
+        this.data.annotatedData = {}
+      }
+      this.data.dataClear.next(true)
+    } else {
+      const ref = this.modal.open(AreYouSureClearModalComponent)
+      ref.closed.subscribe(data => {
+        if (data) {
+          if (data.selections) {
+            this.data.selected = []
+            this.data.selectedGenes = []
+            this.data.selectedAccessions = []
+          }
+          if (data.selectionOperations) {
+            this.data.selectedMap = {}
+            this.data.selectOperationNames = []
+          }
+          if (data.textAnnotation) {
+            this.settings.settings.textAnnotation = {}
+          }
+          if (data.volcanoShapes) {
+            this.settings.settings.volcanoAdditionalShapes = []
+          }
+          if (data.annotatedData) {
+            this.data.annotatedData = {}
+          }
+          this.data.dataClear.next(true)
+        }
+      })
+    }
   }
 
   scrollTo() {
@@ -486,6 +553,59 @@ export class NavbarComponent implements OnInit {
     const ref = this.modal.open(PermanentLinkRequestModalComponent, {scrollable: true, size: "lg"})
     if (this.data.session) {
       ref.componentInstance.curtainId = this.data.session.id
+    }
+  }
+
+  openCollectionManagementModal() {
+    if (this.data.session && this.data.session.link_id) {
+      const ref = this.modal.open(CollectionManagementModalComponent, {size: "lg", scrollable: true})
+      ref.componentInstance.linkId = this.data.session.link_id
+    }
+  }
+
+  async loadSessionCollections(linkId: string): Promise<void> {
+    if (!linkId) return
+
+    try {
+      this.loadingCollections = true
+      const response = await this.accounts.getCollections(1, 100, '', false, linkId)
+      this.sessionCollections = response.results || []
+
+      if (this.sessionCollections.length > 0) {
+        const savedCollectionId = localStorage.getItem('selectedCollectionId')
+        if (savedCollectionId) {
+          const found = this.sessionCollections.find(c => c.id === parseInt(savedCollectionId))
+          this.selectedCollectionId = found ? found.id : this.sessionCollections[0].id
+        } else {
+          this.selectedCollectionId = this.sessionCollections[0].id
+        }
+        localStorage.setItem('selectedCollectionId', this.selectedCollectionId!.toString())
+      } else {
+        this.selectedCollectionId = null
+        localStorage.removeItem('selectedCollectionId')
+      }
+    } catch (error) {
+      console.error('Failed to load session collections:', error)
+      this.sessionCollections = []
+      this.selectedCollectionId = null
+    } finally {
+      this.loadingCollections = false
+    }
+  }
+
+  selectCollection(collectionId: number): void {
+    this.selectedCollectionId = collectionId
+    localStorage.setItem('selectedCollectionId', collectionId.toString())
+  }
+
+  get selectedCollection(): any {
+    return this.sessionCollections.find(c => c.id === this.selectedCollectionId)
+  }
+
+  openCollectionSessionsModal(): void {
+    if (this.selectedCollectionId) {
+      const ref = this.modal.open(CollectionSessionsViewerModalComponent, {size: "lg", scrollable: true})
+      ref.componentInstance.collectionId = this.selectedCollectionId
     }
   }
 }

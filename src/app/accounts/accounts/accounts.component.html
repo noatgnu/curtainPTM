@@ -9,7 +9,7 @@
     </div>
   }
 
-  <ul ngbNav #nav="ngbNav" [(activeId)]="activeTab" class="nav-tabs mb-3">
+  <ul ngbNav #nav="ngbNav" [(activeId)]="activeTab" (activeIdChange)="onTabChange($event)" class="nav-tabs mb-3">
     <li [ngbNavItem]="1">
       <button ngbNavLink>
         <i class="bi bi-collection me-1"></i>Sessions
@@ -271,6 +271,94 @@
       </ng-template>
     </li>
     <li [ngbNavItem]="2">
+      <button ngbNavLink>
+        <i class="bi bi-folder2-open me-1"></i>Collections
+      </button>
+      <ng-template ngbNavContent>
+        @if (collectionsLoading) {
+          <div class="d-flex justify-content-center align-items-center py-5">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        }
+        <div class="card mb-3 shadow-sm">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h6 class="card-subtitle mb-0 text-muted">Manage Collections</h6>
+              <button class="btn btn-primary btn-sm" (click)="openCreateCollectionModal()" [disabled]="collectionsLoading">
+                <i class="bi bi-plus-circle me-1"></i>Create Collection
+              </button>
+            </div>
+            <div class="input-group mb-3">
+              <span class="input-group-text"><i class="bi bi-search"></i></span>
+              <input
+                type="text"
+                [(ngModel)]="collectionSearchQuery"
+                (ngModelChange)="searchCollections()"
+                class="form-control"
+                placeholder="Search collections by name or description..."
+                [disabled]="collectionsLoading">
+            </div>
+          </div>
+        </div>
+        @if (collections.length > 0) {
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <small class="text-muted">{{totalCollections}} Total Collections</small>
+            <ngb-pagination
+              [collectionSize]="totalCollections"
+              [(page)]="collectionPage"
+              [maxSize]="5"
+              [boundaryLinks]="true"
+              [size]="'sm'"
+              [disabled]="collectionsLoading"
+              (pageChange)="loadCollections()">
+            </ngb-pagination>
+          </div>
+          <div class="row g-3">
+            @for (collection of collections; track collection.id) {
+              <div class="col-md-6">
+                <div class="card h-100 shadow-sm">
+                  <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                      <h6 class="card-title mb-0">{{collection.name}}</h6>
+                      <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-primary" (click)="openEditCollectionModal(collection)" [disabled]="collectionsLoading">
+                          <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-outline-danger" (click)="confirmDeleteCollection(collection)" [disabled]="collectionsLoading">
+                          <i class="bi bi-trash"></i>
+                        </button>
+                      </div>
+                    </div>
+                    @if (collection.description) {
+                      <p class="card-text text-muted small">{{collection.description}}</p>
+                    }
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                      <span class="badge bg-info text-dark">
+                        <i class="bi bi-collection me-1"></i>{{collection.curtain_count}} Sessions
+                      </span>
+                      <button class="btn btn-sm btn-outline-primary" (click)="viewCollectionSessions(collection)" [disabled]="collectionsLoading">
+                        <i class="bi bi-eye me-1"></i>View Sessions
+                      </button>
+                    </div>
+                    <div class="text-muted small mt-2">
+                      <i class="bi bi-calendar3 me-1"></i>Updated: {{collection.updated | date:'short'}}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="text-center py-5">
+            <i class="bi bi-folder2-open display-1 text-muted"></i>
+            <p class="text-muted mt-3">No collections found. Create your first collection!</p>
+          </div>
+        }
+      </ng-template>
+    </li>
+    <li [ngbNavItem]="3">
       <button ngbNavLink>
         <i class="bi bi-list-ul me-1"></i>Data Filter Lists
       </button>

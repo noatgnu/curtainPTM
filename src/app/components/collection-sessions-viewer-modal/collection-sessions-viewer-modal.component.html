@@ -1,0 +1,81 @@
+<div class="modal-header">
+  <h5 class="modal-title">
+    <i class="bi bi-folder2-open me-2"></i>
+    @if (collection) {
+      {{collection.name}} - Sessions
+    } @else {
+      Collection Sessions
+    }
+  </h5>
+  <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss()"></button>
+</div>
+<div class="modal-body">
+  @if (isLoading) {
+    <div class="d-flex justify-content-center align-items-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  }
+
+  @if (collection && !isLoading) {
+    <div class="card mb-3 shadow-sm">
+      <div class="card-body">
+        <h6 class="card-subtitle mb-2 text-muted">Collection Details</h6>
+        @if (collection.description) {
+          <p class="mb-2">{{collection.description}}</p>
+        }
+        <div class="d-flex gap-2">
+          <span class="badge bg-info text-dark">
+            <i class="bi bi-collection me-1"></i>{{sessions.length}} Sessions
+          </span>
+          <span class="badge bg-secondary">
+            <i class="bi bi-person me-1"></i>Owner: {{collection.owner_username}}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    @if (sessions.length > 0) {
+      <div class="list-group">
+        @for (session of sessions; track session.link_id) {
+          <div class="list-group-item">
+            <div class="d-flex justify-content-between align-items-start">
+              <div class="flex-grow-1">
+                <div class="d-flex align-items-center mb-2">
+                  <a href="{{base}}/#/{{session.link_id}}" target="_blank" class="text-decoration-none me-2">
+                    <i class="bi bi-box-arrow-up-right me-1"></i>
+                    <strong>{{session.link_id}}</strong>
+                  </a>
+                  @if (session.enable) {
+                    <span class="badge bg-success">
+                      <i class="bi bi-unlock me-1"></i>Public
+                    </span>
+                  } @else {
+                    <span class="badge bg-secondary">
+                      <i class="bi bi-lock me-1"></i>Private
+                    </span>
+                  }
+                </div>
+                @if (session.description) {
+                  <div [innerHTML]="session.description" class="text-muted small"></div>
+                }
+                <div class="text-muted small mt-2">
+                  <i class="bi bi-calendar3 me-1"></i>Created: {{session.created | date:'short'}}
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="text-center py-5">
+        <i class="bi bi-inbox display-1 text-muted"></i>
+        <p class="text-muted mt-3">No sessions in this collection</p>
+      </div>
+    }
+  }
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="activeModal.close()">Close</button>
+</div>

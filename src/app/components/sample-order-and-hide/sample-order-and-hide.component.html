@@ -67,6 +67,36 @@
       </div>
     </div>
   </div>
+  <div class="card mb-3">
+    <div class="card-header">Condition Bracket on Bar Charts</div>
+    <div class="card-body">
+      <div class="form-check mb-3">
+        <input type="checkbox" class="form-check-input" id="showBracketModal" [(ngModel)]="settings.settings.barChartConditionBracket.showBracket">
+        <label class="form-check-label" for="showBracketModal">
+          Show connecting bracket between conditions
+        </label>
+        <small class="text-muted d-block mt-1">
+          Uses conditions set in Volcano Plot settings
+        </small>
+      </div>
+
+      <div class="row g-2 mb-2">
+        <div class="col-md-4">
+          <label for="bracketHeightModal" class="form-label">Bracket Height</label>
+          <input id="bracketHeightModal" type="number" step="0.01" min="0" max="0.2" class="form-control form-control-sm" [(ngModel)]="settings.settings.barChartConditionBracket.bracketHeight">
+          <small class="text-muted">Distance above condition line</small>
+        </div>
+        <div class="col-md-4">
+          <label for="bracketWidthModal" class="form-label">Bracket Line Width</label>
+          <input id="bracketWidthModal" type="number" min="1" max="5" class="form-control form-control-sm" [(ngModel)]="settings.settings.barChartConditionBracket.bracketWidth">
+        </div>
+        <div class="col-md-4">
+          <label for="bracketColorModal" class="form-label">Bracket Color</label>
+          <input id="bracketColorModal" type="color" class="form-control form-control-sm form-control-color" [(ngModel)]="settings.settings.barChartConditionBracket.bracketColor">
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="row">
     <div class="col-4">
       <b>Sample Order</b>

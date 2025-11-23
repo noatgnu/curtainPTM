@@ -27,7 +27,7 @@ export class SampleOrderAndHideComponent implements OnInit {
   }
   violinPointPos: number = -2
   batchToggle: any = {}
-  constructor(public dataService: DataService, public modal: NgbActiveModal, private settings: SettingsService) {
+  constructor(public dataService: DataService, public modal: NgbActiveModal, public settings: SettingsService) {
     for (const c in this.settings.settings.columnSize) {
       if (c in this.columnSize) {
         this.columnSize[c] = this.settings.settings.columnSize[c]

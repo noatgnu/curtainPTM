@@ -35,6 +35,22 @@ export class Settings {
     ticklenX: 5,
     ticklenY: 5,
   }
+  volcanoConditionLabels: any = {
+    enabled: false,
+    leftCondition: "",
+    rightCondition: "",
+    leftX: 0.25,
+    rightX: 0.75,
+    yPosition: -0.1,
+    fontSize: 14,
+    fontColor: '#000000',
+  }
+  barChartConditionBracket: any = {
+    showBracket: false,
+    bracketHeight: 0.05,
+    bracketColor: '#000000',
+    bracketWidth: 2,
+  }
   barchartColorMap: any = {}
   textAnnotation: any = {}
   volcanoPlotTitle: string = ""
