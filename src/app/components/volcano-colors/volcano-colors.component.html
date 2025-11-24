@@ -1,62 +1,93 @@
 <div class="modal-header">
-  Volcano Plot Marker Color Selector
+  <h5 class="modal-title">
+    <i class="bi bi-palette me-2"></i>Plot Marker Color Selector
+  </h5>
+  <button type="button" class="btn-close" aria-label="Close" (click)="closeModal()"></button>
 </div>
 <div class="modal-body">
-  <table class="table">
-    <thead>
-    <tr>
-      <th scope="col">
-        Name
-      </th>
-      <th scope="col">
-        Color
-      </th>
-      <th scope="col">
-        Mark for remove
-      </th>
-    </tr>
-    </thead>
-    <tbody>
-    @for (c of colorGroups; track c.group) {
-      <tr>
-        <td>
-          <label for="{{c.group}}id" class="col-9">{{c.group}}</label>
-        </td>
-        <td>
-          <input id="{{c.group}}id" class="col-3 form-control" [(colorPicker)]="c.color" [style.background]="c.color">
-        </td>
-        <td>
-          <input type="checkbox" class="form-check-input" [(ngModel)]="c.remove">
-        </td>
-      </tr>
-    }
-    </tbody>
-  </table>
+  <div class="alert alert-info" role="alert">
+    <i class="bi bi-info-circle me-2"></i>
+    <strong>Customize colors</strong> for each data group in your volcano plot. Changes apply to all plot markers.
+  </div>
 
-  <div class="mt-2">
-    <form [formGroup]="form">
-      <textarea placeholder="Enter color array string" formControlName="colors" class="form-control"></textarea>
-    </form>
-    <div class="mt-2 d-flex">
-      <div class="p-2">
-        <button class="btn btn-sm btn-primary" (click)="pasteColorArray()">Parse color array</button>
+  @if (colorGroups.length > 0) {
+    <div class="card mb-3">
+      <div class="card-header">
+        <h6 class="mb-0"><i class="bi bi-list-ul me-2"></i>Color Groups</h6>
       </div>
-      <div class="p-2">
-        <button class="btn btn-sm btn-primary" (click)="copyColorArray()">Copy color array</button>
+      <div class="card-body">
+        <div class="row g-3">
+          @for (c of colorGroups; track c.group) {
+            <div class="col-md-6">
+              <div class="color-group-item" [class.marked-for-removal]="c.remove">
+                <div class="d-flex align-items-center">
+                  <div class="color-preview" [style.background-color]="c.color"></div>
+                  <div class="flex-grow-1 ms-3">
+                    <label [for]="c.group + 'id'" class="form-label mb-1 fw-semibold">{{c.group}}</label>
+                    <input
+                      [id]="c.group + 'id'"
+                      class="form-control form-control-sm color-input"
+                      [(colorPicker)]="c.color"
+                      [style.background]="c.color"
+                      [style.color]="getContrastColor(c.color)"
+                      [value]="c.color">
+                  </div>
+                  <div class="form-check ms-3">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      [id]="'remove-' + c.group"
+                      [(ngModel)]="c.remove">
+                    <label class="form-check-label small text-muted" [for]="'remove-' + c.group">
+                      Remove
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
       </div>
-
     </div>
+  } @else {
+    <div class="alert alert-warning" role="alert">
+      <i class="bi bi-exclamation-triangle me-2"></i>
+      No color groups available
+    </div>
+  }
+
+  <div class="card">
+    <div class="card-header">
+      <h6 class="mb-0"><i class="bi bi-code-square me-2"></i>Import/Export Colors</h6>
+    </div>
+    <div class="card-body">
+      <form [formGroup]="form">
+        <label for="colorsTextarea" class="form-label small">Paste color array JSON to import</label>
+        <textarea
+          id="colorsTextarea"
+          placeholder='[{"group": "Group1", "color": "#FF0000"}, {"group": "Group2", "color": "#00FF00"}]'
+          formControlName="colors"
+          class="form-control form-control-sm font-monospace mb-2"
+          rows="3"></textarea>
+      </form>
+      <div class="d-flex gap-2">
+        <button class="btn btn-outline-primary btn-sm" (click)="pasteColorArray()">
+          <i class="bi bi-upload me-1"></i>Import Colors
+        </button>
+        <button class="btn btn-outline-secondary btn-sm" (click)="copyColorArray()">
+          <i class="bi bi-clipboard me-1"></i>Copy Colors
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="modal-footer">
-  <div class="row">
-    <div class="col">
-      <button type="button" class="btn btn-primary" (click)="updateColorGroup()">Update Color</button>
-    </div>
-    <div class="col">
-      <button type="button" class="btn btn-secondary" (click)="closeModal()">Close</button>
-    </div>
-  </div>
-
+  <button type="button" class="btn btn-secondary" (click)="closeModal()">
+    <i class="bi bi-x-lg me-1"></i>Cancel
+  </button>
+  <button type="button" class="btn btn-primary" (click)="updateColorGroup()">
+    <i class="bi bi-check-lg me-1"></i>Apply Colors
+  </button>
 </div>
 

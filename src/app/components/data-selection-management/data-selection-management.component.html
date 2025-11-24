@@ -1,77 +1,172 @@
 <div class="modal-header">
   <h5 class="modal-title">
-    Data selection management
+    <i class="bi bi-layers me-2"></i>Data Selection Management
   </h5>
+  <button type="button" class="btn-close" aria-label="Close" (click)="close()"></button>
 </div>
+
 <div class="modal-body">
-  <input type="file" class="form-control" hidden id="fastaLibrary" #fastaFile (change)="handleFile($event)">
-  <div class="d-flex">
-    <div class="p-2">
-      <button class="btn btn-sm btn-primary" (click)="fastaFile.click()">Import fasta library</button>
+  <div class="card mb-3">
+    <div class="card-header">
+      <h6 class="mb-0"><i class="bi bi-file-earmark-text me-2"></i>FASTA Library Import</h6>
     </div>
-    <div class="p-2">
-      {{fastaFileName}}
+    <div class="card-body">
+      <input type="file" class="form-control" hidden id="fastaLibrary" #fastaFile (change)="handleFile($event)">
+      <div class="d-flex align-items-center gap-2">
+        <button class="btn btn-outline-primary btn-sm" (click)="fastaFile.click()">
+          <i class="bi bi-upload me-1"></i>Import FASTA Library
+        </button>
+        @if (fastaFileName) {
+          <span class="text-muted small">
+            <i class="bi bi-file-earmark-check me-1"></i>{{fastaFileName}}
+          </span>
+        }
+      </div>
     </div>
   </div>
-  @for (s of selectOperationNames; track s) {
-    <div>
-      <form [formGroup]="selectionForms[s]">
-        <div class="form-group">
-          <label>Selection title</label>
-          <input type="text" class="form-control" formControlName="title">
-        </div>
-        <div class="form-check">
-          <input type="checkbox" class="form-check-input" formControlName="markForDeletion">
-          <label class="form-check-label">Remove</label>
-        </div>
-        <div class="form-check">
-          <input type="checkbox" class="form-check-input" formControlName="merge">
-          <label class="form-check-label">Merge</label>
-        </div>
 
-      </form>
-      <button class="btn btn-sm btn-outline-info" (click)="selectionToggle[s] = !selectionToggle[s]">Edit Selection</button>
-      @if (selectionToggle[s] === true && primaryIDForms[s]) {
-        <div class="card border-dark mt-2">
-          <div class="card-body">
-            <form [formGroup]="selectAllForms[s]">
-              <div class="form-check">
-                <input type="checkbox" class="form-check-input" formControlName="selectAll">
-                <label class="form-check-label">Annotate/Deannotate all</label>
-              </div>
-            </form>
-            @for (primaryID of selectionMap[s]; track primaryID; let ind = $index) {
-              <div>
-                <div>
-                  <b>{{primaryID}} @if (geneNameMap[primaryID]) {<span>[{{geneNameMap[primaryID]}}]</span>}</b>
-                </div>
-                @if (primaryIDForms[s][primaryID]) {
-                  <form [formGroup]="primaryIDForms[s][primaryID]">
-                    <div class="d-flex">
-                      <div class="p-2">
+  <div class="alert alert-info">
+    <i class="bi bi-info-circle me-2"></i>
+    <strong>Manage your data selections:</strong> Edit titles, merge selections, or configure individual items for annotation and plotting.
+  </div>
+
+  @if (selectOperationNames.length === 0) {
+    <div class="text-center py-5">
+      <i class="bi bi-inbox display-1 text-muted"></i>
+      <p class="text-muted mt-3">No data selections available</p>
+    </div>
+  } @else {
+    <div class="accordion" id="selectionsAccordion">
+      @for (s of selectOperationNames; track s; let i = $index) {
+        <div class="accordion-item mb-3 border rounded">
+          <div class="accordion-header">
+            <div class="d-flex align-items-center p-3">
+              <div class="flex-grow-1">
+                <form [formGroup]="selectionForms[s]">
+                  <div class="row g-3 align-items-center">
+                    <div class="col-md-6">
+                      <label class="form-label small text-muted mb-1">Selection Title</label>
+                      <input type="text" class="form-control" formControlName="title" placeholder="Enter selection title">
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label small text-muted mb-1">Actions</label>
+                      <div class="d-flex gap-3">
                         <div class="form-check">
-                          <input class="form-check-input" type="checkbox" formControlName="annotate">
-                          <label class="form-check-label">Annotate on volcano plot</label>
+                          <input type="checkbox" class="form-check-input" id="merge-{{i}}" formControlName="merge">
+                          <label class="form-check-label" for="merge-{{i}}">
+                            <i class="bi bi-union me-1"></i>Merge
+                          </label>
                         </div>
-                      </div>
-                      <div class="p-2">
                         <div class="form-check">
-                          <input class="form-check-input" type="checkbox" formControlName="remove">
-                          <label class="form-check-label">Remove from selection</label>
+                          <input type="checkbox" class="form-check-input" id="delete-{{i}}" formControlName="markForDeletion">
+                          <label class="form-check-label text-danger" for="delete-{{i}}">
+                            <i class="bi bi-trash me-1"></i>Remove
+                          </label>
                         </div>
                       </div>
                     </div>
-                  </form>
-                }
+                  </div>
+                </form>
               </div>
-            }
+              <div class="ms-3">
+                <button
+                  class="btn btn-outline-primary btn-sm"
+                  type="button"
+                  (click)="selectionToggle[s] = !selectionToggle[s]">
+                  <i class="bi" [ngClass]="selectionToggle[s] ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+                  {{selectionToggle[s] ? 'Hide' : 'Edit'}} Items
+                  <span class="badge bg-primary ms-2">{{selectionMap[s]?.length || 0}}</span>
+                </button>
+              </div>
+            </div>
           </div>
+
+          @if (selectionToggle[s] === true && primaryIDForms[s]) {
+            <div class="accordion-body border-top">
+              <div class="card mb-3" style="background-color: var(--app-bg-tertiary);">
+                <div class="card-body py-2">
+                  <form [formGroup]="selectAllForms[s]">
+                    <div class="form-check">
+                      <input type="checkbox" formControlName="selectAll" class="form-check-input" id="selectAll-{{i}}">
+                      <label class="form-check-label fw-semibold" for="selectAll-{{i}}">
+                        <i class="bi bi-check-all me-1"></i>Annotate/De-annotate All Items
+                      </label>
+                    </div>
+                  </form>
+                </div>
+              </div>
+
+              <div class="table-responsive">
+                <table class="table table-sm table-hover">
+                  <thead>
+                    <tr>
+                      <th scope="col">Protein / Gene</th>
+                      <th scope="col" class="text-center">Volcano Annotation</th>
+                      <th scope="col" class="text-center">Profile Plot</th>
+                      <th scope="col" class="text-center">Remove</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (primaryID of selectionMap[s]; track primaryID; let ind = $index) {
+                      @if (primaryIDForms[s][primaryID]) {
+                        <tr [formGroup]="primaryIDForms[s][primaryID]">
+                          <td>
+                            <div>
+                              <strong>{{primaryID}}</strong>
+                              @if (geneNameMap[primaryID]) {
+                                <span class="badge bg-secondary ms-2">{{geneNameMap[primaryID]}}</span>
+                              }
+                            </div>
+                          </td>
+                          <td class="text-center">
+                            <div class="form-check d-flex justify-content-center">
+                              <input class="form-check-input" type="checkbox"
+                                     id="annotate-{{i}}-{{ind}}"
+                                     formControlName="annotate">
+                              <label class="form-check-label visually-hidden" for="annotate-{{i}}-{{ind}}">
+                                Annotate {{primaryID}}
+                              </label>
+                            </div>
+                          </td>
+                          <td class="text-center">
+                            <div class="form-check d-flex justify-content-center">
+                              <input class="form-check-input" type="checkbox"
+                                     id="profile-{{i}}-{{ind}}"
+                                     formControlName="profilePlot">
+                              <label class="form-check-label visually-hidden" for="profile-{{i}}-{{ind}}">
+                                Add {{primaryID}} to profile plot
+                              </label>
+                            </div>
+                          </td>
+                          <td class="text-center">
+                            <div class="form-check d-flex justify-content-center">
+                              <input class="form-check-input" type="checkbox"
+                                     id="remove-{{i}}-{{ind}}"
+                                     formControlName="remove">
+                              <label class="form-check-label visually-hidden" for="remove-{{i}}-{{ind}}">
+                                Remove {{primaryID}}
+                              </label>
+                            </div>
+                          </td>
+                        </tr>
+                      }
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          }
         </div>
       }
     </div>
   }
 </div>
+
 <div class="modal-footer">
-  <button type="button" class="btn btn-primary" (click)="save()">Save</button>
-  <button type="button" class="btn btn-secondary" (click)="close()">Close</button>
+  <button type="button" class="btn btn-secondary" (click)="close()">
+    <i class="bi bi-x-lg me-1"></i>Cancel
+  </button>
+  <button type="button" class="btn btn-primary" (click)="save()">
+    <i class="bi bi-save me-1"></i>Save Changes
+  </button>
 </div>

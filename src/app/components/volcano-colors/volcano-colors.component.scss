@@ -1,0 +1,61 @@
+.color-group-item {
+  padding: 12px;
+  border-radius: 8px;
+  border: 2px solid #dee2e6;
+  background-color: #fff;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: var(--bs-primary);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  &.marked-for-removal {
+    opacity: 0.6;
+    border-color: #dc3545;
+    background-color: #fff5f5;
+
+    .color-preview {
+      opacity: 0.5;
+    }
+  }
+}
+
+.color-preview {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  border: 2px solid #dee2e6;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.color-input {
+  cursor: pointer;
+  border-radius: 6px;
+  font-weight: 500;
+  text-align: center;
+  border: 2px solid #dee2e6;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+
+  &:hover {
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.25);
+  }
+
+  &:focus {
+    box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.25);
+  }
+}
+
+.modal-body {
+  max-height: 70vh;
+  overflow-y: auto;
+}

@@ -1,0 +1,58 @@
+.modal-body {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.card {
+  transition: all 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.form-control {
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &:focus {
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.25);
+  }
+}
+
+.form-check-input {
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+
+  &:checked {
+    background-color: var(--bs-primary);
+    border-color: var(--bs-primary);
+  }
+}
+
+.form-check-label {
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.15s ease;
+
+  &:hover {
+    color: var(--bs-primary);
+  }
+}
+
+.btn {
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}

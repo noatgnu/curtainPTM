@@ -1,4 +1,5 @@
-import {AfterViewInit, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
+import {Subscription} from "rxjs";
 import cytoscape from "cytoscape";
 import fcose from "cytoscape-fcose";
 //import * as cxtmenu from "cytoscape-cxtmenu";
@@ -10,6 +11,7 @@ import fcose from "cytoscape-fcose";
 // @ts-ignore
 //import * as panzoom from "cytoscape-panzoom";
 import {SettingsService} from "../../settings.service";
+import {ThemeService} from "../../theme.service";
 
 //cytoscape.use(cytoscapeSVG);
 cytoscape.use(fcose);
@@ -20,7 +22,8 @@ cytoscape.use(fcose);
     styleUrls: ['./cytoplot.component.scss'],
     standalone: false
 })
-export class CytoplotComponent implements OnInit, AfterViewInit {
+export class CytoplotComponent implements OnInit, AfterViewInit, OnDestroy {
+  private themeSubscription?: Subscription;
   private _dimensions = {width: 700, height: 700}
   @Output() clickedID = new EventEmitter<string>()
   @Output() ready = new EventEmitter<boolean>()
@@ -46,13 +49,29 @@ export class CytoplotComponent implements OnInit, AfterViewInit {
     }
   }
 
-  constructor(private settings: SettingsService) { }
+  constructor(private settings: SettingsService, private themeService: ThemeService) { }
 
   ngOnInit(): void {
+    this.themeSubscription = this.themeService.theme$.subscribe(() => {
+      if (this.cy && this._drawData) {
+        this.updateTheme();
+      }
+    });
+  }
 
+  ngOnDestroy(): void {
+    if (this.themeSubscription) {
+      this.themeSubscription.unsubscribe();
+    }
   }
 
   ngAfterViewInit() {
+  }
+
+  private updateTheme(): void {
+    if (this.cy && this._drawData && this._drawData.stylesheet) {
+      this.cy.style().clear().fromJson(this._drawData.stylesheet).update();
+    }
   }
 
   draw() {

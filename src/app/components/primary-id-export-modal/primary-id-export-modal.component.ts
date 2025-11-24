@@ -18,6 +18,28 @@ export class PrimaryIdExportModalComponent {
     this.selections = this.dataService.selectOperationNames.slice()
   }
 
+  getSelectionCount(selection: string): number {
+    let count = 0;
+    for (const i in this.dataService.selectedMap) {
+      if (this.dataService.selectedMap[i] && this.dataService.selectedMap[i][selection]) {
+        count++;
+      }
+    }
+    return count;
+  }
+
+  getTotalCount(): number {
+    const uniqueIds = new Set<string>();
+    for (const s in this.dataService.selectedMap) {
+      for (const i in this.dataService.selectedMap[s]) {
+        if (this.dataService.selectedMap[s][i]) {
+          uniqueIds.add(s);
+        }
+      }
+    }
+    return uniqueIds.size;
+  }
+
   export(selection: string = "", format: "primaryID"|"geneNames"|"dataSearched"|"dataDF" = "primaryID") {
     const data: string[] = []
     if (selection === "") {

@@ -21,6 +21,15 @@ $theme-colors: (
         "light":      $light,
         "dark":       $dark
 );
+
+$enable-dark-mode: true;
+
+$primary-dark: #4a48a0;
+$success-dark: #006d65;
+$info-dark: #a0b5e0;
+$warning-dark: #ffb347;
+$danger-dark: #ff7b7b;
+
 .accordion-button:not(.collapsed) {
   color: #FFF  !important;
   background-color: #9acad5 !important;
@@ -30,9 +39,332 @@ $theme-colors: (
 @import 'node_modules/bootstrap/scss/bootstrap';
 @import 'node_modules/quill/dist/quill.snow.css';
 
+:root {
+  --app-bg-primary: #ffffff;
+  --app-bg-secondary: #f8f9fa;
+  --app-bg-tertiary: #e9ecef;
+  --app-text-primary: #212529;
+  --app-text-secondary: #6c757d;
+  --app-text-muted: #adb5bd;
+  --app-border-color: #dee2e6;
+  --app-border-light: #e9ecef;
+  --app-shadow: rgba(0, 0, 0, 0.1);
+  --app-shadow-lg: rgba(0, 0, 0, 0.15);
+  --app-hover-bg: #f8f9fa;
+  --app-card-bg: #ffffff;
+  --app-modal-bg: #ffffff;
+  --app-input-bg: #ffffff;
+  --app-input-border: #ced4da;
+  --app-chart-bg: #ffffff;
+  --app-chart-grid: #e9ecef;
+  --app-chart-text: #212529;
+}
+
+[data-bs-theme="dark"] {
+  --app-bg-primary: #1a1d29;
+  --app-bg-secondary: #212529;
+  --app-bg-tertiary: #2d3136;
+  --app-text-primary: #f8f9fa;
+  --app-text-secondary: #adb5bd;
+  --app-text-muted: #6c757d;
+  --app-border-color: #495057;
+  --app-border-light: #3d4247;
+  --app-shadow: rgba(0, 0, 0, 0.3);
+  --app-shadow-lg: rgba(0, 0, 0, 0.5);
+  --app-hover-bg: #2d3136;
+  --app-card-bg: #212529;
+  --app-modal-bg: #212529;
+  --app-input-bg: #2d3136;
+  --app-input-border: #495057;
+  --app-chart-bg: #212529;
+  --app-chart-grid: #3d4247;
+  --app-chart-text: #f8f9fa;
+
+  --bs-primary: #6366f1;
+  --bs-primary-rgb: 99, 102, 241;
+  --bs-secondary: #94a3b8;
+  --bs-secondary-rgb: 148, 163, 184;
+  --bs-success: #10b981;
+  --bs-success-rgb: 16, 185, 129;
+  --bs-info: #3b82f6;
+  --bs-info-rgb: 59, 130, 246;
+  --bs-warning: #f59e0b;
+  --bs-warning-rgb: 245, 158, 11;
+  --bs-danger: #ef4444;
+  --bs-danger-rgb: 239, 68, 68;
+  --bs-light: #e5e7eb;
+  --bs-light-rgb: 229, 231, 235;
+  --bs-dark: #1f2937;
+  --bs-dark-rgb: 31, 41, 55;
+
+  --bs-btn-bg: #6366f1;
+  --bs-btn-border-color: #6366f1;
+  --bs-btn-hover-bg: #4f46e5;
+  --bs-btn-hover-border-color: #4338ca;
+  --bs-btn-active-bg: #4338ca;
+  --bs-btn-active-border-color: #3730a3;
+
+  .btn-outline-primary {
+    --bs-btn-color: #818cf8;
+    --bs-btn-border-color: #6366f1;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #6366f1;
+    --bs-btn-hover-border-color: #6366f1;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #4f46e5;
+    --bs-btn-active-border-color: #4338ca;
+  }
+
+  .btn-outline-secondary {
+    --bs-btn-color: #94a3b8;
+    --bs-btn-border-color: #94a3b8;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #94a3b8;
+    --bs-btn-hover-border-color: #94a3b8;
+  }
+
+  .btn-outline-success {
+    --bs-btn-color: #10b981;
+    --bs-btn-border-color: #10b981;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #10b981;
+    --bs-btn-hover-border-color: #10b981;
+  }
+
+  .btn-outline-danger {
+    --bs-btn-color: #ef4444;
+    --bs-btn-border-color: #ef4444;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #ef4444;
+    --bs-btn-hover-border-color: #ef4444;
+  }
+
+  .btn-outline-warning {
+    --bs-btn-color: #f59e0b;
+    --bs-btn-border-color: #f59e0b;
+    --bs-btn-hover-color: #000;
+    --bs-btn-hover-bg: #f59e0b;
+    --bs-btn-hover-border-color: #f59e0b;
+  }
+
+  .btn-outline-info {
+    --bs-btn-color: #3b82f6;
+    --bs-btn-border-color: #3b82f6;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #3b82f6;
+    --bs-btn-hover-border-color: #3b82f6;
+  }
+
+  --bs-link-color: #818cf8;
+  --bs-link-hover-color: #a5b4fc;
+
+  .accordion-button:not(.collapsed) {
+    background-color: #6366f1 !important;
+  }
+
+  ::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--app-bg-secondary);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--app-border-color);
+    border-radius: 6px;
+
+    &:hover {
+      background: #5a6268;
+    }
+  }
+
+  .card {
+    background-color: var(--app-card-bg);
+    border-color: var(--app-border-color);
+    color: var(--app-text-primary);
+  }
+
+  .card-header,
+  .card-footer {
+    background-color: var(--app-bg-tertiary);
+    border-color: var(--app-border-color);
+  }
+
+  .form-control,
+  .form-select {
+    background-color: var(--app-input-bg);
+    border-color: var(--app-input-border);
+    color: var(--app-text-primary);
+
+    &:focus {
+      background-color: var(--app-input-bg);
+      border-color: var(--bs-primary);
+      color: var(--app-text-primary);
+    }
+
+    &::placeholder {
+      color: var(--app-text-muted);
+    }
+  }
+
+  .table {
+    --bs-table-bg: var(--app-card-bg);
+    --bs-table-color: var(--app-text-primary);
+    --bs-table-border-color: var(--app-border-color);
+    --bs-table-striped-bg: var(--app-bg-tertiary);
+    --bs-table-hover-bg: var(--app-hover-bg);
+
+    thead tr {
+      background-color: var(--app-bg-primary) !important;
+
+      th {
+        background-color: var(--app-bg-primary) !important;
+        color: var(--app-text-primary) !important;
+      }
+    }
+  }
+
+  .table-light {
+    --bs-table-bg: var(--app-bg-tertiary);
+    --bs-table-color: var(--app-text-primary);
+  }
+
+  .modal-content {
+    background-color: var(--app-modal-bg);
+    border-color: var(--app-border-color);
+  }
+
+  .modal-header,
+  .modal-footer {
+    border-color: var(--app-border-color);
+  }
+
+  .alert {
+    border-color: var(--app-border-color);
+
+    &.bg-light {
+      background-color: var(--app-bg-tertiary) !important;
+      color: var(--app-text-primary);
+    }
+  }
+
+  .dropdown-menu {
+    background-color: var(--app-card-bg);
+    border-color: var(--app-border-color);
+  }
+
+  .dropdown-item {
+    color: var(--app-text-primary);
+
+    &:hover,
+    &:focus {
+      background-color: var(--app-hover-bg);
+      color: var(--app-text-primary);
+    }
+  }
+
+  .dropdown-header {
+    color: var(--app-text-secondary);
+  }
+
+  .dropdown-divider {
+    border-color: var(--app-border-color);
+  }
+
+  .accordion-item {
+    background-color: var(--app-card-bg);
+    border-color: var(--app-border-color);
+  }
+
+  .accordion-button {
+    background-color: var(--app-bg-tertiary);
+    color: var(--app-text-primary);
+
+    &:not(.collapsed) {
+      background-color: var(--bs-primary);
+      color: white;
+    }
+  }
+
+  .accordion-body {
+    background-color: var(--app-bg-secondary);
+  }
+
+  .list-group-item {
+    background-color: var(--app-card-bg);
+    border-color: var(--app-border-color);
+    color: var(--app-text-primary);
+
+    &:hover {
+      background-color: var(--app-hover-bg);
+    }
+  }
+
+  .badge.bg-light {
+    background-color: var(--app-bg-tertiary) !important;
+    color: var(--app-text-primary) !important;
+  }
+
+  .text-muted {
+    color: var(--app-text-muted) !important;
+  }
+
+  .border {
+    border-color: var(--app-border-color) !important;
+  }
+
+  .shadow-sm {
+    box-shadow: 0 0.125rem 0.25rem var(--app-shadow) !important;
+  }
+
+  .shadow {
+    box-shadow: 0 0.5rem 1rem var(--app-shadow-lg) !important;
+  }
+
+  .nav-tabs {
+    border-color: var(--app-border-color);
+
+    .nav-link {
+      color: var(--app-text-secondary);
+
+      &:hover {
+        border-color: var(--app-border-light);
+        color: var(--app-text-primary);
+      }
+
+      &.active {
+        background-color: var(--app-card-bg);
+        border-color: var(--app-border-color) var(--app-border-color) var(--app-card-bg);
+        color: var(--app-text-primary);
+      }
+    }
+  }
+
+  .toast {
+    background-color: var(--app-card-bg);
+    border-color: var(--app-border-color);
+    color: var(--app-text-primary);
+  }
+
+  .toast-header {
+    background-color: var(--app-bg-tertiary);
+    border-color: var(--app-border-color);
+    color: var(--app-text-primary);
+  }
+}
+
 body {
   padding-top: 80px;
   padding-bottom: 40px;
   min-width: 1080px;
+  background-color: var(--app-bg-primary);
+  color: var(--app-text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+* {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 

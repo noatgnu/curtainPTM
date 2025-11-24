@@ -1,5 +1,8 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {Subscription} from "rxjs";
 import {WebService} from "../../web.service";
+import {PlotlyThemeService} from "../../plotly-theme.service";
+import {ThemeService} from "../../theme.service";
 
 @Component({
     selector: 'app-protein-domain-plot',
@@ -7,7 +10,9 @@ import {WebService} from "../../web.service";
     styleUrls: ['./protein-domain-plot.component.scss'],
     standalone: false
 })
-export class ProteinDomainPlotComponent implements OnInit {
+export class ProteinDomainPlotComponent implements OnInit, OnDestroy {
+  private themeSubscription?: Subscription;
+  revision: number = 0;
   _data: any[] = []
   geneName = ""
   @Input() set data(value: any) {
@@ -91,9 +96,19 @@ export class ProteinDomainPlotComponent implements OnInit {
     }, margin: {t: 25, b: 25, r: 125, l: 175},
     showlegend: false
   }
-  constructor(private web: WebService) { }
+  constructor(private web: WebService, private plotlyTheme: PlotlyThemeService, private themeService: ThemeService) { }
 
   ngOnInit(): void {
+    this.themeSubscription = this.themeService.theme$.subscribe(() => {
+      this.layout = this.plotlyTheme.applyThemeToLayout(this.layout);
+      this.revision++;
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.themeSubscription) {
+      this.themeSubscription.unsubscribe();
+    }
   }
 
   downloadSVG() {

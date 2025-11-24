@@ -1,4 +1,5 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
+import {Subscription} from "rxjs";
 import {DataFrame, fromCSV, IDataFrame} from "data-forge";
 import {DataService} from "../../data.service";
 import {UniprotService} from "../../uniprot.service";
@@ -8,6 +9,8 @@ import {FdrCurveComponent} from "../fdr-curve/fdr-curve.component";
 import {VolcanoColorsComponent} from "../volcano-colors/volcano-colors.component";
 import {selectionData} from "../protein-selections/protein-selections.component";
 import {WebService} from "../../web.service";
+import {PlotlyThemeService} from "../../plotly-theme.service";
+import {ThemeService} from "../../theme.service";
 import {
   VolcanoPlotTextAnnotationComponent
 } from "../volcano-plot-text-annotation/volcano-plot-text-annotation.component";
@@ -22,7 +25,8 @@ import {ReorderTracesModalComponent} from "./reorder-traces-modal/reorder-traces
     styleUrls: ['./volcano-plot.component.scss'],
     standalone: false
 })
-export class VolcanoPlotComponent implements OnInit {
+export class VolcanoPlotComponent implements OnInit, OnDestroy {
+  private themeSubscription?: Subscription;
   settingsNav = "parameters"
   editMode: boolean = false
   explorerMode: boolean = false
@@ -632,7 +636,7 @@ export class VolcanoPlotComponent implements OnInit {
     console.log(this.graphLayout.annotations)
   }
 
-  constructor(private web: WebService, public dataService: DataService, private uniprot: UniprotService, public settings: SettingsService, private modal: NgbModal) {
+  constructor(private web: WebService, public dataService: DataService, private uniprot: UniprotService, public settings: SettingsService, private modal: NgbModal, private plotlyTheme: PlotlyThemeService, private themeService: ThemeService) {
     this.annotated = {}
     for (const i in this.settings.settings.textAnnotation) {
       if (this.settings.settings.textAnnotation[i].showannotation === undefined || this.settings.settings.textAnnotation[i].showannotation === null) {
@@ -681,6 +685,18 @@ export class VolcanoPlotComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.themeSubscription = this.themeService.theme$.subscribe(() => {
+      if (this._data && this._data.count()) {
+        this.graphLayout = this.plotlyTheme.applyThemeToLayout(this.graphLayout);
+        this.revision++;
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.themeSubscription) {
+      this.themeSubscription.unsubscribe();
+    }
   }
 
   selectData(e: any) {
@@ -988,26 +1004,35 @@ export class VolcanoPlotComponent implements OnInit {
     this.web.downloadPlotlyImage('svg', 'volcano', 'volcanoPlot')
   }
 
+  updateAnnotation(data: any) {
+    this.graphLayout.annotations = []
+    this.annotated = {}
+    for (const f of data) {
+      this.settings.settings.textAnnotation[f.value.annotationID].data.showarrow = f.value.showarrow
+      this.settings.settings.textAnnotation[f.value.annotationID].data.arrowhead = f.value.arrowhead
+      this.settings.settings.textAnnotation[f.value.annotationID].data.arrowsize = f.value.arrowsize
+      this.settings.settings.textAnnotation[f.value.annotationID].data.arrowwidth = f.value.arrowwidth
+      this.settings.settings.textAnnotation[f.value.annotationID].data.ax = f.value.ax
+      this.settings.settings.textAnnotation[f.value.annotationID].data.ay = f.value.ay
+      this.settings.settings.textAnnotation[f.value.annotationID].data.font.size = f.value.fontsize
+      this.settings.settings.textAnnotation[f.value.annotationID].data.font.color = f.value.fontcolor
+      this.settings.settings.textAnnotation[f.value.annotationID].data.text = f.value.text
+      this.settings.settings.textAnnotation[f.value.annotationID].data.showannotation = f.value.showannotation
+      this.settings.settings.textAnnotation[f.value.annotationID].data.annotationID = f.value.annotationID
+      this.annotated[f.value.annotationID] = this.settings.settings.textAnnotation[f.value.annotationID].data
+      this.graphLayout.annotations.push(this.annotated[f.value.annotationID])
+    }
+    this.drawVolcano()
+  }
+
   openTextEditor() {
     const ref = this.modal.open(VolcanoPlotTextAnnotationComponent, {size: "xl", scrollable: true})
+    ref.componentInstance.data = {annotation: this.settings.settings.textAnnotation}
+    ref.componentInstance.onApply = (data: any) => {
+      this.updateAnnotation(data)
+    }
     ref.closed.subscribe(data => {
-      this.graphLayout.annotations = []
-      this.annotated = {}
-      for (const f of data) {
-        this.settings.settings.textAnnotation[f.value.annotationID].data.showarrow = f.value.showarrow
-        this.settings.settings.textAnnotation[f.value.annotationID].data.arrowhead = f.value.arrowhead
-        this.settings.settings.textAnnotation[f.value.annotationID].data.arrowsize = f.value.arrowsize
-        this.settings.settings.textAnnotation[f.value.annotationID].data.arrowwidth = f.value.arrowwidth
-        this.settings.settings.textAnnotation[f.value.annotationID].data.ax = f.value.ax
-        this.settings.settings.textAnnotation[f.value.annotationID].data.ay = f.value.ay
-        this.settings.settings.textAnnotation[f.value.annotationID].data.font.size = f.value.fontsize
-        this.settings.settings.textAnnotation[f.value.annotationID].data.font.color = f.value.fontcolor
-        this.settings.settings.textAnnotation[f.value.annotationID].data.text = f.value.text
-        this.settings.settings.textAnnotation[f.value.annotationID].showannotation = f.value.showannotation
-        this.settings.settings.textAnnotation[f.value.annotationID].annotationID = f.value.annotationID
-        this.annotated[f.value.annotationID] = this.settings.settings.textAnnotation[f.value.annotationID].data
-        this.graphLayout.annotations.push(this.annotated[f.value.annotationID])
-      }
+      this.updateAnnotation(data)
     })
   }
 

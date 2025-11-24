@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg navbar-light fixed-top shadow-sm" style="background-color: rgba(248, 249, 250, 0.95); backdrop-filter: blur(10px);">
+<nav class="navbar navbar-expand-lg fixed-top shadow-sm" [attr.data-bs-theme]="themeService.getCurrentTheme()" style="background-color: var(--app-bg-secondary); backdrop-filter: blur(10px);">
   <div class="container-fluid">
     <a class="navbar-brand fw-bold" href="#">Curtain<span class="text-danger">PTM</span></a>
     @if (finished && settings.settings.currentID !== '') {
@@ -129,7 +129,7 @@
         </div>
       }
 
-      @if (sessionCollections.length > 0) {
+      @if (accounts.curtainAPI.user.loginStatus) {
         <div class="me-2">
           <div display="dynamic" ngbDropdown>
             <button class="btn btn-outline-primary" id="dropdownCollections" ngbDropdownToggle>
@@ -142,29 +142,36 @@
               <span class="badge bg-info ms-1">{{sessionCollections.length}}</span>
             </button>
             <div ngbDropdownMenu aria-labelledby="dropdownCollections" class="dropdown-menu-end">
-              <h6 class="dropdown-header">
-                <i class="bi bi-folder2-open me-2"></i>Select Collection
-              </h6>
-              @for (collection of sessionCollections; track collection.id) {
-                <button
-                  ngbDropdownItem
-                  (click)="selectCollection(collection.id)"
-                  [class.active]="selectedCollectionId === collection.id">
-                  <i class="bi bi-check2 me-2" [class.invisible]="selectedCollectionId !== collection.id"></i>
-                  {{collection.name}}
-                  <span class="badge bg-info ms-2">{{collection.curtain_count}}</span>
+              @if (sessionCollections.length > 0) {
+                <h6 class="dropdown-header">
+                  <i class="bi bi-folder2-open me-2"></i>Select Collection
+                </h6>
+                @for (collection of sessionCollections; track collection.id) {
+                  <button
+                    ngbDropdownItem
+                    (click)="selectCollection(collection.id)"
+                    [class.active]="selectedCollectionId === collection.id">
+                    <i class="bi bi-check2 me-2" [class.invisible]="selectedCollectionId !== collection.id"></i>
+                    {{collection.name}}
+                    <span class="badge bg-info ms-2">{{collection.curtain_count}}</span>
+                  </button>
+                }
+                <div class="dropdown-divider"></div>
+              }
+              <button ngbDropdownItem (click)="openCollectionManagementModal()">
+                <i class="bi bi-plus-circle me-2"></i>Add Current Session to Collection
+              </button>
+              @if (selectedCollectionId) {
+                <button ngbDropdownItem (click)="openCollectionSessionsModal()">
+                  <i class="bi bi-eye me-2"></i>View Sessions in Collection
                 </button>
               }
-              <div class="dropdown-divider"></div>
-              <button ngbDropdownItem (click)="openCollectionSessionsModal()">
-                <i class="bi bi-eye me-2"></i>View Sessions in Collection
-              </button>
             </div>
           </div>
         </div>
       }
 
-      <div>
+      <div class="me-2">
         <div display="dynamic" ngbDropdown>
           <button class="btn btn-outline-primary" id="dropdownSession" ngbDropdownToggle>
             <i class="bi bi-folder"></i> Session
@@ -255,6 +262,12 @@
             }
           </div>
         </div>
+      </div>
+
+      <div>
+        <button class="btn btn-outline-secondary" (click)="themeService.toggleTheme()" title="Toggle Dark Mode">
+          <i class="bi" [ngClass]="themeService.isDarkMode() ? 'bi-sun-fill' : 'bi-moon-fill'"></i>
+        </button>
       </div>
     </div>
   </div>

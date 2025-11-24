@@ -1,4 +1,5 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {Subscription} from "rxjs";
 import {DataFrame, IDataFrame, Series} from "data-forge";
 import {DataService} from "../../data.service";
 import {UniprotService} from "../../uniprot.service";
@@ -6,6 +7,8 @@ import {ToastService} from "../../toast.service";
 import {SettingsService} from "../../settings.service";
 import {WebService} from "../../web.service";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
+import {PlotlyThemeService} from "../../plotly-theme.service";
+import {ThemeService} from "../../theme.service";
 
 @Component({
     selector: 'app-profile-plot',
@@ -13,7 +16,9 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
     styleUrls: ['./profile-plot.component.scss'],
     standalone: false
 })
-export class ProfilePlotComponent implements OnInit {
+export class ProfilePlotComponent implements OnInit, OnDestroy {
+  private themeSubscription?: Subscription;
+  revision: number = 0;
   @Input() divId = "profile"
   boxplot: boolean = true
   _data: IDataFrame = new DataFrame()
@@ -51,7 +56,7 @@ export class ProfilePlotComponent implements OnInit {
     }
   }
   graphSelected: any[] = []
-  constructor(private modal: NgbActiveModal, private toast: ToastService, private dataService: DataService, private uniprot: UniprotService, private settings: SettingsService, private web: WebService) {
+  constructor(private modal: NgbActiveModal, private toast: ToastService, private dataService: DataService, private uniprot: UniprotService, private settings: SettingsService, private web: WebService, private plotlyTheme: PlotlyThemeService, private themeService: ThemeService) {
     this.dataService.selectionUpdateTrigger.asObservable().subscribe(data => {
       this.drawSelected().then()
     })
@@ -68,6 +73,16 @@ export class ProfilePlotComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.themeSubscription = this.themeService.theme$.subscribe(() => {
+      this.graphLayout = this.plotlyTheme.applyThemeToLayout(this.graphLayout);
+      this.revision++;
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.themeSubscription) {
+      this.themeSubscription.unsubscribe();
+    }
   }
 
   async drawBoxPlot() {

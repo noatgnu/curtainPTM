@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {SettingsService} from "../../settings.service";
 import {DataService} from "../../data.service";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
@@ -11,33 +11,55 @@ import {FormBuilder, FormGroup} from "@angular/forms";
     standalone: false
 })
 export class VolcanoPlotTextAnnotationComponent implements OnInit {
-  annotationText: any[] = []
+  private _data:any = {}
+  @Input() set data(value: any) {
+    this._data = value
+    for (const i in value.annotation) {
+      this.forms.push(this.fb.group({
+        annotationID: [i],
+        text: [value.annotation[i].data.text],
+        showarrow: [value.annotation[i].data.showarrow],
+        arrowhead: [value.annotation[i].data.arrowhead],
+        arrowsize: [value.annotation[i].data.arrowsize],
+        arrowwidth: [value.annotation[i].data.arrowwidth],
+        ax: [value.annotation[i].data.ax],
+        ay: [value.annotation[i].data.ay],
+        fontsize: [value.annotation[i].data.font.size],
+        fontcolor: [value.annotation[i].data.font.color],
+        showannotation: [value.annotation[i].data.showannotation],
+      }))
+      this.colorMap[i] = value.annotation[i].data.font.color.slice()
+    }
+  }
+
+  onApply: ((data: any) => void) | null = null
   colorMap: any = {}
 
   forms: FormGroup[] = []
-  constructor(public settings: SettingsService, public data: DataService, public modal: NgbActiveModal, private fb: FormBuilder) {
-    for (const i in this.settings.settings.textAnnotation) {
-      //this.annotationText.push(this.settings.settings.textAnnotation[i])
-      this.forms.push(this.fb.group({
-        annotationID: [i],
-        text: [this.settings.settings.textAnnotation[i].data.text],
-        showarrow: [this.settings.settings.textAnnotation[i].data.showarrow],
-        arrowhead: [this.settings.settings.textAnnotation[i].data.arrowhead],
-        arrowsize: [this.settings.settings.textAnnotation[i].data.arrowsize],
-        arrowwidth: [this.settings.settings.textAnnotation[i].data.arrowwidth],
-        ax: [this.settings.settings.textAnnotation[i].data.ax],
-        ay: [this.settings.settings.textAnnotation[i].data.ay],
-        fontsize: [this.settings.settings.textAnnotation[i].data.font.size],
-        fontcolor: [this.settings.settings.textAnnotation[i].data.font.color],
-        showannotation: [this.settings.settings.textAnnotation[i].showannotation],
-      }))
-      this.colorMap[i] = this.settings.settings.textAnnotation[i].data.font.color.slice()
-    }
+  formAll = this.fb.group({
+    fontsize: [12],
+    fontcolor: ["#000000"]
+  })
+  constructor(public modal: NgbActiveModal, private fb: FormBuilder) {
+
   }
+
   ngOnInit(): void {
   }
 
   updateColor(event: any, id: string) {
     this.forms.find((f) => f.controls["annotationID"].value === id)?.controls["fontcolor"].setValue(event)
+  }
+
+  submitFormAll() {
+    for (const f of this.forms) {
+      f.controls["fontsize"].setValue(this.formAll.controls["fontsize"].value)
+    }
+  }
+
+  applyChanges() {
+    if (this.onApply) {
+      this.onApply(this.forms)
+    }
   }
 }

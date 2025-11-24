@@ -11,6 +11,7 @@ interface Collection {
   curtain_count: number;
   curtains: string[];
   updated: Date;
+  owner_username: string;
 }
 
 @Component({
@@ -85,5 +86,9 @@ export class CollectionManagementModalComponent implements OnInit {
         this.isLoading = false;
       }
     }
+  }
+
+  isOwner(collection: Collection): boolean {
+    return collection.owner_username === this.accounts.curtainAPI.user.username;
   }
 }

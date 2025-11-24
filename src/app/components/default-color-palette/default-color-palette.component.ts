@@ -129,6 +129,30 @@ export class DefaultColorPaletteComponent implements OnInit {
   }
 
   parseConfig(value: string) {
-    this.customPalette = JSON.parse(value)
+    try {
+      const parsed = JSON.parse(value)
+      if (Array.isArray(parsed)) {
+        if (typeof parsed[0] === 'string') {
+          this.customPalette = parsed.map((color: string) => ({origin: color, new: color}))
+        } else {
+          this.customPalette = parsed
+        }
+        this.toast.show("Success", "Palette imported successfully").then()
+      } else {
+        this.toast.show("Error", "Invalid palette format. Expected an array.").then()
+      }
+    } catch (error) {
+      this.toast.show("Error", "Failed to parse palette JSON").then()
+    }
+  }
+
+  getContrastColor(hexColor: string): string {
+    if (!hexColor) return '#000000'
+    const hex = hexColor.replace('#', '')
+    const r = parseInt(hex.substr(0, 2), 16)
+    const g = parseInt(hex.substr(2, 2), 16)
+    const b = parseInt(hex.substr(4, 2), 16)
+    const brightness = ((r * 299) + (g * 587) + (b * 114)) / 1000
+    return brightness > 155 ? '#000000' : '#ffffff'
   }
 }

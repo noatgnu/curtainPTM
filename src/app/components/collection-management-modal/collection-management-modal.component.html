@@ -62,16 +62,24 @@
                 }
               </div>
             </div>
-            <div class="ms-3">
-              <button
-                class="btn btn-sm"
-                [ngClass]="isSessionInCollection(collection) ? 'btn-outline-danger' : 'btn-outline-primary'"
-                (click)="toggleCollection(collection)"
-                [disabled]="isLoading">
-                <i class="bi" [ngClass]="isSessionInCollection(collection) ? 'bi-dash-circle' : 'bi-plus-circle'"></i>
-                {{isSessionInCollection(collection) ? 'Remove' : 'Add'}}
-              </button>
-            </div>
+            @if (isOwner(collection)) {
+              <div class="ms-3">
+                <button
+                  class="btn btn-sm"
+                  [ngClass]="isSessionInCollection(collection) ? 'btn-outline-danger' : 'btn-outline-primary'"
+                  (click)="toggleCollection(collection)"
+                  [disabled]="isLoading">
+                  <i class="bi" [ngClass]="isSessionInCollection(collection) ? 'bi-dash-circle' : 'bi-plus-circle'"></i>
+                  {{isSessionInCollection(collection) ? 'Remove' : 'Add'}}
+                </button>
+              </div>
+            } @else {
+              <div class="ms-3">
+                <span class="badge bg-secondary">
+                  <i class="bi bi-eye me-1"></i>View Only
+                </span>
+              </div>
+            }
           </div>
         </div>
       }

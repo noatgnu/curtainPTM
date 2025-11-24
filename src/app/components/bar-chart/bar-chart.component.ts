@@ -6,6 +6,8 @@ import {WebService} from "../../web.service";
 import {StatsService} from "../../stats.service";
 import {SettingsService} from "../../settings.service";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {ThemeService} from "../../theme.service";
+import {PlotlyThemeService} from "../../plotly-theme.service";
 
 @Component({
     selector: 'app-bar-chart',
@@ -47,7 +49,9 @@ export class BarChartComponent implements OnInit {
     private stats: StatsService,
     private web: WebService,
     public dataService: DataService,
-    private uniprot: UniprotService
+    private uniprot: UniprotService,
+    private themeService: ThemeService,
+    private plotlyTheme: PlotlyThemeService
   ) {
     effect(() => {
       const value = this.data()
@@ -122,6 +126,12 @@ export class BarChartComponent implements OnInit {
         this.drawAverageBarChart()
       }
     })
+
+    this.themeService.theme$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      this.drawBarChart();
+      this.drawAverageBarChart();
+      this.applyThemeToLayouts()
+    })
   }
   graph: any = {}
   graphData: any[] = []
@@ -190,6 +200,12 @@ export class BarChartComponent implements OnInit {
   }
 
   ngOnInit(): void {
+  }
+
+  applyThemeToLayouts() {
+    this.graphLayout = this.plotlyTheme.applyThemeToLayout(this.graphLayout)
+    this.graphLayoutAverage = this.plotlyTheme.applyThemeToLayout(this.graphLayoutAverage)
+    this.graphLayoutViolin = this.plotlyTheme.applyThemeToLayout(this.graphLayoutViolin)
   }
   drawBarChart() {
     const tickvals: string[] = []
@@ -405,6 +421,9 @@ export class BarChartComponent implements OnInit {
     const graphViolin: any[] = []
     const graph: any = {}
     let sampleNumber: number = 0
+    const isDark = this.themeService.isDarkMode()
+    const boxDotColor = isDark ? "#adb5bd" : "#654949"
+
     for (const s in this.settings.settings.sampleMap) {
       if (this.settings.settings.sampleVisible[s]) {
         sampleNumber ++
@@ -435,7 +454,7 @@ export class BarChartComponent implements OnInit {
         },
         hoveron: 'points',
         marker: {
-          color: "#654949",
+          color: boxDotColor,
           opacity: 0.8,
         },
         name: g,

@@ -1,0 +1,136 @@
+.accordion-item {
+  border: 2px solid #dee2e6;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: var(--bs-primary);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.accordion-header {
+  .btn-outline-primary {
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+  }
+}
+
+.accordion-body {
+  background-color: #f8f9fa;
+}
+
+.table-responsive {
+  max-height: 400px;
+  overflow-y: auto;
+
+  .table {
+    margin-bottom: 0;
+
+    thead th {
+      position: sticky;
+      top: 0;
+      background-color: var(--bs-light);
+      z-index: 10;
+      font-weight: 600;
+      font-size: 0.875rem;
+      padding: 0.75rem 0.5rem;
+    }
+
+    tbody {
+      tr {
+        transition: background-color 0.15s ease;
+
+        &:hover {
+          background-color: rgba(var(--bs-primary-rgb), 0.05);
+        }
+
+        td {
+          vertical-align: middle;
+          padding: 0.75rem 0.5rem;
+        }
+      }
+    }
+  }
+}
+
+.form-check-input {
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+
+  &:checked {
+    background-color: var(--bs-primary);
+    border-color: var(--bs-primary);
+  }
+}
+
+.modal-body {
+  max-height: 75vh;
+  overflow-y: auto;
+}
+
+.alert-info {
+  border-left: 4px solid var(--bs-info);
+}
+
+.badge {
+  transition: all 0.2s ease;
+}
+
+.card {
+  border: 2px solid #dee2e6;
+
+  &.bg-light {
+    .card-body {
+      border-radius: 8px;
+    }
+  }
+}
+
+.btn-outline-primary {
+  transition: all 0.2s ease;
+
+  .badge {
+    transition: all 0.2s ease;
+  }
+
+  &:hover .badge {
+    transform: scale(1.05);
+  }
+}
+
+.form-control {
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &:focus {
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.25);
+  }
+}
+
+.form-check {
+  .form-check-label {
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.15s ease;
+
+    &:hover {
+      color: var(--bs-primary);
+    }
+
+    &.text-danger:hover {
+      color: #dc3545;
+    }
+  }
+}
+
+.text-center {
+  .form-check {
+    margin: 0;
+  }
+}

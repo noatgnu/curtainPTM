@@ -27,6 +27,7 @@ export class SampleOrderAndHideComponent implements OnInit {
   }
   violinPointPos: number = -2
   batchToggle: any = {}
+  activeTab: number = 1
   constructor(public dataService: DataService, public modal: NgbActiveModal, public settings: SettingsService) {
     for (const c in this.settings.settings.columnSize) {
       if (c in this.columnSize) {
@@ -147,5 +148,15 @@ export class SampleOrderAndHideComponent implements OnInit {
     for (const s of this.samples[condition]) {
       this.samplesVisible[s] = this.batchToggle[condition]
     }
+  }
+
+  getContrastColor(hexColor: string): string {
+    if (!hexColor) return '#000000'
+    const hex = hexColor.replace('#', '')
+    const r = parseInt(hex.substr(0, 2), 16)
+    const g = parseInt(hex.substr(2, 2), 16)
+    const b = parseInt(hex.substr(4, 2), 16)
+    const brightness = ((r * 299) + (g * 587) + (b * 114)) / 1000
+    return brightness > 155 ? '#000000' : '#ffffff'
   }
 }

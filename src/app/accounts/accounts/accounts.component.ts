@@ -34,6 +34,7 @@ export class AccountsComponent implements OnInit, OnDestroy {
   totalCollections: number = 0
   collectionSearchQuery: string = ''
   private readonly COLLECTIONS_PER_PAGE = 20
+  userCollections: any[] = []
 
   constructor(
     public accounts: AccountsService, 
@@ -74,6 +75,7 @@ export class AccountsComponent implements OnInit, OnDestroy {
         "PTM"
       );
       this.updateShowingLink(data);
+      await this.loadUserCollections();
     } catch (error) {
       this.errorMessage = 'Failed to load account information. Please try again.';
       console.error('Error initializing component:', error);
@@ -146,8 +148,6 @@ export class AccountsComponent implements OnInit, OnDestroy {
   }
 
   toggleLinkSelection(link: string): void {
-    const wasSelected = this.selectedLinks[link] || false;
-    this.selectedLinks[link] = !wasSelected;
     this.selectedCount = Object.values(this.selectedLinks).filter(Boolean).length;
   }
 
@@ -358,5 +358,49 @@ export class AccountsComponent implements OnInit, OnDestroy {
 
   viewCollectionSessions(collection: any): void {
     console.log('Viewing sessions for collection:', collection);
+  }
+
+  isCollectionOwner(collection: any): boolean {
+    return collection.owner_username === this.accounts.curtainAPI.user.username;
+  }
+
+  async loadUserCollections(): Promise<void> {
+    try {
+      const response = await this.accounts.getCollections(1, 100, '', true);
+      this.userCollections = response.results || [];
+    } catch (error) {
+      console.error('Failed to load user collections:', error);
+      this.userCollections = [];
+    }
+  }
+
+  async addSelectedLinksToCollection(collectionId: string): Promise<void> {
+    if (!collectionId) {
+      this.toast.show("Warning", "Please select a collection").then();
+      return;
+    }
+
+    const selectedIds = Object.keys(this.selectedLinks).filter(id => this.selectedLinks[id]);
+    if (selectedIds.length === 0) {
+      this.toast.show("Warning", "Please select at least one session").then();
+      return;
+    }
+
+    try {
+      this.isLoading = true;
+      await Promise.all(
+        selectedIds.map(linkId =>
+          this.accounts.addCurtainToCollection(parseInt(collectionId), linkId)
+        )
+      );
+      this.toast.show("Success", `Added ${selectedIds.length} session(s) to collection`).then();
+      this.selectedLinks = {};
+      this.selectedCount = 0;
+    } catch (error) {
+      console.error('Failed to add sessions to collection:', error);
+      this.toast.show("Error", "Failed to add sessions to collection").then();
+    } finally {
+      this.isLoading = false;
+    }
   }
 }

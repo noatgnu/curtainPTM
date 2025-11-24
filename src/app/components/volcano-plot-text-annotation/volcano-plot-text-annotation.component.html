@@ -1,145 +1,114 @@
 <div class="modal-header">
-  Volcano Text Annotation Editor
+  <h5 class="modal-title">
+    <i class="bi bi-fonts me-2"></i>Volcano Text Annotation Editor
+  </h5>
+  <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
 </div>
 <div class="modal-body">
-  <!--<table class="table table-borderless">
-    <thead>
-    <tr>
-      <th scope="col">
-        Name
-      </th>
-      <th scope="col">
-        Text
-      </th>
-      <th scope="col">
-        Font Size
-      </th>
-      <th scope="col">
-        Arrow Head
-      </th>
-      <th scope="col">
-        Arrow Size
-      </th>
-      <th scope="col">
-        Arrow Width
-      </th>
-      <th scope="col">
-        Anchor X
-      </th>
-      <th scope="col">
-        Anchor Y
-      </th>
-      <th scope="col">
-        Text Color
-      </th>
-    </tr>
-    </thead>
-    <tbody>
-    @for (a of annotationText; track a) {
-      <tr>
-      <td>
-        {{a.title}}
-      </td>
-      <td>
-        <input type="text" [(ngModel)]="a.data.text">
-      </td>
-      <td>
-        <input class="col-12" type="number" [(ngModel)]="a.data.font.size">
-      </td>
-      <td>
-        <input class="col-12" [max]="8" [min]="0" type="number" [(ngModel)]="a.data.arrowhead">
-      </td>
-      <td>
-        <input class="col-12" [min]="0.3" type="number" [(ngModel)]="a.data.arrowsize">
-      </td>
-      <td>
-        <input class="col-12" [min]="0.1" type="number" [(ngModel)]="a.data.arrowwidth">
-      </td>
-      <td>
-        <input class="col-12" type="number" [(ngModel)]="a.data.ax">
-      </td>
-      <td>
-        <input class="col-12" type="number" [(ngModel)]="a.data.ay">
-      </td>
-      <td>
-        <input class="col-12" [(colorPicker)]="a.data.font.color" [style.background]="a.data.font.color">
-      </td>
-      </tr>
-    }
-    </tbody>
-  </table>-->
-  @for (f of forms; track f.value['annotationID']) {
-    <form [formGroup]="f">
-      <h5>{{f.value["annotationID"]}}</h5>
-      <div class="d-flex">
-        <div class="p-2">
-          <div class="form-check">
-            <input class="form-check-input" formControlName="showannotation" type="checkbox">
-            <label class="form-check-label">Show Annotation</label>
+  <div class="card mb-3">
+    <div class="card-header">
+      <h6 class="mb-0"><i class="bi bi-collection me-2"></i>Apply to All Annotations</h6>
+    </div>
+    <div class="card-body">
+      <form [formGroup]="formAll" (ngSubmit)="submitFormAll()">
+        <div class="row g-3 align-items-end">
+          <div class="col-md-6">
+            <label for="globalFontSize" class="form-label">Font Size</label>
+            <input type="number" id="globalFontSize" class="form-control" formControlName="fontsize">
+          </div>
+          <div class="col-md-6">
+            <button class="btn btn-primary w-100" type="submit">
+              <i class="bi bi-check-all me-1"></i>Apply to All
+            </button>
           </div>
         </div>
-        <div class="p-2">
-          <div class="form-check">
-            <input class="form-check-input" formControlName="showarrow" type="checkbox">
-            <label class="form-check-label">Show Arrow</label>
-          </div>
-        </div>
+      </form>
+    </div>
+  </div>
+
+  @for (f of forms; track f; let i = $index) {
+    <div class="card mb-3">
+      <div class="card-header bg-light">
+        <h6 class="mb-0"><i class="bi bi-tag me-2"></i>{{f.value["annotationID"]}}</h6>
       </div>
-      <div class="d-flex">
-        <div class="p-2">
-          <div class="form-group">
-            <label>Arrow Head Type</label>
-            <input type="number" class="form-control" formControlName="arrowhead">
+      <div class="card-body">
+        <form [formGroup]="f">
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <div class="form-check">
+                <input class="form-check-input" formControlName="showannotation" type="checkbox" id="show-{{i}}">
+                <label class="form-check-label" for="show-{{i}}">
+                  <i class="bi bi-eye me-1"></i>Show Annotation
+                </label>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-check">
+                <input class="form-check-input" formControlName="showarrow" type="checkbox" id="arrow-{{i}}">
+                <label class="form-check-label" for="arrow-{{i}}">
+                  <i class="bi bi-arrow-up-right me-1"></i>Show Arrow
+                </label>
+              </div>
+            </div>
           </div>
-        </div>
-        <div class="p-2">
-          <div class="form-group">
-            <label>Arrow Size</label>
-            <input type="number" class="form-control" formControlName="arrowsize">
+
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label for="text-{{i}}" class="form-label">Annotation Text</label>
+              <textarea id="text-{{i}}" class="form-control" formControlName="text" rows="2"></textarea>
+            </div>
+            <div class="col-md-3">
+              <label for="fontsize-{{i}}" class="form-label">Font Size</label>
+              <input id="fontsize-{{i}}" type="number" class="form-control" formControlName="fontsize">
+            </div>
+            <div class="col-md-3">
+              <label for="fontcolor-{{i}}" class="form-label">Font Color</label>
+              <input id="fontcolor-{{i}}"
+                     (colorPickerChange)="updateColor($event, f.value['annotationID'])"
+                     formControlName="fontcolor"
+                     [(colorPicker)]="colorMap[f.value['annotationID']]"
+                     class="form-control"
+                     [style.background-color]="colorMap[f.value['annotationID']]">
+            </div>
           </div>
-        </div>
-        <div class="p-2">
-          <div class="form-group">
-            <label>Arrow Width</label>
-            <input type="number" class="form-control" formControlName="arrowwidth">
+
+          <div class="row g-3">
+            <div class="col-md-2">
+              <label for="arrowhead-{{i}}" class="form-label small">Arrow Head</label>
+              <input id="arrowhead-{{i}}" type="number" class="form-control form-control-sm" formControlName="arrowhead">
+            </div>
+            <div class="col-md-2">
+              <label for="arrowsize-{{i}}" class="form-label small">Arrow Size</label>
+              <input id="arrowsize-{{i}}" type="number" class="form-control form-control-sm" formControlName="arrowsize">
+            </div>
+            <div class="col-md-2">
+              <label for="arrowwidth-{{i}}" class="form-label small">Arrow Width</label>
+              <input id="arrowwidth-{{i}}" type="number" class="form-control form-control-sm" formControlName="arrowwidth">
+            </div>
+            <div class="col-md-3">
+              <label for="ax-{{i}}" class="form-label small">X Axis Offset</label>
+              <input id="ax-{{i}}" type="number" class="form-control form-control-sm" formControlName="ax">
+            </div>
+            <div class="col-md-3">
+              <label for="ay-{{i}}" class="form-label small">Y Axis Offset</label>
+              <input id="ay-{{i}}" type="number" class="form-control form-control-sm" formControlName="ay">
+            </div>
           </div>
-        </div>
-        <div class="p-2">
-          <div class="form-group">
-            <label>X axis offset</label>
-            <input type="number" class="form-control" formControlName="ax">
-          </div>
-        </div>
-        <div class="p-2">
-          <div class="form-group">
-            <label>Y axis offset</label>
-            <input type="number" class="form-control" formControlName="ay">
-          </div>
-        </div>
+        </form>
       </div>
-      <div class="d-flex">
-        <div class="p-2">
-          <div class="form-group">
-            <label>Font Size</label>
-            <input type="number" class="form-control" formControlName="fontsize">
-          </div>
-        </div>
-        <div class="p-2">
-          <div class="form-group">
-            <label>Font Color</label>
-            <input (colorPickerChange)="updateColor($event, f.value['annotationID'])" formControlName="fontcolor" [(colorPicker)]="colorMap[f.value['annotationID']]" class="form-control" [style.background-color]="colorMap[f.value['annotationID']]">
-          </div>
-        </div>
-      </div>
-      <div class="form-group">
-        <label>Annotation Text</label>
-        <textarea class="form-control" formControlName="text"></textarea>
-      </div>
-    </form>
-    <hr>
+    </div>
   }
 </div>
-<div class="modal-footer">
-  <button class="btn btn-primary" (click)="modal.close(forms)">Submit</button>
-  <button class="btn btn-danger" (click)="modal.dismiss()">Close</button>
+<div class="modal-footer d-flex justify-content-between">
+  <button class="btn btn-outline-primary" (click)="applyChanges()">
+    <i class="bi bi-arrow-repeat me-1"></i>Update Plot
+  </button>
+  <div class="d-flex gap-2">
+    <button class="btn btn-secondary" (click)="modal.dismiss()">
+      <i class="bi bi-x-lg me-1"></i>Cancel
+    </button>
+    <button class="btn btn-primary" (click)="modal.close(forms)">
+      <i class="bi bi-check-lg me-1"></i>Save & Close
+    </button>
+  </div>
 </div>

@@ -55,15 +55,35 @@ export class VolcanoColorsComponent implements OnInit {
 
   pasteColorArray() {
     if (this.form.value["colors"] !== "" && this.form.value["colors"] !== null && this.form.value["colors"] !== undefined) {
-      const colorArray = JSON.parse(this.form.value["colors"])
-      for (const c of colorArray) {
-        for (const g of this.colorGroups) {
-          if (g.group === c.group) {
-            g.color = c.color
+      try {
+        const colorArray = JSON.parse(this.form.value["colors"])
+        if (Array.isArray(colorArray)) {
+          let matchCount = 0
+          for (const c of colorArray) {
+            for (const g of this.colorGroups) {
+              if (g.group === c.group) {
+                g.color = c.color
+                matchCount++
+              }
+            }
           }
+          this.toast.show("Success", `Imported ${matchCount} color(s) successfully`).then()
+        } else {
+          this.toast.show("Error", "Invalid format. Expected an array of color objects.").then()
         }
+      } catch (error) {
+        this.toast.show("Error", "Failed to parse color array JSON").then()
       }
     }
+  }
 
+  getContrastColor(hexColor: string): string {
+    if (!hexColor) return '#000000'
+    const hex = hexColor.replace('#', '')
+    const r = parseInt(hex.substr(0, 2), 16)
+    const g = parseInt(hex.substr(2, 2), 16)
+    const b = parseInt(hex.substr(4, 2), 16)
+    const brightness = ((r * 299) + (g * 587) + (b * 114)) / 1000
+    return brightness > 155 ? '#000000' : '#ffffff'
   }
 }

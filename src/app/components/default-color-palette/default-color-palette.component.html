@@ -1,144 +1,153 @@
 <div class="modal-header">
   <h5 class="modal-title">
-    Default Color Palette Customization
+    <i class="bi bi-palette me-2"></i>Color Palette Customization
   </h5>
+  <button type="button" class="btn-close" aria-label="Close" (click)="close()"></button>
 </div>
 <div class="modal-body">
-  <p>
-    These are the default colors that will be used for colorable components of plots that do not have a fixed color yet. These colors will be used in the order they are listed and would cycle to the begin of the list once it has reached the last color. You can customize the default color palette by selecting a built-in palette or by creating a custom palette.
-  </p>
-  <div class="d-flex justify-content-center">
-    <div class="p-2">
-      <table class="table table-borderless">
-        <thead>
-        <tr style="height: 50px">
-          <th scope="col">
-            Current Palette
-            <br>
-          </th>
-        </tr>
-        </thead>
-        <tbody>
-        @for (c of currentColor; track c) {
-          <tr>
-            <td>
-              <input disabled class="form-control" [style.background-color]="c">
-            </td>
-          </tr>
-        }
-        </tbody>
-      </table>
-      <div class="mt-2">
-        <button  class="btn btn-sm btn-primary" (click)="openCustomPalette('current')">Customize Palette</button>
-      </div>
-    </div>
-    <div class="p-2">
-      <table class="table table-borderless">
-        <thead>
-        <tr style="height: 50px">
-          <th scope="col">
-            <label for="colorPalette">Select a built-in palette</label>
-          </th>
-          <th scope="col">
-            <form [formGroup]="form">
-              <div class="form-group">
-                <select id="colorPalette" class="form-control-sm" formControlName="colorPalette">
-                  <option [value]="''"></option>
-                  @for (o of colorPaletteList; track o) {
-                    <option [value]="o">{{o}}</option>
-                  }
-                </select>
-              </div>
-            </form>
-          </th>
-        </tr>
-        </thead>
-        <tbody>
-        @for (c of selectedColor; track c) {
-          <tr>
-            <td>
-              <input disabled class="form-control" [style.background-color]="c">
-            </td>
-            <td></td>
-          </tr>
-        }
-        </tbody>
-      </table>
-      @if (selectedColor.length > 0) {
-        <div class="mt-2">
-          <button class="btn btn-sm btn-primary" (click)="openCustomPalette(form.value['colorPalette'])">Customize Palette</button>
+  <div class="alert alert-info" role="alert">
+    <i class="bi bi-info-circle me-2"></i>
+    <strong>How it works:</strong> These colors are applied to plot components in order and cycle back to the beginning when all colors are used.
+  </div>
+  <div class="row g-3">
+    <div class="col-md-4">
+      <div class="card h-100">
+        <div class="card-header">
+          <h6 class="mb-0"><i class="bi bi-palette-fill me-2"></i>Current Palette</h6>
         </div>
-      }
-
-    </div>
-    @if (customPalette.length>0) {
-      <div class="p-2">
-      <table class="table table-borderless">
-        <thead>
-        <tr style="height: 50px">
-          <th scope="col">
-            Custom Palette
-            <br>
-          </th>
-          <th scope="col"></th>
-        </tr>
-        </thead>
-        <tbody>
-        @for (c of customPalette; track $index; let ind = $index) {
-          <tr>
-            <td>
-              <input class="form-control"
-                     [(colorPicker)]="customPalette[ind].new"
-                     [style.background]="customPalette[ind].new"
-                     id="color-settings-for-{{ind}}"
-              >
-            </td>
-            <td><button class="btn btn-sm btn-primary" (click)="removeCustomColor(ind)">-</button></td>
-          </tr>
-        }
-        <tr>
-          <td>
-            <button class="btn btn-sm btn-primary" (click)="addCustomColor()">+</button>
-          </td>
-        </tr>
-        </tbody>
-      </table>
-      <div class="mt-2">
-        <button class="btn btn-sm btn-primary" (click)="clearCustomPalette()">Clear Palette</button>
+        <div class="card-body">
+          <div class="d-flex flex-wrap gap-2 mb-3">
+            @for (c of currentColor; track c; let i = $index) {
+              <div class="color-swatch-container">
+                <div class="color-swatch" [style.background-color]="c" [title]="c"></div>
+                <small class="text-muted">{{i + 1}}</small>
+              </div>
+            }
+          </div>
+          <button class="btn btn-outline-primary btn-sm w-100" (click)="openCustomPalette('current')">
+            <i class="bi bi-pencil me-1"></i>Customize Current
+          </button>
+        </div>
       </div>
     </div>
+
+    <div class="col-md-4">
+      <div class="card h-100">
+        <div class="card-header">
+          <h6 class="mb-0"><i class="bi bi-collection me-2"></i>Built-in Palettes</h6>
+        </div>
+        <div class="card-body">
+          <form [formGroup]="form">
+            <div class="mb-3">
+              <label for="colorPalette" class="form-label small">Select a palette</label>
+              <select id="colorPalette" class="form-select form-select-sm" formControlName="colorPalette">
+                <option [value]="''">-- Choose a palette --</option>
+                @for (o of colorPaletteList; track o) {
+                  <option [value]="o">{{o}}</option>
+                }
+              </select>
+            </div>
+          </form>
+          @if (selectedColor.length > 0) {
+            <div class="d-flex flex-wrap gap-2 mb-3">
+              @for (c of selectedColor; track c; let i = $index) {
+                <div class="color-swatch-container">
+                  <div class="color-swatch" [style.background-color]="c" [title]="c"></div>
+                  <small class="text-muted">{{i + 1}}</small>
+                </div>
+              }
+            </div>
+            <button class="btn btn-outline-primary btn-sm w-100" (click)="openCustomPalette(form.value['colorPalette'])">
+              <i class="bi bi-pencil me-1"></i>Customize Selected
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+
+    @if (customPalette.length > 0) {
+      <div class="col-md-4">
+        <div class="card h-100 border-primary">
+          <div class="card-header bg-primary bg-opacity-10">
+            <h6 class="mb-0"><i class="bi bi-brush me-2"></i>Custom Palette</h6>
+          </div>
+          <div class="card-body">
+            <div class="mb-3">
+              @for (c of customPalette; track c; let ind = $index) {
+                <div class="d-flex align-items-center mb-2">
+                  <small class="text-muted me-2" style="width: 20px;">{{ind + 1}}</small>
+                  <input class="form-control form-control-sm color-input"
+                         [(colorPicker)]="customPalette[ind].new"
+                         [style.background]="customPalette[ind].new"
+                         [style.color]="getContrastColor(customPalette[ind].new)"
+                         [value]="customPalette[ind].new"
+                         id="color-settings-for-{{ind}}">
+                  <button class="btn btn-outline-danger btn-sm ms-2" (click)="removeCustomColor(ind)" title="Remove color">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+              }
+            </div>
+            <div class="d-grid gap-2">
+              <button class="btn btn-outline-success btn-sm" (click)="addCustomColor()">
+                <i class="bi bi-plus-circle me-1"></i>Add Color
+              </button>
+              <button class="btn btn-outline-secondary btn-sm" (click)="clearCustomPalette()">
+                <i class="bi bi-x-circle me-1"></i>Clear Palette
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     }
   </div>
-  <div class="mt-2">
-    <textarea class="form-control" #config></textarea>
-    <div class="d-flex">
-      <div class="p-2">
-        <button class="btn btn-sm btn-primary" (click)="parseConfig(config.value)">Parse Custom Palette Config</button>
-      </div>
-      <div class="p-2">
-        <button class="btn btn-sm btn-primary" (click)="copyColorListToClipboard()">Copy Current Palette</button>
+
+  <div class="card mt-3">
+    <div class="card-header">
+      <h6 class="mb-0"><i class="bi bi-code-square me-2"></i>Import/Export</h6>
+    </div>
+    <div class="card-body">
+      <label for="paletteConfig" class="form-label small">Paste palette JSON to import</label>
+      <textarea
+        id="paletteConfig"
+        class="form-control form-control-sm font-monospace mb-2"
+        rows="3"
+        placeholder='["#FF0000", "#00FF00", "#0000FF"]'
+        #config></textarea>
+      <div class="d-flex gap-2">
+        <button class="btn btn-outline-primary btn-sm" (click)="parseConfig(config.value)">
+          <i class="bi bi-upload me-1"></i>Import Palette
+        </button>
+        <button class="btn btn-outline-secondary btn-sm" (click)="copyColorListToClipboard()">
+          <i class="bi bi-clipboard me-1"></i>Copy Current
+        </button>
       </div>
     </div>
-
   </div>
 </div>
-<div class="modal-footer">
+<div class="modal-footer d-flex justify-content-between align-items-center">
   <form [formGroup]="form">
-    <div class="form-check">
-      <input type="checkbox" id="resetVolcanoColor" class="form-check-input" formControlName="resetVolcanoColor">
-      <label class="form-check-label" for="resetVolcanoColor">
-        Reset Volcano Plot Color
-      </label>
-    </div>
-    <div class="form-check">
-      <input type="checkbox" id="resetBarChartColor" class="form-check-input" formControlName="resetBarChartColor">
-      <label class="form-check-label" for="resetBarChartColor">
-        Reset Bar Chart Color
-      </label>
+    <div class="d-flex gap-3">
+      <div class="form-check">
+        <input type="checkbox" id="resetVolcanoColor" class="form-check-input" formControlName="resetVolcanoColor">
+        <label class="form-check-label small" for="resetVolcanoColor">
+          <i class="bi bi-arrow-clockwise me-1"></i>Reset Volcano Colors
+        </label>
+      </div>
+      <div class="form-check">
+        <input type="checkbox" id="resetBarChartColor" class="form-check-input" formControlName="resetBarChartColor">
+        <label class="form-check-label small" for="resetBarChartColor">
+          <i class="bi bi-arrow-clockwise me-1"></i>Reset Bar Chart Colors
+        </label>
+      </div>
     </div>
   </form>
-  <button class="btn btn-primary" (click)="updateColor()">Update Color Palette</button>
-  <button class="btn btn-danger" (click)="close()" type="button">
-    Close
-  </button>
+  <div class="d-flex gap-2">
+    <button class="btn btn-secondary" (click)="close()" type="button">
+      <i class="bi bi-x-lg me-1"></i>Cancel
+    </button>
+    <button class="btn btn-primary" (click)="updateColor()">
+      <i class="bi bi-check-lg me-1"></i>Apply Changes
+    </button>
+  </div>
 </div>

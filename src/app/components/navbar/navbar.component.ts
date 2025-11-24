@@ -40,6 +40,7 @@ import {
 import {
   CollectionSessionsViewerModalComponent
 } from "../collection-sessions-viewer-modal/collection-sessions-viewer-modal.component";
+import {ThemeService} from "../../theme.service";
 
 @Component({
     selector: 'app-navbar',
@@ -77,7 +78,8 @@ export class NavbarComponent implements OnInit {
     public accounts: AccountsService,
     private toast: ToastService,
     private uniprot: UniprotService,
-    private saveState: SaveStateService
+    private saveState: SaveStateService,
+    public themeService: ThemeService
   ) {
     if (this.subscription) {
       this.subscription.unsubscribe()
