@@ -68,6 +68,7 @@ export class NavbarComponent implements OnInit {
   sessionCollections: any[] = []
   selectedCollectionId: number | null = null
   loadingCollections: boolean = false
+  sessionLinkDismissed = signal(false)
 
   constructor(
     public web: WebService,
@@ -278,6 +279,7 @@ export class NavbarComponent implements OnInit {
           this.uniqueLink = location.origin + "/#/" + this.settings.settings.currentID
           this.uniprot.uniprotProgressBar.next({value: 100, text: "Session data saved"})
           this.permanent = response.curtain.permanent
+          this.sessionLinkDismissed.set(false)
           this.data.session = response.curtain
           this.finished = true
         }
@@ -298,6 +300,7 @@ export class NavbarComponent implements OnInit {
         this.uniqueLink = location.origin + "/#/" + this.settings.settings.currentID
         this.uniprot.uniprotProgressBar.next({value: 100, text: "Session data saved"})
         this.permanent = data.data.permanent
+        this.sessionLinkDismissed.set(false)
         this.data.session = data.data
         this.finished = true
       }
@@ -609,5 +612,25 @@ export class NavbarComponent implements OnInit {
       const ref = this.modal.open(CollectionSessionsViewerModalComponent, {size: "lg", scrollable: true})
       ref.componentInstance.collectionId = this.selectedCollectionId
     }
+  }
+
+  get availableThemes() {
+    return this.themeService.getAvailableThemes()
+  }
+
+  get currentThemeName() {
+    return this.themeService.getCurrentThemeName()
+  }
+
+  selectTheme(themeName: string): void {
+    this.themeService.setName(themeName as any)
+  }
+
+  setThemeMode(mode: 'light' | 'dark'): void {
+    this.themeService.setMode(mode)
+  }
+
+  dismissSessionLink(): void {
+    this.sessionLinkDismissed.set(true)
   }
 }

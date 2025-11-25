@@ -1,77 +1,372 @@
+<!-- Help Panel -->
+@if (showHelpPanel()) {
+  <div class="card help-panel" style="position: fixed; z-index: 1031; top: 60px; right: 20px; width: 400px; max-height: calc(100vh - 80px); overflow-y: auto;">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+      <h6 class="mb-0">
+        <i class="bi bi-question-circle me-2"></i>Command Help
+      </h6>
+      <button type="button" class="btn-close btn-close-white" aria-label="Close" (click)="toggleHelp()"></button>
+    </div>
+    <div class="card-body">
+      <div class="alert alert-info small mb-3">
+        <i class="bi bi-info-circle me-2"></i>
+        Type commands in the chat box starting with <code>!</code>. Use <code>@</code> to reference genes/proteins with autocomplete.
+      </div>
+
+      <!-- Search Commands -->
+      <div class="mb-4">
+        <h6 class="border-bottom pb-2">
+          <i class="bi bi-search me-2"></i>Search Commands
+        </h6>
+
+        <div class="command-item mb-3">
+          <div class="d-flex justify-content-between align-items-start">
+            <code class="text-primary">!searchgene</code>
+            <span class="badge bg-success">Search</span>
+          </div>
+          <p class="small mb-1 mt-2">Search for proteins by gene names</p>
+          <div class="example">
+            <strong>Example:</strong>
+            <code class="d-block">!searchgene @TP53 @BRCA1</code>
+          </div>
+        </div>
+
+        <div class="command-item mb-3">
+          <div class="d-flex justify-content-between align-items-start">
+            <code class="text-primary">!searchpid</code>
+            <span class="badge bg-success">Search</span>
+          </div>
+          <p class="small mb-1 mt-2">Search for proteins by primary IDs</p>
+          <div class="example">
+            <strong>Example:</strong>
+            <code class="d-block">!searchpid @P04637 @P38398</code>
+          </div>
+        </div>
+      </div>
+
+      <!-- Annotation Commands -->
+      <div class="mb-4">
+        <h6 class="border-bottom pb-2">
+          <i class="bi bi-tags me-2"></i>Annotation Commands
+        </h6>
+
+        <div class="command-item mb-3">
+          <div class="d-flex justify-content-between align-items-start">
+            <code class="text-primary">!anngene</code>
+            <span class="badge bg-warning">Annotate</span>
+          </div>
+          <p class="small mb-1 mt-2">Add/remove annotations by gene names</p>
+          <div class="example">
+            <strong>Add:</strong>
+            <code class="d-block">!anngene -a @TP53 @BRCA1</code>
+            <strong>Remove:</strong>
+            <code class="d-block">!anngene -r @TP53 @BRCA1</code>
+          </div>
+        </div>
+
+        <div class="command-item mb-3">
+          <div class="d-flex justify-content-between align-items-start">
+            <code class="text-primary">!annpid</code>
+            <span class="badge bg-warning">Annotate</span>
+          </div>
+          <p class="small mb-1 mt-2">Add/remove annotations by primary IDs</p>
+          <div class="example">
+            <strong>Add:</strong>
+            <code class="d-block">!annpid -a @P04637</code>
+            <strong>Remove:</strong>
+            <code class="d-block">!annpid -r @P04637</code>
+          </div>
+        </div>
+      </div>
+
+      <!-- State Management Commands -->
+      <div class="mb-4">
+        <h6 class="border-bottom pb-2">
+          <i class="bi bi-save me-2"></i>State Management
+        </h6>
+
+        <div class="command-item mb-3">
+          <div class="d-flex justify-content-between align-items-start">
+            <code class="text-primary">!savestate</code>
+            <span class="badge bg-info">State</span>
+          </div>
+          <p class="small mb-1 mt-2">Save current visualization settings</p>
+          <div class="example">
+            <strong>Save:</strong>
+            <code class="d-block">!savestate</code>
+          </div>
+        </div>
+
+        <div class="command-item mb-3">
+          <div class="d-flex justify-content-between align-items-start">
+            <code class="text-primary">!savestate -l</code>
+            <span class="badge bg-info">State</span>
+          </div>
+          <p class="small mb-1 mt-2">Load a saved state by ID</p>
+          <div class="example">
+            <strong>Example:</strong>
+            <code class="d-block">!savestate -l 0</code>
+          </div>
+        </div>
+
+        <div class="command-item mb-3">
+          <div class="d-flex justify-content-between align-items-start">
+            <code class="text-primary">!savestate -a</code>
+            <span class="badge bg-info">State</span>
+          </div>
+          <p class="small mb-1 mt-2">List all available saved states</p>
+          <div class="example">
+            <strong>Example:</strong>
+            <code class="d-block">!savestate -a</code>
+          </div>
+        </div>
+
+        <div class="command-item mb-3">
+          <div class="d-flex justify-content-between align-items-start">
+            <code class="text-primary">!savestate -r</code>
+            <span class="badge bg-danger">State</span>
+          </div>
+          <p class="small mb-1 mt-2">Remove a saved state by ID</p>
+          <div class="example">
+            <strong>Example:</strong>
+            <code class="d-block">!savestate -r 0</code>
+          </div>
+        </div>
+
+        <div class="command-item mb-3">
+          <div class="d-flex justify-content-between align-items-start">
+            <code class="text-primary">!savestate -ra</code>
+            <span class="badge bg-danger">State</span>
+          </div>
+          <p class="small mb-1 mt-2">Remove all saved states</p>
+          <div class="example">
+            <strong>Example:</strong>
+            <code class="d-block">!savestate -ra</code>
+          </div>
+        </div>
+
+        <div class="command-item mb-3">
+          <div class="d-flex justify-content-between align-items-start">
+            <code class="text-primary">!savestate -p</code>
+            <span class="badge bg-primary">State</span>
+          </div>
+          <p class="small mb-1 mt-2">Push state to other connected users</p>
+          <div class="example">
+            <strong>Example:</strong>
+            <code class="d-block">!savestate -p</code>
+          </div>
+        </div>
+      </div>
+
+      <!-- System Commands -->
+      <div class="mb-4">
+        <h6 class="border-bottom pb-2">
+          <i class="bi bi-gear me-2"></i>System Commands
+        </h6>
+
+        <div class="command-item mb-3">
+          <div class="d-flex justify-content-between align-items-start">
+            <code class="text-primary">!rd</code>
+            <span class="badge bg-secondary">System</span>
+          </div>
+          <p class="small mb-1 mt-2">Redraw all plots and refresh visualizations</p>
+          <div class="example">
+            <strong>Example:</strong>
+            <code class="d-block">!rd</code>
+          </div>
+        </div>
+
+        <div class="command-item mb-3">
+          <div class="d-flex justify-content-between align-items-start">
+            <code class="text-primary">!instructor</code>
+            <span class="badge bg-secondary">System</span>
+          </div>
+          <p class="small mb-1 mt-2">Toggle instructor mode for teaching</p>
+          <div class="example">
+            <strong>Example:</strong>
+            <code class="d-block">!instructor</code>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tips -->
+      <div class="alert alert-success small mb-0">
+        <strong><i class="bi bi-lightbulb me-2"></i>Tips:</strong>
+        <ul class="mb-0 ps-3">
+          <li>Use autocomplete by typing <code>@</code> after command</li>
+          <li>Separate multiple items with spaces</li>
+          <li>Drag & drop selections into chat to share</li>
+          <li>Chat messages (no <code>!</code>) are sent to others</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Chat Panel -->
 @if (toggleChatPanel()) {
-  <div class="card" style="position: fixed; z-index: 1030; bottom: 110px; left: 50px; min-width: 200px; max-width: 400px; min-height: 400px; max-height: 400px">
-  <div class="card-body d-flex flex-column justify-content-between">
-    <div (drop)="handleDrop($event)" (dragover)="handleDragOver($event)" class="p-1 d-flex flex-column-reverse" style="overflow-y: auto; height: 300px" #chatbox>
+<div class="card chat-panel" style="position: fixed; z-index: 1030; bottom: 110px; left: 120px; width: 450px; height: 500px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+  <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+    <h6 class="mb-0">
+      <i class="bi bi-chat-dots me-2"></i>Live Chat
+      @if (ws.connection) {
+        <span class="badge bg-success ms-2">
+          <i class="bi bi-circle-fill" style="font-size: 8px;"></i> Connected
+        </span>
+      } @else {
+        <span class="badge bg-danger ms-2">
+          <i class="bi bi-circle-fill" style="font-size: 8px;"></i> Disconnected
+        </span>
+      }
+    </h6>
+    <div>
+      <button type="button" class="btn btn-sm btn-outline-light me-2" (click)="toggleHelp()" title="Command help">
+        <i class="bi bi-question-circle"></i>
+      </button>
+      <button type="button" class="btn btn-sm btn-outline-light" (click)="toggleChat()" title="Minimize">
+        <i class="bi bi-dash-lg"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="card-body d-flex flex-column p-0" style="height: calc(100% - 56px);">
+    <!-- Messages Area -->
+    <div
+      (drop)="handleDrop($event)"
+      (dragover)="handleDragOver($event)"
+      class="p-3 d-flex flex-column-reverse flex-grow-1"
+      style="overflow-y: auto; background: var(--bs-body-bg);"
+      #chatbox>
       <div></div>
       @for (m of messagesList; track m) {
-        <div>
+        <div class="message-item mb-2">
           @if (m.requestType==='push-state-all-force') {
-            <span class="text-danger">State updated</span> <br>
+            <div class="alert alert-danger alert-sm mb-0 py-1 px-2">
+              <i class="bi bi-arrow-clockwise me-1"></i>
+              <span class="small">State updated</span>
+            </div>
           }
           @if (m.requestType==='push-state-all') {
-            <span class="badge bg-info" (click)="loadSentState(m.message.data)">Click to load save state</span> <br>
+            <div class="alert alert-info alert-sm mb-0 py-1 px-2">
+              <button class="btn btn-sm btn-info" (click)="loadSentState(m.message.data)">
+                <i class="bi bi-download me-1"></i>Click to load state
+              </button>
+            </div>
           }
           @if (m.requestType==='chat') {
-            {{m.message.message}} <br>
+            <div class="chat-message">
+              <div class="message-bubble">
+                {{m.message.message}}
+              </div>
+            </div>
           }
           @if (m.requestType==='chat-selection-group') {
-            <span class="badge bg-danger" (click)="searchChatSelectionGroup(m.message)">{{m.message.title}}</span> <br>
+            <button class="btn btn-sm btn-outline-primary" (click)="searchChatSelectionGroup(m.message)">
+              <i class="bi bi-search me-1"></i>{{m.message.title}}
+            </button>
           }
           @if (m.requestType==='chat-selection-single') {
-            <span class="badge bg-danger" (click)="searchChatSelectionSingle(m.message)">{{m.message.title}}</span> <br>
+            <button class="btn btn-sm btn-outline-primary" (click)="searchChatSelectionSingle(m.message)">
+              <i class="bi bi-search me-1"></i>{{m.message.title}}
+            </button>
           }
           @if (m.requestType==='chat-system') {
-            {{m.message.message}}<br>
+            <div class="alert alert-secondary alert-sm mb-0 py-1 px-2">
+              <i class="bi bi-info-circle me-1"></i>
+              <span class="small">{{m.message.message}}</span>
+            </div>
           }
           @if (m.requestType.startsWith('chat-system-save-state')) {
             @if (m.requestType.endsWith('all')) {
-              <ul>
-                Available States:
-                @for (s of m.message.message.data; track s) {
-                  <li>
-                    <span class="badge bg-info" (click)="loadStateDirect(s)">{{s}}</span>
-                  </li>
-                }
-              </ul>
+              <div class="alert alert-info alert-sm mb-0 py-1 px-2">
+                <strong class="small">Available States:</strong>
+                <div class="mt-1">
+                  @for (s of m.message.message.data; track s) {
+                    <button class="btn btn-xs btn-outline-info me-1 mb-1" (click)="loadStateDirect(s)">
+                      <i class="bi bi-save me-1"></i>#{{s}}
+                    </button>
+                  }
+                </div>
+              </div>
             } @else {
-              {{m.message.message}}<br>
+              <div class="alert alert-info alert-sm mb-0 py-1 px-2">
+                <i class="bi bi-save me-1"></i>
+                <span class="small">{{m.message.message}}</span>
+              </div>
             }
           }
-          <small class="text-sm-end text-muted" style="font-size: 10px">{{senderMap[m.senderID]}} - {{m.message.timestamp|date:'short'}}</small>
+          <div class="message-meta text-end">
+            <small class="text-muted" style="font-size: 10px">
+              <i class="bi bi-person me-1"></i>{{senderMap[m.senderID]}}
+              <i class="bi bi-clock ms-2 me-1"></i>{{m.message.timestamp|date:'short'}}
+            </small>
+          </div>
         </div>
       }
     </div>
-    <div class="p-1">
+
+    <!-- Drag & Drop Hint -->
+    <div class="px-3 py-2 bg-light border-top">
+      <small class="text-muted">
+        <i class="bi bi-info-circle me-1"></i>
+        Drag selections here to share. Type <code>!</code> for commands, <code>?</code> for help.
+      </small>
+    </div>
+
+    <!-- Input Area -->
+    <div class="p-2 border-top">
       <form #chatForm="ngForm" (ngSubmit)="sendMessage()" [formGroup]="form">
-        <div class="d-flex">
-          <div class="p-2">
-            <input spellcheck="false" type="text" [editable]="true" class="form-control" formControlName="message" [ngbTypeahead]="typeAheadCommandComplete" [inputFormatter]="formatTypeAheadCommandComplete">
-          </div>
-          <div class="p-2">
-            <button type="submit" class="btn btn-outline-primary">
-              <span class="bi bi-send"></span>
-            </button>
-          </div>
+        <div class="input-group">
+          <input
+            spellcheck="false"
+            type="text"
+            class="form-control"
+            formControlName="message"
+            [ngbTypeahead]="typeAheadCommandComplete"
+            [inputFormatter]="formatTypeAheadCommandComplete"
+            placeholder="Type a message or command..."
+            (keydown.enter)="$event.preventDefault(); sendMessage()">
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-send"></i>
+          </button>
         </div>
       </form>
     </div>
   </div>
-  </div>
+</div>
 }
 
-<div class="float-start" style="position: fixed; z-index: 1030; bottom: 50px; left: 50px">
-  <div class="d-flex">
-    <div class="p-2">
-      <button class="btn btn-sm btn-outline-info" (click)="toggleChat()">
-        <span class="bi bi-chat"></span>
-      </button>
-    </div>
+<!-- Floating Control Buttons -->
+<div class="floating-controls" style="position: fixed; z-index: 1030; bottom: 50px; left: 50px;">
+  <div class="btn-group-vertical shadow" role="group">
+    <button
+      class="btn btn-lg"
+      [ngClass]="toggleChatPanel() ? 'btn-primary' : 'btn-outline-primary'"
+      (click)="toggleChat()"
+      title="Toggle chat panel">
+      <i class="bi bi-chat-dots"></i>
+      @if (unreadCount() > 0 && !toggleChatPanel()) {
+        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+          {{unreadCount()}}
+        </span>
+      }
+    </button>
+
+    <button
+      class="btn btn-lg"
+      [ngClass]="showHelpPanel() ? 'btn-info' : 'btn-outline-info'"
+      (click)="toggleHelp()"
+      title="Command help">
+      <i class="bi bi-question-circle"></i>
+    </button>
+
     @if (data.instructorMode) {
-      <div class="p-2">
-        <button class="btn btn-sm btn-outline-danger" (click)="forcePushState()">
-          <span class="bi bi-arrow-up-right"></span>
-        </button>
-      </div>
+      <button
+        class="btn btn-lg btn-outline-danger"
+        (click)="forcePushState()"
+        title="Force push state to all users">
+        <i class="bi bi-arrow-up-right"></i>
+      </button>
     }
   </div>
 </div>

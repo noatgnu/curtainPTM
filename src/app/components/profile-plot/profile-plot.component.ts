@@ -21,6 +21,8 @@ export class ProfilePlotComponent implements OnInit, OnDestroy {
   revision: number = 0;
   @Input() divId = "profile"
   boxplot: boolean = true
+  sampleCount = 0
+  hideInfo = false
   _data: IDataFrame = new DataFrame()
   @Input() set data(value: IDataFrame) {
     this._data = value
@@ -140,6 +142,7 @@ export class ProfilePlotComponent implements OnInit, OnDestroy {
     this.graphLayout.xaxis.tickvals = tickval
     this.graphLayout.xaxis.ticktext = ticktext
 
+    this.sampleCount = sampleNumber
     this.graphBox = graphBox
     this.toast.show("Profile Plot", "Completed Constructing Box Plots").then(r => {})
   }

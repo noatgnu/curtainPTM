@@ -1,41 +1,6 @@
 <nav class="navbar navbar-expand-lg fixed-top shadow-sm" [attr.data-bs-theme]="themeService.getCurrentTheme()" style="background-color: var(--app-bg-secondary); backdrop-filter: blur(10px);">
   <div class="container-fluid">
     <a class="navbar-brand fw-bold" href="#">Curtain<span class="text-danger">PTM</span></a>
-    @if (finished && settings.settings.currentID !== '') {
-      <div class="d-flex align-items-center me-auto">
-        @if (uniqueLink !== '') {
-          <a href="{{uniqueLink}}" class="me-2 text-success text-truncate session-link">{{uniqueLink}}</a>
-        }
-
-        @if (!data.session.permanent) {
-          <span class="badge bg-danger me-2">Temporary</span>
-        } @else {
-          @if (isDOI && data.session) {
-            @if (data.session.data_cite) {
-              <span class="badge me-2" [ngClass]="{
-                'bg-warning': data.session.data_cite.status === 'draft',
-                'bg-success': data.session.data_cite.status === 'published',
-                'bg-danger': data.session.data_cite.status !== 'draft' && data.session.data_cite.status !== 'published'
-              }">
-                {{data.session.data_cite.status === 'draft' ? 'DOI Draft' :
-                data.session.data_cite.status === 'published' ? 'DOI Permanent' : 'DOI Pending'}}
-              </span>
-            }
-          } @else {
-            @if (!isDOI) {
-              <span class="badge bg-success me-2">Permanent</span>
-            }
-          }
-        }
-
-        <button class="btn btn-sm btn-outline-info me-1" (click)="copyToClipboard(uniqueLink)">
-          <i class="bi bi-clipboard"></i>
-        </button>
-        <button class="btn btn-sm btn-outline-warning" (click)="openQRCode()">
-          <i class="bi bi-qr-code"></i>
-        </button>
-      </div>
-    }
 
     @if (progressEvent && !finished) {
       <div class="glitch-element me-auto">
@@ -264,14 +229,100 @@
         </div>
       </div>
 
-      <div>
-        <button class="btn btn-outline-secondary" (click)="themeService.toggleTheme()" title="Toggle Dark Mode">
-          <i class="bi" [ngClass]="themeService.isDarkMode() ? 'bi-sun-fill' : 'bi-moon-fill'"></i>
-        </button>
+      <div class="me-2">
+        <div display="dynamic" ngbDropdown>
+          <button class="btn btn-outline-secondary" id="dropdownTheme" ngbDropdownToggle>
+            @if (themeService.isDarkMode()) {
+              <i class="bi bi-moon-fill"></i>
+            } @else {
+              <i class="bi bi-sun-fill"></i>
+            }
+          </button>
+          <div ngbDropdownMenu aria-labelledby="dropdownTheme" class="dropdown-menu-end">
+            <h6 class="dropdown-header">
+              <i class="bi bi-palette me-2"></i>Theme
+            </h6>
+            @for (theme of availableThemes; track theme.name) {
+              <button
+                ngbDropdownItem
+                (click)="selectTheme(theme.name)"
+                [class.active]="currentThemeName === theme.name">
+                <i class="bi bi-check2 me-2" [class.invisible]="currentThemeName !== theme.name"></i>
+                {{theme.displayName}}
+              </button>
+            }
+            <div class="dropdown-divider"></div>
+            <h6 class="dropdown-header">
+              <i class="bi bi-brightness-high me-2"></i>Mode
+            </h6>
+            <button ngbDropdownItem (click)="setThemeMode('light')" [class.active]="!themeService.isDarkMode()">
+              <i class="bi bi-check2 me-2" [class.invisible]="themeService.isDarkMode()"></i>
+              <i class="bi bi-sun me-1"></i>Light
+            </button>
+            <button ngbDropdownItem (click)="setThemeMode('dark')" [class.active]="themeService.isDarkMode()">
+              <i class="bi bi-check2 me-2" [class.invisible]="!themeService.isDarkMode()"></i>
+              <i class="bi bi-moon me-1"></i>Dark
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </nav>
+
+<!-- Floating Session Link Panel -->
+@if (finished && settings.settings.currentID !== '' && uniqueLink !== '' && !sessionLinkDismissed()) {
+  <div class="alert alert-dismissible fade show shadow-lg"
+       style="position: fixed; top: 80px; right: 20px; z-index: 1029; max-width: 600px; width: 90%;"
+       [ngClass]="{
+         'alert-danger': !data.session.permanent,
+         'alert-warning': data.session.permanent && isDOI && data.session.data_cite?.status === 'draft',
+         'alert-success': data.session.permanent && (!isDOI || data.session.data_cite?.status === 'published'),
+         'alert-info': data.session.permanent && isDOI && data.session.data_cite?.status !== 'draft' && data.session.data_cite?.status !== 'published'
+       }">
+    <button type="button" class="btn-close" (click)="dismissSessionLink()" aria-label="Close"></button>
+    <div class="d-flex align-items-center">
+      <div class="flex-grow-1 me-3">
+        <h6 class="alert-heading mb-2">
+          <i class="bi bi-link-45deg me-2"></i>Session Link
+          @if (!data.session.permanent) {
+            <span class="badge bg-dark ms-2">Temporary</span>
+          } @else {
+            @if (isDOI && data.session?.data_cite) {
+              <span class="badge bg-dark ms-2">
+                {{data.session?.data_cite?.status === 'draft' ? 'DOI Draft' :
+                    data.session?.data_cite?.status === 'published' ? 'DOI Permanent' : 'DOI Pending'}}
+              </span>
+            } @else {
+              @if (!isDOI) {
+                <span class="badge bg-dark ms-2">Permanent</span>
+              }
+            }
+          }
+        </h6>
+        <div class="small mb-2">
+          <a [href]="uniqueLink" class="text-decoration-none fw-bold" target="_blank" style="word-break: break-all;">
+            {{uniqueLink}}
+          </a>
+        </div>
+        @if (!data.session.permanent) {
+          <div class="small text-muted">
+            <i class="bi bi-info-circle me-1"></i>
+            This is a temporary link. Save your session to make it permanent.
+          </div>
+        }
+      </div>
+      <div class="d-flex flex-column gap-2">
+        <button [ngClass]="themeService.isDarkMode() ? 'btn btn-sm btn-outline-light' : 'btn btn-sm btn-outline-dark'" (click)="copyToClipboard(uniqueLink)" title="Copy to clipboard">
+          <i class="bi bi-clipboard"></i>
+        </button>
+        <button [ngClass]="themeService.isDarkMode() ? 'btn btn-sm btn-outline-light' : 'btn btn-sm btn-outline-dark'" (click)="openQRCode()" title="Show QR code">
+          <i class="bi bi-qr-code"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+}
 
 <div class="container mt-5 pt-3">
   @if (showAlert()) {

@@ -1,14 +1,68 @@
 <div class="modal-header">
   <h5 class="modal-title">
-    Profile Plot
+    <i class="bi bi-graph-up-arrow me-2"></i>Profile Plot
   </h5>
+  <button type="button" class="btn-close" aria-label="Close" (click)="close()"></button>
 </div>
 <div class="modal-body">
+  @if (!hideInfo) {
+    <div class="alert alert-info mb-3">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <h6 class="alert-heading"><i class="bi bi-info-circle me-2"></i>About Profile Plots</h6>
+          <p class="mb-2">Profile plots show the intensity patterns of selected proteins/PTMs across all samples, allowing you to:</p>
+          <ul class="mb-0">
+            <li>Compare expression patterns between different proteins/PTMs</li>
+            <li>Identify consistent vs. variable proteins across replicates</li>
+            <li>Visualize intensity distributions with box plots</li>
+            <li>Detect outliers and data quality issues</li>
+          </ul>
+        </div>
+        <button type="button" class="btn-close" aria-label="Hide" (click)="hideInfo = true"></button>
+      </div>
+    </div>
+  }
+
+  <div class="card mb-3">
+    <div class="card-body">
+      <div class="row align-items-center">
+        <div class="col-md-8">
+          <h6 class="mb-2">
+            <i class="bi bi-bar-chart-line me-2"></i>Plot Controls
+          </h6>
+          <p class="small text-muted mb-0">
+            Showing <strong>{{selected.length}}</strong> selected item(s) across <strong>{{sampleCount}}</strong> samples
+          </p>
+        </div>
+        <div class="col-md-4">
+          <div class="btn-group w-100" role="group">
+            <button
+              class="btn btn-sm"
+              [ngClass]="boxplot ? 'btn-primary' : 'btn-outline-primary'"
+              (click)="hideBoxPlot()"
+              title="Toggle background box plot showing data distribution">
+              <i class="bi bi-box me-1"></i>Box Plot
+            </button>
+            <button
+              class="btn btn-sm btn-outline-success"
+              (click)="downloadSVG()"
+              title="Download plot as SVG file">
+              <i class="bi bi-download me-1"></i>SVG
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <plotly-plot [divId]="divId" [data]="graphData" [layout]="graphLayout" [updateOnLayoutChange]="true" [updateOnDataChange]="true"></plotly-plot>
 </div>
 <div class="modal-footer">
-  <button class="btn btn-primary" (click)="hideBoxPlot()">Toggle Box Plot</button>
-  <button class="btn btn-primary" (click)="downloadSVG()">Download SVG</button>
-  <button class="btn btn-primary" (click)="close()">Close</button>
+  <button class="btn btn-outline-secondary btn-sm" (click)="hideInfo = !hideInfo">
+    <i class="bi bi-info-circle me-1"></i>{{ hideInfo ? 'Show' : 'Hide' }} Info
+  </button>
+  <div class="ms-auto">
+    <button class="btn btn-secondary" (click)="close()">Close</button>
+  </div>
 </div>
 

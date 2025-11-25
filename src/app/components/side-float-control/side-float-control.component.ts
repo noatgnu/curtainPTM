@@ -21,6 +21,8 @@ interface Message {
 
 export class SideFloatControlComponent implements OnInit, OnDestroy {
   toggleChatPanel = signal(false)
+  showHelpPanel = signal(false)
+  unreadCount = signal(0)
   messagesList: Message[] = []
   form = this.fb.group({
     message: ['']
@@ -52,7 +54,7 @@ export class SideFloatControlComponent implements OnInit, OnDestroy {
     "!annpid",
     "!savestate",
   ]
-  constructor(private saveState: SaveStateService, private ws: WebsocketService, private fb: FormBuilder, public data: DataService) {
+  constructor(private saveState: SaveStateService, public ws: WebsocketService, private fb: FormBuilder, public data: DataService) {
     this.ws.connection = this.ws.connect()
 
     if (this.webSub) {
@@ -79,6 +81,9 @@ export class SideFloatControlComponent implements OnInit, OnDestroy {
       this.senderMap[data.senderID] = data.senderName
       if (data.requestType === "push-state-all-force") {
         this.loadSentState(data.message.data)
+      }
+      if (!this.toggleChatPanel()) {
+        this.unreadCount.set(this.unreadCount() + 1)
       }
       this.chatbox?.nativeElement.scrollTo(0, this.chatbox.nativeElement.scrollHeight)
     }, (error: any) => {
@@ -340,8 +345,13 @@ export class SideFloatControlComponent implements OnInit, OnDestroy {
   toggleChat() {
     this.toggleChatPanel.set(!this.toggleChatPanel())
     if (this.toggleChatPanel()) {
+      this.unreadCount.set(0)
       this.chatbox?.nativeElement.scrollTo(0, this.chatbox.nativeElement.scrollHeight)
     }
+  }
+
+  toggleHelp() {
+    this.showHelpPanel.set(!this.showHelpPanel())
   }
 
   handleDrop(event: any) {
