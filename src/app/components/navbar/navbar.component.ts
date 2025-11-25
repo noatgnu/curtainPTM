@@ -314,8 +314,9 @@ export class NavbarComponent implements OnInit {
   }
   clearSelections() {
     const rememberClearSettings = localStorage.getItem("curtainRememberClearSettings")
-    if (rememberClearSettings === "true") {
-      const savedSettings = localStorage.getItem('curtainClearSettingsSelection')
+    const savedSettings = localStorage.getItem('curtainClearSettingsSelection')
+
+    if (rememberClearSettings === "true" && savedSettings) {
       let settingsToClear: {[key: string]: boolean} = {}
       if (savedSettings) {
         try {
@@ -328,8 +329,6 @@ export class NavbarComponent implements OnInit {
         this.data.selected = []
         this.data.selectedGenes = []
         this.data.selectedAccessions = []
-      }
-      if (settingsToClear['selectionOperations']) {
         this.data.selectedMap = {}
         this.data.selectOperationNames = []
       }
@@ -351,8 +350,6 @@ export class NavbarComponent implements OnInit {
             this.data.selected = []
             this.data.selectedGenes = []
             this.data.selectedAccessions = []
-          }
-          if (data.selectionOperations) {
             this.data.selectedMap = {}
             this.data.selectOperationNames = []
           }

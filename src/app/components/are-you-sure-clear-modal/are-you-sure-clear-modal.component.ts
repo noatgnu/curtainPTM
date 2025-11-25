@@ -30,12 +30,6 @@ export class AreYouSureClearModalComponent {
       selected: true
     },
     {
-      key: 'selectionOperations',
-      label: 'Selection Operations',
-      description: 'Selection operation names and mappings',
-      selected: true
-    },
-    {
       key: 'textAnnotation',
       label: 'Text Annotations',
       description: 'Text annotations on plots',
