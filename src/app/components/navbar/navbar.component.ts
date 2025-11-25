@@ -64,6 +64,7 @@ export class NavbarComponent implements OnInit {
   currentAnnouncement = signal<Announcement | null>(null);
   dismissedAnnouncementIds: Set<number> = this.loadDismissedAnnouncements()
   GDPR = signal(false);
+  hasSavedClearSettings = signal(localStorage.getItem('curtainClearSettingsSelection') !== null);
 
   sessionCollections: any[] = []
   selectedCollectionId: number | null = null
@@ -96,7 +97,9 @@ export class NavbarComponent implements OnInit {
       this.GDPR.set(false)
       this.gdprAccepted.set(false)
     }
-
+    this.data.dataClear.asObservable().subscribe((data: any) => {
+      this.hasSavedClearSettings.set(localStorage.getItem('curtainClearSettingsSelection') !== null)
+    })
     effect(() => {
       localStorage.setItem("CurtainGDPR", this.gdprAccepted().toString())
     })
@@ -629,5 +632,9 @@ export class NavbarComponent implements OnInit {
 
   dismissSessionLink(): void {
     this.sessionLinkDismissed.set(true)
+  }
+
+  removeClearSettings() {
+    localStorage.removeItem('curtainClearSettingsSelection')
   }
 }

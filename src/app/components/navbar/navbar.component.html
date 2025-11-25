@@ -184,6 +184,9 @@
               <div class="dropdown-divider"></div>
               <h6 class="dropdown-header">Data Management</h6>
               <button ngbDropdownItem (click)="clearSelections()">Clear Selections</button>
+              @if (hasSavedClearSettings()) {
+                <button ngbDropdownItem (click)="removeClearSettings()">Remove Clear Selection Settings</button>
+              }
               <button ngbDropdownItem (click)="web.downloadFile('different.txt', data.differential.originalFile)">
                 Download Differential File
               </button>
