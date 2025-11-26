@@ -1,27 +1,67 @@
 <div class="modal-header">
-  <h4 class="modal-title">Custom FDR Curve</h4>
+  <h5 class="modal-title">
+    <i class="bi bi-graph-up me-2"></i>Custom FDR Curve
+  </h5>
+  <button type="button" class="btn-close" aria-label="Close" (click)="closeModal()"></button>
 </div>
 <div class="modal-body">
-  <div class="row">
-    <div class="col">
-      <div class="form-check">
-        <input type="checkbox" class="form-check-input" [(ngModel)]="fdrCurveTextEnable">
-        <label class="form-check-label">Enable FDR-curve (Will disable normal cutoff annotations)</label>
+  <div class="alert alert-info mb-3">
+    <div class="d-flex align-items-start">
+      <i class="bi bi-info-circle me-2 mt-1"></i>
+      <div>
+        <strong>About FDR Curves</strong>
+        <p class="mb-1 mt-1">Define custom False Discovery Rate thresholds across different fold change values. This allows for more nuanced significance cutoffs than a single global FDR threshold.</p>
+        <small class="text-muted">
+          <strong>Note:</strong> Enabling this will override standard cutoff annotations on the volcano plot.
+        </small>
       </div>
     </div>
   </div>
-  <div class="form-group">
-    <label for="entryList" class="sr-only">Custom FDR Curve Data Table (require x and y columns)</label>
-    <textarea class="form-control" id="entryList" [(ngModel)]="settings.settings.fdrCurveText" rows="5" [disabled]="fdrCurveTextEnable===false"></textarea>
+
+  <div class="card mb-3">
+    <div class="card-header">
+      <div class="form-check mb-0">
+        <input type="checkbox" class="form-check-input" id="enableFdrCurve" [(ngModel)]="fdrCurveTextEnable">
+        <label class="form-check-label fw-bold" for="enableFdrCurve">
+          Enable Custom FDR Curve
+        </label>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="mb-2">
+        <label for="entryList" class="form-label">
+          <i class="bi bi-table me-1"></i>FDR Curve Data
+          <small class="text-muted">(Tab-separated with x and y columns)</small>
+        </label>
+        <textarea
+          class="form-control font-monospace"
+          id="entryList"
+          [(ngModel)]="settings.settings.fdrCurveText"
+          rows="8"
+          [disabled]="!fdrCurveTextEnable"
+          placeholder="x&#9;y&#10;0.0&#9;0.05&#10;1.0&#9;0.01&#10;2.0&#9;0.001"
+          style="resize: vertical;"></textarea>
+        <div class="form-text">
+          <i class="bi bi-lightbulb me-1"></i>
+          <strong>Format:</strong> First row should be column headers (x and y). Subsequent rows contain fold change (x) and FDR threshold (y) values separated by tabs.
+        </div>
+      </div>
+
+      @if (!fdrCurveTextEnable) {
+        <div class="alert alert-warning alert-sm mb-0">
+          <i class="bi bi-exclamation-triangle me-1"></i>
+          <small>Enable the FDR curve above to edit the data.</small>
+        </div>
+      }
+    </div>
   </div>
 </div>
+
 <div class="modal-footer">
-  <div class="row">
-    <div class="col">
-      <button type="button" class="btn btn-primary" (click)="updateFDRCurveText()">Submit</button>
-    </div>
-    <div class="col">
-      <button type="button" class="btn btn-secondary" (click)="closeModal()">Close</button>
-    </div>
-  </div>
+  <button type="button" class="btn btn-secondary" (click)="closeModal()">
+    <i class="bi bi-x-lg me-1"></i>Cancel
+  </button>
+  <button type="button" class="btn btn-primary" (click)="updateFDRCurveText()">
+    <i class="bi bi-check-lg me-1"></i>Apply FDR Curve
+  </button>
 </div>

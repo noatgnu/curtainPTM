@@ -62,6 +62,10 @@ import {ShapesComponent} from "./components/volcano-plot/shapes/shapes.component
 import { NearbyPointsModalComponent } from './components/nearby-points-modal/nearby-points-modal.component';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import {ReorderTracesModalComponent} from './components/volcano-plot/reorder-traces-modal/reorder-traces-modal.component';
+import { StringNetworkComponent } from './components/string-network/string-network.component';
+import { InteractiveNetworkComponent } from './components/string-network/interactive-network/interactive-network.component';
+import { ProteinInfoPanelComponent } from './components/string-network/protein-info-panel/protein-info-panel.component';
+import { StringNetworkService } from './components/string-network/string-network.service';
 //PlotlyViaCDNModule.setPlotlyVersion('latest');
 //PlotlyViaCDNModule.setPlotlyBundle('basic');
 
@@ -111,6 +115,9 @@ import {ReorderTracesModalComponent} from './components/volcano-plot/reorder-tra
         EncryptionSettingsComponent,
         NearbyPointsModalComponent,
         ReorderTracesModalComponent,
+        StringNetworkComponent,
+        InteractiveNetworkComponent,
+        ProteinInfoPanelComponent,
     ],
     bootstrap: [AppComponent], imports: [BrowserModule,
         AppRoutingModule,
@@ -132,5 +139,5 @@ import {ReorderTracesModalComponent} from './components/volcano-plot/reorder-tra
         }),
         ToastProgressbarComponent,
         ShapesComponent,
-        DragDropModule], providers: [HttpClient, provideHttpClient(withInterceptorsFromDi()),] })
+        DragDropModule], providers: [HttpClient, provideHttpClient(withInterceptorsFromDi()), StringNetworkService] })
 export class AppModule { }

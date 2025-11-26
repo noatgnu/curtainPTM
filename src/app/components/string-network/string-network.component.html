@@ -1,0 +1,143 @@
+<div class="container-fluid p-0">
+  <div class="d-flex justify-content-end gap-2 mb-3">
+    <button class="btn btn-primary btn-sm" (click)="downloadSVG()" [disabled]="loading || !svgContent">
+      <i class="bi bi-download me-1"></i>Download as SVG
+    </button>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-md-9">
+      <div class="card border-primary h-100">
+        <div class="card-header bg-primary bg-opacity-10">
+          <h5 class="mb-0">STRING Interaction Network</h5>
+        </div>
+        <div class="card-body p-0 position-relative">
+          @if (loading) {
+            <div class="d-flex justify-content-center align-items-center min-height-400">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading network...</span>
+              </div>
+              <span class="ms-2">Loading network...</span>
+            </div>
+          }
+          @if (error) {
+            <div class="alert alert-danger m-3" role="alert">
+              <i class="bi bi-exclamation-triangle me-2"></i>
+              {{error}}
+            </div>
+          }
+          @if (svgContent && !loading) {
+            <div class="w-100 h-100 min-height-400">
+              <app-interactive-network
+                [svgContent]="svgContent"
+                [selectedGenes]="selectedGenes"
+                [increaseGenes]="increaseGenes"
+                [decreaseGenes]="decreaseGenes"
+                [allGenes]="allGenes"
+                [colorMap]="colorMap"
+                (nodeClick)="handleNodeClick($event)"
+                (edgeClick)="handleEdgeClick($event)"
+                (positionsChanged)="handlePositionsChanged($event)">
+              </app-interactive-network>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card mb-3">
+        <div class="card-header">
+          <h5 class="h6 mb-0">Node Color Legend</h5>
+        </div>
+        <div class="card-body p-0">
+          <form [formGroup]="form">
+            <table class="table table-bordered table-sm mb-0">
+              <thead class="table-light">
+              <tr>
+                <th scope="col">Color</th>
+                <th scope="col">Description</th>
+              </tr>
+              </thead>
+              <tbody>
+                @for (item of ['Increase', 'Decrease', 'In dataset', 'Not in dataset']; track item) {
+                  <tr>
+                    <td>
+                      <input
+                        [formControlName]="item"
+                        (colorPickerChange)="updateColor($event, item)"
+                        class="form-control form-control-sm color-input"
+                        [(colorPicker)]="colorMap[item]"
+                        [style.background]="colorMap[item]"
+                        [attr.aria-label]="'Set color for ' + item">
+                    </td>
+                    <td class="align-middle">{{item}}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </form>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h5 class="h6 mb-0">Network Settings</h5>
+        </div>
+        <div class="card-body">
+          <div class="mb-3">
+            <label for="string{{selected}}" class="form-label">Minimum Required Score</label>
+            <div class="input-group">
+              <input
+                class="form-control"
+                [id]="'string'+selected"
+                type="number"
+                [(ngModel)]="requiredScore"
+                min="1"
+                max="1000"
+                aria-describedby="scoreHelp">
+              <span class="input-group-text">/ 1000</span>
+            </div>
+            <small id="scoreHelp" class="form-text text-muted">Higher values mean more stringent connections</small>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-12 col-sm-6">
+              <label for="stringNT{{selected}}" class="form-label">Network Type</label>
+              <select class="form-select" [id]="'stringNT'+selected" [(ngModel)]="networkType">
+                <option value="functional">Functional</option>
+                <option value="physical">Physical</option>
+              </select>
+            </div>
+            <div class="col-12 col-sm-6">
+              <label for="stringNF{{selected}}" class="form-label">Network Flavor</label>
+              <select class="form-select" [id]="'stringNF'+selected" [(ngModel)]="networkFlavor">
+                <option value="evidence">Evidence</option>
+                <option value="confidence">Confidence</option>
+                <option value="actions">Actions</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer text-end">
+          <button type="button" class="btn btn-primary" (click)="loadNetwork()" [disabled]="loading">
+            @if (loading) {
+              <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+            } @else {
+              <i class="bi bi-arrow-repeat me-1"></i>
+            }
+            Redraw Network
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <app-protein-info-panel
+    [proteinId]="infoPanelProteinId"
+    [edgeInfo]="infoPanelEdgeInfo"
+    [position]="infoPanelPosition"
+    [visible]="showInfoPanel"
+    (close)="closeInfoPanel()">
+  </app-protein-info-panel>
+</div>

@@ -28,6 +28,8 @@ export class SampleOrderAndHideComponent implements OnInit {
   violinPointPos: number = -2
   batchToggle: any = {}
   activeTab: number = 1
+  collapseState: {[key: string]: boolean} = {}
+
   constructor(public dataService: DataService, public modal: NgbActiveModal, public settings: SettingsService) {
     for (const c in this.settings.settings.columnSize) {
       if (c in this.columnSize) {
@@ -65,12 +67,17 @@ export class SampleOrderAndHideComponent implements OnInit {
     }
     for (const c of this.condition) {
       this.batchToggle[c] = !this.samples[c].some((s: string) => this.samplesVisible[s] === false);
+      this.collapseState[c] = true
       if (this.settings.settings.barchartColorMap[c]) {
         this.colorMap[c] = this.settings.settings.barchartColorMap[c].slice()
       } else {
         this.colorMap[c] = this.settings.settings.colorMap[c].slice()
       }
     }
+  }
+
+  toggleCollapse(condition: string) {
+    this.collapseState[condition] = !this.collapseState[condition]
   }
 
   ngOnInit(): void {
