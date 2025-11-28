@@ -1,6 +1,6 @@
 <div class="container-fluid p-0">
   <div class="d-flex justify-content-end gap-2 mb-3">
-    <button class="btn btn-primary btn-sm" (click)="downloadSVG()" [disabled]="loading || !svgContent">
+    <button class="btn btn-primary btn-sm" (click)="downloadSVG()" [disabled]="loading() || !svgContent()">
       <i class="bi bi-download me-1"></i>Download as SVG
     </button>
   </div>
@@ -12,7 +12,7 @@
           <h5 class="mb-0">STRING Interaction Network</h5>
         </div>
         <div class="card-body p-0 position-relative">
-          @if (loading) {
+          @if (loading()) {
             <div class="d-flex justify-content-center align-items-center min-height-400">
               <div class="spinner-border text-primary" role="status">
                 <span class="visually-hidden">Loading network...</span>
@@ -20,21 +20,21 @@
               <span class="ms-2">Loading network...</span>
             </div>
           }
-          @if (error) {
+          @if (error()) {
             <div class="alert alert-danger m-3" role="alert">
               <i class="bi bi-exclamation-triangle me-2"></i>
-              {{error}}
+              {{error()}}
             </div>
           }
-          @if (svgContent && !loading) {
+          @if (svgContent() && !loading()) {
             <div class="w-100 h-100 min-height-400">
               <app-interactive-network
-                [svgContent]="svgContent"
+                [svgContent]="svgContent()"
                 [selectedGenes]="selectedGenes"
-                [increaseGenes]="increaseGenes"
-                [decreaseGenes]="decreaseGenes"
-                [allGenes]="allGenes"
-                [colorMap]="colorMap"
+                [increaseGenes]="increaseGenes()"
+                [decreaseGenes]="decreaseGenes()"
+                [allGenes]="allGenes()"
+                [colorMap]="colorMap()"
                 (nodeClick)="handleNodeClick($event)"
                 (edgeClick)="handleEdgeClick($event)"
                 (positionsChanged)="handlePositionsChanged($event)">
@@ -67,8 +67,8 @@
                         [formControlName]="item"
                         (colorPickerChange)="updateColor($event, item)"
                         class="form-control form-control-sm color-input"
-                        [(colorPicker)]="colorMap[item]"
-                        [style.background]="colorMap[item]"
+                        [(colorPicker)]="colorMap()[item]"
+                        [style.background]="colorMap()[item]"
                         [attr.aria-label]="'Set color for ' + item">
                     </td>
                     <td class="align-middle">{{item}}</td>
@@ -120,8 +120,8 @@
           </div>
         </div>
         <div class="card-footer text-end">
-          <button type="button" class="btn btn-primary" (click)="loadNetwork()" [disabled]="loading">
-            @if (loading) {
+          <button type="button" class="btn btn-primary" (click)="loadNetwork()" [disabled]="loading()">
+            @if (loading()) {
               <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
             } @else {
               <i class="bi bi-arrow-repeat me-1"></i>
@@ -134,10 +134,10 @@
   </div>
 
   <app-protein-info-panel
-    [proteinId]="infoPanelProteinId"
-    [edgeInfo]="infoPanelEdgeInfo"
-    [position]="infoPanelPosition"
-    [visible]="showInfoPanel"
+    [proteinId]="infoPanelProteinId()"
+    [edgeInfo]="infoPanelEdgeInfo()"
+    [position]="infoPanelPosition()"
+    [visible]="showInfoPanel()"
     (close)="closeInfoPanel()">
   </app-protein-info-panel>
 </div>

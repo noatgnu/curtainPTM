@@ -175,7 +175,7 @@ export class VolcanoPlotComponent implements OnInit, OnDestroy {
         name: s,
         marker: {
           color: this.settings.settings.colorMap[s],
-          size: this.settings.settings.scatterPlotMarkerSize
+          size: this.settings.settings.markerSizeMap[s] || this.settings.settings.scatterPlotMarkerSize
         }
       }
 
@@ -313,7 +313,7 @@ export class VolcanoPlotComponent implements OnInit, OnDestroy {
             mode: "markers",
             marker: {
               color: this.settings.settings.colorMap[group],
-              size: this.settings.settings.scatterPlotMarkerSize
+              size: this.settings.settings.markerSizeMap[group] || this.settings.settings.scatterPlotMarkerSize
             },
             name: group
           }

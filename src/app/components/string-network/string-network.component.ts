@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, ViewChild, signal } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { UniprotService } from '../../uniprot.service';
 import { DataService } from '../../data.service';
@@ -38,8 +38,8 @@ export class StringNetworkComponent implements OnInit {
       this.ids = ids;
       this.selectedGenes = this._data.selectedGenes;
 
-      for (const i in this.colorMap) {
-        this.form.controls[i].setValue(this.colorMap[i]);
+      for (const i in this.colorMap()) {
+        this.form.controls[i].setValue(this.colorMap()[i]);
       }
 
       this.loadNetwork();
@@ -59,18 +59,19 @@ export class StringNetworkComponent implements OnInit {
   requiredScore: number = 400;
   networkFlavor: 'evidence' | 'confidence' | 'actions' = 'evidence';
   _data: any = {};
-  svgContent: string = '';
-  loading: boolean = false;
-  error: string = '';
 
-  increaseGenes: string[] = [];
-  decreaseGenes: string[] = [];
-  allGenes: string[] = [];
+  svgContent = signal<string>('');
+  loading = signal<boolean>(false);
+  error = signal<string>('');
 
-  showInfoPanel: boolean = false;
-  infoPanelProteinId: string | null = null;
-  infoPanelEdgeInfo: { node1: string; node2: string } | null = null;
-  infoPanelPosition: { x: number; y: number } = { x: 0, y: 0 };
+  increaseGenes = signal<string[]>([]);
+  decreaseGenes = signal<string[]>([]);
+  allGenes = signal<string[]>([]);
+
+  showInfoPanel = signal<boolean>(false);
+  infoPanelProteinId = signal<string | null>(null);
+  infoPanelEdgeInfo = signal<{ node1: string; node2: string } | null>(null);
+  infoPanelPosition = signal<{ x: number; y: number }>({ x: 0, y: 0 });
 
   form: FormGroup = this.fb.group({
     'Increase': ['#8d0606'],
@@ -79,12 +80,12 @@ export class StringNetworkComponent implements OnInit {
     'Not in dataset': ['#676666']
   });
 
-  colorMap: NetworkColorMap = {
+  colorMap = signal<NetworkColorMap>({
     'Increase': '#8d0606',
     'Decrease': '#4f78a4',
     'In dataset': '#ce8080',
     'Not in dataset': '#676666'
-  };
+  });
 
   constructor(
     private fb: FormBuilder,
@@ -109,12 +110,12 @@ export class StringNetworkComponent implements OnInit {
 
     await this.updateIncreaseDecrease(increased, decreased, allGenes, this.data.currentDF);
 
-    this.increaseGenes = increased;
-    this.decreaseGenes = decreased;
-    this.allGenes = allGenes;
+    this.increaseGenes.set(increased);
+    this.decreaseGenes.set(decreased);
+    this.allGenes.set(allGenes);
 
-    this.loading = true;
-    this.error = '';
+    this.loading.set(true);
+    this.error.set('');
 
     const params: InteractiveSVGParams = {
       identifiers: this.ids,
@@ -126,13 +127,13 @@ export class StringNetworkComponent implements OnInit {
 
     this.stringService.getInteractiveSVGNetwork(params).subscribe({
       next: (svg) => {
-        this.svgContent = svg;
-        this.loading = false;
+        this.svgContent.set(svg);
+        this.loading.set(false);
       },
       error: (err) => {
         console.error('Error loading network:', err);
-        this.error = 'Failed to load network. Please try again.';
-        this.loading = false;
+        this.error.set('Failed to load network. Please try again.');
+        this.loading.set(false);
       }
     });
   }
@@ -170,29 +171,29 @@ export class StringNetworkComponent implements OnInit {
 
 
   handleNodeClick(event: NodeClickEvent) {
-    this.infoPanelProteinId = event.nodeId;
-    this.infoPanelEdgeInfo = null;
-    this.infoPanelPosition = {
+    this.infoPanelProteinId.set(event.nodeId);
+    this.infoPanelEdgeInfo.set(null);
+    this.infoPanelPosition.set({
       x: Math.min(event.event.clientX, window.innerWidth - 650),
       y: Math.min(event.event.clientY, window.innerHeight - 650)
-    };
-    this.showInfoPanel = true;
+    });
+    this.showInfoPanel.set(true);
   }
 
   handleEdgeClick(event: EdgeClickEvent) {
-    this.infoPanelProteinId = null;
-    this.infoPanelEdgeInfo = { node1: event.node1, node2: event.node2 };
-    this.infoPanelPosition = {
+    this.infoPanelProteinId.set(null);
+    this.infoPanelEdgeInfo.set({ node1: event.node1, node2: event.node2 });
+    this.infoPanelPosition.set({
       x: Math.min(event.event.clientX, window.innerWidth - 650),
       y: Math.min(event.event.clientY, window.innerHeight - 650)
-    };
-    this.showInfoPanel = true;
+    });
+    this.showInfoPanel.set(true);
   }
 
   closeInfoPanel() {
-    this.showInfoPanel = false;
-    this.infoPanelProteinId = null;
-    this.infoPanelEdgeInfo = null;
+    this.showInfoPanel.set(false);
+    this.infoPanelProteinId.set(null);
+    this.infoPanelEdgeInfo.set(null);
   }
 
   handlePositionsChanged(positions: { [nodeId: string]: { x: number; y: number } }) {
@@ -219,5 +220,7 @@ export class StringNetworkComponent implements OnInit {
   updateColor(color: string, key: string) {
     this.form.controls[key].setValue(color);
     this.form.markAsDirty();
+    const currentMap = this.colorMap();
+    this.colorMap.set({ ...currentMap, [key]: color });
   }
 }

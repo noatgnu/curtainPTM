@@ -10,6 +10,7 @@ export class Settings {
   description: string = ""
   uniprot: boolean = true
   colorMap: any = {}
+  markerSizeMap: any = {}
   academic: boolean = true
   backGroundColorGrey: boolean = false
   currentComparison: string = ""

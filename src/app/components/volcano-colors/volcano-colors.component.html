@@ -1,24 +1,37 @@
 <div class="modal-header">
   <h5 class="modal-title">
-    <i class="bi bi-palette me-2"></i>Plot Marker Color Selector
+    <i class="bi bi-palette me-2"></i>Plot Marker Customization
   </h5>
   <button type="button" class="btn-close" aria-label="Close" (click)="closeModal()"></button>
 </div>
 <div class="modal-body">
-  @if (colorGroups.length > 0) {
+  @if (colorGroups().length > 0) {
     <div class="color-groups-container mb-3">
-      @for (c of colorGroups; track c.group) {
+      @for (c of colorGroups(); track c.group) {
         <div class="color-group-item" [class.marked-for-removal]="c.remove">
           <label [for]="c.group + 'id'" class="form-label mb-2 fw-semibold d-block text-break">{{c.group}}</label>
-          <div class="d-flex align-items-center gap-2">
-            <input
-              [id]="c.group + 'id'"
-              class="form-control form-control-sm color-input"
-              [(colorPicker)]="c.color"
-              [style.background]="c.color"
-              [style.color]="getContrastColor(c.color)"
-              [value]="c.color">
-            <div class="form-check mb-0 flex-shrink-0">
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <div class="flex-grow-1">
+              <label class="form-label small mb-1">Color</label>
+              <input
+                [id]="c.group + 'id'"
+                class="form-control form-control-sm color-input"
+                [(colorPicker)]="c.color"
+                [style.background]="c.color"
+                [style.color]="getContrastColor(c.color)"
+                [value]="c.color">
+            </div>
+            <div class="flex-grow-1">
+              <label class="form-label small mb-1">Size</label>
+              <input
+                type="number"
+                class="form-control form-control-sm"
+                [(ngModel)]="c.size"
+                min="1"
+                max="50"
+                [id]="'size-' + c.group">
+            </div>
+            <div class="form-check mb-0 flex-shrink-0 align-self-end">
               <input
                 type="checkbox"
                 class="form-check-input"
@@ -40,21 +53,21 @@
   }
 
   <div class="import-export-section">
-    <h6 class="mb-2"><i class="bi bi-code-square me-2"></i>Import/Export Colors</h6>
+    <h6 class="mb-2"><i class="bi bi-code-square me-2"></i>Import/Export Data</h6>
     <form [formGroup]="form">
       <textarea
         id="colorsTextarea"
-        placeholder='[{"group": "Group1", "color": "#FF0000"}, {"group": "Group2", "color": "#00FF00"}]'
+        placeholder='[{"group": "Group1", "color": "#FF0000", "size": 10}, {"group": "Group2", "color": "#00FF00", "size": 12}]'
         formControlName="colors"
         class="form-control form-control-sm font-monospace mb-2"
         rows="3"></textarea>
     </form>
     <div class="d-flex gap-2">
       <button class="btn btn-outline-primary btn-sm" (click)="pasteColorArray()">
-        <i class="bi bi-upload me-1"></i>Import Colors
+        <i class="bi bi-upload me-1"></i>Import Data
       </button>
       <button class="btn btn-outline-secondary btn-sm" (click)="copyColorArray()">
-        <i class="bi bi-clipboard me-1"></i>Copy Colors
+        <i class="bi bi-clipboard me-1"></i>Copy Data
       </button>
     </div>
   </div>
@@ -65,7 +78,7 @@
     <i class="bi bi-x-lg me-1"></i>Cancel
   </button>
   <button type="button" class="btn btn-primary" (click)="updateColorGroup()">
-    <i class="bi bi-check-lg me-1"></i>Apply Colors
+    <i class="bi bi-check-lg me-1"></i>Apply Changes
   </button>
 </div>
 

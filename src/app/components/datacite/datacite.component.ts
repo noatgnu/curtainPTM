@@ -47,10 +47,15 @@ export class DataciteComponent {
   @Input() set linkID(value: string) {
     this._linkID = value
     this.dataCiteForm.controls.alternateIdentifiers.at(0).controls.alternateIdentifier.setValue(`${this.baseURL}curtain/${this._linkID}/download/token=/`)
+    this.loadSessionCollections()
   }
   get linkID(): string {
     return this._linkID
   }
+
+  availableCollections: any[] = []
+  selectedCollectionId: number | null = null
+  collectionsLoading: boolean = false
   private _dataCiteMetadata?: DataCiteCurtain
   @Input() set dataCiteMetadata(value: DataCiteCurtain) {
     if (this.dataCiteForm.controls.alternateIdentifiers) {
@@ -423,12 +428,15 @@ export class DataciteComponent {
       this.toastService.show("DOI Form Error", "Please fill in all fields for additional data", 5000, "error").then()
       return;
     }
-    const payload = {
+    const payload: any = {
       "token": this.permissionToken,
       "form": dataCiteMetadata,
       "linkID": this.linkID,
       "pii_statement": this.form_additional_data.controls.pii_statement.value,
       "contact_email": this.form_additional_data.controls.contact_email.value
+    }
+    if (this.selectedCollectionId) {
+      payload.collection_id = this.selectedCollectionId
     }
     if (mode === "create") {
       this.accountsService.curtainAPI.submitDataCite(payload).then((value) => {
@@ -696,7 +704,6 @@ export class DataciteComponent {
     const reader = new FileReader();
     reader.onload = (e) => {
       const data = JSON.parse(reader.result as string);
-      // patch all but prefix, suffix, url, publisher, publisherIdentifier, publicationYear, and alternateIdentifiers
       for (const key of Object.keys(data)) {
         if (key !== "prefix" && key !== "suffix" && key !== "url" && key !== "publisher" && key !== "publisherIdentifier" && key !== "publicationYear" && key !== "alternateIdentifiers") {
           // @ts-ignore
@@ -705,6 +712,22 @@ export class DataciteComponent {
       }
     }
     reader.readAsText(file);
+  }
+
+  async loadSessionCollections() {
+    if (!this._linkID) {
+      return
+    }
+    try {
+      this.collectionsLoading = true
+      const response = await this.accountsService.getCollections(1, 100, '', false, this._linkID)
+      this.availableCollections = response.results || []
+    } catch (error) {
+      console.error('Failed to load session collections:', error)
+      this.availableCollections = []
+    } finally {
+      this.collectionsLoading = false
+    }
   }
 
   removeAffiliation(type: "creators"|"contributors", contributorIndex: number, affiliationIndex: number) {
