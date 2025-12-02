@@ -1,7 +1,7 @@
 import { Component, signal } from '@angular/core';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {FormsModule} from "@angular/forms";
-import {CommonModule} from "@angular/common";
+
 
 interface ClearSetting {
   key: string;
@@ -13,9 +13,8 @@ interface ClearSetting {
 @Component({
     selector: 'app-are-you-sure-clear-modal',
     imports: [
-        FormsModule,
-        CommonModule
-    ],
+    FormsModule
+],
     templateUrl: './are-you-sure-clear-modal.component.html',
     styleUrl: './are-you-sure-clear-modal.component.scss'
 })

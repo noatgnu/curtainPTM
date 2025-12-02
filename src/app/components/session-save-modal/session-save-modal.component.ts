@@ -1,6 +1,6 @@
 import { Component, Input, signal } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { SiteProperties } from 'curtain-web-api';
 
@@ -11,7 +11,7 @@ export interface SessionSaveOptions {
 
 @Component({
   selector: 'app-session-save-modal',
-  imports: [CommonModule, FormsModule],
+  imports: [FormsModule],
   templateUrl: './session-save-modal.component.html',
   styleUrl: './session-save-modal.component.scss',
 })
