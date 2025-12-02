@@ -30,8 +30,13 @@ export class EncryptionSettingsComponent {
   savePublicKey: boolean = false
   savePrivateKey: boolean = false
 
+  hasPublicKeyInStorage: boolean = false
+  hasPrivateKeyInStorage: boolean = false
+
   @Input() enabled: boolean = false
-  constructor(private toastService: ToastService, private modal: NgbActiveModal, private dataService: DataService, private accounts: AccountsService, private web: WebService) { }
+  constructor(private toastService: ToastService, private modal: NgbActiveModal, private dataService: DataService, private accounts: AccountsService, private web: WebService) {
+    this.checkStoredKeys()
+  }
 
   async handleFileImport(e: Event, fileType: "Public Key"|"Private Key") {
     if (e.target){
@@ -98,6 +103,23 @@ export class EncryptionSettingsComponent {
 
   }
 
+  checkStoredKeys() {
+    this.hasPublicKeyInStorage = localStorage.getItem("public_key") !== null
+    this.hasPrivateKeyInStorage = localStorage.getItem("private_key") !== null
+  }
+
+  clearPublicKey() {
+    localStorage.removeItem("public_key")
+    this.hasPublicKeyInStorage = false
+    this.toastService.show("Encryption", "Public key cleared from browser storage").then()
+  }
+
+  clearPrivateKey() {
+    localStorage.removeItem("private_key")
+    this.hasPrivateKeyInStorage = false
+    this.toastService.show("Encryption", "Private key cleared from browser storage").then()
+  }
+
   clearKeys() {
     // remove keys from memory
     this.public_key = undefined
@@ -107,6 +129,7 @@ export class EncryptionSettingsComponent {
     // remove keys from local storage
     localStorage.removeItem("public_key")
     localStorage.removeItem("private_key")
-    this.toastService.show("Encryption", "Keys cleared").then()
+    this.checkStoredKeys()
+    this.toastService.show("Encryption", "All keys cleared").then()
   }
 }
