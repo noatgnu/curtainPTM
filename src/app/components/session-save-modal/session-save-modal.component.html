@@ -6,7 +6,7 @@
 </div>
 
 <div class="modal-body">
-  @if (siteProperties.allow_user_set_permanent) {
+  @if (siteProperties.allow_user_set_permanent || isStaff) {
     <div class="form-check form-switch mb-3">
       <input
         class="form-check-input"

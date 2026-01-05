@@ -6,6 +6,7 @@ import {SettingsService} from "./settings.service";
 import {environment} from "../environments/environment";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {CurtainStatsSummaryComponent} from "./components/curtain-stats-summary/curtain-stats-summary.component";
+import {AnalyticsService} from "./analytics.service";
 
 @Component({
     selector: 'app-root',
@@ -17,7 +18,7 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   title = 'CurtainPTM';
   newVersionSubscription: Subscription|undefined;
   baseURL = environment.apiURL
-  constructor(private accounts: AccountsService, private swUpdate: SwUpdate, private settings: SettingsService, private modal: NgbModal) {
+  constructor(private accounts: AccountsService, private swUpdate: SwUpdate, private settings: SettingsService, private modal: NgbModal, private analytics: AnalyticsService) {
     const path = document.URL.replace(window.location.origin+"/", "")
     if (path.startsWith("?code=")) {
       const code = path.split("=")
@@ -27,6 +28,7 @@ export class AppComponent implements AfterViewInit, OnDestroy {
         localStorage.removeItem("orcidRememberMe")
       })
     }
+    this.analytics.initialize()
   }
 
   ngAfterViewInit(): void {

@@ -193,6 +193,7 @@ export class NavbarComponent implements OnInit {
       size: 'md'
     });
     modalRef.componentInstance.siteProperties = this.web.siteProperties;
+    modalRef.componentInstance.isStaff = this.accounts.curtainAPI.user.isStaff;
 
     try {
       const result = await modalRef.result;

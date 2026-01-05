@@ -17,6 +17,7 @@ export interface SessionSaveOptions {
 })
 export class SessionSaveModalComponent {
   @Input() siteProperties!: SiteProperties;
+  @Input() isStaff: boolean = false;
 
   permanent = signal(false);
   expiryDuration = signal<number | undefined>(undefined);
