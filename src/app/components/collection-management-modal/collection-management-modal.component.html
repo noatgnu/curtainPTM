@@ -28,6 +28,15 @@
           <i class="bi bi-plus-circle me-1"></i>New Collection
         </button>
       </div>
+
+      <div class="btn-group w-100 mb-3" role="group" aria-label="Collection filter">
+        <input type="radio" class="btn-check" name="filterMode" id="filterAll" autocomplete="off" [checked]="filterMode === 'all'" (change)="setFilterMode('all')">
+        <label class="btn btn-outline-primary" for="filterAll">All Collections</label>
+
+        <input type="radio" class="btn-check" name="filterMode" id="filterContaining" autocomplete="off" [checked]="filterMode === 'containing'" (change)="setFilterMode('containing')">
+        <label class="btn btn-outline-primary" for="filterContaining">In Collection</label>
+      </div>
+
       <div class="input-group">
         <span class="input-group-text"><i class="bi bi-search"></i></span>
         <input
@@ -42,47 +51,67 @@
   </div>
 
   @if (collections.length > 0) {
-    <div class="list-group">
-      @for (collection of collections; track collection.id) {
-        <div class="list-group-item">
-          <div class="d-flex justify-content-between align-items-start">
-            <div class="flex-grow-1">
-              <h6 class="mb-1">{{collection.name}}</h6>
-              @if (collection.description) {
-                <p class="mb-1 text-muted small">{{collection.description}}</p>
-              }
-              <div class="d-flex align-items-center gap-2 mt-2">
-                <span class="badge bg-info text-dark">
-                  <i class="bi bi-collection me-1"></i>{{collection.curtain_count}} Sessions
-                </span>
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead>
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Description</th>
+            <th scope="col" style="width: 120px;">Sessions</th>
+            <th scope="col" style="width: 180px;">Last Updated</th>
+            <th scope="col" style="width: 120px;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (collection of collections; track collection.id) {
+            <tr>
+              <td>
+                <strong>{{collection.name}}</strong>
                 @if (isSessionInCollection(collection)) {
-                  <span class="badge bg-success">
-                    <i class="bi bi-check-circle me-1"></i>In Collection
+                  <div class="mt-1">
+                    <span class="badge bg-success">
+                      <i class="bi bi-check-circle me-1"></i>In Collection
+                    </span>
+                  </div>
+                }
+              </td>
+              <td>
+                @if (collection.description) {
+                  <span class="text-muted">{{collection.description}}</span>
+                } @else {
+                  <span class="text-muted fst-italic">No description</span>
+                }
+              </td>
+              <td>
+                <span class="badge bg-info text-dark">
+                  <i class="bi bi-collection me-1"></i>{{collection.curtain_count}}
+                </span>
+              </td>
+              <td>
+                <div class="text-muted small">
+                  <i class="bi bi-calendar3 me-1"></i>{{collection.updated | date:'short'}}
+                </div>
+              </td>
+              <td>
+                @if (isOwner(collection)) {
+                  <button
+                    class="btn btn-sm w-100"
+                    [ngClass]="isSessionInCollection(collection) ? 'btn-outline-danger' : 'btn-outline-primary'"
+                    (click)="toggleCollection(collection)"
+                    [disabled]="isLoading">
+                    <i class="bi" [ngClass]="isSessionInCollection(collection) ? 'bi-dash-circle' : 'bi-plus-circle'"></i>
+                    {{isSessionInCollection(collection) ? 'Remove' : 'Add'}}
+                  </button>
+                } @else {
+                  <span class="badge bg-secondary w-100">
+                    <i class="bi bi-eye me-1"></i>View Only
                   </span>
                 }
-              </div>
-            </div>
-            @if (isOwner(collection)) {
-              <div class="ms-3">
-                <button
-                  class="btn btn-sm"
-                  [ngClass]="isSessionInCollection(collection) ? 'btn-outline-danger' : 'btn-outline-primary'"
-                  (click)="toggleCollection(collection)"
-                  [disabled]="isLoading">
-                  <i class="bi" [ngClass]="isSessionInCollection(collection) ? 'bi-dash-circle' : 'bi-plus-circle'"></i>
-                  {{isSessionInCollection(collection) ? 'Remove' : 'Add'}}
-                </button>
-              </div>
-            } @else {
-              <div class="ms-3">
-                <span class="badge bg-secondary">
-                  <i class="bi bi-eye me-1"></i>View Only
-                </span>
-              </div>
-            }
-          </div>
-        </div>
-      }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
     </div>
   } @else {
     <div class="text-center py-5">

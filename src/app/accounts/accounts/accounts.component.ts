@@ -4,6 +4,8 @@ import { FormBuilder, FormGroup } from "@angular/forms";
 import { Subject } from "rxjs";
 import { debounceTime, distinctUntilChanged, takeUntil } from "rxjs/operators";
 import { ToastService } from "../../toast.service";
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { CollectionSessionsViewerModalComponent } from '../../components/collection-sessions-viewer-modal/collection-sessions-viewer-modal.component';
 
 @Component({
     selector: 'app-accounts',
@@ -39,7 +41,8 @@ export class AccountsComponent implements OnInit, OnDestroy {
   constructor(
     public accounts: AccountsService, 
     private fb: FormBuilder,
-    private toast: ToastService
+    private toast: ToastService,
+    private modal: NgbModal
   ) {}
 
   ngOnInit(): void {
@@ -357,7 +360,8 @@ export class AccountsComponent implements OnInit, OnDestroy {
   }
 
   viewCollectionSessions(collection: any): void {
-    console.log('Viewing sessions for collection:', collection);
+    const modalRef = this.modal.open(CollectionSessionsViewerModalComponent, { size: 'lg', scrollable: true });
+    modalRef.componentInstance.collectionId = collection.id;
   }
 
   isCollectionOwner(collection: any): boolean {
