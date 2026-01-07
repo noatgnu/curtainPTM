@@ -19,9 +19,8 @@
   }
 
   &:hover {
-    background-color: #f8f9fa;
-  }
-}
+        background-color: var(--app-bg-secondary);
+    }}
 
 .drag-handle {
   color: #6c757d;

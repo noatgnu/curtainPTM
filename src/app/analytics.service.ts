@@ -11,7 +11,7 @@ export class AnalyticsService {
 
   async initialize(): Promise<void> {
     try {
-      const response = await this.accounts.curtainAPI.getSiteProperties();
+      const response = await this.accounts.curtainAPI.getSiteProperties('curtainptm');
 
       if (response.data) {
         const { umami_website_id, umami_url } = response.data;

@@ -197,5 +197,8 @@ export interface DataCiteMetadata {
    form_data: any,
    contact_email: string,
    pii_statement: string,
-   lock: boolean
+   lock: boolean,
+   local_file?: string | null,
+   public_file_url?: string | null,
+   collection?: number | null
  }

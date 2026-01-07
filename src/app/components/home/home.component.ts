@@ -30,6 +30,7 @@ export class HomeComponent implements OnInit {
 
   isDOI: boolean = false;
   doiMetadata: any = {}
+  doiParsedData: any = undefined
   loadingDataCite: boolean = false
   finished: boolean = false
   rawFiltered: IDataFrame = new DataFrame()
@@ -65,6 +66,7 @@ export class HomeComponent implements OnInit {
           this.data.selectionUpdateTrigger.next(true)
         }
       })
+
       this.route.params.subscribe(params => {
         console.log(params)
         if (params) {
@@ -73,19 +75,26 @@ export class HomeComponent implements OnInit {
               this.isDOI = true
               this.loadingDataCite = true
               this.toast.show("Initialization", "Fetching data from DOI").then()
+
+              const parts = params["settings"].split("&")
+              const doiPart = parts[0]
+              const sessionId = parts.length > 1 ? parts[1] : undefined
+
               const meta = document.createElement("meta");
               meta.name = "DC.identifier";
-              meta.content = params["settings"];
+              meta.content = doiPart;
               meta.scheme = "DCTERMS.URI";
               document.head.appendChild(meta);
-              const doiID = params["settings"].replace("doi.org/", "")
+              const doiID = doiPart.replace("doi.org/", "")
               console.log(doiID)
-              this.web.getDataCiteMetaData(doiID).subscribe((data) => {
+              this.web.getDataCiteMetaData(doiID).subscribe(async (data) => {
                 console.log(data)
                 this.loadingDataCite = false
                 this.doiMetadata = data
                 if (data.data.attributes.alternateIdentifiers.length > 0) {
-                  this.tryAlternateIdentifiers(data.data.attributes.alternateIdentifiers, params["settings"], data.data.attributes.alternateIdentifiers.length - 1).then()
+                  await this.loadDataCiteSession(data.data.attributes.alternateIdentifiers, doiPart, sessionId)
+                } else {
+                  this.toast.show("Initialization", "Error: No alternate identifiers found in DOI").then()
                 }
 
               })
@@ -156,6 +165,74 @@ export class HomeComponent implements OnInit {
         }
       })
     })
+  }
+
+  async loadDataCiteSession(alternateIdentifiers: any[], doiLink: string, sessionId?: string) {
+    try {
+      const parsedData = await this.accounts.curtainAPI.parseDataCiteAlternateIdentifiers(alternateIdentifiers)
+      this.doiParsedData = parsedData
+
+      if (sessionId) {
+        const sessionUrl = this.findSessionUrlById(parsedData, sessionId)
+        if (sessionUrl) {
+          this.toast.show("Initialization", "Loading specific session from collection", undefined, undefined, "download").then()
+          await this.getDOISessionData(sessionUrl, doiLink)
+          return
+        }
+      }
+
+      if (parsedData.mainSessionUrl) {
+        this.toast.show("Initialization", "Loading main session from DOI", undefined, undefined, "download").then()
+        await this.getDOISessionData(parsedData.mainSessionUrl, doiLink)
+        return
+      }
+    } catch (e) {
+      console.log("Failed to parse new format, falling back to old format:", e)
+      this.doiParsedData = undefined
+    }
+
+    await this.tryAlternateIdentifiers(alternateIdentifiers, doiLink, alternateIdentifiers.length - 1)
+  }
+
+  findSessionUrlById(parsedData: any, sessionId: string): string | null {
+    if (!parsedData || !parsedData.collectionMetadata || !parsedData.collectionMetadata.allSessionLinks) {
+      return null
+    }
+
+    for (const session of parsedData.collectionMetadata.allSessionLinks) {
+      try {
+        const url = new URL(session.sessionUrl)
+        const id = url.searchParams.get("id") || url.searchParams.get("link")
+        if (id === sessionId) {
+          return session.sessionUrl
+        }
+      } catch (e) {
+        console.error("Failed to parse session URL:", e)
+      }
+    }
+
+    return null
+  }
+
+  handleNavigateToSession(sessionUrl: string) {
+    const params = this.route.snapshot.params
+    if (!params || !params["settings"] || !params["settings"].startsWith("doi.org/")) {
+      return
+    }
+
+    const doiPart = params["settings"].split("&")[0]
+
+    try {
+      const url = new URL(sessionUrl)
+      const uniqueID = url.searchParams.get("id") || url.searchParams.get("link")
+
+      if (uniqueID) {
+        const newUrl = `${location.origin}/#/${encodeURIComponent(doiPart)}&${encodeURIComponent(uniqueID)}`
+        window.open(newUrl, '_blank')
+      }
+    } catch (e) {
+      console.error("Failed to parse session URL:", e)
+    }
   }
 
   async tryAlternateIdentifiers(alternateIdentifiers: any[], doiLink: string, index: number) {

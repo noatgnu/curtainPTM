@@ -44,7 +44,7 @@
 thead th {
   position: sticky;
   top: 0;
-  background-color: #f8f9fa;
+  background-color: var(--app-bg-secondary);
   z-index: 10;
 }
 

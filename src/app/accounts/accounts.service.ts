@@ -243,4 +243,64 @@ export class AccountsService {
       return error
     })
   }
+
+  async parseDataCiteAlternateIdentifiers(dataCite: any) {
+    const result: {mainSessionUrl?: string, alternativeSessionUrls: string[], collectionMetadataUrl?: string, collectionMetadata?: any} = {
+      alternativeSessionUrls: []
+    }
+
+    if (dataCite.form_data && dataCite.form_data.alternateIdentifiers) {
+      for (const identifier of dataCite.form_data.alternateIdentifiers) {
+        if (identifier.alternateIdentifierType === 'Curtain Main Session Data') {
+          result.mainSessionUrl = identifier.alternateIdentifier;
+        } else if (identifier.alternateIdentifierType === 'Curtain Alternative Session Data') {
+          result.alternativeSessionUrls.push(identifier.alternateIdentifier);
+        } else if (identifier.alternateIdentifierType === 'Curtain Collection Metadata') {
+          result.collectionMetadataUrl = identifier.alternateIdentifier;
+        }
+      }
+    }
+
+    if (result.collectionMetadataUrl) {
+      try {
+        const response = await this.curtainAPI.axiosInstance.get(result.collectionMetadataUrl);
+        result.collectionMetadata = response.data;
+      } catch (error) {
+        console.error('Failed to fetch collection metadata:', error);
+      }
+    }
+
+    return result;
+  }
+
+  async loadDataCiteSession(url: string) {
+    try {
+      const response = await this.curtainAPI.axiosInstance.get(url);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to load session data:', error);
+      throw error;
+    }
+  }
+
+  async loadAllDataCiteSessions(parsedData: any) {
+    const sessions: {main?: any, alternatives: any[]} = {
+      alternatives: []
+    };
+
+    if (parsedData.mainSessionUrl) {
+      sessions.main = await this.loadDataCiteSession(parsedData.mainSessionUrl);
+    }
+
+    for (const url of parsedData.alternativeSessionUrls) {
+      try {
+        const session = await this.loadDataCiteSession(url);
+        sessions.alternatives.push(session);
+      } catch (error) {
+        console.error(`Failed to load alternative session from ${url}:`, error);
+      }
+    }
+
+    return sessions;
+  }
 }

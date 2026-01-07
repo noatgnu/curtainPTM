@@ -9,7 +9,7 @@
 }
 
 .form-control:disabled, .form-select:disabled, .form-control[readonly] {
-  background-color: #f8f9fa;
+  background-color: var(--app-bg-secondary);
 }
 
 /* Improve display on small screens */

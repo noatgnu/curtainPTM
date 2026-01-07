@@ -353,6 +353,12 @@ $danger-dark: #ff7b7b;
     border-color: var(--app-border-color);
     color: var(--app-text-primary);
   }
+
+  .input-group-text {
+    background-color: var(--app-bg-tertiary);
+    border-color: var(--app-input-border);
+    color: var(--app-text-primary);
+  }
 }
 
 body {
