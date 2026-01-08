@@ -28,7 +28,7 @@
     "@citation-js/plugin-ris": "^0.7.16",
     "@ng-bootstrap/ng-bootstrap": "^20.0.0",
     "@popperjs/core": "^2.10.2",
-    "@rollup/rollup-win32-x64-msvc": "^4.54.0",
+    "@rollup/rollup-win32-x64-msvc": "^4.55.1",
     "@types/cytoscape-cxtmenu": "^3.4.0",
     "@types/cytoscape-fcose": "^2.2.1",
     "@types/plotly.js-dist-min": "^2.3.0",
