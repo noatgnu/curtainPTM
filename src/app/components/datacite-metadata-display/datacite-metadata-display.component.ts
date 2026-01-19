@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
-import {DataCiteMetadata} from "../../data-cite-metadata";
+import {DataCiteMetadata, ParsedDataCiteData} from "../../data-cite-metadata";
 import {DataciteCitationComponent} from "./datacite-citation/datacite-citation.component";
 import {NgbModal, NgbTooltip} from "@ng-bootstrap/ng-bootstrap";
 import {QuillViewComponent} from "ngx-quill";
@@ -43,7 +43,10 @@ export class DataciteMetadataDisplayComponent {
 
   }
 
+  @Input() parsedData: ParsedDataCiteData | undefined = undefined
+
   @Output() clickDownload: EventEmitter<string> = new EventEmitter<string>()
+  @Output() navigateToSession: EventEmitter<string> = new EventEmitter<string>()
   creatorsString: string = ""
   get metadata(): DataCiteMetadata|undefined {
     return this._metadata

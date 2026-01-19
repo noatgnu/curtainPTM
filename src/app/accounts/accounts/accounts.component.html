@@ -339,8 +339,8 @@
                 <tr>
                   <th scope="col">Name</th>
                   <th scope="col">Description</th>
-                  <th scope="col" style="width: 120px;">Sessions</th>
-                  <th scope="col" style="width: 180px;">Last Updated</th>
+                  <th scope="col" style="width: 100px;">Sessions</th>
+                  <th scope="col" style="width: 120px;">Share</th>
                   <th scope="col" style="width: 200px;">Actions</th>
                 </tr>
               </thead>
@@ -363,9 +363,38 @@
                       </span>
                     </td>
                     <td>
-                      <div class="text-muted small">
-                        <i class="bi bi-calendar3 me-1"></i>{{collection.updated | date:'short'}}
-                      </div>
+                      @if (isCollectionOwner(collection)) {
+                        <div class="d-flex align-items-center gap-1">
+                          <div class="form-check form-switch mb-0">
+                            <input
+                              class="form-check-input"
+                              type="checkbox"
+                              role="switch"
+                              [id]="'enable-' + collection.id"
+                              [checked]="collection.enable"
+                              (change)="toggleCollectionEnable(collection)"
+                              [disabled]="collectionsLoading">
+                          </div>
+                          @if (collection.enable) {
+                            <button
+                              class="btn btn-sm btn-outline-secondary"
+                              (click)="copyCollectionLink(collection)"
+                              [disabled]="collectionsLoading"
+                              title="Copy share link">
+                              <i class="bi bi-link-45deg"></i>
+                            </button>
+                            <button
+                              class="btn btn-sm btn-outline-secondary"
+                              (click)="openCollectionQRCode(collection)"
+                              [disabled]="collectionsLoading"
+                              title="Show QR code">
+                              <i class="bi bi-qr-code"></i>
+                            </button>
+                          }
+                        </div>
+                      } @else {
+                        <span class="text-muted">-</span>
+                      }
                     </td>
                     <td>
                       <div class="btn-group btn-group-sm">

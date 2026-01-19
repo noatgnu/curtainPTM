@@ -66,6 +66,7 @@ import { StringNetworkComponent } from './components/string-network/string-netwo
 import { InteractiveNetworkComponent } from './components/string-network/interactive-network/interactive-network.component';
 import { ProteinInfoPanelComponent } from './components/string-network/protein-info-panel/protein-info-panel.component';
 import { StringNetworkService } from './components/string-network/string-network.service';
+import { DataciteMetadataDisplayComponent } from './components/datacite-metadata-display/datacite-metadata-display.component';
 //PlotlyViaCDNModule.setPlotlyVersion('latest');
 //PlotlyViaCDNModule.setPlotlyBundle('basic');
 
@@ -139,5 +140,6 @@ import { StringNetworkService } from './components/string-network/string-network
         }),
         ToastProgressbarComponent,
         ShapesComponent,
-        DragDropModule], providers: [HttpClient, provideHttpClient(withInterceptorsFromDi()), StringNetworkService] })
+        DragDropModule,
+        DataciteMetadataDisplayComponent], providers: [HttpClient, provideHttpClient(withInterceptorsFromDi()), StringNetworkService] })
 export class AppModule { }

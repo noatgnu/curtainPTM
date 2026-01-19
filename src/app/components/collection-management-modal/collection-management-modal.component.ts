@@ -3,6 +3,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { AccountsService } from '../../accounts/accounts.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ToastService } from '../../toast.service';
 
 interface Collection {
   id: number;
@@ -12,6 +13,7 @@ interface Collection {
   curtains: string[];
   updated: Date;
   owner_username: string;
+  enable?: boolean;
 }
 
 @Component({
@@ -30,7 +32,8 @@ export class CollectionManagementModalComponent implements OnInit {
 
   constructor(
     public activeModal: NgbActiveModal,
-    private accounts: AccountsService
+    private accounts: AccountsService,
+    private toast: ToastService
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -99,5 +102,39 @@ export class CollectionManagementModalComponent implements OnInit {
 
   isOwner(collection: Collection): boolean {
     return collection.owner_username === this.accounts.curtainAPI.user.username;
+  }
+
+  async toggleEnable(collection: Collection): Promise<void> {
+    try {
+      this.isLoading = true;
+      const newEnable = !collection.enable;
+      await this.accounts.updateCollectionEnable(collection.id, newEnable);
+      collection.enable = newEnable;
+      if (newEnable) {
+        this.toast.show("Sharing Enabled", "Collection is now publicly shareable.");
+      } else {
+        this.toast.show("Sharing Disabled", "Collection is no longer publicly accessible.");
+      }
+    } catch (error) {
+      console.error('Failed to toggle collection sharing:', error);
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
+  getCollectionLink(collection: Collection): string {
+    const baseUrl = window.location.origin + window.location.pathname;
+    return `${baseUrl}#/collection/${collection.id}`;
+  }
+
+  async copyCollectionLink(collection: Collection): Promise<void> {
+    const link = this.getCollectionLink(collection);
+    try {
+      await navigator.clipboard.writeText(link);
+      this.toast.show("Link Copied", "Collection link copied to clipboard.");
+    } catch (error) {
+      console.error('Failed to copy link:', error);
+      this.toast.show("Error", "Failed to copy link to clipboard.");
+    }
   }
 }

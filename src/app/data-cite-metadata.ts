@@ -202,3 +202,27 @@ export interface DataCiteMetadata {
    public_file_url?: string | null,
    collection?: number | null
  }
+
+export interface DataCiteCollectionSession {
+  curtain_id: number;
+  link_id: string;
+  data_url: string;
+}
+
+export interface DataCiteCollectionMetadata {
+  collection_id: number;
+  collection_name: string;
+  collection_description: string;
+  main_session: {
+    curtain_id: number | null;
+    link_id: string | null;
+  };
+  sessions: DataCiteCollectionSession[];
+}
+
+export interface ParsedDataCiteData {
+  mainSessionUrl?: string;
+  alternativeSessionUrls: string[];
+  collectionMetadataUrl?: string;
+  collectionMetadata?: DataCiteCollectionMetadata;
+}

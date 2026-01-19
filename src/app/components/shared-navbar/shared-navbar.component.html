@@ -1,0 +1,71 @@
+<nav class="navbar navbar-expand-lg fixed-top shadow-sm" [attr.data-bs-theme]="themeService.getCurrentTheme()" style="background-color: var(--app-bg-secondary); backdrop-filter: blur(10px);">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold" href="#">CurtainPTM</a>
+
+    <div class="d-flex align-items-center">
+      @if (accounts.curtainAPI.user.loginStatus) {
+        <div class="me-2">
+          <div display="dynamic" ngbDropdown>
+            <button class="btn btn-outline-primary" id="dropdownAccount" ngbDropdownToggle>
+              <i class="bi bi-person-circle"></i> Account
+            </button>
+            <div ngbDropdownMenu aria-labelledby="dropdownAccount" class="dropdown-menu-end">
+              <h6 class="dropdown-header">Account Management</h6>
+              <button ngbDropdownItem (click)="openAccountModal()">
+                <i class="bi bi-person"></i> My Account
+              </button>
+              <div class="dropdown-divider"></div>
+              <button ngbDropdownItem (click)="logout()">
+                <i class="bi bi-box-arrow-right"></i> Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      } @else {
+        <div class="me-2">
+          <button class="btn btn-outline-primary" (click)="openLoginModal()">
+            <i class="bi bi-box-arrow-in-right"></i> Login
+          </button>
+        </div>
+      }
+
+      <div class="me-2">
+        <div display="dynamic" ngbDropdown>
+          <button class="btn btn-outline-secondary" id="dropdownTheme" ngbDropdownToggle>
+            @if (isDarkMode()) {
+              <i class="bi bi-moon-fill"></i>
+            } @else {
+              <i class="bi bi-sun-fill"></i>
+            }
+          </button>
+          <div ngbDropdownMenu aria-labelledby="dropdownTheme" class="dropdown-menu-end">
+            <h6 class="dropdown-header">
+              <i class="bi bi-palette me-2"></i>Theme
+            </h6>
+            @for (theme of availableThemes; track theme.name) {
+              <button
+                ngbDropdownItem
+                (click)="selectTheme(theme.name)"
+                [class.active]="currentThemeName === theme.name">
+                <i class="bi bi-check2 me-2" [class.invisible]="currentThemeName !== theme.name"></i>
+                {{theme.displayName}}
+              </button>
+            }
+            <div class="dropdown-divider"></div>
+            <h6 class="dropdown-header">
+              <i class="bi bi-brightness-high me-2"></i>Mode
+            </h6>
+            <button ngbDropdownItem (click)="setThemeMode('light')" [class.active]="!isDarkMode()">
+              <i class="bi bi-check2 me-2" [class.invisible]="isDarkMode()"></i>
+              <i class="bi bi-sun me-1"></i>Light
+            </button>
+            <button ngbDropdownItem (click)="setThemeMode('dark')" [class.active]="isDarkMode()">
+              <i class="bi bi-check2 me-2" [class.invisible]="!isDarkMode()"></i>
+              <i class="bi bi-moon me-1"></i>Dark
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>

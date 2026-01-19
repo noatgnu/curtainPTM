@@ -1,6 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import {HomeComponent} from "./components/home/home.component";
+import {CollectionLandingComponent} from "./components/collection-landing/collection-landing.component";
+import {AppLayoutComponent} from "./components/app-layout/app-layout.component";
 
 const routes: Routes = [
 
@@ -15,6 +17,13 @@ const routes: Routes = [
       }
     ],
 
+  },
+  {
+    path: 'collection/:id',
+    component: AppLayoutComponent,
+    children: [
+      { path: '', component: CollectionLandingComponent }
+    ]
   },
   {path: ':settings', component: HomeComponent},
   {path: "**", redirectTo:"home"}

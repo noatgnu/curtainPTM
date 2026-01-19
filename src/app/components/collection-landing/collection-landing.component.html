@@ -1,0 +1,72 @@
+<div class="container mt-5 pt-3">
+  @if (loading()) {
+    <div class="mb-4">
+      <ngb-progressbar [animated]="true" [value]="100" [striped]="true">Loading Collection...</ngb-progressbar>
+    </div>
+  }
+
+  @if (error()) {
+    <div class="alert alert-danger">
+      <i class="bi bi-exclamation-triangle me-2"></i>{{error()}}
+    </div>
+  }
+
+  @if (collection()) {
+    <div class="card shadow-sm">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h4 class="card-title mb-0">
+          <i class="bi bi-collection me-2"></i>{{collection()!.name}}
+        </h4>
+        <span class="badge bg-info">{{collection()!.accessible_curtains.length}} sessions</span>
+      </div>
+
+      <div class="card-body">
+        @if (collection()!.description) {
+          <p class="card-text text-muted mb-4">{{collection()!.description}}</p>
+        }
+
+        @if (!accounts.curtainAPI.user.loginStatus) {
+          <div class="alert alert-secondary mb-4">
+            <i class="bi bi-info-circle me-2"></i>
+            <button class="btn btn-link p-0 align-baseline" (click)="openLogin()">Login</button> to see additional sessions you may have access to.
+          </div>
+        }
+
+        <h5 class="border-bottom pb-2 mb-3">
+          <i class="bi bi-list-ul me-2"></i>Sessions
+        </h5>
+
+        @if (collection()!.accessible_curtains.length === 0) {
+          <div class="alert alert-info">
+            <i class="bi bi-info-circle me-2"></i>No accessible sessions in this collection.
+          </div>
+        } @else {
+          <div class="list-group">
+            @for (curtain of collection()!.accessible_curtains; track curtain.id) {
+              <button type="button" class="list-group-item list-group-item-action" (click)="navigateToSession(curtain)">
+                <div class="d-flex w-100 justify-content-between align-items-start">
+                  <div>
+                    <h6 class="mb-1">{{curtain.description || 'Untitled Session'}}</h6>
+                    <small class="text-muted">Created: {{formatDate(curtain.created)}}</small>
+                  </div>
+                  <div class="text-end">
+                    <span class="badge bg-secondary me-2">{{curtain.curtain_type}}</span>
+                    <i class="bi bi-box-arrow-up-right"></i>
+                  </div>
+                </div>
+              </button>
+            }
+          </div>
+        }
+      </div>
+
+      <div class="card-footer text-muted">
+        <small>
+          <i class="bi bi-person me-1"></i>Owner: {{collection()!.owner_username}}
+          <span class="mx-2">|</span>
+          <i class="bi bi-calendar me-1"></i>Created: {{formatDate(collection()!.created)}}
+        </small>
+      </div>
+    </div>
+  }
+</div>

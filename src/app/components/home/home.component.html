@@ -1,5 +1,23 @@
 <app-navbar [isDOI]="isDOI" [doiMetadata]="doiMetadata" [loadingDataCite]="loadingDataCite" [finished]="finished" (updateSelection)="handleFinish($event)" [uniqueLink]="uniqueLink"></app-navbar>
 
+@if (isDOI) {
+  <div class="container mt-5 pt-3">
+    @if (doiMetadata) {
+      <app-datacite-metadata-display [metadata]="doiMetadata"
+                                     [parsedData]="doiParsedData"
+                                     (clickDownload)="handleDataCiteClickDownload($event)"
+                                     (navigateToSession)="handleNavigateToSession($event)">
+      </app-datacite-metadata-display>
+    } @else {
+      @if (loadingDataCite) {
+        <div class="mb-4">
+          <ngb-progressbar [animated]="true" [value]="100" [striped]="true">Retrieving MetaData</ngb-progressbar>
+        </div>
+      }
+    }
+  </div>
+}
+
 <app-pride></app-pride>
 <app-file-form (finished)="handleFinish($event)"></app-file-form>
 <app-protein-selections (searchResult)="handleSearch($event)"></app-protein-selections>

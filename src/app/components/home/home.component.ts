@@ -195,43 +195,25 @@ export class HomeComponent implements OnInit {
   }
 
   findSessionUrlById(parsedData: any, sessionId: string): string | null {
-    if (!parsedData || !parsedData.collectionMetadata || !parsedData.collectionMetadata.allSessionLinks) {
+    if (!parsedData || !parsedData.collectionMetadata || !parsedData.collectionMetadata.sessions) {
       return null
     }
 
-    for (const session of parsedData.collectionMetadata.allSessionLinks) {
-      try {
-        const url = new URL(session.sessionUrl)
-        const id = url.searchParams.get("id") || url.searchParams.get("link")
-        if (id === sessionId) {
-          return session.sessionUrl
-        }
-      } catch (e) {
-        console.error("Failed to parse session URL:", e)
+    for (const session of parsedData.collectionMetadata.sessions) {
+      if (session.link_id === sessionId) {
+        return session.data_url
       }
     }
 
     return null
   }
 
-  handleNavigateToSession(sessionUrl: string) {
+  handleNavigateToSession(sessionLinkId: string) {
     const params = this.route.snapshot.params
-    if (!params || !params["settings"] || !params["settings"].startsWith("doi.org/")) {
-      return
-    }
-
-    const doiPart = params["settings"].split("&")[0]
-
-    try {
-      const url = new URL(sessionUrl)
-      const uniqueID = url.searchParams.get("id") || url.searchParams.get("link")
-
-      if (uniqueID) {
-        const newUrl = `${location.origin}/#/${encodeURIComponent(doiPart)}&${encodeURIComponent(uniqueID)}`
-        window.open(newUrl, '_blank')
-      }
-    } catch (e) {
-      console.error("Failed to parse session URL:", e)
+    if (params && params["settings"] && params["settings"].startsWith("doi.org/")) {
+      const doiPart = params["settings"].split("&")[0]
+      const newUrl = `${location.origin}/#/${doiPart}&${sessionLinkId}`
+      window.open(newUrl, '_blank')
     }
   }
 
@@ -635,6 +617,17 @@ export class HomeComponent implements OnInit {
       this.data.downloadProgress.next(100)
     }
 
+  }
+
+  handleDataCiteClickDownload(event: string) {
+    switch (event) {
+      case "different":
+        this.web.downloadFile('different.txt', this.data.differential.originalFile)
+        break
+      case "searched":
+        this.web.downloadFile('searched.txt', this.data.raw.originalFile)
+        break
+    }
   }
 
 }

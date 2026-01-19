@@ -6,6 +6,7 @@ import { debounceTime, distinctUntilChanged, takeUntil } from "rxjs/operators";
 import { ToastService } from "../../toast.service";
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CollectionSessionsViewerModalComponent } from '../../components/collection-sessions-viewer-modal/collection-sessions-viewer-modal.component';
+import { QrcodeModalComponent } from '../../components/qrcode-modal/qrcode-modal.component';
 
 @Component({
     selector: 'app-accounts',
@@ -406,5 +407,38 @@ export class AccountsComponent implements OnInit, OnDestroy {
     } finally {
       this.isLoading = false;
     }
+  }
+
+  async toggleCollectionEnable(collection: any): Promise<void> {
+    try {
+      this.collectionsLoading = true;
+      const newEnable = !collection.enable;
+      await this.accounts.updateCollectionEnable(collection.id, newEnable);
+      collection.enable = newEnable;
+    } catch (error) {
+      console.error('Failed to toggle collection sharing:', error);
+    } finally {
+      this.collectionsLoading = false;
+    }
+  }
+
+  getCollectionLink(collection: any): string {
+    return `${window.location.origin}${window.location.pathname}#/collection/${collection.id}`;
+  }
+
+  async copyCollectionLink(collection: any): Promise<void> {
+    const link = this.getCollectionLink(collection);
+    try {
+      await navigator.clipboard.writeText(link);
+      this.toast.show("Success", "Link copied to clipboard").then();
+    } catch (error) {
+      console.error('Failed to copy link:', error);
+      this.toast.show("Error", "Failed to copy link").then();
+    }
+  }
+
+  openCollectionQRCode(collection: any): void {
+    const ref = this.modal.open(QrcodeModalComponent, { size: 'sm' });
+    ref.componentInstance.url = this.getCollectionLink(collection);
   }
 }

@@ -210,6 +210,17 @@ export class AccountsService {
     })
   }
 
+  updateCollectionEnable(id: number, enable: boolean) {
+    return this.curtainAPI.axiosInstance.patch(this.curtainAPI.baseURL + `curtain-collections/${id}/`, {
+      enable
+    }).then((response: any) => {
+      return response.data
+    }).catch((error: any) => {
+      this.toast.show("Error", "Failed to update collection sharing.").then()
+      throw error
+    })
+  }
+
   deleteCollection(id: number) {
     return this.curtainAPI.axiosInstance.delete(this.curtainAPI.baseURL + `curtain-collections/${id}/`).then((response: any) => {
       this.toast.show("Success", "Collection deleted successfully.").then()
