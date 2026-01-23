@@ -7,6 +7,7 @@ import { SiteProperties } from 'curtain-web-api';
 export interface SessionSaveOptions {
   permanent: boolean;
   expiryDuration?: number;
+  sessionName?: string;
 }
 
 @Component({
@@ -18,9 +19,11 @@ export interface SessionSaveOptions {
 export class SessionSaveModalComponent {
   @Input() siteProperties!: SiteProperties;
   @Input() isStaff: boolean = false;
+  @Input() currentName: string = '';
 
   permanent = signal(false);
   expiryDuration = signal<number | undefined>(undefined);
+  sessionName = signal('');
 
   constructor(public activeModal: NgbActiveModal) {}
 
@@ -28,12 +31,16 @@ export class SessionSaveModalComponent {
     if (this.siteProperties) {
       this.expiryDuration.set(this.siteProperties.default_expiry_duration_months);
     }
+    if (this.currentName) {
+      this.sessionName.set(this.currentName);
+    }
   }
 
   save() {
     const options: SessionSaveOptions = {
       permanent: this.permanent(),
-      expiryDuration: this.permanent() ? undefined : this.expiryDuration()
+      expiryDuration: this.permanent() ? undefined : this.expiryDuration(),
+      sessionName: this.sessionName() || undefined
     };
     this.activeModal.close(options);
   }

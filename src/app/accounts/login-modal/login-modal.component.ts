@@ -15,9 +15,9 @@ import {DataService} from "../../data.service";
   standalone: false
 })
 export class LoginModalComponent implements OnInit, OnDestroy {
-  allowOrcid = true
   @ViewChild('orcidWidget') orcidWidget: ElementRef|undefined
-  orcid: string = environment.orcid
+  orcid: string = environment.orcid || ''
+  allowOrcid = !!environment.orcid
   form = this.fb.group({
     username: [null, Validators.required],
     password: [null, Validators.required],
@@ -39,6 +39,10 @@ export class LoginModalComponent implements OnInit, OnDestroy {
     this.accounts.curtainAPI.getSiteProperties().then(response => {
       if (response.data) {
         this.rememberMeDays = response.data.jwt_remember_me_refresh_token_lifetime_days
+        if (response.data.orcid_client_id) {
+          this.orcid = response.data.orcid_client_id
+          this.allowOrcid = true
+        }
       }
     }).catch(err => {
       console.error('Failed to load site properties:', err)

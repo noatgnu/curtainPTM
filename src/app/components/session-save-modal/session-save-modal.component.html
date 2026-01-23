@@ -6,6 +6,21 @@
 </div>
 
 <div class="modal-body">
+  <div class="mb-3">
+    <label for="sessionName" class="form-label">
+      <strong>Session Name</strong>
+    </label>
+    <input
+      type="text"
+      id="sessionName"
+      class="form-control"
+      [(ngModel)]="sessionName"
+      placeholder="Enter a name for this session (optional)">
+    <div class="form-text">
+      Give your session a descriptive name to easily find it later.
+    </div>
+  </div>
+
   @if (siteProperties.allow_user_set_permanent || isStaff) {
     <div class="form-check form-switch mb-3">
       <input
