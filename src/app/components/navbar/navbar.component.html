@@ -286,8 +286,13 @@
     <button type="button" class="btn-close" (click)="dismissSessionLink()" aria-label="Close"></button>
     <div class="d-flex align-items-center">
       <div class="flex-grow-1 me-3">
-        <h6 class="alert-heading mb-2">
-          <i class="bi bi-link-45deg me-2"></i>Session Link
+        <h6 class="alert-heading mb-1">
+          <i class="bi bi-link-45deg me-2"></i>
+          @if (data.session?.name) {
+            {{data.session.name}}
+          } @else {
+            Session Link
+          }
           @if (!data.session.permanent) {
             <span class="badge bg-dark ms-2">Temporary</span>
           } @else {
@@ -303,6 +308,11 @@
             }
           }
         </h6>
+        @if (data.session?.name) {
+          <div class="small text-muted mb-1">
+            <i class="bi bi-hash me-1"></i>{{settings.settings.currentID}}
+          </div>
+        }
         <div class="small mb-2">
           <a [href]="uniqueLink" class="text-decoration-none fw-bold" target="_blank" style="word-break: break-all;">
             {{uniqueLink}}

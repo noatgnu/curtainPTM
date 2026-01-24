@@ -8,6 +8,22 @@
   <form [formGroup]="form">
     <div class="card mb-3">
       <div class="card-header">
+        <h6 class="mb-0"><i class="bi bi-tag me-2"></i>Session Name</h6>
+      </div>
+      <div class="card-body">
+        <input
+          type="text"
+          formControlName="name"
+          class="form-control"
+          placeholder="Enter a name for this session (optional)">
+        <div class="form-text">
+          Give your session a descriptive name to easily identify it.
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-3">
+      <div class="card-header">
         <h6 class="mb-0"><i class="bi bi-eye me-2"></i>Visibility Settings</h6>
       </div>
       <div class="card-body">
