@@ -1,22 +1,58 @@
+@if (isLoading) {
+  <div class="loading-overlay">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <div class="mt-2">
+      @if (loading.alignment) {
+        <small>Aligning sequences...</small>
+      } @else if (loading.drawing) {
+        <small>Drawing visualization...</small>
+      } @else if (loading.netphos) {
+        <small>Fetching NetPhos predictions...</small>
+      }
+    </div>
+  </div>
+}
+
+@if (hasErrors) {
+  <div class="error-alerts mb-2">
+    @if (errors.alignment) {
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>{{errors.alignment}}
+        <button type="button" class="btn-close" (click)="dismissError('alignment')"></button>
+      </div>
+    }
+    @if (errors.netphos) {
+      <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-circle-fill me-2"></i>{{errors.netphos}}
+        <button type="button" class="btn-close" (click)="dismissError('netphos')"></button>
+      </div>
+    }
+    @if (errors.kinaseLibrary) {
+      <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-circle-fill me-2"></i>{{errors.kinaseLibrary}}
+        <button type="button" class="btn-close" (click)="dismissError('kinaseLibrary')"></button>
+      </div>
+    }
+  </div>
+}
+
 <div class="row">
   <div class="col-3">
     <label for="modTypes">Modification types for UniProt</label>
-    <select multiple id="modTypes" [(ngModel)]="selectedUniProt" class="form-control">
+    <select multiple id="modTypes" [(ngModel)]="selectedUniProt" class="form-control" size="4">
       @for (m of uniMods; track m) {
-        <option [value]="m">
-          {{m}}
-        </option>
+        <option [value]="m">{{m}}</option>
       }
     </select>
   </div>
   <div class="col-3">
     <label for="db">Select Databases</label>
-    <select multiple id="db" class="form-control" [(ngModel)]="dbSelected">
+    <select multiple id="db" class="form-control" [(ngModel)]="dbSelected" size="4">
       @for (d of ptm.databases; track d) {
         @if (availableDB.includes(d.name)) {
-          <option [value]="d.name">
-            {{d.name}}
-          </option>
+          <option [value]="d.name">{{d.name}}</option>
         }
       }
     </select>
@@ -30,9 +66,7 @@
         <label>{{a}}</label>
         <select class="form-control" [(ngModel)]="sourceMap[a]">
           @for (o of accOptions[a]; track o) {
-            <option [value]="o">
-              {{o}}
-            </option>
+            <option [value]="o">{{o}}</option>
           }
         </select>
       </div>
@@ -41,14 +75,51 @@
 </div>
 
 <div class="row mt-2">
-  <div class="col-3">
-    <button class="btn btn-primary" (click)="reDraw()">Redraw Plot</button>
-  </div>
-  <div class="col-3">
-    <button class="btn btn-primary" (click)="downloadSVG()">Download as SVG</button>
+  <div class="col-12">
+    <div class="btn-toolbar gap-2" role="toolbar">
+      <div class="btn-group" role="group">
+        <button class="btn btn-primary btn-sm" (click)="reDraw()" [disabled]="isLoading">
+          @if (loading.drawing) {
+            <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+          }
+          <i class="bi bi-arrow-clockwise me-1"></i>Redraw
+        </button>
+      </div>
+      <div class="btn-group" role="group">
+        <button class="btn btn-outline-secondary btn-sm" (click)="downloadSVG()" [disabled]="graphData.length === 0">
+          <i class="bi bi-download me-1"></i>SVG
+        </button>
+        <button class="btn btn-outline-secondary btn-sm" (click)="downloadPNG()" [disabled]="graphData.length === 0">
+          <i class="bi bi-image me-1"></i>PNG
+        </button>
+        <button class="btn btn-outline-secondary btn-sm" (click)="downloadCSV()" [disabled]="filteredAlignedData.length === 0">
+          <i class="bi bi-file-earmark-spreadsheet me-1"></i>CSV
+        </button>
+      </div>
+      <div class="btn-group" role="group">
+        <button class="btn btn-sm" [ngClass]="showLegend ? 'btn-info' : 'btn-outline-info'" (click)="toggleLegend()">
+          <i class="bi bi-palette me-1"></i>Legend
+        </button>
+      </div>
+    </div>
   </div>
 </div>
 
+@if (showLegend) {
+  <div class="row mt-2">
+    <div class="col-12">
+      <div class="legend-container">
+        <span class="legend-title">Color Legend:</span>
+        @for (item of colorLegend; track item.label) {
+          <span class="legend-item">
+            <span class="legend-color" [style.background-color]="item.color"></span>
+            <span class="legend-label">{{item.label}}</span>
+          </span>
+        }
+      </div>
+    </div>
+  </div>
+}
 
 @for (g of graphData; track g) {
   <div class="row mt-2">
@@ -59,62 +130,144 @@
 }
 
 @if (alignedMap['Experimental Data']) {
-  <table class="table table-hover mt-2">
-  <thead>
-  <tr>
-    <th scope="col" style="word-wrap: break-word;min-width: 160px;max-width: 160px;">
-      Experimental Data Aligned Position (Original Position)
-    </th>
-    @for (g of graphData; track g) {
-      <th scope="col">
-        {{g.name}}
-      </th>
-    }
-  </tr>
-  </thead>
-  <tbody>
-  @for (d of alignedMap['Experimental Data']; track d) {
-    <tr [ngClass]="{'table-success': d.id && dataService.selectedMap[d.id]}">
-      <td style="word-wrap: break-word;min-width: 160px;max-width: 160px;">
-        {{d.alignedPosition+1}} ({{d.actualPosition+1}})
-<!--        <span class="badge bg-primary ml-2" (click)="openNetPhos(d.actualPosition+1)">NetPhos</span>-->
-        <span class="badge bg-danger" style="margin-left: 2px" (click)="toggleKinaseLibraryOpenStatus(d.actualPosition+1)">Kinase Library</span>
+  <div class="table-controls mt-3 mb-2">
+    <div class="row align-items-center">
+      <div class="col-auto">
+        <div class="input-group input-group-sm">
+          <span class="input-group-text"><i class="bi bi-search"></i></span>
+          <input type="text" class="form-control" placeholder="Filter by position..." [(ngModel)]="filterText" (ngModelChange)="onFilterChange()">
+          @if (filterText) {
+            <button class="btn btn-outline-secondary" type="button" (click)="filterText = ''; onFilterChange()">
+              <i class="bi bi-x"></i>
+            </button>
+          }
+        </div>
+      </div>
+      <div class="col-auto">
+        <button class="btn btn-sm" [ngClass]="showOnlySignificant ? 'btn-warning' : 'btn-outline-warning'" (click)="toggleSignificantFilter()">
+          <i class="bi bi-star-fill me-1"></i>Significant only
+        </button>
+      </div>
+      <div class="col-auto ms-auto">
+        <small class="text-muted">
+          Showing {{paginatedData.length}} of {{filteredAlignedData.length}} positions
+        </small>
+      </div>
+    </div>
+  </div>
 
-      </td>
-      @for (g of graphData; track g) {
-        <td>
-          <span>{{g.x[d.alignedPosition].split(".")[0]}}</span>
-          @if (alignedPosition[d.alignedPosition][g.name]) {
-            <span>({{alignedPosition[d.alignedPosition][g.name].actualPosition+1}})</span>
-          }
-          @if (g.name === 'PhosphoSite Plus (Phosphorylation)' && alignedPosition[d.alignedPosition][g.name]) {
-            <span>
-              @if (alignedPosition[d.alignedPosition][g.name].kinases && alignedPosition[d.alignedPosition][g.name].kinases!.length > 0) {
-                @for (k of alignedPosition[d.alignedPosition][g.name].kinases!; track k) {
-                  <span placement="top" ngbTooltip="Kinase" class="badge bg-danger ml-2" (click)="openKinaseInfo(k)">{{k.kinase}}</span>
-                }
-              }
-            </span>
-          }
-          @if (g.name === 'UniProt' && alignedPosition[d.alignedPosition][g.name]) {
-            @if (alignedPosition[d.alignedPosition][g.name].diseases) {
-              @for (disease of alignedPosition[d.alignedPosition][g.name].diseases; track disease) {
-                <span class="badge bg-info ml-2">{{disease.disease}}</span>
-              }
+  <div class="table-responsive">
+    <table class="table table-hover table-sm ptm-table">
+      <thead class="sticky-header">
+        <tr>
+          <th scope="col" class="position-col sortable" (click)="sortBy('position')">
+            Position
+            @if (sortColumn === 'position') {
+              <i class="bi" [ngClass]="sortDirection === 'asc' ? 'bi-sort-up' : 'bi-sort-down'"></i>
             }
+          </th>
+          <th scope="col" class="sortable" (click)="sortBy('residue')">
+            Residue
+            @if (sortColumn === 'residue') {
+              <i class="bi" [ngClass]="sortDirection === 'asc' ? 'bi-sort-up' : 'bi-sort-down'"></i>
+            }
+          </th>
+          <th scope="col" class="sortable" (click)="sortBy('significant')">
+            Sig.
+            @if (sortColumn === 'significant') {
+              <i class="bi" [ngClass]="sortDirection === 'asc' ? 'bi-sort-up' : 'bi-sort-down'"></i>
+            }
+          </th>
+          <th scope="col">Sequence Window</th>
+          <th scope="col">Actions</th>
+          @for (g of graphData; track g) {
+            <th scope="col">{{g.name}}</th>
           }
-        </td>
-      }
-    </tr>
-  }
+        </tr>
+      </thead>
+      <tbody>
+        @for (d of paginatedData; track d) {
+          <tr [ngClass]="{'table-success': d.id && dataService.selectedMap[d.id], 'table-warning': isPositionSignificant(d.actualPosition)}">
+            <td class="position-col">
+              <span class="position-badge">{{d.actualPosition+1}}</span>
+              <small class="text-muted">({{d.alignedPosition+1}})</small>
+            </td>
+            <td>
+              <span class="residue-badge">{{getResidueAt(d.alignedPosition)}}</span>
+            </td>
+            <td>
+              @if (isPositionSignificant(d.actualPosition)) {
+                <span class="badge bg-warning text-dark" ngbTooltip="Statistically significant">*</span>
+              }
+            </td>
+            <td>
+              <code class="sequence-window" ngbTooltip="Sequence window (±7 residues)">{{getSequenceWindow(d.actualPosition)}}</code>
+            </td>
+            <td>
+              <button class="btn btn-outline-danger btn-xs" ngbTooltip="View Kinase Library predictions" (click)="toggleKinaseLibraryOpenStatus(d.actualPosition+1)">
+                <i class="bi bi-lightning-charge"></i>
+              </button>
+            </td>
+            @for (g of graphData; track g) {
+              <td>
+                <span>{{g.x[d.alignedPosition].split(".")[0]}}</span>
+                @if (alignedPosition[d.alignedPosition][g.name]) {
+                  <span class="text-muted">({{alignedPosition[d.alignedPosition][g.name].actualPosition+1}})</span>
+                }
+                @if (g.name === 'PhosphoSite Plus (Phosphorylation)' && alignedPosition[d.alignedPosition][g.name]) {
+                  @if (alignedPosition[d.alignedPosition][g.name].kinases && alignedPosition[d.alignedPosition][g.name].kinases!.length > 0) {
+                    <div class="kinase-badges">
+                      @for (k of alignedPosition[d.alignedPosition][g.name].kinases!; track k) {
+                        <span class="badge bg-danger kinase-badge" ngbTooltip="Click for kinase details" (click)="openKinaseInfo(k)">{{k.kinase}}</span>
+                      }
+                    </div>
+                  }
+                }
+                @if (g.name === 'UniProt' && alignedPosition[d.alignedPosition][g.name]) {
+                  @if (alignedPosition[d.alignedPosition][g.name].diseases) {
+                    <div class="disease-badges">
+                      @for (disease of alignedPosition[d.alignedPosition][g.name].diseases; track disease) {
+                        <span class="badge bg-info disease-badge" ngbTooltip="Disease association">{{disease.disease}}</span>
+                      }
+                    </div>
+                  }
+                }
+              </td>
+            }
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
 
-  </tbody>
-</table>
+  @if (totalPages > 1) {
+    <nav class="mt-2">
+      <ul class="pagination pagination-sm justify-content-center">
+        <li class="page-item" [ngClass]="{'disabled': tableCurrentPage === 1}">
+          <a class="page-link" (click)="goToPage(1)"><i class="bi bi-chevron-double-left"></i></a>
+        </li>
+        <li class="page-item" [ngClass]="{'disabled': tableCurrentPage === 1}">
+          <a class="page-link" (click)="goToPage(tableCurrentPage - 1)"><i class="bi bi-chevron-left"></i></a>
+        </li>
+        @for (page of pageNumbers; track page) {
+          <li class="page-item" [ngClass]="{'active': page === tableCurrentPage}">
+            <a class="page-link" (click)="goToPage(page)">{{page}}</a>
+          </li>
+        }
+        <li class="page-item" [ngClass]="{'disabled': tableCurrentPage === totalPages}">
+          <a class="page-link" (click)="goToPage(tableCurrentPage + 1)"><i class="bi bi-chevron-right"></i></a>
+        </li>
+        <li class="page-item" [ngClass]="{'disabled': tableCurrentPage === totalPages}">
+          <a class="page-link" (click)="goToPage(totalPages)"><i class="bi bi-chevron-double-right"></i></a>
+        </li>
+      </ul>
+    </nav>
+  }
 }
 
 @if (showPSPLink) {
-  <p>
-    PhosphoSitePlus link for <a href="https://www.phosphosite.org/uniprotAccAction?id={{uni['Entry']}}">{{uni["Entry"]}}</a>
+  <p class="mt-2">
+    <i class="bi bi-link-45deg me-1"></i>
+    PhosphoSitePlus: <a href="https://www.phosphosite.org/uniprotAccAction?id={{uni['Entry']}}" target="_blank">{{uni["Entry"]}}</a>
   </p>
 }
-
