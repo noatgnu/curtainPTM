@@ -8,8 +8,6 @@
         <small>Aligning sequences...</small>
       } @else if (loading.drawing) {
         <small>Drawing visualization...</small>
-      } @else if (loading.netphos) {
-        <small>Fetching NetPhos predictions...</small>
       }
     </div>
   </div>
@@ -21,12 +19,6 @@
       <div class="alert alert-danger alert-dismissible fade show" role="alert">
         <i class="bi bi-exclamation-triangle-fill me-2"></i>{{errors.alignment}}
         <button type="button" class="btn-close" (click)="dismissError('alignment')"></button>
-      </div>
-    }
-    @if (errors.netphos) {
-      <div class="alert alert-warning alert-dismissible fade show" role="alert">
-        <i class="bi bi-exclamation-circle-fill me-2"></i>{{errors.netphos}}
-        <button type="button" class="btn-close" (click)="dismissError('netphos')"></button>
       </div>
     }
     @if (errors.kinaseLibrary) {

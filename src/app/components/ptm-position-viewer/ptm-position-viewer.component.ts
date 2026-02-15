@@ -9,7 +9,6 @@ import {DataService} from "../../data.service";
 import {PspService} from "../../psp.service";
 import {WebService} from "../../web.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {NetphosKinasesComponent} from "../netphos-kinases/netphos-kinases.component";
 import {KinaseInfoComponent} from "../kinase-info/kinase-info.component";
 import {KinaseLibraryService} from "../../kinase-library.service";
 import {KinaseLibraryModalComponent} from "../kinase-library-modal/kinase-library-modal.component";
@@ -66,17 +65,6 @@ export interface DiseaseInfo {
   disease: string;
 }
 
-export interface NetPhosEntry {
-  id: string;
-  res: string;
-  pos: number;
-  score: number;
-  kinase: string;
-}
-
-export interface NetPhosMap {
-  [position: number]: NetPhosEntry[];
-}
 
 export interface GraphDataItem {
   x: string[];
@@ -116,14 +104,12 @@ export interface KinaseLibraryData {
 
 export interface LoadingState {
   alignment: boolean;
-  netphos: boolean;
   kinaseLibrary: boolean;
   drawing: boolean;
 }
 
 export interface ErrorState {
   alignment: string | null;
-  netphos: string | null;
   kinaseLibrary: string | null;
 }
 
@@ -192,7 +178,6 @@ export class PtmPositionViewerComponent implements OnInit {
   alignedPosition: AlignedPositionData = {};
   private _dbSelected: string[] = [];
   currentLayout: Record<string, [number, number]> = {};
-  netPhosMap: NetPhosMap = {};
   kinases: Record<string, any> = {};
   kinaseLibrary: Record<string, KinaseLibraryEntry> = {};
   kinaseLibraryOpenStatus: Record<string, boolean> = {};
@@ -203,14 +188,12 @@ export class PtmPositionViewerComponent implements OnInit {
 
   loading: LoadingState = {
     alignment: false,
-    netphos: false,
     kinaseLibrary: false,
     drawing: false
   };
 
   errors: ErrorState = {
     alignment: null,
-    netphos: null,
     kinaseLibrary: null
   };
 
@@ -247,11 +230,11 @@ export class PtmPositionViewerComponent implements OnInit {
   }
 
   get isLoading(): boolean {
-    return this.loading.alignment || this.loading.netphos || this.loading.drawing;
+    return this.loading.alignment || this.loading.drawing;
   }
 
   get hasErrors(): boolean {
-    return !!(this.errors.alignment || this.errors.netphos || this.errors.kinaseLibrary);
+    return !!(this.errors.alignment || this.errors.kinaseLibrary);
   }
 
   get filteredAlignedData(): ModifiedPosition[] {
@@ -345,7 +328,7 @@ export class PtmPositionViewerComponent implements OnInit {
   ngOnInit(): void {}
 
   private resetState(): void {
-    this.errors = { alignment: null, netphos: null, kinaseLibrary: null };
+    this.errors = { alignment: null, kinaseLibrary: null };
     this.tableCurrentPage = 1;
     this.filterText = '';
     this.showOnlySignificant = false;
@@ -454,7 +437,6 @@ export class PtmPositionViewerComponent implements OnInit {
       this.loading.alignment = false;
     }
 
-    this.fetchNetPhosData();
     this.gatherMods();
 
     try {
@@ -467,26 +449,6 @@ export class PtmPositionViewerComponent implements OnInit {
     }
   }
 
-  private fetchNetPhosData(): void {
-    const experimentalSource = this.sourceMap[DATA_SOURCES.EXPERIMENTAL];
-    const sequence = this.sequences[experimentalSource];
-
-    this.loading.netphos = true;
-    this.errors.netphos = null;
-
-    this.web.postNetphos(experimentalSource, sequence).subscribe({
-      next: (data) => {
-        if (data.body) {
-          this.netPhosMap = this.parseNetphos((data.body as any)["data"]);
-        }
-        this.loading.netphos = false;
-      },
-      error: () => {
-        this.errors.netphos = 'Failed to fetch NetPhos predictions';
-        this.loading.netphos = false;
-      }
-    });
-  }
 
   async drawHeatmap(): Promise<void> {
     this.showPSPLink = false;
@@ -913,39 +875,6 @@ export class PtmPositionViewerComponent implements OnInit {
     return sourceData[position] || [];
   }
 
-  parseNetphos(data: string): NetPhosMap {
-    const lines = data.split("\n");
-    const result: NetPhosMap = {};
-
-    for (const line of lines) {
-      const parts = line.split(" ");
-      if (parts.length > 1) {
-        const entry: NetPhosEntry = {
-          id: parts[2],
-          res: parts[1],
-          pos: parseInt(parts[3]),
-          score: parseFloat(parts[4]),
-          kinase: parts[6].replace("\t", "")
-        };
-
-        if (!result[entry.pos]) {
-          result[entry.pos] = [];
-        }
-        result[entry.pos].push(entry);
-      }
-    }
-
-    for (const pos in result) {
-      result[pos].sort((a, b) => b.score - a.score);
-    }
-
-    return result;
-  }
-
-  openNetPhos(position: number): void {
-    const ref = this.modal.open(NetphosKinasesComponent);
-    ref.componentInstance.data = this.netPhosMap[position];
-  }
 
   openKinaseInfo(kinase: KinaseInfo): void {
     const ref = this.modal.open(KinaseInfoComponent, { size: "xl" });
