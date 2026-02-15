@@ -1,169 +1,282 @@
-<table class="table table-hover">
-  <thead>
-  <tr>
-    <th scope="col">
-      UID
-    </th>
-    <th scope="col">
-      Residue
-    </th>
-    <th scope="col">
-      Position in Protein
-    </th>
-    <th scope="col" (click)="sortHeader(dataService.differentialForm.foldChange)">
-      Log2 Fold Change
-    </th>
-    <th scope="col" (click)="sortHeader(dataService.differentialForm.significant)">
-      Significant -log10(p-value)
-    </th>
-    <th scope="col">
-      Sequence Window
-    </th>
-    <th scope="col" style="word-wrap: break-word;min-width: 160px;max-width: 160px;">
-      Peptide Sequence
-    </th>
-    <th scope="col">
-      Localization Score
-    </th>
-    <th scope="col">
-      Actions
-    </th>
-  </tr>
-  </thead>
-  <tbody>
-  @for (d of differentialData; track d[dataService.differentialForm.primaryIDs]) {
-    <tr [ngClass]="{'table-success': dataService.selectedMap[d[dataService.differentialForm.primaryIDs]]}" id="{{d[dataService.differentialForm.primaryIDs]}}scrollID">
-      <td>
-        {{d[dataService.differentialForm.primaryIDs]}}
-        @if (dataService.selectedMap[d[dataService.differentialForm.primaryIDs]]) {
-          @for (o of dataService.selectOperationNames; track o) {
-            @if (dataService.selectedMap[d[dataService.differentialForm.primaryIDs]][o]) {
-              <span class="badge bg-primary mr-2">{{o}}</span>
+@if (isLoading) {
+  <div class="loading-overlay">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <small class="mt-2">Loading data...</small>
+  </div>
+}
+
+<div class="table-controls mb-3">
+  <div class="row align-items-center">
+    <div class="col-auto">
+      <div class="input-group input-group-sm">
+        <span class="input-group-text"><i class="bi bi-search"></i></span>
+        <input type="text" class="form-control" placeholder="Filter by UID or position..."
+               [(ngModel)]="filterText" (ngModelChange)="onFilterChange()">
+        @if (filterText) {
+          <button class="btn btn-outline-secondary" type="button" (click)="filterText = ''; onFilterChange()">
+            <i class="bi bi-x"></i>
+          </button>
+        }
+      </div>
+    </div>
+    <div class="col-auto">
+      <button class="btn btn-sm btn-outline-primary" (click)="downloadCSV()" ngbTooltip="Export to CSV">
+        <i class="bi bi-download me-1"></i>CSV
+      </button>
+    </div>
+    <div class="col-auto ms-auto">
+      <small class="text-muted">
+        Showing {{paginatedData.length}} of {{totalItems}} items
+      </small>
+    </div>
+  </div>
+</div>
+
+@if (totalItems === 0 && !isLoading) {
+  <div class="empty-state">
+    <i class="bi bi-inbox"></i>
+    <p>No data available</p>
+    @if (filterText) {
+      <small class="text-muted">Try adjusting your filter</small>
+    }
+  </div>
+} @else {
+  <div class="table-responsive">
+    <table class="table table-hover table-sm raw-data-table">
+      <thead class="sticky-header">
+        <tr>
+          <th scope="col" class="sortable" (click)="sortBy('primaryID')">
+            UID
+            @if (sortColumn === 'primaryID') {
+              <i class="bi" [ngClass]="sortDirection === 'asc' ? 'bi-sort-up' : 'bi-sort-down'"></i>
             }
-          }
-        }
-      </td>
-      <td>
-        @if (getModifiedResidues(d).length > 1) {
-          @for (residue of getModifiedResidues(d); track residue; let i = $index) {
-            <div>{{residue}}</div>
-          }
-        } @else {
-          {{getModifiedResidues(d)[0] || positionMap[d[dataService.differentialForm.primaryIDs]].residue}}
-        }
-      </td>
-      <td>
-        @if (isArray(d[dataService.differentialForm.position])) {
-          @for (pos of d[dataService.differentialForm.position]; track pos) {
-            <div>{{pos}}</div>
-          }
-        } @else {
-          {{d[dataService.differentialForm.position]}}
-        }
-      </td>
-      <td>
-        {{d[dataService.differentialForm.foldChange]}}
-      </td>
-      <td>
-        {{d[dataService.differentialForm.significant]}}
-      </td>
-      <td style="word-wrap: break-word;min-width: 160px;max-width: 160px;">
-        @if (isArray(d[dataService.differentialForm.sequence])) {
-          @for (s of d[dataService.differentialForm.sequence]; track s) {
-            <div>
-              <span>{{s.slice(0, getSequenceWindowCenter(s))}}</span>
-              <span class="text-danger">{{s[getSequenceWindowCenter(s)]}}</span>
-              <span>{{s.slice(getSequenceWindowCenter(s) + 1, s.length)}}</span>
-            </div>
-          }
-        } @else {
-          @for (s of getSequenceArray(d[dataService.differentialForm.sequence]); track s) {
-            <div>
-              <span>{{s.slice(0, getSequenceWindowCenter(s))}}</span>
-              <span class="text-danger">{{s[getSequenceWindowCenter(s)]}}</span>
-              <span>{{s.slice(getSequenceWindowCenter(s) + 1, s.length)}}</span>
-            </div>
-          }
-        }
-      </td>
-      <td style="word-wrap: break-word;min-width: 160px;max-width: 160px;">
-        @if (isArray(d[dataService.differentialForm.peptideSequence])) {
-          @for (peptide of d[dataService.differentialForm.peptideSequence]; track peptide; let i = $index) {
-            <div>
-              @if (isArray(d[dataService.differentialForm.positionPeptide])) {
-                @for (segment of renderPeptideWithHighlights(peptide, d[dataService.differentialForm.positionPeptide]).segments; track segment.text + segment.isHighlighted) {
-                  @if (segment.isHighlighted) {
-                    <span class="text-danger">{{segment.text}}</span>
-                  } @else {
-                    <span>{{segment.text}}</span>
+          </th>
+          <th scope="col" class="sortable" (click)="sortBy('residue')">
+            Residue
+            @if (sortColumn === 'residue') {
+              <i class="bi" [ngClass]="sortDirection === 'asc' ? 'bi-sort-up' : 'bi-sort-down'"></i>
+            }
+          </th>
+          <th scope="col" class="sortable" (click)="sortBy('position')">
+            Position
+            @if (sortColumn === 'position') {
+              <i class="bi" [ngClass]="sortDirection === 'asc' ? 'bi-sort-up' : 'bi-sort-down'"></i>
+            }
+          </th>
+          <th scope="col" class="sortable" (click)="sortBy('foldChange')">
+            Log2 FC
+            @if (sortColumn === 'foldChange') {
+              <i class="bi" [ngClass]="sortDirection === 'asc' ? 'bi-sort-up' : 'bi-sort-down'"></i>
+            }
+          </th>
+          <th scope="col" class="sortable" (click)="sortBy('significant')">
+            -log10(p)
+            @if (sortColumn === 'significant') {
+              <i class="bi" [ngClass]="sortDirection === 'asc' ? 'bi-sort-up' : 'bi-sort-down'"></i>
+            }
+          </th>
+          <th scope="col" class="sequence-col">Sequence Window</th>
+          <th scope="col" class="peptide-col">Peptide Sequence</th>
+          <th scope="col" class="sortable" (click)="sortBy('score')">
+            Score
+            @if (sortColumn === 'score') {
+              <i class="bi" [ngClass]="sortDirection === 'asc' ? 'bi-sort-up' : 'bi-sort-down'"></i>
+            }
+          </th>
+          <th scope="col" class="actions-col">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (d of paginatedData; track d[dataService.differentialForm.primaryIDs]) {
+          <tr [ngClass]="{
+                'table-success': dataService.selectedMap[d[dataService.differentialForm.primaryIDs]],
+                'significant-row': isSignificant(d)
+              }"
+              id="{{d[dataService.differentialForm.primaryIDs]}}scrollID">
+            <td class="uid-cell">
+              <span class="uid-text">{{d[dataService.differentialForm.primaryIDs]}}</span>
+              @if (dataService.selectedMap[d[dataService.differentialForm.primaryIDs]]) {
+                <div class="selection-badges">
+                  @for (o of dataService.selectOperationNames; track o) {
+                    @if (dataService.selectedMap[d[dataService.differentialForm.primaryIDs]][o]) {
+                      <span class="badge bg-primary badge-sm">{{o}}</span>
+                    }
                   }
+                </div>
+              }
+            </td>
+            <td class="residue-cell">
+              @if (getModifiedResidues(d).length > 1) {
+                @for (residue of getModifiedResidues(d); track residue; let i = $index) {
+                  <span class="residue-badge">{{residue}}</span>
                 }
               } @else {
-                <span>{{peptide.slice(0, d[dataService.differentialForm.positionPeptide]-1)}}</span>
-                <span class="text-danger">{{peptide[d[dataService.differentialForm.positionPeptide]-1]}}</span>
-                <span>{{peptide.slice(d[dataService.differentialForm.positionPeptide], peptide.length)}}</span>
+                <span class="residue-badge">{{getModifiedResidues(d)[0] || positionMap[d[dataService.differentialForm.primaryIDs]]?.residue || '-'}}</span>
               }
-            </div>
-          }
-        } @else {
-          @if (isArray(d[dataService.differentialForm.positionPeptide])) {
-            @for (segment of renderPeptideWithHighlights(d[dataService.differentialForm.peptideSequence], d[dataService.differentialForm.positionPeptide]).segments; track segment.text + segment.isHighlighted) {
-              @if (segment.isHighlighted) {
-                <span class="text-danger">{{segment.text}}</span>
+            </td>
+            <td class="position-cell">
+              @if (isArray(d[dataService.differentialForm.position])) {
+                @for (pos of d[dataService.differentialForm.position]; track pos) {
+                  <span class="position-badge">{{pos}}</span>
+                }
               } @else {
-                <span>{{segment.text}}</span>
+                <span class="position-badge">{{d[dataService.differentialForm.position]}}</span>
               }
-            }
-          } @else {
-            <span>{{d[dataService.differentialForm.peptideSequence].slice(0, d[dataService.differentialForm.positionPeptide]-1)}}</span>
-            <span class="text-danger">{{d[dataService.differentialForm.peptideSequence][d[dataService.differentialForm.positionPeptide]-1]}}</span>
-            <span>{{d[dataService.differentialForm.peptideSequence].slice(d[dataService.differentialForm.positionPeptide], d[dataService.differentialForm.peptideSequence].length)}}</span>
+            </td>
+            <td class="numeric-cell" [ngClass]="{'text-success': d[dataService.differentialForm.foldChange] > 0, 'text-danger': d[dataService.differentialForm.foldChange] < 0}">
+              {{d[dataService.differentialForm.foldChange] | number:'1.2-4'}}
+            </td>
+            <td class="numeric-cell">
+              {{d[dataService.differentialForm.significant] | number:'1.2-4'}}
+            </td>
+            <td class="sequence-col">
+              @if (isArray(d[dataService.differentialForm.sequence])) {
+                @for (s of d[dataService.differentialForm.sequence]; track s) {
+                  <div class="sequence-window">
+                    <span class="seq-flanking">{{s.slice(0, getSequenceWindowCenter(s))}}</span>
+                    <span class="seq-modified">{{s[getSequenceWindowCenter(s)]}}</span>
+                    <span class="seq-flanking">{{s.slice(getSequenceWindowCenter(s) + 1, s.length)}}</span>
+                  </div>
+                }
+              } @else {
+                @for (s of getSequenceArray(d[dataService.differentialForm.sequence]); track s) {
+                  <div class="sequence-window">
+                    <span class="seq-flanking">{{s.slice(0, getSequenceWindowCenter(s))}}</span>
+                    <span class="seq-modified">{{s[getSequenceWindowCenter(s)]}}</span>
+                    <span class="seq-flanking">{{s.slice(getSequenceWindowCenter(s) + 1, s.length)}}</span>
+                  </div>
+                }
+              }
+            </td>
+            <td class="peptide-col">
+              @if (isArray(d[dataService.differentialForm.peptideSequence])) {
+                @for (peptide of d[dataService.differentialForm.peptideSequence]; track peptide; let i = $index) {
+                  <div class="peptide-sequence">
+                    @if (isArray(d[dataService.differentialForm.positionPeptide])) {
+                      @for (segment of renderPeptideWithHighlights(peptide, d[dataService.differentialForm.positionPeptide]).segments; track segment.text + segment.isHighlighted) {
+                        @if (segment.isHighlighted) {
+                          <span class="seq-modified">{{segment.text}}</span>
+                        } @else {
+                          <span class="seq-flanking">{{segment.text}}</span>
+                        }
+                      }
+                    } @else {
+                      <span class="seq-flanking">{{peptide.slice(0, d[dataService.differentialForm.positionPeptide]-1)}}</span>
+                      <span class="seq-modified">{{peptide[d[dataService.differentialForm.positionPeptide]-1]}}</span>
+                      <span class="seq-flanking">{{peptide.slice(d[dataService.differentialForm.positionPeptide], peptide.length)}}</span>
+                    }
+                  </div>
+                }
+              } @else {
+                <div class="peptide-sequence">
+                  @if (isArray(d[dataService.differentialForm.positionPeptide])) {
+                    @for (segment of renderPeptideWithHighlights(d[dataService.differentialForm.peptideSequence], d[dataService.differentialForm.positionPeptide]).segments; track segment.text + segment.isHighlighted) {
+                      @if (segment.isHighlighted) {
+                        <span class="seq-modified">{{segment.text}}</span>
+                      } @else {
+                        <span class="seq-flanking">{{segment.text}}</span>
+                      }
+                    }
+                  } @else if (d[dataService.differentialForm.peptideSequence]) {
+                    <span class="seq-flanking">{{d[dataService.differentialForm.peptideSequence].slice(0, d[dataService.differentialForm.positionPeptide]-1)}}</span>
+                    <span class="seq-modified">{{d[dataService.differentialForm.peptideSequence][d[dataService.differentialForm.positionPeptide]-1]}}</span>
+                    <span class="seq-flanking">{{d[dataService.differentialForm.peptideSequence].slice(d[dataService.differentialForm.positionPeptide], d[dataService.differentialForm.peptideSequence].length)}}</span>
+                  }
+                </div>
+              }
+            </td>
+            <td class="numeric-cell">
+              {{d[dataService.differentialForm.score] | number:'1.2-4'}}
+            </td>
+            <td class="actions-col">
+              <div class="action-buttons">
+                <button class="btn btn-xs"
+                        [ngClass]="barChartState[d[dataService.differentialForm.primaryIDs]] ? 'btn-primary' : 'btn-outline-primary'"
+                        (click)="viewBarChartToggle(d[dataService.differentialForm.primaryIDs])"
+                        ngbTooltip="Toggle bar chart">
+                  <i class="bi bi-bar-chart-fill"></i>
+                </button>
+                <button class="btn btn-xs"
+                        [ngClass]="annotateMap[d[dataService.differentialForm.primaryIDs]] ? 'btn-warning' : 'btn-outline-warning'"
+                        (click)="annotateMap[d[dataService.differentialForm.primaryIDs]] = !annotateMap[d[dataService.differentialForm.primaryIDs]]; annotate(d[dataService.differentialForm.primaryIDs])"
+                        ngbTooltip="Volcano plot annotation">
+                  <i class="bi bi-tag-fill"></i>
+                </button>
+                <button class="btn btn-xs"
+                        [ngClass]="profilePlotMap[d[dataService.differentialForm.primaryIDs]] ? 'btn-info' : 'btn-outline-info'"
+                        (click)="profilePlotMap[d[dataService.differentialForm.primaryIDs]] = !profilePlotMap[d[dataService.differentialForm.primaryIDs]]; profilePlotToggle(d[dataService.differentialForm.primaryIDs])"
+                        ngbTooltip="Include in profile comparison">
+                  <i class="bi bi-graph-up"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          @if (barChartState[d[dataService.differentialForm.primaryIDs]]) {
+            <tr class="bar-chart-row">
+              <td [colSpan]="9">
+                <div class="bar-chart-container">
+                  @if (rawDataMap[d[dataService.differentialForm.primaryIDs]]) {
+                    <app-bar-chart [data]="{raw: rawDataMap[d[dataService.differentialForm.primaryIDs]], position: positionMap[d[dataService.differentialForm.primaryIDs]]}"></app-bar-chart>
+                  } @else {
+                    <div class="alert alert-warning mb-0" role="alert">
+                      <i class="bi bi-exclamation-triangle me-2"></i>
+                      No raw data available for this protein.
+                    </div>
+                  }
+                </div>
+              </td>
+            </tr>
           }
         }
-      </td>
-      <td>
-        {{d[dataService.differentialForm.score] | number}}
-      </td>
-      <td>
-        <div ngbDropdown class="d-inline-block">
-          <button class="btn btn-sm btn-outline-primary ml-2" ngbDropdownToggle>A</button>
-          <div ngbDropdownMenu>
-            <button ngbDropdownItem (click)="viewBarChartToggle(d[dataService.differentialForm.primaryIDs])">Toggle Bar Charts</button>
-            <div class="form-check">
-              <input type="checkbox" [(ngModel)]="annotateMap[d[dataService.differentialForm.primaryIDs]]" class="form-check-input" id="toggleAnnotation{{d[dataService.differentialForm.primaryIDs]}}" (change)="annotate(d[dataService.differentialForm.primaryIDs])">
-              <label class="form-check-label" for="toggleAnnotation{{d[dataService.differentialForm.primaryIDs]}}">
-                Volcano plot annotation
-              </label>
-            </div>
-            <div class="form-check">
-              <input type="checkbox" [(ngModel)]="profilePlotMap[d[dataService.differentialForm.primaryIDs]]" id="toggleProfile{{d[dataService.differentialForm.primaryIDs]}}" (change)="profilePlotToggle(d[dataService.differentialForm.primaryIDs])" class="form-check-input">
-              <label class="form-check-label">Include in profile comparison</label>
-            </div>
-          </div>
+      </tbody>
+    </table>
+  </div>
+
+  @if (totalPages > 1) {
+    <nav class="pagination-container mt-3">
+      <div class="d-flex justify-content-between align-items-center">
+        <div class="page-size-selector">
+          <label class="me-2">Show:</label>
+          <select class="form-select form-select-sm d-inline-block w-auto" [(ngModel)]="pageSize" (ngModelChange)="currentPage = 1">
+            <option [value]="5">5</option>
+            <option [value]="10">10</option>
+            <option [value]="25">25</option>
+            <option [value]="50">50</option>
+          </select>
         </div>
-      </td>
-    </tr>
-    @if (barChartState[d[dataService.differentialForm.primaryIDs]]) {
-      <tr>
-        <td [colSpan]="8">
-          <div class="card border-warning">
-            @if (rawDataMap[d[dataService.differentialForm.primaryIDs]]) {
-              <div class="card-body">
-                <app-bar-chart [data]="{raw: rawDataMap[d[dataService.differentialForm.primaryIDs]], position: positionMap[d[dataService.differentialForm.primaryIDs]]}"></app-bar-chart>
-              </div>
-            } @else {
-              <div class="card-body">
-                <div class="alert alert-warning" role="alert">
-                  No raw data available for this protein.
-                </div>
-              </div>
-            }
-          </div>
-        </td>
-      </tr>
-    }
+        <ul class="pagination pagination-sm mb-0">
+          <li class="page-item" [ngClass]="{'disabled': currentPage === 1}">
+            <a class="page-link" (click)="goToPage(1)" aria-label="First">
+              <i class="bi bi-chevron-double-left"></i>
+            </a>
+          </li>
+          <li class="page-item" [ngClass]="{'disabled': currentPage === 1}">
+            <a class="page-link" (click)="goToPage(currentPage - 1)" aria-label="Previous">
+              <i class="bi bi-chevron-left"></i>
+            </a>
+          </li>
+          @for (page of pageNumbers; track page) {
+            <li class="page-item" [ngClass]="{'active': page === currentPage}">
+              <a class="page-link" (click)="goToPage(page)">{{page}}</a>
+            </li>
+          }
+          <li class="page-item" [ngClass]="{'disabled': currentPage === totalPages}">
+            <a class="page-link" (click)="goToPage(currentPage + 1)" aria-label="Next">
+              <i class="bi bi-chevron-right"></i>
+            </a>
+          </li>
+          <li class="page-item" [ngClass]="{'disabled': currentPage === totalPages}">
+            <a class="page-link" (click)="goToPage(totalPages)" aria-label="Last">
+              <i class="bi bi-chevron-double-right"></i>
+            </a>
+          </li>
+        </ul>
+        <small class="text-muted">
+          Page {{currentPage}} of {{totalPages}}
+        </small>
+      </div>
+    </nav>
   }
-
-  </tbody>
-</table>
-
+}
