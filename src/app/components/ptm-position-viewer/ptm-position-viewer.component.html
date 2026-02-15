@@ -74,7 +74,7 @@
   </thead>
   <tbody>
   @for (d of alignedMap['Experimental Data']; track d) {
-    <tr [ngClass]="{'table-success': dataService.selectedMap[d.id]}">
+    <tr [ngClass]="{'table-success': d.id && dataService.selectedMap[d.id]}">
       <td style="word-wrap: break-word;min-width: 160px;max-width: 160px;">
         {{d.alignedPosition+1}} ({{d.actualPosition+1}})
 <!--        <span class="badge bg-primary ml-2" (click)="openNetPhos(d.actualPosition+1)">NetPhos</span>-->
@@ -89,8 +89,8 @@
           }
           @if (g.name === 'PhosphoSite Plus (Phosphorylation)' && alignedPosition[d.alignedPosition][g.name]) {
             <span>
-              @if (alignedPosition[d.alignedPosition][g.name].kinases.length > 0) {
-                @for (k of alignedPosition[d.alignedPosition][g.name].kinases; track k) {
+              @if (alignedPosition[d.alignedPosition][g.name].kinases && alignedPosition[d.alignedPosition][g.name].kinases!.length > 0) {
+                @for (k of alignedPosition[d.alignedPosition][g.name].kinases!; track k) {
                   <span placement="top" ngbTooltip="Kinase" class="badge bg-danger ml-2" (click)="openKinaseInfo(k)">{{k.kinase}}</span>
                 }
               }
