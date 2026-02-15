@@ -1,0 +1,430 @@
+@if (session) {
+  <div class="card mt-2">
+    <div class="card-body">
+      <div class="mt-2">
+        <ngb-progressbar type="info" [value]="progressBar.value">
+          {{progressBar.text}}
+        </ngb-progressbar>
+      </div>
+      <form [formGroup]="session.form">
+        <div class="form-check">
+          <input type="checkbox" id="permanent-session-{{sessionId}}" class="form-check-input" [ngModelOptions]="{standalone: true}" [(ngModel)]="session.data.permanent">
+          <label class="form-check-label" for="permanent-session-{{sessionId}}">Permanent Session</label>
+        </div>
+        <div class="form-check">
+          <input type="checkbox" id="fetch-uniprot-{{sessionId}}" class="form-check-input" [ngModelOptions]="{standalone: true}" [(ngModel)]="session.data.fetchUniProt">
+          <label class="form-check-label" for="fetch-uniprot-{{sessionId}}">Fetch UniProt Accession ID</label>
+        </div>
+        <div class="form-check">
+          <input type="checkbox" id="private-session-{{sessionId}}" class="form-check-input" [ngModelOptions]="{standalone: true}" [(ngModel)]="session.private">
+          <label class="form-check-label" for="private-session-{{sessionId}}">Private Session</label>
+        </div>
+
+        @if (accounts.curtainAPI.user.loginStatus) {
+          <div class="card mb-3 mt-2">
+            <div class="card-header">
+              <i class="bi bi-folder2-open me-2"></i>Collections
+            </div>
+            <div class="card-body">
+              @if (loadingCollections) {
+                <div class="text-center">
+                  <div class="spinner-border spinner-border-sm" role="status">
+                    <span class="visually-hidden">Loading collections...</span>
+                  </div>
+                  <small class="ms-2">Loading collections...</small>
+                </div>
+              } @else {
+                @if (availableCollections.length > 0) {
+                  <div class="mb-3">
+                    <label class="form-label"><strong>Select Collections:</strong></label>
+                    <div class="list-group" style="max-height: 200px; overflow-y: auto;">
+                      @for (collection of availableCollections; track collection.id) {
+                        <label class="list-group-item d-flex align-items-center">
+                          <input
+                            class="form-check-input me-2"
+                            type="checkbox"
+                            [checked]="selectedCollectionIds.includes(collection.id)"
+                            (change)="toggleCollectionSelection(collection.id)">
+                          <div class="flex-grow-1">
+                            <div class="fw-bold">{{collection.name}}</div>
+                            @if (collection.description) {
+                              <small class="text-muted">{{collection.description}}</small>
+                            }
+                          </div>
+                          <span class="badge bg-info ms-2">{{collection.curtain_count || 0}}</span>
+                        </label>
+                      }
+                    </div>
+                  </div>
+                }
+
+                <div class="border-top pt-3">
+                  <label class="form-label"><strong>Create New Collection:</strong></label>
+                  <div class="mb-2">
+                    <input
+                      type="text"
+                      class="form-control form-control-sm mb-2"
+                      placeholder="Collection name"
+                      [(ngModel)]="newCollectionName"
+                      [ngModelOptions]="{standalone: true}">
+                    <textarea
+                      class="form-control form-control-sm mb-2"
+                      rows="2"
+                      placeholder="Description (optional)"
+                      [(ngModel)]="newCollectionDescription"
+                      [ngModelOptions]="{standalone: true}"></textarea>
+                    <button
+                      class="btn btn-sm btn-primary"
+                      (click)="createNewCollection()"
+                      [disabled]="!newCollectionName.trim() || isCreatingCollection">
+                      @if (isCreatingCollection) {
+                        <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+                      }
+                      <i class="bi bi-plus-circle me-1"></i>Create Collection
+                    </button>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        <div class="form-group">
+          <label>Differential Analysis</label>
+          <select class="form-select" formControlName="differential">
+            @for (f of differentialFiles; track f) {
+              <option [ngValue]="f" (click)="settings.settings.description=f.name">{{ f.name }}</option>
+            }
+          </select>
+        </div>
+        <div class="row">
+          <div class="col-3">
+            <label>Select Primary IDs</label>
+            <select class="form-select" aria-label="Select Primary IDs" [ngModelOptions]="{standalone: true}" [(ngModel)]="session.data.differentialForm.primaryIDs">
+              @for (c of session.differentialColumns; track c) {
+                <option [value]="c">{{ c }}</option>
+              }
+            </select>
+            <small class="text-muted">Unique identifier column</small>
+          </div>
+          <div class="col-3">
+            <label>Select Protein/Accession</label>
+            <select class="form-select" aria-label="Select Accession" [ngModelOptions]="{standalone: true}" [(ngModel)]="session.data.differentialForm.accession">
+              @for (c of session.differentialColumns; track c) {
+                <option [value]="c">{{ c }}</option>
+              }
+            </select>
+            <small class="text-muted">Should contain UniProt Accession ID</small>
+          </div>
+          @if (session.data.fetchUniProt === false) {
+            <div class="col-3">
+              <label>Select Gene Names</label>
+              <select class="form-select" aria-label="Select Gene Names" [ngModelOptions]="{standalone: true}" [(ngModel)]="session.data.differentialForm.geneNames">
+                @for (c of session.differentialColumns; track c) {
+                  <option [value]="c">{{ c }}</option>
+                }
+              </select>
+            </div>
+          }
+
+          <div class="col-3">
+            <label>Select Fold Change</label>
+            <select class="form-select" aria-label="Select Fold Change" [ngModelOptions]="{standalone: true}" [(ngModel)]="session.data.differentialForm.foldChange">
+              @for (c of session.differentialColumns; track c) {
+                <option [value]="c">{{ c }}</option>
+              }
+            </select>
+            <div class="form-check">
+              <input type="checkbox" class="form-check-input" [ngModelOptions]="{standalone: true}" [(ngModel)]="session.data.differentialForm.transformFC">
+              <label>Perform log2 Transformation</label>
+            </div>
+            <div class="form-check">
+              <input type="checkbox" class="form-check-input" [ngModelOptions]="{standalone: true}" [(ngModel)]="session.data.differentialForm.reverseFoldChange">
+              <label class="form-check-label">Reverse fold change value</label>
+            </div>
+          </div>
+          <div class="col-3">
+            <label>Select Significant</label>
+            <select class="form-select" aria-label="Select Significant" [ngModelOptions]="{standalone: true}" [(ngModel)]="session.data.differentialForm.significant">
+              @for (c of session.differentialColumns; track c) {
+                <option [value]="c">{{ c }}</option>
+              }
+            </select>
+            <div class="form-check">
+              <input type="checkbox" class="form-check-input" [ngModelOptions]="{standalone: true}" [(ngModel)]="session.data.differentialForm.transformSignificant">
+              <label>Perform -log10 Transformation</label>
+            </div>
+          </div>
+        </div>
+        <div class="row mt-2">
+          <div class="col-3">
+            <label>Position Column</label>
+            <select class="form-select" aria-label="Select Position" [ngModelOptions]="{standalone: true}" [(ngModel)]="session.data.differentialForm.position">
+              @for (c of session.differentialColumns; track c) {
+                <option [value]="c">{{ c }}</option>
+              }
+            </select>
+          </div>
+          <div class="col-3">
+            <label>Position in Peptide</label>
+            <select class="form-select" aria-label="Select Position in Peptide" [ngModelOptions]="{standalone: true}" [(ngModel)]="session.data.differentialForm.positionPeptide">
+              @for (c of session.differentialColumns; track c) {
+                <option [value]="c">{{ c }}</option>
+              }
+            </select>
+          </div>
+          <div class="col-3">
+            <label>Peptide Sequence</label>
+            <select class="form-select" aria-label="Select Peptide Sequence" [ngModelOptions]="{standalone: true}" [(ngModel)]="session.data.differentialForm.peptideSequence">
+              @for (c of session.differentialColumns; track c) {
+                <option [value]="c">{{ c }}</option>
+              }
+            </select>
+          </div>
+          <div class="col-3">
+            <label>Localization Score</label>
+            <select class="form-select" aria-label="Select Score" [ngModelOptions]="{standalone: true}" [(ngModel)]="session.data.differentialForm.score">
+              @for (c of session.differentialColumns; track c) {
+                <option [value]="c">{{ c }}</option>
+              }
+            </select>
+          </div>
+        </div>
+        <div class="row mt-2">
+          <div class="col-3">
+            <label>Sequence Window</label>
+            <select class="form-select" aria-label="Select Sequence" [ngModelOptions]="{standalone: true}" [(ngModel)]="session.data.differentialForm.sequence">
+              @for (c of session.differentialColumns; track c) {
+                <option [value]="c">{{ c }}</option>
+              }
+            </select>
+          </div>
+          <div class="col-3">
+            <label>Comparison</label>
+            <div class="input-group">
+              <select class="form-select" aria-label="Comparison" [ngModelOptions]="{standalone: true}" [(ngModel)]="session.data.differentialForm.comparison" (ngModelChange)="getComparisonColumnUnique(session, $event)">
+                @for (c of session.differentialColumns; track c) {
+                  <option [value]="c" (click)="getComparisonColumnUnique(session, c)">{{ c }}</option>
+                }
+              </select>
+              <button type="button" class="btn btn-outline-secondary" (click)="clearComparisonGroup()"
+                      [disabled]="!session.data.differentialForm.comparison || session.data.differentialForm.comparison === ''"
+                      title="Clear comparison group">
+                <i class="bi bi-x"></i>
+              </button>
+            </div>
+          </div>
+          @if (session.uniqueComparisons) {
+            <div class="col-3">
+              <label>Select Comparison</label>
+              <select class="form-select" aria-label="ComparisonSelect" [ngModelOptions]="{standalone: true}" [(ngModel)]="session.data.differentialForm.comparisonSelect">
+                @for (c of session.uniqueComparisons; track c) {
+                  <option [value]="c">{{ c }}</option>
+                }
+              </select>
+              <div class="mt-1 text-end">
+                <button type="button" class="btn btn-sm btn-outline-secondary" (click)="clearComparisonSelection()"
+                        [disabled]="!session.data.differentialForm.comparisonSelect || session.data.differentialForm.comparisonSelect === ''"
+                        title="Clear comparison selection">
+                  <i class="bi bi-x"></i> Clear
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+        <hr>
+        <div class="form-group">
+          <label>Raw Data</label>
+          <select class="form-select" formControlName="raw">
+            @for (f of rawFiles; track f) {
+              <option [ngValue]="f">{{ f.name }}</option>
+            }
+          </select>
+        </div>
+        <div class="row">
+          <div class="col-3">
+            <label>Select Primary IDs</label>
+            <select class="form-select" aria-label="Select Primary IDs Raw" [ngModelOptions]="{standalone: true}" [(ngModel)]="session.data.rawForm.primaryIDs">
+              @for (c of session.rawColumns; track c) {
+                <option [value]="c">{{ c }}</option>
+              }
+            </select>
+            <small class="text-muted">Same as differential analysis primary ID column</small>
+          </div>
+          <div class="col-5">
+            <div class="d-flex gap-2">
+              <div class="form-group">
+                <label>Manual Sample(s) Selection</label>
+                <select multiple class="form-select" aria-label="Select Samples" [ngModelOptions]="{standalone: true}" [(ngModel)]="session.data.rawForm.samples" size="5">
+                  @for (c of session.rawColumns; track c) {
+                    <option [value]="c">{{ c }}</option>
+                  }
+                </select>
+                <small class="text-muted d-block mt-1">Hold Ctrl/Cmd to select multiple samples. Samples should be named as 'Condition.Replicate'</small>
+              </div>
+              <div>
+                <div class="form-group">
+                  <label>Autoselection pattern</label>
+                  <input type="text" class="form-control" [(ngModel)]="autoMatchSampleColumnsPattern" [ngModelOptions]="{standalone: true}">
+                </div>
+                <div>
+                  <button class="btn btn-secondary" (click)="autoMatchSampleColumns()">
+                    <i class="bi bi-magic me-1"></i>Autoselect Samples
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="form-check mt-2">
+              <input type="checkbox" class="form-check-input" [ngModelOptions]="{standalone: true}" [(ngModel)]="session.data.rawForm.log2">
+              <label class="form-check-label">Data was log2 transformed</label>
+            </div>
+          </div>
+        </div>
+        <div class="form-group mb-2 mt-2">
+          <label><b>Session Description</b></label>
+          <quill-editor [ngModelOptions]="{standalone: true}" [(ngModel)]="session.data.settings.description"></quill-editor>
+        </div>
+        <div class="form-group mb-2">
+          <label>Data Analysis Contact</label>
+          <input type="text" class="form-control" [ngModelOptions]="{standalone: true}" [(ngModel)]="session.data.settings.dataAnalysisContact">
+        </div>
+      </form>
+      <div class="accordion">
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button [ngClass]="{'accordion-button': true, 'collapsed': isColorPaletteClosed}" type="button" (click)=" isColorPaletteClosed=!isColorPaletteClosed">
+              Default Color Palette
+            </button>
+          </h2>
+          <div [ngbCollapse]="isColorPaletteClosed">
+            <div class="accordion-body">
+              <h5 class="mt-2">Color Palette Selection</h5>
+              <div class="form-group" style="width: 200px">
+                <select class="form-control" [(ngModel)]="session.colorPalette" (ngModelChange)="updateDefaultPalette($event)">
+                  @for (c of colorPalletes; track c) {
+                    <option [value]="c">{{ c }}</option>
+                  }
+                </select>
+              </div>
+              <div class="d-flex gap-2 flex-column">
+                @for (c of session.data.settings.defaultColorList; track c) {
+                  <div class="form-group">
+                    <input class="form-control" style="width: 200px" [style.background-color]="c">
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="accordion">
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button [ngClass]="{'accordion-button': true, 'collapsed': isVolcanoPlotSettingsClosed}" type="button" (click)=" isVolcanoPlotSettingsClosed=!isVolcanoPlotSettingsClosed">
+              Volcano Plot Settings
+            </button>
+          </h2>
+          <div [ngbCollapse]="isVolcanoPlotSettingsClosed">
+            <div class="accordion-body">
+              <h5 class="mt-2">Volcano Plot Settings</h5>
+              <div class="d-flex">
+                <div class="p-2">
+                  <label for="width">
+                    Plot Width
+                  </label>
+                  <input id="width" type="number" class="form-control" [(ngModel)]="session.data.settings.volcanoPlotDimension.width">
+                </div>
+                <div class="p-2">
+                  <label for="height">
+                    Plot Height
+                  </label>
+                  <input id="height" type="number" class="form-control" [(ngModel)]="session.data.settings.volcanoPlotDimension.height">
+                </div>
+              </div>
+              <div>
+                <label for="xTitle">
+                  X-axis Title
+                </label>
+                <input id="xTitle" type="text" class="form-control" [(ngModel)]="session.data.settings.volcanoAxis.x">
+              </div>
+              <div>
+                <label for="yTitle">
+                  Y-axis Title
+                </label>
+                <input id="yTitle" type="text" class="form-control" [(ngModel)]="session.data.settings.volcanoAxis.y">
+              </div>
+              <div class="d-flex">
+                <div class="p-2">
+                  <label for="significant">
+                    Significant Cutoff
+                  </label>
+                  <input id="significant" type="number" class="form-control" [(ngModel)]="session.data.settings.pCutoff" (ngModelChange)="updateDefaultVolcanoColorP($event)">
+                </div>
+                <div class="p-2">
+                  <label for="foldchange">
+                    Log2 Fold Change Cutoff
+                  </label>
+                  <input id="foldchange" type="number" class="form-control" [(ngModel)]="session.data.settings.log2FCCutoff" (ngModelChange)="updateDefaultVolcanoColorFC($event)">
+                </div>
+              </div>
+              <div class="d-flex">
+                <div class="p-2">
+                  <label for="plotTitle">
+                    Plot Title
+                  </label>
+                  <input id="plotTitle" type="text" class="form-control" [(ngModel)]="session.data.settings.volcanoPlotTitle">
+                </div>
+                <div class="p-2">
+                  <label for="markerSize">Marker Size</label>
+                  <input id="markerSize" type="number" class="form-control" [(ngModel)]="session.data.settings.scatterPlotMarkerSize">
+                </div>
+              </div>
+              <div class="d-flex">
+                <div class="p-2">
+                  <div class="form-check">
+                    <input type="checkbox" id="backgroundGrey" class="form-check-input" [(ngModel)]="session.data.settings.backGroundColorGrey">
+                    <label class="form-check-label" for="backgroundGrey">Set Background Data Points Grey</label>
+                  </div>
+                </div>
+              </div>
+              <div class="d-flex">
+                <div class="p-2">
+                  <div class="form-check">
+                    <input type="checkbox" id="showVerticalGrid" class="form-check-input" [(ngModel)]="session.data.settings.volcanoPlotGrid.x">
+                    <label class="form-check-label" for="showVerticalGrid">Show Vertical Grid</label>
+                  </div>
+                </div>
+                <div class="p-2">
+                  <div class="form-check">
+                    <input type="checkbox" id="showHorizontalGrid" class="form-check-input" [(ngModel)]="session.data.settings.volcanoPlotGrid.y">
+                    <label class="form-check-label" for="showHorizontalGrid">Show Horizontal Grid</label>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div>
+                  <b>Default Color</b>
+                </div>
+                @for (p of ["P-value > ", "P-value <= "]; track p) {
+                  @for (f of ["FC > ", "FC <= "]; track f) {
+                    @if (session.volcanoColors[p+f]) {
+                      <div class="d-flex gap-2">
+                        <input style="width: 200px" placeholder="Select a color" [(colorPicker)]="session.volcanoColors[p+f].color" class="form-control" [style.background-color]="session.volcanoColors[p+f].color">
+                        <span>{{[p+session.data.settings.pCutoff,f+session.data.settings.log2FCCutoff].join(";")}}</span>
+                      </div>
+                    }
+                  }
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mt-2">
+        <ngb-progressbar type="info" [value]="progressBar.value">
+          {{progressBar.text}}
+        </ngb-progressbar>
+      </div>
+    </div>
+  </div>
+}

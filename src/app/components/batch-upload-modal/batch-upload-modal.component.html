@@ -1,0 +1,55 @@
+<div class="modal-header">
+  <h5 class="modal-title">Batch Session Creation</h5>
+</div>
+<div class="modal-body">
+  <div class="d-flex gap-2 flex-wrap">
+    <button class="btn btn-primary" (click)="differentialAnalysisFiles.click()">Select Differential Analysis Files @if (differentialFiles.length > 0) {({{differentialFiles.length}} selected)}</button>
+    <button class="btn btn-primary" (click)="rFiles.click()">Select Raw Files @if (rawFiles.length >0) {({{rawFiles.length}} selected)}</button>
+  </div>
+  <input type="file" hidden (change)="handleDifferentialAnalysisFiles($event)" #differentialAnalysisFiles multiple>
+  <input type="file" hidden (change)="handleRawFiles($event)" #rFiles multiple>
+
+  <button class="btn btn-primary mt-2" (click)="addSession()">+ Session</button>
+  @if (sessions.length > 0) {
+    <ul ngbNav #nav="ngbNav" class="nav-tabs" [destroyOnHide]="false">
+      @for (s of sessions; track s; let index = $index) {
+        <li ngbNavItem>
+          <button ngbNavLink>Session #{{index+1}}</button>
+          <ng-template ngbNavContent>
+            <h5 [ngClass]="{'text-success': s.linkId !== undefined && s.linkId !== null && s.linkId !== ''}">Session #{{index+1}} of {{sessions.length}}</h5>
+            <div class="d-flex gap-2">
+              <button class="btn btn-sm btn-outline-primary" ngbTooltip="Clone Session" (click)="cloneSession(index)">
+                <i class="bi bi-copy"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-danger" ngbTooltip="Delete Session From Workflow" (click)="deleteSession(index)">
+                <i class="bi bi-trash"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-info" ngbTooltip="Export Settings Template" (click)="exportSettingsButFiles(index)">
+                <i class="bi bi-download"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-info" ngbTooltip="Import Settings Template" (click)="templateFile.click()">
+                <i class="bi bi-upload"></i>
+              </button>
+            </div>
+            <input type="file" hidden (change)="importSettingsButFiles($event, index)" #templateFile>
+            @if (s.linkId) {
+              <div class="alert alert-link">
+                <a href="{{s.linkId}}" target="_blank">{{s.linkId}}</a>
+              </div>
+            }
+            <app-individual-session [sessionId]="index" (changed)="sessions[index] = $event" [session]="s" [differentialFiles]="differentialFiles" [rawFiles]="rawFiles" (finished)="handleFinished($event, index)"></app-individual-session>
+          </ng-template>
+        </li>
+      }
+    </ul>
+    <div [ngbNavOutlet]="nav"></div>
+  }
+</div>
+<div class="modal-footer">
+  @if (allTasksFinished) {
+    <button class="btn btn-success" (click)="downloadLinkDocument()">Download Link Documents</button>
+    <button class="btn btn-secondary" (click)="openAllLinks()">Open All Links</button>
+  }
+  <button class="btn btn-primary" (click)="submit()">Create Batch Session</button>
+  <button class="btn btn-secondary" (click)="close()">Close</button>
+</div>

@@ -41,6 +41,8 @@ import {
   CollectionSessionsViewerModalComponent
 } from "../collection-sessions-viewer-modal/collection-sessions-viewer-modal.component";
 import {ThemeService} from "../../theme.service";
+import {environment} from "../../../environments/environment";
+import {BatchUploadModalComponent} from "../batch-upload-modal/batch-upload-modal.component";
 
 @Component({
     selector: 'app-navbar',
@@ -617,6 +619,10 @@ export class NavbarComponent implements OnInit {
     }
   }
 
+  openBatchSessionCreator(): void {
+    this.modal.open(BatchUploadModalComponent, {size: "xl", scrollable: true, backdrop: "static"})
+  }
+
   get availableThemes() {
     return this.themeService.getAvailableThemes()
   }
@@ -639,5 +645,21 @@ export class NavbarComponent implements OnInit {
 
   removeClearSettings() {
     localStorage.removeItem('curtainClearSettingsSelection')
+  }
+
+  private isMacOS(): boolean {
+    return /Macintosh|MacIntel|MacPPC|Mac68K/i.test(navigator.userAgent) ||
+           (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  }
+
+  openInNativeApp(): void {
+    if (this.settings.settings.currentID) {
+      const nativeAppUrl = `curtainptm://open?uniqueId=${encodeURIComponent(this.settings.settings.currentID)}&apiURL=${encodeURIComponent(environment.apiURL)}&frontendURL=${encodeURIComponent(location.origin)}`;
+      window.location.href = nativeAppUrl;
+    }
+  }
+
+  get showNativeAppButton(): boolean {
+    return this.isMacOS() && !!this.settings.settings.currentID && this.finished;
   }
 }

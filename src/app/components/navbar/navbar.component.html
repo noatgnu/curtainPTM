@@ -162,6 +162,11 @@
                 <button ngbDropdownItem (click)="saveSession()" [disabled]="data.tempLink">
                   <i class="bi bi-save me-1"></i>Save Session
                 </button>
+                @if (showNativeAppButton) {
+                  <button ngbDropdownItem (click)="openInNativeApp()">
+                    <i class="bi bi-arrow-up-right-square me-1"></i>Open in Native App
+                  </button>
+                }
                 @if (accounts.curtainAPI.user.loginStatus && data.session) {
                   <button ngbDropdownItem (click)="openDataciteDOI()">
                     {{data.session.data_cite ? 'View DOI Form' : 'Register DOI (Beta)'}}
@@ -209,6 +214,11 @@
             </button>
             <button ngbDropdownItem (click)="openCollaborateModal()">Collaborate</button>
             <button ngbDropdownItem (click)="openEncryptionSettings()">Encryption Settings</button>
+            @if (accounts.curtainAPI.user.loginStatus && accounts.curtainAPI.user.isStaff) {
+              <button ngbDropdownItem (click)="openBatchSessionCreator()">
+                <i class="bi bi-collection me-1"></i>Batch Session Creation
+              </button>
+            }
 
             <div class="dropdown-divider"></div>
             <h6 class="dropdown-header">Help & Resources</h6>

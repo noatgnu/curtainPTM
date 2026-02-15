@@ -32,7 +32,7 @@ export class CollectionLandingComponent implements OnInit, OnDestroy {
       const id = params['id'];
       if (id) {
         this.currentCollectionId = parseInt(id, 10);
-        if (this.isAndroid()) {
+        if (this.isMobile()) {
           this.promptForNativeApp(this.currentCollectionId);
         }
         this.loadCollection(this.currentCollectionId);
@@ -44,11 +44,35 @@ export class CollectionLandingComponent implements OnInit, OnDestroy {
     return /Android/i.test(navigator.userAgent);
   }
 
+  private isIOS(): boolean {
+    return /iPhone|iPad|iPod/i.test(navigator.userAgent);
+  }
+
+  private isMacOS(): boolean {
+    return /Macintosh|MacIntel|MacPPC|Mac68K/i.test(navigator.userAgent) ||
+           (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  }
+
+  private isMobile(): boolean {
+    return this.isAndroid() || this.isIOS();
+  }
+
   private promptForNativeApp(collectionId: number): void {
     if (confirm('Would you like to open this collection in the native CurtainPTM app?')) {
       const nativeAppUrl = `curtainptm://collection?collectionId=${encodeURIComponent(collectionId)}&curtainType=PTM&apiURL=${encodeURIComponent(environment.apiURL)}&frontendURL=${encodeURIComponent(location.origin)}`;
       window.location.href = nativeAppUrl;
     }
+  }
+
+  openInNativeApp(): void {
+    if (this.currentCollectionId) {
+      const nativeAppUrl = `curtainptm://collection?collectionId=${encodeURIComponent(this.currentCollectionId)}&curtainType=PTM&apiURL=${encodeURIComponent(environment.apiURL)}&frontendURL=${encodeURIComponent(location.origin)}`;
+      window.location.href = nativeAppUrl;
+    }
+  }
+
+  get showNativeAppButton(): boolean {
+    return this.isMacOS() && this.currentCollectionId !== null && !this.loading();
   }
 
   ngOnDestroy(): void {

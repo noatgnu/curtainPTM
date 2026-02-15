@@ -19,6 +19,7 @@ import {WebsocketService} from "../../websocket.service";
 import {arrayBufferToBase64String, base64ToArrayBuffer, reviver, saveToLocalStorage, decryptAESData, decryptAESKey, importAESKey} from "curtain-web-api";
 import {PtmDiseasesService} from "../../ptm-diseases.service";
 import {EncryptionSettingsComponent} from "../encryption-settings/encryption-settings.component";
+import {environment} from "../../../environments/environment";
 
 @Component({
     selector: 'app-home',
@@ -122,6 +123,11 @@ export class HomeComponent implements OnInit {
             this.toast.show("Initialization", "Fetching data from session " + params["settings"], undefined, undefined, "download").then()
             if (this.currentID !== settings[0]) {
               this.currentID = settings[0]
+
+              if (this.isMobile()) {
+                this.promptForNativeApp(settings[0]);
+              }
+
               this.getSessionData(settings[0], token).then(() => {
 
               })
@@ -340,6 +346,41 @@ export class HomeComponent implements OnInit {
   openLoginModal() {
     const ref = this.modal.open(LoginModalComponent)
     return ref
+  }
+
+  private isAndroid(): boolean {
+    return /Android/i.test(navigator.userAgent);
+  }
+
+  private isIOS(): boolean {
+    return /iPhone|iPad|iPod/i.test(navigator.userAgent);
+  }
+
+  private isMacOS(): boolean {
+    return /Macintosh|MacIntel|MacPPC|Mac68K/i.test(navigator.userAgent) ||
+           (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  }
+
+  private isMobile(): boolean {
+    return this.isAndroid() || this.isIOS();
+  }
+
+  private promptForNativeApp(uniqueId: string): void {
+    if (confirm('Would you like to open this in the native CurtainPTM app?')) {
+      const nativeAppUrl = `curtainptm://open?uniqueId=${encodeURIComponent(uniqueId)}&apiURL=${encodeURIComponent(environment.apiURL)}&frontendURL=${encodeURIComponent(location.origin)}`;
+      window.location.href = nativeAppUrl;
+    }
+  }
+
+  openInNativeApp(): void {
+    if (this.currentID) {
+      const nativeAppUrl = `curtainptm://open?uniqueId=${encodeURIComponent(this.currentID)}&apiURL=${encodeURIComponent(environment.apiURL)}&frontendURL=${encodeURIComponent(location.origin)}`;
+      window.location.href = nativeAppUrl;
+    }
+  }
+
+  get showNativeAppButton(): boolean {
+    return this.isMacOS() && !!this.currentID && this.finished;
   }
   async restoreSettings(object: any) {
     if (typeof object === "string") {

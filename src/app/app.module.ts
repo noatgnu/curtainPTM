@@ -67,6 +67,8 @@ import { InteractiveNetworkComponent } from './components/string-network/interac
 import { ProteinInfoPanelComponent } from './components/string-network/protein-info-panel/protein-info-panel.component';
 import { StringNetworkService } from './components/string-network/string-network.service';
 import { DataciteMetadataDisplayComponent } from './components/datacite-metadata-display/datacite-metadata-display.component';
+import { BatchUploadModalComponent } from './components/batch-upload-modal/batch-upload-modal.component';
+import { IndividualSessionComponent } from './components/batch-upload-modal/individual-session/individual-session.component';
 //PlotlyViaCDNModule.setPlotlyVersion('latest');
 //PlotlyViaCDNModule.setPlotlyBundle('basic');
 
@@ -119,6 +121,8 @@ import { DataciteMetadataDisplayComponent } from './components/datacite-metadata
         StringNetworkComponent,
         InteractiveNetworkComponent,
         ProteinInfoPanelComponent,
+        BatchUploadModalComponent,
+        IndividualSessionComponent,
     ],
     bootstrap: [AppComponent], imports: [BrowserModule,
         AppRoutingModule,
