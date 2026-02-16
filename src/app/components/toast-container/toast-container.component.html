@@ -1,34 +1,61 @@
-@for (toast of toastService.toasts; track toast) {
-  @if (toast.action === "other") {
-    <ngb-toast
-      [autohide]="true"
-      [delay]="toast.delay || 5000"
-      (hidden)="toastService.remove(toast)" [ngClass]="toast.type === 'info' ? 'bg-primary text-light' : toast.type === 'success' ? 'bg-success text-light' : toast.type === 'warning' ? 'bg-warning text-light' : 'bg-danger text-light'"
-    >
-      <div class="d-flex">
-        <div class="p-2">
-          <b>{{toast.header}}: </b>{{toast.body}}
+<div class="toast-wrapper" role="region" aria-label="Notifications" aria-live="polite">
+  @for (toast of toastService.toasts; track toast.id) {
+    @if (toast.action === "other") {
+      <ngb-toast
+        [autohide]="true"
+        [delay]="toast.delay || 5000"
+        (hidden)="toastService.remove(toast)"
+        [ngClass]="toastService.getToastClasses(toast)"
+        role="status"
+        [attr.aria-label]="toast.header + ': ' + toast.body"
+      >
+        <div class="d-flex align-items-center">
+          <div class="toast-icon me-2">
+            <i class="bi" [ngClass]="toastService.getToastIcon(toast)" aria-hidden="true"></i>
+          </div>
+          <div class="toast-content flex-grow-1">
+            <strong>{{toast.header}}</strong>
+            <span class="ms-1">{{toast.body}}</span>
+          </div>
+          <button
+            type="button"
+            class="btn-close ms-2"
+            [ngClass]="{'btn-close-white': !toastService.isLightBackground(toast)}"
+            aria-label="Dismiss notification"
+            (click)="toastService.remove(toast)">
+          </button>
         </div>
-        <div class="p-2">
-          <button type="button" class="btn btn-close" aria-label="Close" (click)="toastService.remove(toast)"></button>
+      </ngb-toast>
+    } @else {
+      <ngb-toast
+        (hidden)="toastService.remove(toast)"
+        [ngClass]="toastService.getToastClasses(toast)"
+        #toastHandler
+        role="status"
+        [attr.aria-label]="toast.header + ': ' + toast.body"
+      >
+        <div class="d-flex align-items-center">
+          <div class="toast-icon me-2">
+            <i class="bi" [ngClass]="toastService.getToastIcon(toast)" aria-hidden="true"></i>
+          </div>
+          <div class="toast-content flex-grow-1">
+            <strong>{{toast.header}}</strong>
+            <span class="ms-1">{{toast.body}}</span>
+          </div>
+          <button
+            type="button"
+            class="btn-close ms-2"
+            [ngClass]="{'btn-close-white': !toastService.isLightBackground(toast)}"
+            aria-label="Dismiss notification"
+            (click)="toastService.remove(toast)">
+          </button>
         </div>
-      </div>
-      <!--      <app-toast-progressbar [total]="toast.delay || 5000"></app-toast-progressbar>-->
-    </ngb-toast>
-  } @else {
-    <ngb-toast
-      (hidden)="toastService.remove(toast)" [ngClass]="toast.type === 'info' ? 'bg-primary text-light' : toast.type === 'success' ? 'bg-success text-light' : toast.type === 'warning' ? 'bg-warning text-light' : 'bg-danger text-light'"
-      #toastHandler
-    >
-      <div class="d-flex">
-        <div class="p-2">
-          <b>{{toast.header}}: </b>{{toast.body}}
-        </div>
-        <div class="p-2">
-          <button type="button" class="btn btn-close" aria-label="Close" (click)="toastService.remove(toast)"></button>
-        </div>
-      </div>
-      <app-toast-progressbar [action]="toast.action" (finished)="toastHandler.hide()"></app-toast-progressbar>
-    </ngb-toast>
+        <app-toast-progressbar
+          [action]="toast.action"
+          [toastType]="toast.type"
+          (finished)="toastHandler.hide()">
+        </app-toast-progressbar>
+      </ngb-toast>
+    }
   }
-}
+</div>

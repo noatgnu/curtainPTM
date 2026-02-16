@@ -1,9 +1,9 @@
 
-<div class="d-flex justify-content-around">
+<div class="d-flex justify-content-around" role="region" aria-label="Volcano Plot Analysis">
   <div class="d-flex justify-content-center align-items-center flex-grow-1">
     <div class="d-flex flex-column">
       @if (config.editable) {
-        <div class="alert alert-info">
+        <div class="alert alert-info" role="status" aria-live="polite">
           <p>Edit mode is currently activated</p>
           <ul>
             <li>Click on the plot title or axis title to edit them directly</li>
@@ -12,31 +12,58 @@
           </ul>
         </div>
       }
-      <plotly-plot (relayout)="handleLayoutChange($event)" (legendClick)="legendClickHandler($event)" [config]="config" [divId]="'volcanoPlot'" [data]="graphData" [layout]="graphLayout" [revision]="revision" [updateOnLayoutChange]="true" (plotlyClick)="selectData($event)" (selected)="selectData($event)"></plotly-plot>
+      <div class="volcano-plot-container" role="img" [attr.aria-label]="getPlotAriaLabel()">
+        <span class="visually-hidden" id="volcanoPlotDescription">
+          Volcano plot showing {{graphData.length}} data groups.
+          X-axis represents log2 fold change, Y-axis represents -log10 p-value.
+          Significance cutoff: p-value {{settings.settings.pCutoff}}, fold change ±{{settings.settings.log2FCCutoff}}.
+          Click or use keyboard to select data points for detailed analysis.
+        </span>
+        <plotly-plot
+          (relayout)="handleLayoutChange($event)"
+          (legendClick)="legendClickHandler($event)"
+          [config]="config"
+          [divId]="'volcanoPlot'"
+          [data]="graphData"
+          [layout]="graphLayout"
+          [revision]="revision"
+          [updateOnLayoutChange]="true"
+          (plotlyClick)="selectData($event)"
+          (selected)="selectData($event)"
+          aria-describedby="volcanoPlotDescription">
+        </plotly-plot>
+      </div>
     </div>
   </div>
   <div class="flex-grow-0" style="max-width: 500px">
-    <div class="accordion">
+    <nav class="accordion" aria-label="Volcano Plot Settings Panel">
       <div class="accordion-item">
-        <h2 class="accordion-header">
-          <button [ngClass]="{'accordion-button': true, 'collapsed': isVolcanoParameterCollapsed}" type="button" (click)="isVolcanoParameterCollapsed=!isVolcanoParameterCollapsed">
+        <h2 class="accordion-header" id="volcanoSettingsHeader">
+          <button
+            [ngClass]="{'accordion-button': true, 'collapsed': isVolcanoParameterCollapsed}"
+            type="button"
+            (click)="isVolcanoParameterCollapsed=!isVolcanoParameterCollapsed"
+            [attr.aria-expanded]="!isVolcanoParameterCollapsed"
+            aria-controls="volcanoSettingsPanel">
             Volcano Plot Settings
           </button>
         </h2>
-        <div #collapse="ngbCollapse" [(ngbCollapse)]="isVolcanoParameterCollapsed">
+        <div #collapse="ngbCollapse" [(ngbCollapse)]="isVolcanoParameterCollapsed" id="volcanoSettingsPanel" role="region" aria-labelledby="volcanoSettingsHeader">
           <div class="accordion-body">
-            <ul #nav="ngbNav" ngbNav [(activeId)]="settingsNav" class="nav-tabs">
-              <li [ngbNavItem]="'parameters'">
-                <button ngbNavLink>Plot Parameters</button>
+            <ul #nav="ngbNav" ngbNav [(activeId)]="settingsNav" class="nav-tabs" role="tablist" aria-label="Settings categories">
+              <li [ngbNavItem]="'parameters'" role="presentation">
+                <button ngbNavLink role="tab" aria-controls="parametersPanel">Plot Parameters</button>
                 <ng-template ngbNavContent>
-                  <div class="form-check">
-                    <input type="checkbox" class="form-check-input" [(ngModel)]="editMode">
-                    <label class="form-check-label">Editable Mode (enable free movement and editing of text and other element of the plot)</label>
-                  </div>
-                  <div class="form-check">
-                    <input type="checkbox" class="form-check-input" [(ngModel)]="explorerMode">
-                    <label class="form-check-label">Explorer Mode (click on points to view nearby points with peptide sequences and PTM information)</label>
-                  </div>
+                  <fieldset class="mb-3" role="group" aria-label="Plot modes">
+                    <div class="form-check">
+                      <input type="checkbox" class="form-check-input" id="editModeToggle" [(ngModel)]="editMode">
+                      <label class="form-check-label" for="editModeToggle">Editable Mode (enable free movement and editing of text and other element of the plot)</label>
+                    </div>
+                    <div class="form-check">
+                      <input type="checkbox" class="form-check-input" id="explorerModeToggle" [(ngModel)]="explorerMode">
+                      <label class="form-check-label" for="explorerModeToggle">Explorer Mode (click on points to view nearby points with peptide sequences and PTM information)</label>
+                    </div>
+                  </fieldset>
                   <div class="d-flex">
                     <div class="p-2">
                       <label for="width">
@@ -318,33 +345,55 @@
                   </div>
                 </ng-template>
               </li>
-              <li [ngbNavItem]="'shapes'">
-                <button ngbNavLink>Shapes</button>
+              <li [ngbNavItem]="'shapes'" role="presentation">
+                <button ngbNavLink role="tab" aria-controls="shapesPanel">Shapes</button>
                 <ng-template ngbNavContent>
                   <app-shapes (updateShapes)="updateShapes($event)"></app-shapes>
                 </ng-template>
               </li>
             </ul>
-            <div [ngbNavOutlet]="nav" class="mt-2"></div>
-            <div ngbDropdown class="d-inline-block">
-              <button type="button" class="btn btn-primary" id="volcanoAction" ngbDropdownToggle>
+            <div [ngbNavOutlet]="nav" class="mt-2" role="tabpanel"></div>
+            <div ngbDropdown class="d-inline-block mt-3">
+              <button
+                type="button"
+                class="btn btn-primary"
+                id="volcanoAction"
+                ngbDropdownToggle
+                aria-haspopup="true"
+                aria-label="Open volcano plot actions menu">
                 Volcano Plot Actions
               </button>
-              <div ngbDropdownMenu aria-labelledby="volcanoAction">
-                <button ngbDropdownItem (click)="drawVolcano()">Redraw Plot</button>
-                <button ngbDropdownItem (click)="openColorByCategoryModal()">Color By Category Column</button>
-                <button ngbDropdownItem (click)="FDRCurveSettings()">Custom FDR Curve</button>
-                <button ngbDropdownItem (click)="openCustomColor()">Custom Legend Color</button>
-                <button ngbDropdownItem (click)="openTextEditor()">Annotation Text Editor</button>
-                <!--                <button ngbDropdownItem (click)="download()">Download Volcano Plot</button>-->
-                <button ngbDropdownItem (click)="openWebLogo()">Web Logo Viewer</button>
-                <button ngbDropdownItem (click)="openReorderTracesModal()">Reorder Traces</button>
-                <button ngbDropdownItem (click)="dataService.clear()">Clear Selections</button>
+              <div ngbDropdownMenu aria-labelledby="volcanoAction" role="menu">
+                <button ngbDropdownItem (click)="drawVolcano()" role="menuitem">
+                  <i class="bi bi-arrow-clockwise me-2" aria-hidden="true"></i>Redraw Plot
+                </button>
+                <button ngbDropdownItem (click)="openColorByCategoryModal()" role="menuitem">
+                  <i class="bi bi-palette me-2" aria-hidden="true"></i>Color By Category Column
+                </button>
+                <button ngbDropdownItem (click)="FDRCurveSettings()" role="menuitem">
+                  <i class="bi bi-graph-up me-2" aria-hidden="true"></i>Custom FDR Curve
+                </button>
+                <button ngbDropdownItem (click)="openCustomColor()" role="menuitem">
+                  <i class="bi bi-brush me-2" aria-hidden="true"></i>Custom Legend Color
+                </button>
+                <button ngbDropdownItem (click)="openTextEditor()" role="menuitem">
+                  <i class="bi bi-pencil-square me-2" aria-hidden="true"></i>Annotation Text Editor
+                </button>
+                <button ngbDropdownItem (click)="openWebLogo()" role="menuitem">
+                  <i class="bi bi-image me-2" aria-hidden="true"></i>Web Logo Viewer
+                </button>
+                <button ngbDropdownItem (click)="openReorderTracesModal()" role="menuitem">
+                  <i class="bi bi-sort-down me-2" aria-hidden="true"></i>Reorder Traces
+                </button>
+                <hr class="dropdown-divider">
+                <button ngbDropdownItem (click)="dataService.clear()" role="menuitem" class="text-danger">
+                  <i class="bi bi-trash me-2" aria-hidden="true"></i>Clear Selections
+                </button>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </nav>
   </div>
 </div>

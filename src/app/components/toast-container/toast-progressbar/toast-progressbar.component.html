@@ -1,1 +1,10 @@
-<ngb-progressbar [value]="progress" [max]="total" [type]="'danger'" [height]="'4px'"></ngb-progressbar>
+<ngb-progressbar
+  [value]="progress"
+  [max]="total"
+  [type]="progressBarType"
+  [height]="'4px'"
+  [aria-valuenow]="progress"
+  [aria-valuemin]="0"
+  [attr.aria-valuemax]="total"
+  aria-label="Operation progress">
+</ngb-progressbar>
