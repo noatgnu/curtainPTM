@@ -1,261 +1,461 @@
 /// <reference lib="webworker" />
 
-import {DataFrame, fromCSV, Series, IDataFrame} from "data-forge";
+import { fromCSV, IDataFrame, Series } from "data-forge";
 
-addEventListener('message', (data: MessageEvent<any>) => {
-  console.log(data.data)
-  switch (data.data.task) {
-    case "processDifferentialFile":
-      postMessage({type: "progress", value: 100, text: "Processing differential data..."})
-      let df: IDataFrame = fromCSV(data.data.differential)
-      console.log(data.data.differentialForm)
-      if (!data.data.differentialForm._comparison || data.data.differentialForm._comparison === "" || data.data.differentialForm._comparison === "CurtainSetComparison") {
-        data.data.differentialForm._comparison = "CurtainSetComparison"
-        data.data.differentialForm._comparisonSelect = "1"
+interface DifferentialForm {
+  _primaryIDs: string;
+  _geneNames: string;
+  _foldChange: string;
+  _significant: string;
+  _comparison: string;
+  _comparisonSelect: string;
+  _transformFC: boolean;
+  _transformSignificant: boolean;
+  _reverseFoldChange: boolean;
+  _accession: string;
+  _position: string;
+  _positionPeptide: string;
+  _peptideSequence: string;
+  _score: string;
+  _sequence: string;
+}
 
-        df = df.withSeries("CurtainSetComparison", new Series(Array(df.count()).fill("1"))).bake()
-      }
+interface RawForm {
+  _primaryIDs: string;
+  _samples: string[];
+}
 
-      if (data.data.differentialForm._comparisonSelect === "" || data.data.differentialForm._comparisonSelect === undefined) {
-        if (df.getColumnNames().includes(data.data.differentialForm._comparison)) {
-          data.data.differentialForm._comparisonSelect = df.first()[data.data.differentialForm._comparison]
-        } else {
-          data.data.differentialForm._comparison = "CurtainSetComparison"
-          data.data.differentialForm._comparisonSelect = "1"
+interface Settings {
+  conditionOrder: string[];
+  sampleOrder: Record<string, string[]>;
+  sampleVisible: Record<string, boolean>;
+  sampleMap: Record<string, SampleInfo>;
+  colorMap: Record<string, string>;
+  defaultColorList: string[];
+}
 
-          df = df.withSeries("CurtainSetComparison", new Series(Array(df.count()).fill("1"))).bake()
-        }
+interface SampleInfo {
+  replicate: string;
+  condition: string;
+  name: string;
+}
 
-      }
-      const store: any[] = df.toArray().map((r: any) => {
-        r[data.data.differentialForm._position] = parseArrayField(r[data.data.differentialForm._position], 'number')
-        r[data.data.differentialForm._positionPeptide] = parseArrayField(r[data.data.differentialForm._positionPeptide], 'number')
-        r[data.data.differentialForm._foldChange] = Number(r[data.data.differentialForm._foldChange])
-        r[data.data.differentialForm._score] = Number(r[data.data.differentialForm._score])
-        r[data.data.differentialForm._significant] = Number(r[data.data.differentialForm._significant])
-        if (data.data.differentialForm._transformFC) {
-          if (r[data.data.differentialForm._foldChange] > 0) {
-            r[data.data.differentialForm._foldChange] = Math.log2(r[data.data.differentialForm._foldChange])
-          } else if (r[data.data.differentialForm._foldChange] < 0) {
-            r[data.data.differentialForm._foldChange] = -Math.log2(Math.abs(r[data.data.differentialForm._foldChange]))
-          } else {
-            r[data.data.differentialForm._foldChange] = 0
-          }
-        }
-        if (data.data.differentialForm._reverseFoldChange) {
-          r[data.data.differentialForm._foldChange] = -r[data.data.differentialForm._foldChange]
-        }
-        if (data.data.differentialForm._significant) {
-          r[data.data.differentialForm._significant] = Number(r[data.data.differentialForm._significant])
-        }
-        if (data.data.differentialForm._transformSignificant) {
-          r[data.data.differentialForm._significant] = -Math.log10(r[data.data.differentialForm._significant])
-        }
-        r[data.data.differentialForm._peptideSequence] = parseArrayField(r[data.data.differentialForm._peptideSequence], 'string', true)
-        if (data.data.differentialForm._sequence) {
-          r[data.data.differentialForm._sequence] = parseArrayField(r[data.data.differentialForm._sequence], 'string')
-        }
-        return r
-      })
+interface WorkerMessage {
+  task: 'processDifferentialFile' | 'processRawFile';
+  differential?: string;
+  differentialForm?: DifferentialForm;
+  raw?: string;
+  rawForm?: RawForm;
+  settings?: Settings;
+}
 
+interface ProgressMessage {
+  type: 'progress';
+  value: number;
+  text: string;
+}
 
+interface ErrorMessage {
+  type: 'error';
+  message: string;
+  details?: string;
+}
 
-      // passing data back to main thread in chunks of 100 items each to avoid memory issues
-      /*const chunkSize = 100
-      const chunkNumber = Math.ceil(df.count() / chunkSize)
-      for (let i = 0; i < chunkNumber; i++) {
-        postMessage({type: "progress", value: i*100/chunkNumber, text: "Processing differential data..."})
-        postMessage({type: "resultDifferential", differential: df.skip(i*chunkSize).take(chunkSize).toArray()})
-      }*/
-      postMessage({type: "progress", value: 100, text: "Finished processing differential data"})
-      // @ts-ignore
-      const result = {type: "resultDifferential", differential: JSON.stringify(store), differentialForm: data.data.differentialForm}
-      postMessage(result)
+interface DifferentialResultMessage {
+  type: 'resultDifferential';
+  differential: string;
+  differentialForm: DifferentialForm;
+}
 
-      break
-  case "processRawFile":
-    postMessage({type: "progress", value: 100, text: "Processing primary data"})
-    let rawDF: IDataFrame = fromCSV(data.data.raw)
-    const totalSampleNumber = data.data.rawForm._samples.length
-    let sampleNumber = 0
-    const conditions: string[] = []
-    let colorPosition = 0
-    const colorMap: any = {}
-    const conditionOrder = data.data.settings.conditionOrder.slice()
-    let samples: string[] = []
-    samples = data.data.rawForm._samples.slice()
-    const sampleMap: any = {}
-    for (const s of samples) {
-      const condition_replicate = s.split(".")
-      const replicate = condition_replicate[condition_replicate.length-1]
-      const condition = condition_replicate.slice(0, condition_replicate.length-1).join(".")
-      if (!conditions.includes(condition)) {
-        conditions.push(condition)
-        if (colorPosition >= data.data.settings.defaultColorList.length) {
-          colorPosition = 0
-        }
-        colorMap[condition] = data.data.settings.defaultColorList[colorPosition]
-        colorPosition ++
-      }
-      if (!data.data.settings.sampleOrder[condition]) {
-        data.data.settings.sampleOrder[condition] = []
-      }
-      if (!data.data.settings.sampleOrder[condition].includes(s)) {
-        data.data.settings.sampleOrder[condition].push(s)
-      }
+interface RawResultMessage {
+  type: 'resultRaw';
+  raw: string;
+  settings: Settings;
+  conditions: string[];
+}
 
-      if (!(s in data.data.settings.sampleVisible)) {
-        data.data.settings.sampleVisible[s] = true
-      }
-      sampleMap[s] = {replicate: replicate, condition: condition, name: s}
+type WorkerResponse = ProgressMessage | ErrorMessage | DifferentialResultMessage | RawResultMessage;
+
+const PROGRESS_BATCH_SIZE = 500;
+
+addEventListener('message', (event: MessageEvent<WorkerMessage>) => {
+  const { task } = event.data;
+
+  try {
+    switch (task) {
+      case 'processDifferentialFile':
+        processDifferentialFile(event.data);
+        break;
+      case 'processRawFile':
+        processRawFile(event.data);
+        break;
+      default:
+        postError(`Unknown task: ${task}`);
     }
-
-    if (Object.keys(data.data.settings.sampleMap).length === 0) {
-      data.data.settings.sampleMap = sampleMap
-    }
-    for (const s in data.data.settings.sampleVisible) {
-      if (!(s in sampleMap)) {
-        delete data.data.settings.sampleVisible[s]
-      }
-    }
-    for (const s in colorMap) {
-      if (!(s in data.data.settings.colorMap)) {
-        data.data.settings.colorMap[s] = colorMap[s]
-      }
-    }
-    for (const s in data.data.settings.sampleMap) {
-      if (!(s in sampleMap)) {
-        delete data.data.settings.sampleMap[s]
-      }
-    }
-
-    if (data.data.settings.conditionOrder.length === 0) {
-      data.data.settings.conditionOrder = conditions.slice()
-    } else {
-      //let conditionOrder = conditions.slice()
-      /*for (const c of data.data.settings.conditionOrder) {
-        if (!conditionOrder.includes(c)) {
-          data.data.settings.conditionOrder = data.data.settings.conditionOrder.filter((cc: string) => cc !== c)
-        }
-      }
-      console.log(conditionOrder)
-      for (const c of conditionOrder) {
-        if (!data.data.settings.conditionOrder.includes(c)) {
-          data.data.settings.conditionOrder.push(c)
-        }
-      }
-      console.log(data.data.settings.conditionOrder)
-    }*/
-      const conditionO: string[] = []
-      for (const c of conditionOrder) {
-
-        if (!conditions.includes(c)) {
-
-        } else {
-          conditionO.push(c)
-        }
-      }
-      for (const c of conditions) {
-        if (!conditionO.includes(c)) {
-          conditionO.push(c)
-        }
-      }
-      data.data.settings.conditionOrder = conditionO
-    }
-    const storeRaw = rawDF.toArray().map((r: any) => {
-      for (const s of samples) {
-        r[s] = Number(r[s])
-      }
-      return r
-    })
-
-    // @ts-ignore
-    postMessage({type: "resultRaw", raw: JSON.stringify(storeRaw), settings: data.data.settings, conditions: conditions})
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error occurred';
+    postError(message);
   }
 });
 
-function convertToNumber(arr: string[]) {
-  const newCol = arr.map(Number)
-  return newCol
+function postProgress(value: number, text: string): void {
+  const message: ProgressMessage = { type: 'progress', value, text };
+  postMessage(message);
 }
 
-function log2Convert(arr: number[]) {
-  const newCol = arr.map(a => log2Stuff(a))
-  return newCol
+function postError(message: string, details?: string): void {
+  const errorMessage: ErrorMessage = { type: 'error', message, details };
+  postMessage(errorMessage);
 }
 
-function log2Stuff(data: number) {
-  if (data > 0) {
-    return Math.log2(data)
-  } else if (data < 0) {
-    return -Math.log2(Math.abs(data))
+function processDifferentialFile(data: WorkerMessage): void {
+  if (!data.differential || !data.differentialForm) {
+    postError('Missing differential data or form configuration');
+    return;
+  }
+
+  const validationErrors = validateDifferentialForm(data.differentialForm);
+  if (validationErrors.length > 0) {
+    postError('Validation failed', validationErrors.join('; '));
+    return;
+  }
+
+  postProgress(0, 'Parsing differential data...');
+
+  let df: IDataFrame = fromCSV(data.differential);
+  const form = data.differentialForm;
+
+  df = ensureComparisonColumn(df, form);
+
+  postProgress(20, 'Processing rows...');
+
+  const totalRows = df.count();
+  const rows = df.toArray();
+  const store: any[] = [];
+
+  for (let i = 0; i < rows.length; i++) {
+    const row = processRow(rows[i], form);
+    store.push(row);
+
+    if (i % PROGRESS_BATCH_SIZE === 0) {
+      const progress = 20 + (i / totalRows) * 70;
+      postProgress(progress, `Processing row ${i + 1} of ${totalRows}...`);
+    }
+  }
+
+  postProgress(95, 'Finalizing...');
+
+  const result: DifferentialResultMessage = {
+    type: 'resultDifferential',
+    differential: JSON.stringify(store),
+    differentialForm: form
+  };
+
+  postProgress(100, 'Finished processing differential data');
+  postMessage(result);
+}
+
+function validateDifferentialForm(form: DifferentialForm): string[] {
+  const errors: string[] = [];
+
+  if (!form._foldChange) {
+    errors.push('Fold change column is required');
+  }
+  if (!form._significant) {
+    errors.push('Significance column is required');
+  }
+  if (!form._primaryIDs) {
+    errors.push('Primary ID column is required');
+  }
+
+  return errors;
+}
+
+function ensureComparisonColumn(df: IDataFrame, form: DifferentialForm): IDataFrame {
+  if (!form._comparison || form._comparison === '' || form._comparison === 'CurtainSetComparison') {
+    form._comparison = 'CurtainSetComparison';
+    form._comparisonSelect = '1';
+    return df.withSeries('CurtainSetComparison', new Series(Array(df.count()).fill('1'))).bake();
+  }
+
+  if (form._comparisonSelect === '' || form._comparisonSelect === undefined) {
+    if (df.getColumnNames().includes(form._comparison)) {
+      form._comparisonSelect = df.first()[form._comparison];
+    } else {
+      form._comparison = 'CurtainSetComparison';
+      form._comparisonSelect = '1';
+      return df.withSeries('CurtainSetComparison', new Series(Array(df.count()).fill('1'))).bake();
+    }
+  }
+
+  return df;
+}
+
+function processRow(row: any, form: DifferentialForm): any {
+  row[form._position] = parseArrayField(row[form._position], 'number');
+  row[form._positionPeptide] = parseArrayField(row[form._positionPeptide], 'number');
+  row[form._foldChange] = transformFoldChange(
+    Number(row[form._foldChange]),
+    form._transformFC,
+    form._reverseFoldChange
+  );
+  row[form._score] = Number(row[form._score]);
+  row[form._significant] = transformSignificance(
+    Number(row[form._significant]),
+    form._transformSignificant
+  );
+  row[form._peptideSequence] = parseArrayField(row[form._peptideSequence], 'string', true);
+
+  if (form._sequence) {
+    row[form._sequence] = parseArrayField(row[form._sequence], 'string');
+  }
+
+  return row;
+}
+
+function transformFoldChange(value: number, transform: boolean, reverse: boolean): number {
+  let result = value;
+
+  if (transform) {
+    if (result > 0) {
+      result = Math.log2(result);
+    } else if (result < 0) {
+      result = -Math.log2(Math.abs(result));
+    } else {
+      result = 0;
+    }
+  }
+
+  if (reverse) {
+    result = -result;
+  }
+
+  return result;
+}
+
+function transformSignificance(value: number, transform: boolean): number {
+  if (transform) {
+    return -Math.log10(value);
+  }
+  return value;
+}
+
+function processRawFile(data: WorkerMessage): void {
+  if (!data.raw || !data.rawForm || !data.settings) {
+    postError('Missing raw data, form configuration, or settings');
+    return;
+  }
+
+  const validationErrors = validateRawForm(data.rawForm);
+  if (validationErrors.length > 0) {
+    postError('Validation failed', validationErrors.join('; '));
+    return;
+  }
+
+  postProgress(0, 'Parsing raw data...');
+
+  const rawDF: IDataFrame = fromCSV(data.raw);
+  const samples = data.rawForm._samples.slice();
+  const settings = data.settings;
+
+  postProgress(20, 'Processing samples...');
+
+  const { conditions, colorMap, sampleMap } = processSamples(samples, settings);
+
+  postProgress(40, 'Updating settings...');
+
+  updateSettings(settings, conditions, colorMap, sampleMap);
+
+  postProgress(60, 'Processing data rows...');
+
+  const totalRows = rawDF.count();
+  const rows = rawDF.toArray();
+  const storeRaw: any[] = [];
+
+  for (let i = 0; i < rows.length; i++) {
+    const row = rows[i];
+    for (const s of samples) {
+      row[s] = Number(row[s]);
+    }
+    storeRaw.push(row);
+
+    if (i % PROGRESS_BATCH_SIZE === 0) {
+      const progress = 60 + (i / totalRows) * 35;
+      postProgress(progress, `Processing row ${i + 1} of ${totalRows}...`);
+    }
+  }
+
+  postProgress(100, 'Finished processing raw data');
+
+  const result: RawResultMessage = {
+    type: 'resultRaw',
+    raw: JSON.stringify(storeRaw),
+    settings: settings,
+    conditions: conditions
+  };
+
+  postMessage(result);
+}
+
+function validateRawForm(form: RawForm): string[] {
+  const errors: string[] = [];
+
+  if (!form._primaryIDs) {
+    errors.push('Primary ID column is required');
+  }
+  if (!form._samples || form._samples.length === 0) {
+    errors.push('At least one sample column is required');
+  }
+
+  return errors;
+}
+
+interface ProcessSamplesResult {
+  conditions: string[];
+  colorMap: Record<string, string>;
+  sampleMap: Record<string, SampleInfo>;
+}
+
+function processSamples(samples: string[], settings: Settings): ProcessSamplesResult {
+  const conditions: string[] = [];
+  const colorMap: Record<string, string> = {};
+  const sampleMap: Record<string, SampleInfo> = {};
+  let colorPosition = 0;
+
+  for (const sample of samples) {
+    const parts = sample.split('.');
+    const replicate = parts[parts.length - 1];
+    const condition = parts.slice(0, parts.length - 1).join('.');
+
+    if (!conditions.includes(condition)) {
+      conditions.push(condition);
+
+      if (colorPosition >= settings.defaultColorList.length) {
+        colorPosition = 0;
+      }
+      colorMap[condition] = settings.defaultColorList[colorPosition];
+      colorPosition++;
+    }
+
+    if (!settings.sampleOrder[condition]) {
+      settings.sampleOrder[condition] = [];
+    }
+    if (!settings.sampleOrder[condition].includes(sample)) {
+      settings.sampleOrder[condition].push(sample);
+    }
+
+    if (!(sample in settings.sampleVisible)) {
+      settings.sampleVisible[sample] = true;
+    }
+
+    sampleMap[sample] = { replicate, condition, name: sample };
+  }
+
+  return { conditions, colorMap, sampleMap };
+}
+
+function updateSettings(
+  settings: Settings,
+  conditions: string[],
+  colorMap: Record<string, string>,
+  sampleMap: Record<string, SampleInfo>
+): void {
+  if (Object.keys(settings.sampleMap).length === 0) {
+    settings.sampleMap = sampleMap;
+  }
+
+  cleanupSampleVisible(settings, sampleMap);
+  cleanupSampleMap(settings, sampleMap);
+  updateColorMap(settings, colorMap);
+  updateConditionOrder(settings, conditions);
+}
+
+function cleanupSampleVisible(settings: Settings, sampleMap: Record<string, SampleInfo>): void {
+  for (const sample in settings.sampleVisible) {
+    if (!(sample in sampleMap)) {
+      delete settings.sampleVisible[sample];
+    }
+  }
+}
+
+function cleanupSampleMap(settings: Settings, sampleMap: Record<string, SampleInfo>): void {
+  for (const sample in settings.sampleMap) {
+    if (!(sample in sampleMap)) {
+      delete settings.sampleMap[sample];
+    }
+  }
+}
+
+function updateColorMap(settings: Settings, colorMap: Record<string, string>): void {
+  for (const condition in colorMap) {
+    if (!(condition in settings.colorMap)) {
+      settings.colorMap[condition] = colorMap[condition];
+    }
+  }
+}
+
+function updateConditionOrder(settings: Settings, conditions: string[]): void {
+  if (settings.conditionOrder.length === 0) {
+    settings.conditionOrder = conditions.slice();
   } else {
-    return 0
-  }
-}
+    const existingOrder = settings.conditionOrder.slice();
+    const newOrder: string[] = [];
 
-function log10Convert(arr: number[]) {
-  const newCol = arr.map(a => -Math.log10(a))
-  return newCol
-}
-function parseSequence(df: IDataFrame, sequenceColumnName: string) {
-  return df.getSeries(sequenceColumnName).bake().toArray().map(v => {
-    let count = 0
-    let seq = ""
-    for (const a of v) {
-      if (["(", "[", "{"].includes(a)) {
-        count = count + 1
-      }
-      if (count === 0) {
-        seq = seq + a
-      }
-      if ([")", "]", "}"].includes(a)) {
-        count = count - 1
+    for (const condition of existingOrder) {
+      if (conditions.includes(condition)) {
+        newOrder.push(condition);
       }
     }
-    return seq
-  })
-}
 
-function parseSequenceSingle(v: string) {
-  let count = 0
-  let seq = ""
-  for (const a of v) {
-    if (["(", "[", "{"].includes(a)) {
-      count = count + 1
+    for (const condition of conditions) {
+      if (!newOrder.includes(condition)) {
+        newOrder.push(condition);
+      }
     }
-    if (count === 0) {
-      seq = seq + a
-    }
-    if ([")", "]", "}"].includes(a)) {
-      count = count - 1
-    }
+
+    settings.conditionOrder = newOrder;
   }
-  return seq
 }
 
 function parseArrayField(value: string, type: 'number' | 'string', cleanSequence: boolean = false): any {
   if (!value || value === '') {
-    return type === 'number' ? [] : []
+    return type === 'number' ? [] : [];
   }
-  
-  const parts = value.split(';').map(part => part.trim()).filter(part => part !== '')
-  
+
+  const parts = value.split(';').map(part => part.trim()).filter(part => part !== '');
+
   if (parts.length === 1) {
     if (type === 'number') {
-      const num = Number(parts[0])
-      return isNaN(num) ? [parts[0]] : num
+      const num = Number(parts[0]);
+      return isNaN(num) ? [parts[0]] : num;
     } else {
-      return cleanSequence ? parseSequenceSingle(parts[0]) : parts[0]
+      return cleanSequence ? parseSequenceSingle(parts[0]) : parts[0];
     }
   }
-  
+
   if (type === 'number') {
     return parts.map(part => {
-      const num = Number(part)
-      return isNaN(num) ? part : num
-    })
+      const num = Number(part);
+      return isNaN(num) ? part : num;
+    });
   } else {
-    return cleanSequence ? parts.map(part => parseSequenceSingle(part)) : parts
+    return cleanSequence ? parts.map(part => parseSequenceSingle(part)) : parts;
   }
+}
+
+function parseSequenceSingle(value: string): string {
+  let depth = 0;
+  let sequence = '';
+
+  for (const char of value) {
+    if (['(', '[', '{'].includes(char)) {
+      depth++;
+    } else if ([')', ']', '}'].includes(char)) {
+      depth--;
+    } else if (depth === 0) {
+      sequence += char;
+    }
+  }
+
+  return sequence;
 }
