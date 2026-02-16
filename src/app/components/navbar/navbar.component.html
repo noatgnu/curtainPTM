@@ -284,67 +284,85 @@
 </nav>
 
 <!-- Floating Session Link Panel -->
-@if (finished && settings.settings.currentID !== '' && uniqueLink !== '' && !sessionLinkDismissed()) {
-  <div class="alert alert-dismissible fade show shadow-lg"
-       style="position: fixed; top: 80px; right: 20px; z-index: 1029; max-width: 600px; width: 90%;"
-       [ngClass]="{
-         'alert-danger': !data.session.permanent,
-         'alert-warning': data.session.permanent && isDOI && data.session.data_cite?.status === 'draft',
-         'alert-success': data.session.permanent && (!isDOI || data.session.data_cite?.status === 'published'),
-         'alert-info': data.session.permanent && isDOI && data.session.data_cite?.status !== 'draft' && data.session.data_cite?.status !== 'published'
-       }">
-    <button type="button" class="btn-close" (click)="dismissSessionLink()" aria-label="Close"></button>
-    <div class="d-flex align-items-center">
-      <div class="flex-grow-1 me-3">
-        <h6 class="alert-heading mb-1">
-          <i class="bi bi-link-45deg me-2"></i>
-          @if (data.session?.name) {
-            {{data.session.name}}
-          } @else {
-            Session Link
-          }
-          @if (!data.session.permanent) {
-            <span class="badge bg-dark ms-2">Temporary</span>
-          } @else {
-            @if (isDOI && data.session?.data_cite) {
-              <span class="badge bg-dark ms-2">
-                {{data.session?.data_cite?.status === 'draft' ? 'DOI Draft' :
-                    data.session?.data_cite?.status === 'published' ? 'DOI Permanent' : 'DOI Pending'}}
-              </span>
+@if (finished && settings.settings.currentID !== '' && uniqueLink !== '') {
+  @if (!sessionLinkMinimized()) {
+    <div class="alert alert-dismissible fade show shadow-lg"
+         style="position: fixed; top: 80px; right: 20px; z-index: 1029; max-width: 600px; width: 90%;"
+         [ngClass]="{
+           'alert-danger': !data.session.permanent,
+           'alert-warning': data.session.permanent && isDOI && data.session.data_cite?.status === 'draft',
+           'alert-success': data.session.permanent && (!isDOI || data.session.data_cite?.status === 'published'),
+           'alert-info': data.session.permanent && isDOI && data.session.data_cite?.status !== 'draft' && data.session.data_cite?.status !== 'published'
+         }">
+      <button type="button" class="btn-close" (click)="minimizeSessionLink()" aria-label="Minimize" title="Minimize"></button>
+      <div class="d-flex align-items-center">
+        <div class="flex-grow-1 me-3">
+          <h6 class="alert-heading mb-1">
+            <i class="bi bi-link-45deg me-2"></i>
+            @if (data.session?.name) {
+              {{data.session.name}}
             } @else {
-              @if (!isDOI) {
-                <span class="badge bg-dark ms-2">Permanent</span>
+              Session Link
+            }
+            @if (!data.session.permanent) {
+              <span class="badge bg-dark ms-2">Temporary</span>
+            } @else {
+              @if (isDOI && data.session?.data_cite) {
+                <span class="badge bg-dark ms-2">
+                  {{data.session?.data_cite?.status === 'draft' ? 'DOI Draft' :
+                      data.session?.data_cite?.status === 'published' ? 'DOI Permanent' : 'DOI Pending'}}
+                </span>
+              } @else {
+                @if (!isDOI) {
+                  <span class="badge bg-dark ms-2">Permanent</span>
+                }
               }
             }
+          </h6>
+          @if (data.session?.name) {
+            <div class="small text-muted mb-1">
+              <i class="bi bi-hash me-1"></i>{{settings.settings.currentID}}
+            </div>
           }
-        </h6>
-        @if (data.session?.name) {
-          <div class="small text-muted mb-1">
-            <i class="bi bi-hash me-1"></i>{{settings.settings.currentID}}
+          <div class="small mb-2">
+            <a [href]="uniqueLink" class="text-decoration-none fw-bold" target="_blank" style="word-break: break-all;">
+              {{uniqueLink}}
+            </a>
           </div>
-        }
-        <div class="small mb-2">
-          <a [href]="uniqueLink" class="text-decoration-none fw-bold" target="_blank" style="word-break: break-all;">
-            {{uniqueLink}}
-          </a>
+          @if (!data.session.permanent) {
+            <div class="small text-muted">
+              <i class="bi bi-info-circle me-1"></i>
+              This is a temporary link. Save your session to make it permanent.
+            </div>
+          }
         </div>
-        @if (!data.session.permanent) {
-          <div class="small text-muted">
-            <i class="bi bi-info-circle me-1"></i>
-            This is a temporary link. Save your session to make it permanent.
-          </div>
-        }
-      </div>
-      <div class="d-flex flex-column gap-2">
-        <button [ngClass]="themeService.isDarkMode() ? 'btn btn-sm btn-outline-light' : 'btn btn-sm btn-outline-dark'" (click)="copyToClipboard(uniqueLink)" title="Copy to clipboard">
-          <i class="bi bi-clipboard"></i>
-        </button>
-        <button [ngClass]="themeService.isDarkMode() ? 'btn btn-sm btn-outline-light' : 'btn btn-sm btn-outline-dark'" (click)="openQRCode()" title="Show QR code">
-          <i class="bi bi-qr-code"></i>
-        </button>
+        <div class="d-flex flex-column gap-2">
+          <button [ngClass]="themeService.isDarkMode() ? 'btn btn-sm btn-outline-light' : 'btn btn-sm btn-outline-dark'" (click)="copyToClipboard(uniqueLink)" title="Copy to clipboard">
+            <i class="bi bi-clipboard"></i>
+          </button>
+          <button [ngClass]="themeService.isDarkMode() ? 'btn btn-sm btn-outline-light' : 'btn btn-sm btn-outline-dark'" (click)="openQRCode()" title="Show QR code">
+            <i class="bi bi-qr-code"></i>
+          </button>
+        </div>
       </div>
     </div>
-  </div>
+  } @else {
+    <!-- Minimized Session Link Button -->
+    <button
+      class="btn shadow-lg session-link-minimized"
+      style="position: fixed; top: 80px; right: 20px; z-index: 1029;"
+      [ngClass]="{
+        'btn-danger': !data.session.permanent,
+        'btn-warning': data.session.permanent && isDOI && data.session.data_cite?.status === 'draft',
+        'btn-success': data.session.permanent && (!isDOI || data.session.data_cite?.status === 'published'),
+        'btn-info': data.session.permanent && isDOI && data.session.data_cite?.status !== 'draft' && data.session.data_cite?.status !== 'published'
+      }"
+      (click)="expandSessionLink()"
+      title="Show session link">
+      <i class="bi bi-link-45deg"></i>
+      <span class="ms-1 d-none d-md-inline">Session Link</span>
+    </button>
+  }
 }
 
 <div class="container mt-5 pt-3">
