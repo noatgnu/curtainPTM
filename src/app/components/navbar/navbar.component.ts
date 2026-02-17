@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output, signal, effect} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, OnDestroy, Output, signal, effect} from '@angular/core';
 import {WebService} from "../../web.service";
 import {DataService} from "../../data.service";
 import {ScrollService} from "../../scroll.service";
@@ -18,9 +18,10 @@ import {QrcodeModalComponent} from "../qrcode-modal/qrcode-modal.component";
 import {UniprotService} from "../../uniprot.service";
 import {CollaborateModalComponent} from "../collaborate-modal/collaborate-modal.component";
 import {SaveStateService} from "../../save-state.service";
+import {AutoSaveService} from "../../auto-save.service";
 import {LocalSessionStateModalComponent} from "../local-session-state-modal/local-session-state-modal.component";
 import {ProfilePlotComponent} from "../profile-plot/profile-plot.component";
-import {Subscription} from "rxjs";
+import {Subject, Subscription, takeUntil} from "rxjs";
 import {
   SampleConditionAssignmentModalComponent
 } from "../sample-condition-assignment-modal/sample-condition-assignment-modal.component";
@@ -50,7 +51,7 @@ import {BatchUploadModalComponent} from "../batch-upload-modal/batch-upload-moda
     styleUrls: ['./navbar.component.scss'],
     standalone: false
 })
-export class NavbarComponent implements OnInit {
+export class NavbarComponent implements OnInit, OnDestroy {
   @Input() loadingDataCite: boolean = false
   @Input() doiMetadata: any = {}
   @Input() isDOI: boolean = false
@@ -73,6 +74,9 @@ export class NavbarComponent implements OnInit {
   loadingCollections: boolean = false
   sessionLinkMinimized = signal(false)
 
+  lastAutoSave: Date | null = null
+  private destroy$ = new Subject<void>()
+
   constructor(
     public web: WebService,
     public data: DataService,
@@ -83,6 +87,7 @@ export class NavbarComponent implements OnInit {
     private toast: ToastService,
     private uniprot: UniprotService,
     private saveState: SaveStateService,
+    public autoSave: AutoSaveService,
     public themeService: ThemeService
   ) {
     if (this.subscription) {
@@ -112,6 +117,41 @@ export class NavbarComponent implements OnInit {
     if (this.data.session && this.data.session.link_id) {
       this.loadSessionCollections(this.data.session.link_id)
     }
+    this.loadLastAutoSaveTime()
+    this.autoSave.autoSaveTrigger.pipe(takeUntil(this.destroy$)).subscribe(() => {
+      this.lastAutoSave = new Date()
+      this.saveLastAutoSaveTime()
+    })
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next()
+    this.destroy$.complete()
+  }
+
+  private loadLastAutoSaveTime(): void {
+    const stored = localStorage.getItem('LastAutoSaveTime')
+    if (stored) {
+      this.lastAutoSave = new Date(parseInt(stored, 10))
+    }
+  }
+
+  private saveLastAutoSaveTime(): void {
+    if (this.lastAutoSave) {
+      localStorage.setItem('LastAutoSaveTime', this.lastAutoSave.getTime().toString())
+    }
+  }
+
+  getLastAutoSaveText(): string {
+    if (!this.lastAutoSave) return 'Never'
+    const now = new Date()
+    const diff = now.getTime() - this.lastAutoSave.getTime()
+    const minutes = Math.floor(diff / 60000)
+    if (minutes < 1) return 'Just now'
+    if (minutes < 60) return `${minutes}m ago`
+    const hours = Math.floor(minutes / 60)
+    if (hours < 24) return `${hours}h ago`
+    return this.lastAutoSave.toLocaleDateString()
   }
 
   ngOnChanges(): void {
