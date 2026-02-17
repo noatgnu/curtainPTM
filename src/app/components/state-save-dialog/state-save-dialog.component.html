@@ -1,0 +1,68 @@
+<div class="modal-header">
+  <h5 class="modal-title">
+    <i class="bi bi-plus-circle me-2"></i>Save Local State
+  </h5>
+  <button type="button" class="btn-close" (click)="cancel()"></button>
+</div>
+<div class="modal-body">
+  <div class="mb-3">
+    <label for="stateName" class="form-label">Name <span class="text-danger">*</span></label>
+    <input type="text" class="form-control" id="stateName" [(ngModel)]="name" placeholder="Enter a name for this state">
+  </div>
+
+  <div class="mb-3">
+    <label for="stateDescription" class="form-label">Description</label>
+    <textarea class="form-control" id="stateDescription" [(ngModel)]="description" rows="2" placeholder="Optional notes about this state"></textarea>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Tags</label>
+    <div class="d-flex flex-wrap gap-1 mb-2">
+      @for (tag of tags; track tag) {
+        <span class="badge bg-primary d-flex align-items-center">
+          {{tag}}
+          <button type="button" class="btn-close btn-close-white ms-1" style="font-size: 0.6rem;" (click)="removeTag(tag)"></button>
+        </span>
+      }
+    </div>
+    <div class="input-group input-group-sm">
+      <input type="text" class="form-control" [(ngModel)]="newTag" placeholder="Add a tag" (keyup.enter)="addTag()">
+      <button class="btn btn-outline-secondary" type="button" (click)="addTag()">
+        <i class="bi bi-plus"></i>
+      </button>
+    </div>
+    @if (existingTags.length > 0) {
+      <div class="mt-2">
+        <small class="text-muted">Existing tags:</small>
+        <div class="d-flex flex-wrap gap-1 mt-1">
+          @for (tag of existingTags; track tag) {
+            @if (!tags.includes(tag)) {
+              <span class="badge bg-secondary" role="button" (click)="selectExistingTag(tag)">{{tag}}</span>
+            }
+          }
+        </div>
+      </div>
+    }
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Include Settings</label>
+    <div class="list-group list-group-flush">
+      @for (cat of categories; track cat.key) {
+        <label class="list-group-item d-flex align-items-center">
+          <input type="checkbox" class="form-check-input me-2" [(ngModel)]="selectedCategories[cat.key]">
+          <div>
+            <div class="fw-semibold">{{cat.label}}</div>
+            <small class="text-muted">{{cat.description}}</small>
+          </div>
+        </label>
+      }
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <button class="btn btn-secondary" (click)="cancel()">Cancel</button>
+  <button class="btn btn-primary" (click)="save()" [disabled]="!name.trim()">
+    <i class="bi bi-save me-1"></i>Save State
+  </button>
+</div>

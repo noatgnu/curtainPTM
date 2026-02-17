@@ -1,5 +1,5 @@
 @if (visible) {
-  <div class="protein-info-panel card" [ngStyle]="panelStyle">
+  <div class="protein-info-panel card" [ngStyle]="panelStyle" role="dialog" aria-modal="false" [attr.aria-label]="proteinId ? 'Protein information for ' + proteinId : 'Interaction information panel'">
     <div class="card-header d-flex justify-content-between align-items-center">
       <h6 class="mb-0">{{ proteinId ? 'Protein Information' : 'Interaction Information' }}</h6>
       <button type="button" class="btn-close btn-close-white" aria-label="Close" (click)="onClose()"></button>
@@ -24,7 +24,8 @@
           #contentFrame
           class="protein-info-iframe"
           frameborder="0"
-          scrolling="auto">
+          scrolling="auto"
+          [title]="proteinId ? 'Information about protein ' + proteinId : 'Interaction information'">
         </iframe>
       }
     </div>

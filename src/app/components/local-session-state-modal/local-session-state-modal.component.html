@@ -5,63 +5,147 @@
   <button type="button" class="btn-close" aria-label="Close local state management dialog" (click)="close()"></button>
 </div>
 <div class="modal-body" aria-labelledby="local-state-modal-title">
-  <div class="alert alert-info" role="status">
-    <h6 class="alert-heading"><i class="bi bi-info-circle me-2" aria-hidden="true"></i>What are Local States?</h6>
-    <p class="mb-2">Local states save your <strong>visualization settings and selections</strong> without the raw data:</p>
-    <ul class="mb-2">
-      <li>Colors, plot settings, annotations, and labels</li>
-      <li>Selected proteins/PTMs and their groupings</li>
-      <li>Sample order and visibility configurations</li>
-      <li>Comparison settings and cutoff thresholds</li>
-    </ul>
-    <p class="mb-0"><strong>Use cases:</strong> Work offline, share configuration templates, switch between analysis views, or backup publication settings.</p>
+  <div class="row mb-3">
+    <div class="col-md-6">
+      @if (availableTags.length > 0) {
+        <div class="input-group input-group-sm">
+          <label class="input-group-text" for="filterTag"><i class="bi bi-funnel"></i></label>
+          <select class="form-select" id="filterTag" [(ngModel)]="filterTag">
+            <option value="">All tags</option>
+            @for (tag of availableTags; track tag) {
+              <option [value]="tag">{{tag}}</option>
+            }
+          </select>
+          @if (filterTag) {
+            <button class="btn btn-outline-secondary" type="button" (click)="clearFilter()">
+              <i class="bi bi-x"></i>
+            </button>
+          }
+        </div>
+      }
+    </div>
+    <div class="col-md-6">
+      <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="showAutoSaves" [(ngModel)]="showAutoSaves">
+        <label class="form-check-label" for="showAutoSaves">
+          Show auto-saves
+          @if (autoSaves.length > 0) {
+            <span class="badge bg-warning text-dark ms-1">{{autoSaves.length}}</span>
+          }
+        </label>
+      </div>
+    </div>
   </div>
 
-  @if (states.length === 0) {
+  @if (showAutoSaves && autoSaves.length > 0) {
+    <div class="mb-3">
+      <h6 class="border-bottom pb-2">
+        <i class="bi bi-clock-history me-2"></i>Auto-saves
+      </h6>
+      @for (autoSave of autoSaves; track autoSave.id) {
+        <div class="card mb-2 border-warning">
+          <div class="card-body py-2">
+            <div class="row align-items-center">
+              <div class="col-md-8">
+                <div class="d-flex align-items-center">
+                  <i class="bi bi-arrow-repeat text-warning me-2"></i>
+                  <div>
+                    <span class="fw-semibold">{{getRelativeTime(autoSave.date)}}</span>
+                    @if (autoSave.currentID) {
+                      <small class="text-muted ms-2">Session: {{autoSave.currentID}}</small>
+                    }
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4 text-end">
+                <button class="btn btn-sm btn-outline-primary me-1" (click)="loadAutoSave(autoSave.id.toString())">
+                  <i class="bi bi-arrow-clockwise"></i> Load
+                </button>
+                <button class="btn btn-sm btn-outline-danger" (click)="deleteAutoSave(autoSave.id.toString())">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  @if (getFilteredStates().length === 0) {
     <div class="text-center py-4">
       <i class="bi bi-inbox display-1 text-muted" aria-hidden="true"></i>
       <p class="text-muted mt-3">No saved states found</p>
-      <p class="small text-muted">Create a state by clicking <strong>State → Create local state</strong> in the navbar</p>
+      <p class="small text-muted">Click <strong>Create State</strong> below to save your current settings</p>
     </div>
   } @else {
     <div class="mb-3">
       <h6 class="border-bottom pb-2" id="saved-states-heading">
         <i class="bi bi-clock-history me-2" aria-hidden="true"></i>Saved States
-        <span class="badge bg-secondary ms-2" [attr.aria-label]="states.length + ' saved states'">{{states.length}}</span>
+        <span class="badge bg-secondary ms-2" [attr.aria-label]="getFilteredStates().length + ' saved states'">{{getFilteredStates().length}}</span>
       </h6>
     </div>
 
-    @for (s of states; track s.id) {
+    @for (s of getFilteredStates(); track s.id) {
       <div class="card mb-3 shadow-sm">
         <div class="card-body">
-          <div class="row align-items-center">
+          <div class="row align-items-start">
             <div class="col-md-8">
-              <h6 class="card-title mb-2">
+              <h6 class="card-title mb-1">
                 <i class="bi bi-file-earmark-text me-2" aria-hidden="true"></i>
-                @if (s.currentID && s.currentID !== '') {
-                  Session: <span class="text-primary">{{s.currentID}}</span>
-                } @else {
-                  <span class="text-muted">No session ID</span>
-                }
+                {{s.name || 'Unnamed State'}}
               </h6>
+              @if (s.currentID && s.currentID !== '') {
+                <p class="card-text small text-muted mb-1">
+                  Session: <span class="text-primary">{{s.currentID}}</span>
+                </p>
+              }
               <p class="card-text small mb-1">
                 <i class="bi bi-calendar3 me-1" aria-hidden="true"></i>
-                <strong>Created:</strong> {{s.date | date:'medium'}}
+                {{s.date | date:'medium'}}
               </p>
+              @if (s.description) {
+                <p class="card-text small text-muted mb-1">{{s.description}}</p>
+              }
+              @if (s.tags && s.tags.length > 0) {
+                <div class="mb-1">
+                  @for (tag of s.tags; track tag) {
+                    <span class="badge bg-secondary me-1">{{tag}}</span>
+                  }
+                </div>
+              }
               <p class="card-text small text-muted mb-0">
                 <i class="bi bi-hdd me-1" aria-hidden="true"></i>
                 State ID: #{{s.id}}
               </p>
             </div>
             <div class="col-md-4">
-              <div class="btn-group-vertical w-100" role="group" aria-label="State actions">
-                <button class="btn btn-sm btn-outline-primary" (click)="loadState(s.id)" title="Apply this state to current data" aria-label="Load state {{s.id}}">
+              <div class="d-flex flex-column gap-1">
+                <button class="btn btn-sm btn-outline-primary" (click)="loadState(+s.id)" title="Apply this state to current data">
                   <i class="bi bi-arrow-clockwise me-1" aria-hidden="true"></i>Load
                 </button>
-                <button class="btn btn-sm btn-outline-success" (click)="downloadState(s.id)" title="Download as JSON file" aria-label="Download state {{s.id}} as JSON">
-                  <i class="bi bi-download me-1" aria-hidden="true"></i>Download
-                </button>
-                <button class="btn btn-sm btn-outline-danger" (click)="deleteState(s.id)" title="Remove from browser storage" aria-label="Delete state {{s.id}}">
+                <div class="btn-group">
+                  <button class="btn btn-sm btn-outline-success" (click)="downloadState(+s.id)" title="Download as JSON file">
+                    <i class="bi bi-download me-1" aria-hidden="true"></i>Download
+                  </button>
+                  <button type="button" class="btn btn-sm btn-outline-success dropdown-toggle dropdown-toggle-split" (click)="toggleExportOptions(s.id)">
+                    <span class="visually-hidden">Toggle Dropdown</span>
+                  </button>
+                </div>
+                @if (showExportOptions[s.id]) {
+                  <div class="card card-body p-2 mt-1">
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" name="format{{s.id}}" id="pretty{{s.id}}" [checked]="exportOptions.pretty" (change)="exportOptions.pretty = true">
+                      <label class="form-check-label small" for="pretty{{s.id}}">Pretty</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" name="format{{s.id}}" id="minified{{s.id}}" [checked]="!exportOptions.pretty" (change)="exportOptions.pretty = false">
+                      <label class="form-check-label small" for="minified{{s.id}}">Minified</label>
+                    </div>
+                    <button class="btn btn-sm btn-success mt-1" (click)="downloadStateWithOptions(+s.id, exportOptions)">Export</button>
+                  </div>
+                }
+                <button class="btn btn-sm btn-outline-danger" (click)="deleteState(+s.id)" title="Remove from browser storage">
                   <i class="bi bi-trash me-1" aria-hidden="true"></i>Delete
                 </button>
               </div>
@@ -75,10 +159,27 @@
   <input type="file" accept=".json" (change)="loadFromFile($event)" style="display: none" #fileInput [hidden]="true" aria-label="State file input">
 </div>
 <div class="modal-footer">
-  <div class="me-auto">
-    <button class="btn btn-outline-primary" (click)="fileInput.click()" aria-label="Import state from JSON file">
-      <i class="bi bi-upload me-2" aria-hidden="true"></i>Import State File
+  <div class="d-flex align-items-center me-auto gap-3">
+    <button class="btn btn-primary" (click)="openSaveDialog()">
+      <i class="bi bi-plus-circle me-2" aria-hidden="true"></i>Create State
     </button>
+    <button class="btn btn-outline-primary" (click)="fileInput.click()" aria-label="Import state from JSON file">
+      <i class="bi bi-upload me-2" aria-hidden="true"></i>Import
+    </button>
+  </div>
+  <div class="d-flex align-items-center gap-2">
+    <div class="form-check form-switch mb-0">
+      <input class="form-check-input" type="checkbox" id="autoSaveToggle" [checked]="autoSaveEnabled" (change)="toggleAutoSave()">
+      <label class="form-check-label small" for="autoSaveToggle">Auto-save</label>
+    </div>
+    @if (autoSaveEnabled) {
+      <select class="form-select form-select-sm" style="width: auto;" [(ngModel)]="autoSaveInterval" (change)="updateAutoSaveInterval()">
+        <option [value]="1">1 min</option>
+        <option [value]="5">5 min</option>
+        <option [value]="10">10 min</option>
+        <option [value]="30">30 min</option>
+      </select>
+    }
   </div>
   <button class="btn btn-secondary" (click)="close()" aria-label="Close dialog">Close</button>
 </div>

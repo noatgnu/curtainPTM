@@ -1,1 +1,8 @@
-<div #networkContainer class="interactive-network-container"></div>
+<div
+  #networkContainer
+  class="interactive-network-container"
+  role="application"
+  aria-label="Interactive protein network. Use Tab to navigate between nodes, Enter to select, and arrow keys to move nodes."
+  tabindex="0"
+  (keydown)="handleKeyDown($event)">
+</div>

@@ -69,6 +69,9 @@ import { StringNetworkService } from './components/string-network/string-network
 import { DataciteMetadataDisplayComponent } from './components/datacite-metadata-display/datacite-metadata-display.component';
 import { BatchUploadModalComponent } from './components/batch-upload-modal/batch-upload-modal.component';
 import { IndividualSessionComponent } from './components/batch-upload-modal/individual-session/individual-session.component';
+import { StateSaveDialogComponent } from './components/state-save-dialog/state-save-dialog.component';
+import { StatePreviewComponent } from './components/state-preview/state-preview.component';
+import { SelectiveImportDialogComponent } from './components/selective-import-dialog/selective-import-dialog.component';
 //PlotlyViaCDNModule.setPlotlyVersion('latest');
 //PlotlyViaCDNModule.setPlotlyBundle('basic');
 
@@ -123,6 +126,9 @@ import { IndividualSessionComponent } from './components/batch-upload-modal/indi
         ProteinInfoPanelComponent,
         BatchUploadModalComponent,
         IndividualSessionComponent,
+        StateSaveDialogComponent,
+        StatePreviewComponent,
+        SelectiveImportDialogComponent,
     ],
     bootstrap: [AppComponent], imports: [BrowserModule,
         AppRoutingModule,

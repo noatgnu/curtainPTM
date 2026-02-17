@@ -1,0 +1,72 @@
+<div class="modal-header">
+  <h5 class="modal-title">
+    <i class="bi bi-upload me-2"></i>Import State
+  </h5>
+  <button type="button" class="btn-close" (click)="cancel()"></button>
+</div>
+<div class="modal-body">
+  @if (parseError) {
+    <div class="alert alert-danger">
+      <i class="bi bi-exclamation-triangle me-2"></i>{{parseError}}
+    </div>
+  } @else if (parsedState) {
+    @if (isOldFormat) {
+      <div class="alert alert-info">
+        <i class="bi bi-info-circle me-2"></i>This file uses an older format and will be upgraded automatically.
+      </div>
+    }
+
+    <div class="card mb-3">
+      <div class="card-body">
+        <h6 class="card-title">{{parsedState.name || 'Unnamed State'}}</h6>
+        @if (parsedState.currentID) {
+          <p class="card-text small text-muted mb-1">Session: {{parsedState.currentID}}</p>
+        }
+        <p class="card-text small text-muted mb-1">
+          <i class="bi bi-calendar3 me-1"></i>{{formatDate(parsedState.date)}}
+        </p>
+        @if (parsedState.description) {
+          <p class="card-text small">{{parsedState.description}}</p>
+        }
+        @if (parsedState.tags && parsedState.tags.length > 0) {
+          <div>
+            @for (tag of parsedState.tags; track tag) {
+              <span class="badge bg-secondary me-1">{{tag}}</span>
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Select categories to import:</label>
+      <div class="list-group list-group-flush">
+        @for (cat of categories; track cat.key) {
+          <label class="list-group-item d-flex align-items-center" [class.text-muted]="!getCategoryHasData(cat)">
+            <input type="checkbox" class="form-check-input me-2" [(ngModel)]="selectedCategories[cat.key]" [disabled]="!getCategoryHasData(cat)">
+            <div class="flex-grow-1">
+              <div class="fw-semibold">{{cat.label}}</div>
+              <small class="text-muted">{{cat.description}}</small>
+            </div>
+            @if (getCategoryHasData(cat)) {
+              <span class="badge bg-success">Has data</span>
+            } @else {
+              <span class="badge bg-secondary">Empty</span>
+            }
+          </label>
+        }
+      </div>
+    </div>
+  }
+</div>
+<div class="modal-footer">
+  <button class="btn btn-secondary" (click)="cancel()">Cancel</button>
+  @if (parsedState) {
+    <button class="btn btn-outline-primary" (click)="importSelected()" [disabled]="getSelectedCategoryKeys().length === 0">
+      <i class="bi bi-check2-square me-1"></i>Import Selected
+    </button>
+    <button class="btn btn-primary" (click)="importAll()">
+      <i class="bi bi-box-arrow-in-down me-1"></i>Import All
+    </button>
+  }
+</div>

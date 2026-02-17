@@ -69,11 +69,14 @@ export class InteractiveNetworkComponent implements AfterViewInit, OnDestroy {
 
   private readonly DEFAULT_SVG_WIDTH = 450;
   private readonly DEFAULT_SVG_HEIGHT = 450;
+  private readonly KEYBOARD_MOVE_STEP = 10;
   private svgWidth = this.DEFAULT_SVG_WIDTH;
   private svgHeight = this.DEFAULT_SVG_HEIGHT;
   private svgMetainfoNodes: { [key: string]: InteractiveSVGNode } = {};
   private networkPositionsDirty = false;
   private destroy$ = new Subject<void>();
+  private focusedNodeIndex = -1;
+  private nodeIds: string[] = [];
 
   ngAfterViewInit(): void {
     if (this.svgContent && this.networkContainer) {
@@ -92,17 +95,24 @@ export class InteractiveNetworkComponent implements AfterViewInit, OnDestroy {
     const containerElement = this.networkContainer.nativeElement;
     containerElement.innerHTML = this.svgContent;
 
+    this.addLiveRegion(containerElement);
+
     const networkDocument = containerElement.ownerDocument;
     if (!networkDocument) return;
 
     const svgElement = containerElement.querySelector('#svg_network_image') as SVGElement;
     if (!svgElement) return;
 
+    svgElement.setAttribute('role', 'img');
+    svgElement.setAttribute('aria-label', 'Protein interaction network diagram');
+
     const rect = svgElement.getBoundingClientRect();
     this.svgWidth = rect.width || this.DEFAULT_SVG_WIDTH;
     this.svgHeight = rect.height || this.DEFAULT_SVG_HEIGHT;
 
     this.svgMetainfoNodes = {};
+    this.nodeIds = [];
+    this.focusedNodeIndex = -1;
 
     const nodeWrappers = containerElement.querySelectorAll('.nwnodecontainer');
     nodeWrappers.forEach((elm: any) => {
@@ -148,7 +158,12 @@ export class InteractiveNetworkComponent implements AfterViewInit, OnDestroy {
       node.iy = node.y;
 
       this.svgMetainfoNodes[nodeId] = node;
+      this.nodeIds.push(nodeId);
       elm.node = node;
+
+      elm.setAttribute('role', 'button');
+      elm.setAttribute('aria-label', `Protein node: ${node.preferredName}. Click to view details or use arrow keys to move.`);
+      elm.setAttribute('aria-selected', 'false');
 
       this.setupNodeDragging(elm);
       elm.addEventListener('click', (e: MouseEvent) => this.handleNodeClick(e, elm));
@@ -337,6 +352,19 @@ export class InteractiveNetworkComponent implements AfterViewInit, OnDestroy {
     this.edgeClick.emit({ node1, node2, event });
   }
 
+  private addLiveRegion(container: HTMLElement): void {
+    let liveRegion = document.getElementById('network-live-region');
+    if (!liveRegion) {
+      liveRegion = document.createElement('div');
+      liveRegion.id = 'network-live-region';
+      liveRegion.setAttribute('role', 'status');
+      liveRegion.setAttribute('aria-live', 'polite');
+      liveRegion.setAttribute('aria-atomic', 'true');
+      liveRegion.className = 'visually-hidden';
+      container.appendChild(liveRegion);
+    }
+  }
+
   private emitPositions(): void {
     const positions: { [nodeId: string]: { x: number; y: number } } = {};
 
@@ -358,5 +386,128 @@ export class InteractiveNetworkComponent implements AfterViewInit, OnDestroy {
     }
 
     return positions;
+  }
+
+  handleKeyDown(event: KeyboardEvent): void {
+    if (this.nodeIds.length === 0) return;
+
+    switch (event.key) {
+      case 'Tab':
+        event.preventDefault();
+        if (event.shiftKey) {
+          this.focusPreviousNode();
+        } else {
+          this.focusNextNode();
+        }
+        break;
+      case 'Enter':
+      case ' ':
+        event.preventDefault();
+        this.activateFocusedNode(event);
+        break;
+      case 'ArrowUp':
+        event.preventDefault();
+        this.moveNodeByKeyboard(0, -this.KEYBOARD_MOVE_STEP);
+        break;
+      case 'ArrowDown':
+        event.preventDefault();
+        this.moveNodeByKeyboard(0, this.KEYBOARD_MOVE_STEP);
+        break;
+      case 'ArrowLeft':
+        event.preventDefault();
+        this.moveNodeByKeyboard(-this.KEYBOARD_MOVE_STEP, 0);
+        break;
+      case 'ArrowRight':
+        event.preventDefault();
+        this.moveNodeByKeyboard(this.KEYBOARD_MOVE_STEP, 0);
+        break;
+      case 'Escape':
+        this.clearNodeFocus();
+        break;
+    }
+  }
+
+  private focusNextNode(): void {
+    if (this.nodeIds.length === 0) return;
+    this.focusedNodeIndex = (this.focusedNodeIndex + 1) % this.nodeIds.length;
+    this.updateNodeFocusVisual();
+    this.announceNode();
+  }
+
+  private focusPreviousNode(): void {
+    if (this.nodeIds.length === 0) return;
+    this.focusedNodeIndex = this.focusedNodeIndex <= 0
+      ? this.nodeIds.length - 1
+      : this.focusedNodeIndex - 1;
+    this.updateNodeFocusVisual();
+    this.announceNode();
+  }
+
+  private updateNodeFocusVisual(): void {
+    const containerElement = this.networkContainer?.nativeElement;
+    if (!containerElement) return;
+
+    containerElement.querySelectorAll('.nwnodecontainer').forEach((elm: Element) => {
+      elm.classList.remove('keyboard-focused');
+      elm.setAttribute('aria-selected', 'false');
+    });
+
+    if (this.focusedNodeIndex >= 0 && this.focusedNodeIndex < this.nodeIds.length) {
+      const focusedNodeId = this.nodeIds[this.focusedNodeIndex];
+      const focusedNode = this.svgMetainfoNodes[focusedNodeId];
+      if (focusedNode?.elm) {
+        focusedNode.elm.classList.add('keyboard-focused');
+        focusedNode.elm.setAttribute('aria-selected', 'true');
+      }
+    }
+  }
+
+  private clearNodeFocus(): void {
+    this.focusedNodeIndex = -1;
+    this.updateNodeFocusVisual();
+  }
+
+  private activateFocusedNode(event: KeyboardEvent): void {
+    if (this.focusedNodeIndex < 0 || this.focusedNodeIndex >= this.nodeIds.length) return;
+
+    const nodeId = this.nodeIds[this.focusedNodeIndex];
+    const node = this.svgMetainfoNodes[nodeId];
+    if (!node) return;
+
+    const idFields = nodeId.split('.');
+    this.nodeClick.emit({
+      nodeId: idFields[1],
+      nodeName: node.preferredName,
+      event: event as unknown as MouseEvent
+    });
+  }
+
+  private moveNodeByKeyboard(deltaX: number, deltaY: number): void {
+    if (this.focusedNodeIndex < 0 || this.focusedNodeIndex >= this.nodeIds.length) return;
+
+    const nodeId = this.nodeIds[this.focusedNodeIndex];
+    const node = this.svgMetainfoNodes[nodeId];
+    if (!node || !node.elm) return;
+
+    node.x = Math.max(node.radius / 2, Math.min(this.svgWidth - node.radius / 2, node.x + deltaX));
+    node.y = Math.max(node.radius / 2, Math.min(this.svgHeight - node.radius / 2, node.y + deltaY));
+
+    node.elm.setAttribute('transform', `translate(${node.x - node.ix},${node.y - node.iy})`);
+    this.updateNodeLinks(node);
+    this.networkPositionsDirty = true;
+    this.emitPositions();
+  }
+
+  private announceNode(): void {
+    if (this.focusedNodeIndex < 0 || this.focusedNodeIndex >= this.nodeIds.length) return;
+
+    const nodeId = this.nodeIds[this.focusedNodeIndex];
+    const node = this.svgMetainfoNodes[nodeId];
+    if (!node) return;
+
+    const announcement = document.getElementById('network-live-region');
+    if (announcement) {
+      announcement.textContent = `${node.preferredName}, node ${this.focusedNodeIndex + 1} of ${this.nodeIds.length}`;
+    }
   }
 }
