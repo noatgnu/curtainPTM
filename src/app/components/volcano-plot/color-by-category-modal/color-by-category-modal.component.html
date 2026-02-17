@@ -1,13 +1,13 @@
 <div class="modal-header">
-  <h5 class="modal-title">Assign Colors by Category</h5>
-  <button type="button" class="btn-close" aria-label="Close" (click)="close()"></button>
+  <h5 class="modal-title" id="color-category-modal-title">Assign Colors by Category</h5>
+  <button type="button" class="btn-close" aria-label="Close color assignment dialog" (click)="close()"></button>
 </div>
-<div class="modal-body">
+<div class="modal-body" aria-labelledby="color-category-modal-title">
   @if (data) {
-    <form [formGroup]="form">
+    <form [formGroup]="form" aria-label="Category column selection">
       <div class="mb-3">
-        <label class="form-label">Select column with categorical values</label>
-        <select class="form-select" formControlName="selectedColumn">
+        <label class="form-label" for="category-column">Select column with categorical values</label>
+        <select class="form-select" formControlName="selectedColumn" id="category-column">
           <option value="" disabled>Choose a column...</option>
           @for (o of data.getColumnNames(); track o) {
             <option [value]="o">{{o}}</option>
@@ -19,34 +19,37 @@
 
   @if (categories.length > 0) {
     <div class="d-flex justify-content-between align-items-center mb-3">
-      <span class="text-muted">{{categories.length}} unique categories found</span>
-      <div class="btn-group btn-group-sm">
-        <button type="button" class="btn btn-outline-secondary" (click)="assignSequentialColors()">
+      <span class="text-muted" aria-live="polite">{{categories.length}} unique categories found</span>
+      <div class="btn-group btn-group-sm" role="group" aria-label="Color assignment actions">
+        <button type="button" class="btn btn-outline-secondary" (click)="assignSequentialColors()" aria-label="Reset colors to sequential palette">
           Reset Colors
         </button>
-        <button type="button" class="btn btn-outline-secondary" (click)="assignRandomColors()">
+        <button type="button" class="btn btn-outline-secondary" (click)="assignRandomColors()" aria-label="Assign random colors to categories">
           Random Colors
         </button>
       </div>
     </div>
 
-    <div class="category-list">
-      @for (cat of categories; track cat.value) {
-        <div class="card mb-2">
+    <div class="category-list" role="list" aria-label="Category color assignments">
+      @for (cat of categories; track cat.value; let i = $index) {
+        <div class="card mb-2" role="listitem">
           <div class="card-body p-2">
             <div class="d-flex align-items-center gap-2">
+              <label [for]="'cat-color-' + i" class="visually-hidden">Color for {{cat.value}}</label>
               <input
                 type="text"
                 class="form-control form-control-sm color-input"
+                [id]="'cat-color-' + i"
                 [(ngModel)]="cat.color"
                 [(colorPicker)]="cat.color"
-                [style.background-color]="cat.color">
+                [style.background-color]="cat.color"
+                [attr.aria-label]="'Color picker for ' + cat.value">
               <div class="flex-grow-1">
                 <div class="fw-medium">{{cat.value}}</div>
                 <small class="text-muted">{{cat.count}} items</small>
               </div>
-              <button type="button" class="btn btn-sm btn-outline-danger" (click)="removeCategory(cat)">
-                <i class="bi bi-x"></i>
+              <button type="button" class="btn btn-sm btn-outline-danger" (click)="removeCategory(cat)" [attr.aria-label]="'Remove category ' + cat.value">
+                <i class="bi bi-x" aria-hidden="true"></i>
               </button>
             </div>
           </div>
@@ -54,12 +57,12 @@
       }
     </div>
   } @else if (selectedColumn) {
-    <div class="alert alert-info">
+    <div class="alert alert-info" role="status">
       No categories found in the selected column.
     </div>
   }
 </div>
 <div class="modal-footer">
-  <button type="button" class="btn btn-secondary" (click)="close()">Cancel</button>
-  <button type="button" class="btn btn-primary" (click)="submit()" [disabled]="categories.length === 0">Apply</button>
+  <button type="button" class="btn btn-secondary" (click)="close()" aria-label="Cancel and close dialog">Cancel</button>
+  <button type="button" class="btn btn-primary" (click)="submit()" [disabled]="categories.length === 0" aria-label="Apply color assignments">Apply</button>
 </div>

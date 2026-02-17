@@ -1,15 +1,16 @@
 <div class="modal-header">
-  <h5 class="modal-title">Batch Session Creation</h5>
+  <h5 class="modal-title" id="batch-upload-title">Batch Session Creation</h5>
+  <button type="button" class="btn-close" aria-label="Close batch session dialog" (click)="close()"></button>
 </div>
-<div class="modal-body">
-  <div class="d-flex gap-2 flex-wrap">
-    <button class="btn btn-primary" (click)="differentialAnalysisFiles.click()">Select Differential Analysis Files @if (differentialFiles.length > 0) {({{differentialFiles.length}} selected)}</button>
-    <button class="btn btn-primary" (click)="rFiles.click()">Select Raw Files @if (rawFiles.length >0) {({{rawFiles.length}} selected)}</button>
+<div class="modal-body" aria-labelledby="batch-upload-title">
+  <div class="d-flex gap-2 flex-wrap" role="group" aria-label="File selection buttons">
+    <button class="btn btn-primary" (click)="differentialAnalysisFiles.click()" aria-label="Select differential analysis files, {{differentialFiles.length}} currently selected">Select Differential Analysis Files @if (differentialFiles.length > 0) {({{differentialFiles.length}} selected)}</button>
+    <button class="btn btn-primary" (click)="rFiles.click()" aria-label="Select raw files, {{rawFiles.length}} currently selected">Select Raw Files @if (rawFiles.length >0) {({{rawFiles.length}} selected)}</button>
   </div>
-  <input type="file" hidden (change)="handleDifferentialAnalysisFiles($event)" #differentialAnalysisFiles multiple>
-  <input type="file" hidden (change)="handleRawFiles($event)" #rFiles multiple>
+  <input type="file" hidden (change)="handleDifferentialAnalysisFiles($event)" #differentialAnalysisFiles multiple aria-label="Differential analysis file input">
+  <input type="file" hidden (change)="handleRawFiles($event)" #rFiles multiple aria-label="Raw file input">
 
-  <button class="btn btn-primary mt-2" (click)="addSession()">+ Session</button>
+  <button class="btn btn-primary mt-2" (click)="addSession()" aria-label="Add new session">+ Session</button>
   @if (sessions.length > 0) {
     <ul ngbNav #nav="ngbNav" class="nav-tabs" [destroyOnHide]="false">
       @for (s of sessions; track s; let index = $index) {
@@ -17,21 +18,21 @@
           <button ngbNavLink>Session #{{index+1}}</button>
           <ng-template ngbNavContent>
             <h5 [ngClass]="{'text-success': s.linkId !== undefined && s.linkId !== null && s.linkId !== ''}">Session #{{index+1}} of {{sessions.length}}</h5>
-            <div class="d-flex gap-2">
-              <button class="btn btn-sm btn-outline-primary" ngbTooltip="Clone Session" (click)="cloneSession(index)">
-                <i class="bi bi-copy"></i>
+            <div class="d-flex gap-2" role="group" aria-label="Session actions">
+              <button class="btn btn-sm btn-outline-primary" ngbTooltip="Clone Session" (click)="cloneSession(index)" aria-label="Clone session {{index + 1}}">
+                <i class="bi bi-copy" aria-hidden="true"></i>
               </button>
-              <button class="btn btn-sm btn-outline-danger" ngbTooltip="Delete Session From Workflow" (click)="deleteSession(index)">
-                <i class="bi bi-trash"></i>
+              <button class="btn btn-sm btn-outline-danger" ngbTooltip="Delete Session From Workflow" (click)="deleteSession(index)" aria-label="Delete session {{index + 1}}">
+                <i class="bi bi-trash" aria-hidden="true"></i>
               </button>
-              <button class="btn btn-sm btn-outline-info" ngbTooltip="Export Settings Template" (click)="exportSettingsButFiles(index)">
-                <i class="bi bi-download"></i>
+              <button class="btn btn-sm btn-outline-info" ngbTooltip="Export Settings Template" (click)="exportSettingsButFiles(index)" aria-label="Export settings template for session {{index + 1}}">
+                <i class="bi bi-download" aria-hidden="true"></i>
               </button>
-              <button class="btn btn-sm btn-outline-info" ngbTooltip="Import Settings Template" (click)="templateFile.click()">
-                <i class="bi bi-upload"></i>
+              <button class="btn btn-sm btn-outline-info" ngbTooltip="Import Settings Template" (click)="templateFile.click()" aria-label="Import settings template for session {{index + 1}}">
+                <i class="bi bi-upload" aria-hidden="true"></i>
               </button>
             </div>
-            <input type="file" hidden (change)="importSettingsButFiles($event, index)" #templateFile>
+            <input type="file" hidden (change)="importSettingsButFiles($event, index)" #templateFile aria-label="Settings template file input">
             @if (s.linkId) {
               <div class="alert alert-link">
                 <a href="{{s.linkId}}" target="_blank">{{s.linkId}}</a>
@@ -47,9 +48,9 @@
 </div>
 <div class="modal-footer">
   @if (allTasksFinished) {
-    <button class="btn btn-success" (click)="downloadLinkDocument()">Download Link Documents</button>
-    <button class="btn btn-secondary" (click)="openAllLinks()">Open All Links</button>
+    <button class="btn btn-success" (click)="downloadLinkDocument()" aria-label="Download link documents">Download Link Documents</button>
+    <button class="btn btn-secondary" (click)="openAllLinks()" aria-label="Open all session links in new tabs">Open All Links</button>
   }
-  <button class="btn btn-primary" (click)="submit()">Create Batch Session</button>
-  <button class="btn btn-secondary" (click)="close()">Close</button>
+  <button class="btn btn-primary" (click)="submit()" aria-label="Create batch session">Create Batch Session</button>
+  <button class="btn btn-secondary" (click)="close()" aria-label="Close dialog">Close</button>
 </div>

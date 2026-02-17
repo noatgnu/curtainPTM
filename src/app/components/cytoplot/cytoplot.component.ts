@@ -193,4 +193,57 @@ export class CytoplotComponent implements OnInit, AfterViewInit, OnDestroy {
   saveJSON() {
     return this.cy.elements().jsons()
   }
+
+  handleKeyboardNavigation(event: KeyboardEvent): void {
+    if (!this.cy) return
+
+    const panAmount = 50
+    const zoomFactor = 1.1
+
+    switch (event.key) {
+      case 'ArrowUp':
+        event.preventDefault()
+        this.cy.panBy({x: 0, y: panAmount})
+        break
+      case 'ArrowDown':
+        event.preventDefault()
+        this.cy.panBy({x: 0, y: -panAmount})
+        break
+      case 'ArrowLeft':
+        event.preventDefault()
+        this.cy.panBy({x: panAmount, y: 0})
+        break
+      case 'ArrowRight':
+        event.preventDefault()
+        this.cy.panBy({x: -panAmount, y: 0})
+        break
+      case '+':
+      case '=':
+        event.preventDefault()
+        this.cy.zoom(this.cy.zoom() * zoomFactor)
+        break
+      case '-':
+        event.preventDefault()
+        this.cy.zoom(this.cy.zoom() / zoomFactor)
+        break
+      case 'Home':
+        event.preventDefault()
+        this.cy.fit()
+        this.announceStatus('Graph view reset to fit all elements')
+        break
+      case '0':
+        event.preventDefault()
+        this.cy.zoom(1)
+        this.cy.center()
+        this.announceStatus('Graph view reset to default zoom')
+        break
+    }
+  }
+
+  private announceStatus(message: string): void {
+    const statusEl = document.getElementById(this.componentID + '-status')
+    if (statusEl) {
+      statusEl.textContent = message
+    }
+  }
 }

@@ -1,24 +1,25 @@
 <div class="modal-header">
-  QR Code
+  <h5 class="modal-title" id="qrcode-modal-title">QR Code</h5>
+  <button type="button" class="btn-close" aria-label="Close QR code dialog" (click)="close()"></button>
 </div>
-<div class="modal-body">
-  <div class="d-flex justify-content-center">
+<div class="modal-body" aria-labelledby="qrcode-modal-title">
+  <div class="d-flex justify-content-center" role="img" aria-label="QR code for sharing session link">
     <!--    @if (config.data !== '') {
       <ngx-qrcode-styling [config]="config"></ngx-qrcode-styling>
     }-->
     <div id="canvas"></div>
   </div>
 
-  <div class="alert alert-info">
+  <div class="alert alert-info" role="status">
     <p class="mt-3">Scan the QR code to open the link on your mobile device.</p>
   </div>
 
-  <div class="alert alert-warning">
+  <div class="alert alert-warning" role="status">
     <p>Mobile devices with low total system RAM or low amount of allocatable RAM
-      for web process (iOS) might have problem with loading a large dataset in Curtain</p>
+      for web process (iOS) might have problem with loading a large dataset in CurtainPTM</p>
   </div>
 </div>
 <div class="modal-footer">
-  <button type="button" class="btn btn-secondary" (click)="close()">Close</button>
-  <button type="button" class="btn btn-primary" (click)="download()">Download</button>
+  <button type="button" class="btn btn-secondary" (click)="close()" aria-label="Close dialog">Close</button>
+  <button type="button" class="btn btn-primary" (click)="download()" aria-label="Download QR code as image">Download</button>
 </div>

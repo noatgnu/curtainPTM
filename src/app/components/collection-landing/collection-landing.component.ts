@@ -28,6 +28,12 @@ export class CollectionLandingComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.initializeAndLoad();
+  }
+
+  private async initializeAndLoad(): Promise<void> {
+    await this.accounts.curtainAPI.user.loadFromDB();
+
     this.route.params.subscribe(params => {
       const id = params['id'];
       if (id) {

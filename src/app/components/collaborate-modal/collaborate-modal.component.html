@@ -1,5 +1,6 @@
 <div class="modal-header">
   <h5 class="modal-title">Collaborate settings</h5>
+  <button type="button" class="btn-close" aria-label="Close" (click)="cancel()"></button>
 </div>
 <div class="modal-body">
   <div class="alert alert-info">
@@ -8,17 +9,27 @@
     </p>
   </div>
   <form [formGroup]="form">
-    <div class="form-group">
+    <div class="form-group mb-3">
       <label for="sessionID">
         Session ID
       </label>
-      <input class="form-control" formControlName="sessionID" id="sessionID">
+      <input
+        class="form-control"
+        formControlName="sessionID"
+        id="sessionID"
+        aria-describedby="sessionID-hint">
+      <small id="sessionID-hint" class="visually-hidden">Unique identifier for this collaborative session</small>
     </div>
-    <div class="form-group">
+    <div class="form-group mb-3">
       <label for="displayName">
         Display name
       </label>
-      <input class="form-control" formControlName="displayName" id="displayName">
+      <input
+        class="form-control"
+        formControlName="displayName"
+        id="displayName"
+        aria-describedby="displayName-hint">
+      <small id="displayName-hint" class="visually-hidden">Your name as it will appear to other collaborators</small>
     </div>
   </form>
   <div class="d-flex">
@@ -28,7 +39,13 @@
       </p>
     </div>
     <div class="p-2">
-      <span class="badge bg-info" (click)="copyToClipboard(collaborateLink)"><i class="bi bi-clipboard"></i></span>
+      <button
+        type="button"
+        class="btn btn-sm btn-info"
+        (click)="copyToClipboard(collaborateLink)"
+        aria-label="Copy collaborative session link to clipboard">
+        <i class="bi bi-clipboard" aria-hidden="true"></i>
+      </button>
     </div>
   </div>
 

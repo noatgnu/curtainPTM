@@ -1,11 +1,12 @@
 <div class="modal-header">
-  <h5 class="modal-title">Log Files</h5>
+  <h5 class="modal-title" id="log-file-modal-title">Log Files</h5>
+  <button type="button" class="btn-close" aria-label="Close log files dialog" (click)="close()"></button>
 </div>
-<div class="modal-body d-flex flex-column gap-2">
+<div class="modal-body d-flex flex-column gap-2" aria-labelledby="log-file-modal-title">
   <div class="d-flex gap-2">
-    <button class="btn btn-primary" (click)="logFileAdd.click()">+ Log File</button>
+    <button class="btn btn-primary" (click)="logFileAdd.click()" aria-label="Add a new log file">+ Log File</button>
   </div>
-  <input hidden type="file" id="file" #logFileAdd (change)="handleAddLogFile($event)">
+  <input hidden type="file" id="file" #logFileAdd (change)="handleAddLogFile($event)" aria-label="Log file input">
   @if (settings.settings.extraData.length > 0) {
     <div class="form-group">
       <label for="selectLogFile">Select File</label>
@@ -36,17 +37,17 @@
       <h5>{{settings.settings.extraData[selectedLogFile()].name}}</h5>
       <p>{{settings.settings.extraData[selectedLogFile()].content}}</p>
     </div>
-    <div class="d-flex gap-2">
-      <button class="btn btn-sm btn-danger" (click)="removeLogFile(selectedLogFile())">
-        <i class="bi bi-trash"></i>
+    <div class="d-flex gap-2" role="group" aria-label="File actions">
+      <button class="btn btn-sm btn-danger" (click)="removeLogFile(selectedLogFile())" aria-label="Remove selected log file">
+        <i class="bi bi-trash" aria-hidden="true"></i>
       </button>
-      <button class="btn btn-sm btn-primary" (click)="downloadLogFile(selectedLogFile())">
-        <i class="bi bi-download"></i>
+      <button class="btn btn-sm btn-primary" (click)="downloadLogFile(selectedLogFile())" aria-label="Download selected log file">
+        <i class="bi bi-download" aria-hidden="true"></i>
       </button>
     </div>
   }
 </div>
 <div class="modal-footer">
-  <button type="button" class="btn btn-secondary" (click)="close()">Close</button>
+  <button type="button" class="btn btn-secondary" (click)="close()" aria-label="Close dialog">Close</button>
 </div>
 

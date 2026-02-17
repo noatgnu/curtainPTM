@@ -13,7 +13,7 @@
     </div>
   }
 
-  <form [formGroup]="form" (ngSubmit)="login()">
+  <form [formGroup]="form" (ngSubmit)="login()" [attr.aria-busy]="isLoading">
     <div class="mb-3">
       <label for="username" class="form-label fw-semibold">
         <i class="bi bi-person me-1"></i>Username
@@ -26,10 +26,12 @@
         placeholder="Enter your username"
         [class.is-invalid]="form.get('username')?.touched && form.get('username')?.invalid"
         [disabled]="isLoading"
-        autocomplete="username">
+        autocomplete="username"
+        aria-describedby="username-error"
+        [attr.aria-invalid]="form.get('username')?.touched && form.get('username')?.invalid">
       @if (form.get('username')?.touched && form.get('username')?.invalid) {
-        <div class="invalid-feedback">
-          <i class="bi bi-exclamation-circle me-1"></i>Username is required
+        <div id="username-error" class="invalid-feedback" role="alert">
+          <i class="bi bi-exclamation-circle me-1" aria-hidden="true"></i>Username is required
         </div>
       }
     </div>
@@ -47,19 +49,23 @@
           placeholder="Enter your password"
           [class.is-invalid]="form.get('password')?.touched && form.get('password')?.invalid"
           [disabled]="isLoading"
-          autocomplete="current-password">
+          autocomplete="current-password"
+          aria-describedby="password-error"
+          [attr.aria-invalid]="form.get('password')?.touched && form.get('password')?.invalid">
         <button
           type="button"
           class="btn btn-link position-absolute end-0 top-50 translate-middle-y text-muted password-toggle"
           (click)="togglePasswordVisibility()"
           [disabled]="isLoading"
-          tabindex="-1">
-          <i class="bi" [class.bi-eye]="!showPassword" [class.bi-eye-slash]="showPassword"></i>
+          tabindex="-1"
+          [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
+          [attr.aria-pressed]="showPassword">
+          <i class="bi" [class.bi-eye]="!showPassword" [class.bi-eye-slash]="showPassword" aria-hidden="true"></i>
         </button>
       </div>
       @if (form.get('password')?.touched && form.get('password')?.invalid) {
-        <div class="invalid-feedback d-block">
-          <i class="bi bi-exclamation-circle me-1"></i>Password is required
+        <div id="password-error" class="invalid-feedback d-block" role="alert">
+          <i class="bi bi-exclamation-circle me-1" aria-hidden="true"></i>Password is required
         </div>
       }
     </div>

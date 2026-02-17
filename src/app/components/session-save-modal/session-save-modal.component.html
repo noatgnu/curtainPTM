@@ -2,7 +2,7 @@
   <h4 class="modal-title">
     <i class="bi bi-save me-2"></i>Save Session
   </h4>
-  <button type="button" class="btn-close" (click)="cancel()"></button>
+  <button type="button" class="btn-close" aria-label="Close" (click)="cancel()"></button>
 </div>
 
 <div class="modal-body">
@@ -15,8 +15,9 @@
       id="sessionName"
       class="form-control"
       [(ngModel)]="sessionName"
-      placeholder="Enter a name for this session (optional)">
-    <div class="form-text">
+      placeholder="Enter a name for this session (optional)"
+      aria-describedby="sessionName-hint">
+    <div id="sessionName-hint" class="form-text">
       Give your session a descriptive name to easily find it later.
     </div>
   </div>
@@ -45,14 +46,15 @@
       <select
         id="expiryDuration"
         class="form-select"
-        [(ngModel)]="expiryDuration">
+        [(ngModel)]="expiryDuration"
+        aria-describedby="expiryDuration-hint">
         @for (option of siteProperties.expiry_duration_options; track option) {
           <option [value]="option">
             {{option}} {{option === 1 ? 'month' : 'months'}}
           </option>
         }
       </select>
-      <div class="form-text">
+      <div id="expiryDuration-hint" class="form-text">
         Session will automatically expire after the selected duration.
       </div>
     </div>

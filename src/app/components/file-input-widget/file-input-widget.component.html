@@ -1,4 +1,13 @@
 <div class="input-group mb-3">
-  <input type="file" class="form-control" id="{{fileType.replace(' ', '')}}" (change)="handleFile($event)">
-  <label class="input-group-text" for="{{fileType.replace(' ', '')}}">{{fileType}}</label>
+  <label class="input-group-text" [for]="inputId">{{fileType}}</label>
+  <input
+    type="file"
+    class="form-control"
+    [id]="inputId"
+    [attr.aria-describedby]="inputId + '-hint'"
+    accept=".csv,.tsv,.txt"
+    (change)="handleFile($event)">
+  <span [id]="inputId + '-hint'" class="visually-hidden">
+    Accepted formats: CSV, TSV, or TXT files
+  </span>
 </div>

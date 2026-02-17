@@ -11,19 +11,29 @@
   <div class="row align-items-center">
     <div class="col-auto">
       <div class="input-group input-group-sm">
-        <span class="input-group-text"><i class="bi bi-search"></i></span>
-        <input type="text" class="form-control" placeholder="Filter by UID or position..."
-               [(ngModel)]="filterText" (ngModelChange)="onFilterChange()">
+        <span class="input-group-text" id="filter-addon"><i class="bi bi-search" aria-hidden="true"></i></span>
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Filter by UID or position..."
+          [(ngModel)]="filterText"
+          (ngModelChange)="onFilterChange()"
+          aria-label="Filter by UID or position"
+          aria-describedby="filter-addon">
         @if (filterText) {
-          <button class="btn btn-outline-secondary" type="button" (click)="filterText = ''; onFilterChange()">
-            <i class="bi bi-x"></i>
+          <button
+            class="btn btn-outline-secondary"
+            type="button"
+            (click)="filterText = ''; onFilterChange()"
+            aria-label="Clear filter">
+            <i class="bi bi-x" aria-hidden="true"></i>
           </button>
         }
       </div>
     </div>
     <div class="col-auto">
-      <button class="btn btn-sm btn-outline-primary" (click)="downloadCSV()" ngbTooltip="Export to CSV">
-        <i class="bi bi-download me-1"></i>CSV
+      <button class="btn btn-sm btn-outline-primary" (click)="downloadCSV()" ngbTooltip="Export to CSV" aria-label="Export data to CSV">
+        <i class="bi bi-download me-1" aria-hidden="true"></i>CSV
       </button>
     </div>
     <div class="col-auto ms-auto">
@@ -35,8 +45,8 @@
 </div>
 
 @if (totalItems === 0 && !isLoading) {
-  <div class="empty-state">
-    <i class="bi bi-inbox"></i>
+  <div class="empty-state" role="status">
+    <i class="bi bi-inbox" aria-hidden="true"></i>
     <p>No data available</p>
     @if (filterText) {
       <small class="text-muted">Try adjusting your filter</small>
@@ -47,43 +57,55 @@
     <table class="table table-hover table-sm raw-data-table">
       <thead class="sticky-header">
         <tr>
-          <th scope="col" class="sortable" (click)="sortBy('primaryID')">
-            UID
-            @if (sortColumn === 'primaryID') {
-              <i class="bi" [ngClass]="sortDirection === 'asc' ? 'bi-sort-up' : 'bi-sort-down'"></i>
-            }
+          <th scope="col" class="sortable" (click)="sortBy('primaryID')" role="columnheader" [attr.aria-sort]="sortColumn === 'primaryID' ? (sortDirection === 'asc' ? 'ascending' : 'descending') : 'none'">
+            <button type="button" class="btn btn-link p-0 text-decoration-none text-reset" aria-label="Sort by UID">
+              UID
+              @if (sortColumn === 'primaryID') {
+                <i class="bi" [ngClass]="sortDirection === 'asc' ? 'bi-sort-up' : 'bi-sort-down'" aria-hidden="true"></i>
+              }
+            </button>
           </th>
-          <th scope="col" class="sortable" (click)="sortBy('residue')">
-            Residue
-            @if (sortColumn === 'residue') {
-              <i class="bi" [ngClass]="sortDirection === 'asc' ? 'bi-sort-up' : 'bi-sort-down'"></i>
-            }
+          <th scope="col" class="sortable" (click)="sortBy('residue')" role="columnheader" [attr.aria-sort]="sortColumn === 'residue' ? (sortDirection === 'asc' ? 'ascending' : 'descending') : 'none'">
+            <button type="button" class="btn btn-link p-0 text-decoration-none text-reset" aria-label="Sort by Residue">
+              Residue
+              @if (sortColumn === 'residue') {
+                <i class="bi" [ngClass]="sortDirection === 'asc' ? 'bi-sort-up' : 'bi-sort-down'" aria-hidden="true"></i>
+              }
+            </button>
           </th>
-          <th scope="col" class="sortable" (click)="sortBy('position')">
-            Position
-            @if (sortColumn === 'position') {
-              <i class="bi" [ngClass]="sortDirection === 'asc' ? 'bi-sort-up' : 'bi-sort-down'"></i>
-            }
+          <th scope="col" class="sortable" (click)="sortBy('position')" role="columnheader" [attr.aria-sort]="sortColumn === 'position' ? (sortDirection === 'asc' ? 'ascending' : 'descending') : 'none'">
+            <button type="button" class="btn btn-link p-0 text-decoration-none text-reset" aria-label="Sort by Position">
+              Position
+              @if (sortColumn === 'position') {
+                <i class="bi" [ngClass]="sortDirection === 'asc' ? 'bi-sort-up' : 'bi-sort-down'" aria-hidden="true"></i>
+              }
+            </button>
           </th>
-          <th scope="col" class="sortable" (click)="sortBy('foldChange')">
-            Log2 FC
-            @if (sortColumn === 'foldChange') {
-              <i class="bi" [ngClass]="sortDirection === 'asc' ? 'bi-sort-up' : 'bi-sort-down'"></i>
-            }
+          <th scope="col" class="sortable" (click)="sortBy('foldChange')" role="columnheader" [attr.aria-sort]="sortColumn === 'foldChange' ? (sortDirection === 'asc' ? 'ascending' : 'descending') : 'none'">
+            <button type="button" class="btn btn-link p-0 text-decoration-none text-reset" aria-label="Sort by Log2 Fold Change">
+              Log2 FC
+              @if (sortColumn === 'foldChange') {
+                <i class="bi" [ngClass]="sortDirection === 'asc' ? 'bi-sort-up' : 'bi-sort-down'" aria-hidden="true"></i>
+              }
+            </button>
           </th>
-          <th scope="col" class="sortable" (click)="sortBy('significant')">
-            -log10(p)
-            @if (sortColumn === 'significant') {
-              <i class="bi" [ngClass]="sortDirection === 'asc' ? 'bi-sort-up' : 'bi-sort-down'"></i>
-            }
+          <th scope="col" class="sortable" (click)="sortBy('significant')" role="columnheader" [attr.aria-sort]="sortColumn === 'significant' ? (sortDirection === 'asc' ? 'ascending' : 'descending') : 'none'">
+            <button type="button" class="btn btn-link p-0 text-decoration-none text-reset" aria-label="Sort by negative log10 p-value">
+              -log10(p)
+              @if (sortColumn === 'significant') {
+                <i class="bi" [ngClass]="sortDirection === 'asc' ? 'bi-sort-up' : 'bi-sort-down'" aria-hidden="true"></i>
+              }
+            </button>
           </th>
           <th scope="col" class="sequence-col">Sequence Window</th>
           <th scope="col" class="peptide-col">Peptide Sequence</th>
-          <th scope="col" class="sortable" (click)="sortBy('score')">
-            Score
-            @if (sortColumn === 'score') {
-              <i class="bi" [ngClass]="sortDirection === 'asc' ? 'bi-sort-up' : 'bi-sort-down'"></i>
-            }
+          <th scope="col" class="sortable" (click)="sortBy('score')" role="columnheader" [attr.aria-sort]="sortColumn === 'score' ? (sortDirection === 'asc' ? 'ascending' : 'descending') : 'none'">
+            <button type="button" class="btn btn-link p-0 text-decoration-none text-reset" aria-label="Sort by Score">
+              Score
+              @if (sortColumn === 'score') {
+                <i class="bi" [ngClass]="sortDirection === 'asc' ? 'bi-sort-up' : 'bi-sort-down'" aria-hidden="true"></i>
+              }
+            </button>
           </th>
           <th scope="col" class="actions-col">Actions</th>
         </tr>
@@ -191,24 +213,30 @@
               {{d[dataService.differentialForm.score] | number:'1.2-4'}}
             </td>
             <td class="actions-col">
-              <div class="action-buttons">
+              <div class="action-buttons" role="group" aria-label="Row actions">
                 <button class="btn btn-xs"
                         [ngClass]="barChartState[d[dataService.differentialForm.primaryIDs]] ? 'btn-primary' : 'btn-outline-primary'"
                         (click)="viewBarChartToggle(d[dataService.differentialForm.primaryIDs])"
-                        ngbTooltip="Toggle bar chart">
-                  <i class="bi bi-bar-chart-fill"></i>
+                        ngbTooltip="Toggle bar chart"
+                        [attr.aria-label]="'Toggle bar chart for ' + d[dataService.differentialForm.primaryIDs]"
+                        [attr.aria-pressed]="barChartState[d[dataService.differentialForm.primaryIDs]]">
+                  <i class="bi bi-bar-chart-fill" aria-hidden="true"></i>
                 </button>
                 <button class="btn btn-xs"
                         [ngClass]="annotateMap[d[dataService.differentialForm.primaryIDs]] ? 'btn-warning' : 'btn-outline-warning'"
                         (click)="annotateMap[d[dataService.differentialForm.primaryIDs]] = !annotateMap[d[dataService.differentialForm.primaryIDs]]; annotate(d[dataService.differentialForm.primaryIDs])"
-                        ngbTooltip="Volcano plot annotation">
-                  <i class="bi bi-tag-fill"></i>
+                        ngbTooltip="Volcano plot annotation"
+                        [attr.aria-label]="'Toggle volcano plot annotation for ' + d[dataService.differentialForm.primaryIDs]"
+                        [attr.aria-pressed]="annotateMap[d[dataService.differentialForm.primaryIDs]]">
+                  <i class="bi bi-tag-fill" aria-hidden="true"></i>
                 </button>
                 <button class="btn btn-xs"
                         [ngClass]="profilePlotMap[d[dataService.differentialForm.primaryIDs]] ? 'btn-info' : 'btn-outline-info'"
                         (click)="profilePlotMap[d[dataService.differentialForm.primaryIDs]] = !profilePlotMap[d[dataService.differentialForm.primaryIDs]]; profilePlotToggle(d[dataService.differentialForm.primaryIDs])"
-                        ngbTooltip="Include in profile comparison">
-                  <i class="bi bi-graph-up"></i>
+                        ngbTooltip="Include in profile comparison"
+                        [attr.aria-label]="'Toggle profile comparison for ' + d[dataService.differentialForm.primaryIDs]"
+                        [attr.aria-pressed]="profilePlotMap[d[dataService.differentialForm.primaryIDs]]">
+                  <i class="bi bi-graph-up" aria-hidden="true"></i>
                 </button>
               </div>
             </td>
@@ -235,45 +263,81 @@
   </div>
 
   @if (totalPages > 1) {
-    <nav class="pagination-container mt-3">
+    <nav class="pagination-container mt-3" aria-label="Data table pagination">
       <div class="d-flex justify-content-between align-items-center">
         <div class="page-size-selector">
-          <label class="me-2">Show:</label>
-          <select class="form-select form-select-sm d-inline-block w-auto" [(ngModel)]="pageSize" (ngModelChange)="currentPage = 1">
+          <label for="pageSize" class="me-2">Show:</label>
+          <select
+            id="pageSize"
+            class="form-select form-select-sm d-inline-block w-auto"
+            [(ngModel)]="pageSize"
+            (ngModelChange)="currentPage = 1"
+            aria-label="Items per page">
             <option [value]="5">5</option>
             <option [value]="10">10</option>
             <option [value]="25">25</option>
             <option [value]="50">50</option>
           </select>
         </div>
-        <ul class="pagination pagination-sm mb-0">
+        <ul class="pagination pagination-sm mb-0" role="navigation" aria-label="Page navigation">
           <li class="page-item" [ngClass]="{'disabled': currentPage === 1}">
-            <a class="page-link" (click)="goToPage(1)" aria-label="First">
-              <i class="bi bi-chevron-double-left"></i>
-            </a>
+            <button
+              type="button"
+              class="page-link"
+              (click)="goToPage(1)"
+              aria-label="Go to first page"
+              [attr.aria-disabled]="currentPage === 1"
+              [disabled]="currentPage === 1">
+              <i class="bi bi-chevron-double-left" aria-hidden="true"></i>
+            </button>
           </li>
           <li class="page-item" [ngClass]="{'disabled': currentPage === 1}">
-            <a class="page-link" (click)="goToPage(currentPage - 1)" aria-label="Previous">
-              <i class="bi bi-chevron-left"></i>
-            </a>
+            <button
+              type="button"
+              class="page-link"
+              (click)="goToPage(currentPage - 1)"
+              aria-label="Go to previous page"
+              [attr.aria-disabled]="currentPage === 1"
+              [disabled]="currentPage === 1">
+              <i class="bi bi-chevron-left" aria-hidden="true"></i>
+            </button>
           </li>
           @for (page of pageNumbers; track page) {
             <li class="page-item" [ngClass]="{'active': page === currentPage}">
-              <a class="page-link" (click)="goToPage(page)">{{page}}</a>
+              <button
+                type="button"
+                class="page-link"
+                (click)="goToPage(page)"
+                [attr.aria-label]="'Go to page ' + page"
+                [attr.aria-current]="page === currentPage ? 'page' : null">
+                {{page}}
+              </button>
             </li>
           }
           <li class="page-item" [ngClass]="{'disabled': currentPage === totalPages}">
-            <a class="page-link" (click)="goToPage(currentPage + 1)" aria-label="Next">
-              <i class="bi bi-chevron-right"></i>
-            </a>
+            <button
+              type="button"
+              class="page-link"
+              (click)="goToPage(currentPage + 1)"
+              aria-label="Go to next page"
+              [attr.aria-disabled]="currentPage === totalPages"
+              [disabled]="currentPage === totalPages">
+              <i class="bi bi-chevron-right" aria-hidden="true"></i>
+            </button>
           </li>
           <li class="page-item" [ngClass]="{'disabled': currentPage === totalPages}">
-            <a class="page-link" (click)="goToPage(totalPages)" aria-label="Last">
-              <i class="bi bi-chevron-double-right"></i>
-            </a>
+            <button
+              type="button"
+              class="page-link"
+              (click)="goToPage(totalPages)"
+              aria-label="Go to last page"
+              [attr.aria-disabled]="currentPage === totalPages"
+              [disabled]="currentPage === totalPages">
+              <i class="bi bi-chevron-double-right" aria-hidden="true"></i>
+            </button>
           </li>
         </ul>
-        <small class="text-muted">
+        <small class="text-muted" aria-live="polite">
           Page {{currentPage}} of {{totalPages}}
         </small>
       </div>

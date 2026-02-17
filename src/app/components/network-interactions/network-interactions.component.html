@@ -73,17 +73,18 @@
 
   </div>
   <div class="card-footer">
-    <button type="button" class="btn btn-primary" (click)="getInteractions()">Redraw</button>
+    <button type="button" class="btn btn-primary" (click)="getInteractions()" aria-label="Redraw network graph with current parameters">Redraw</button>
   </div>
 </div>
 <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-2">
-  <button class="btn btn-primary" (click)="saveNetwork()">Save current network configuration</button>
-  <button class="btn btn-primary" (click)="cytoplot.download()">Download PNG</button>
+  <button class="btn btn-primary" (click)="saveNetwork()" aria-label="Save current network configuration">Save current network configuration</button>
+  <button class="btn btn-primary" (click)="cytoplot.download()" aria-label="Download network graph as PNG image">Download PNG</button>
 </div>
 <div class="row">
   <div class="col-3">
     <form [formGroup]="form">
-      <table class="table table-bordered mt-2">
+      <table class="table table-bordered mt-2" aria-label="Network color legend">
+        <caption class="visually-hidden">Color legend for network graph nodes and edges</caption>
         <thead>
         <tr>
           <th scope="col">
@@ -97,43 +98,50 @@
         <tbody>
         <tr>
           <td>
-            <input formControlName="Increase" (colorPickerChange)="updateColor($event, 'Increase')" class="form-control" [(colorPicker)]="colorMap['Increase']" [style.background]="colorMap['Increase']">
+            <label for="color-increase" class="visually-hidden">Color for increased fold change nodes</label>
+            <input id="color-increase" formControlName="Increase" (colorPickerChange)="updateColor($event, 'Increase')" class="form-control" [(colorPicker)]="colorMap['Increase']" [style.background]="colorMap['Increase']" aria-label="Select color for increased fold change">
           </td>
           <td>Fold change > {{settings.settings.log2FCCutoff}}</td>
         </tr>
         <tr>
           <td>
-            <input formControlName="Decrease" (colorPickerChange)="updateColor($event, 'Decrease')" class="form-control" [(colorPicker)]="colorMap['Decrease']" [style.background]="colorMap['Decrease']">
+            <label for="color-decrease" class="visually-hidden">Color for decreased fold change nodes</label>
+            <input id="color-decrease" formControlName="Decrease" (colorPickerChange)="updateColor($event, 'Decrease')" class="form-control" [(colorPicker)]="colorMap['Decrease']" [style.background]="colorMap['Decrease']" aria-label="Select color for decreased fold change">
           </td>
           <td>Fold change < {{-settings.settings.log2FCCutoff}}</td>
         </tr>
         <tr>
           <td>
-            <input formControlName="No change" (colorPickerChange)="updateColor($event, 'No change')" class="form-control" [(colorPicker)]="colorMap['No change']" [style.background]="colorMap['No change']">
+            <label for="color-nochange" class="visually-hidden">Color for no change nodes</label>
+            <input id="color-nochange" formControlName="No change" (colorPickerChange)="updateColor($event, 'No change')" class="form-control" [(colorPicker)]="colorMap['No change']" [style.background]="colorMap['No change']" aria-label="Select color for no change">
           </td>
           <td>{{-settings.settings.log2FCCutoff}} < Fold change < {{settings.settings.log2FCCutoff}}</td>
         </tr>
         <tr>
           <td>
-            <input formControlName="Significant" (colorPickerChange)="updateColor($event, 'Significant')" class="form-control" [(colorPicker)]="colorMap['Significant']" [style.background]="colorMap['Significant']">
+            <label for="color-significant" class="visually-hidden">Color for significant text</label>
+            <input id="color-significant" formControlName="Significant" (colorPickerChange)="updateColor($event, 'Significant')" class="form-control" [(colorPicker)]="colorMap['Significant']" [style.background]="colorMap['Significant']" aria-label="Select color for significant">
           </td>
           <td>pvalue <= {{settings.settings.pCutoff}}</td>
         </tr>
         <tr>
           <td>
-            <input formControlName="Not significant" (colorPickerChange)="updateColor($event, 'Not significant')" class="form-control" [(colorPicker)]="colorMap['Not significant']" [style.background]="colorMap['Not significant']">
+            <label for="color-notsignificant" class="visually-hidden">Color for not significant text</label>
+            <input id="color-notsignificant" formControlName="Not significant" (colorPickerChange)="updateColor($event, 'Not significant')" class="form-control" [(colorPicker)]="colorMap['Not significant']" [style.background]="colorMap['Not significant']" aria-label="Select color for not significant">
           </td>
           <td>pvalue > {{settings.settings.pCutoff}}</td>
         </tr>
         <tr>
           <td>
-            <input formControlName="StringDB" (colorPickerChange)="updateColor($event, 'StringDB')" class="form-control" [(colorPicker)]="colorMap['StringDB']" [style.background]="colorMap['StringDB']">
+            <label for="color-stringdb" class="visually-hidden">Color for StringDB edges</label>
+            <input id="color-stringdb" formControlName="StringDB" (colorPickerChange)="updateColor($event, 'StringDB')" class="form-control" [(colorPicker)]="colorMap['StringDB']" [style.background]="colorMap['StringDB']" aria-label="Select color for StringDB interaction">
           </td>
           <td>StringDB interaction</td>
         </tr>
         <tr>
           <td>
-            <input formControlName="InteractomeAtlas" (colorPickerChange)="updateColor($event, 'InteractomeAtlas')" class="form-control" [(colorPicker)]="colorMap['InteractomeAtlas']" [style.background]="colorMap['InteractomeAtlas']">
+            <label for="color-interactome" class="visually-hidden">Color for Interactome Atlas edges</label>
+            <input id="color-interactome" formControlName="InteractomeAtlas" (colorPickerChange)="updateColor($event, 'InteractomeAtlas')" class="form-control" [(colorPicker)]="colorMap['InteractomeAtlas']" [style.background]="colorMap['InteractomeAtlas']" aria-label="Select color for Interactome Atlas interaction">
           </td>
           <td>Interactome Atlas interaction</td>
         </tr>
@@ -142,7 +150,8 @@
     </form>
 
     @if (edgeDataViewer[edgeDataSource]) {
-      <table class="table table-bordered table-striped mt-2">
+      <table class="table table-bordered table-striped mt-2" aria-label="Selected edge properties">
+        <caption class="visually-hidden">Properties of the currently selected network edge</caption>
         <thead>
         <tr>
           <th scope="col">

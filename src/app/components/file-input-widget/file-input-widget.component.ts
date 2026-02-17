@@ -15,6 +15,10 @@ export class FileInputWidgetComponent implements OnInit {
   filename: string = ""
   constructor() { }
 
+  get inputId(): string {
+    return this.fileType.replace(/\s+/g, '-').toLowerCase()
+  }
+
   ngOnInit(): void {
   }
 

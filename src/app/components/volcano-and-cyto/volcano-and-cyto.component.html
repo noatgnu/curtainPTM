@@ -2,11 +2,16 @@
   <div class="accordion">
     <div class="accordion-item">
       <h2 class="accordion-header">
-        <button [ngClass]="{'accordion-button': true, 'collapsed': isVolcanoCollapse}" type="button" (click)=" isVolcanoCollapse=!isVolcanoCollapse">
+        <button
+          [ngClass]="{'accordion-button': true, 'collapsed': isVolcanoCollapse}"
+          type="button"
+          (click)="isVolcanoCollapse=!isVolcanoCollapse"
+          [attr.aria-expanded]="!isVolcanoCollapse"
+          aria-controls="volcanoCollapseContent">
           Differential Analysis Volcano Plot
         </button>
       </h2>
-      <div #collapse="ngbCollapse" [(ngbCollapse)]="isVolcanoCollapse">
+      <div id="volcanoCollapseContent" #collapse="ngbCollapse" [(ngbCollapse)]="isVolcanoCollapse">
         <div class="accordion-body">
           <app-volcano-plot [data]="data.currentDF" (selected)="handleVolcanoSelection($event)"></app-volcano-plot>
         </div>
@@ -20,11 +25,16 @@
   <div class="accordion">
     <div class="accordion-item">
       <h2 class="accordion-header">
-        <button [ngClass]="{'accordion-button': true, 'collapsed': isNetworkCollapse}" type="button" (click)=" isNetworkCollapse=!isNetworkCollapse">
+        <button
+          [ngClass]="{'accordion-button': true, 'collapsed': isNetworkCollapse}"
+          type="button"
+          (click)="isNetworkCollapse=!isNetworkCollapse"
+          [attr.aria-expanded]="!isNetworkCollapse"
+          aria-controls="networkCollapseContent">
           Selected Protein Interactions
         </button>
       </h2>
-      <div #collapse2="ngbCollapse" [(ngbCollapse)]="isNetworkCollapse">
+      <div id="networkCollapseContent" #collapse2="ngbCollapse" [(ngbCollapse)]="isNetworkCollapse">
         <div class="accordion-body">
           @if (isNetworkCollapse === false) {
             <app-network-interactions [genes]="data.selected"></app-network-interactions>

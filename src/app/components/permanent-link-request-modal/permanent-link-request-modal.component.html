@@ -1,16 +1,16 @@
 <div class="modal-header">
-  <h5 class="modal-title">Request Session Changes</h5>
-  <button type="button" class="btn-close" (click)="close()"></button>
+  <h5 class="modal-title" id="permanent-link-request-title">Request Session Changes</h5>
+  <button type="button" class="btn-close" aria-label="Close request dialog" (click)="close()"></button>
 </div>
 
-<div class="modal-body">
+<div class="modal-body" aria-labelledby="permanent-link-request-title">
   @if (!data.session?.permanent) {
     <div class="mb-4">
-      <h6>Submit a New Request</h6>
-      <form [formGroup]="form" (ngSubmit)="submitRequest()">
+      <h6 id="submit-request-heading">Submit a New Request</h6>
+      <form [formGroup]="form" (ngSubmit)="submitRequest()" aria-labelledby="submit-request-heading">
         <div class="mb-3">
-          <label class="form-label">Request Type</label>
-          <select class="form-select" formControlName="request_type">
+          <label class="form-label" for="request-type">Request Type</label>
+          <select class="form-select" formControlName="request_type" id="request-type">
             <option value="permanent">Make Session Permanent</option>
             <option value="extend">Extend Expiry Date</option>
           </select>
@@ -18,29 +18,34 @@
 
         @if (form.get('request_type')?.value === 'extend') {
           <div class="mb-3">
-            <label class="form-label">Extend By (Months)</label>
-            <select class="form-select" formControlName="requested_expiry_months">
+            <label class="form-label" for="expiry-months">Extend By (Months)</label>
+            <select class="form-select" formControlName="requested_expiry_months" id="expiry-months"
+                    [attr.aria-invalid]="form.get('requested_expiry_months')?.invalid && form.get('requested_expiry_months')?.touched"
+                    aria-describedby="expiry-months-error">
               <option [value]="null">Select duration</option>
               @for (option of expiryOptions; track option) {
                 <option [value]="option">{{option}} months</option>
               }
             </select>
             @if (form.get('requested_expiry_months')?.invalid && form.get('requested_expiry_months')?.touched) {
-              <div class="text-danger small mt-1">Please select a duration</div>
+              <div class="text-danger small mt-1" id="expiry-months-error" role="alert">Please select a duration</div>
             }
           </div>
         }
 
         <div class="mb-3">
-          <label class="form-label">Reason for Request</label>
-          <textarea class="form-control" formControlName="reason" rows="3"
-                    placeholder="Please explain why you need this change..."></textarea>
+          <label class="form-label" for="request-reason">Reason for Request</label>
+          <textarea class="form-control" formControlName="reason" rows="3" id="request-reason"
+                    placeholder="Please explain why you need this change..."
+                    [attr.aria-invalid]="form.get('reason')?.invalid && form.get('reason')?.touched"
+                    aria-describedby="reason-error"
+                    aria-required="true"></textarea>
           @if (form.get('reason')?.invalid && form.get('reason')?.touched) {
-            <div class="text-danger small mt-1">Reason is required</div>
+            <div class="text-danger small mt-1" id="reason-error" role="alert">Reason is required</div>
           }
         </div>
 
-        <button type="submit" class="btn btn-primary" [disabled]="form.invalid">
+        <button type="submit" class="btn btn-primary" [disabled]="form.invalid" aria-label="Submit request">
           Submit Request
         </button>
       </form>
@@ -100,5 +105,5 @@
 </div>
 
 <div class="modal-footer">
-  <button type="button" class="btn btn-secondary" (click)="close()">Close</button>
+  <button type="button" class="btn btn-secondary" (click)="close()" aria-label="Close dialog">Close</button>
 </div>

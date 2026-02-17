@@ -16,8 +16,10 @@
           Deselect All
         </button>
         <div class="vr"></div>
+        <label for="bulkConditionInput" class="visually-hidden">Bulk condition name</label>
         <input
           type="text"
+          id="bulkConditionInput"
           class="form-control form-control-sm"
           [(ngModel)]="bulkConditionName"
           placeholder="Condition name..."
@@ -36,16 +38,17 @@
   <table class="table table-striped table-hover">
     <thead>
     <tr>
-      <th style="width: 40px">
+      <th scope="col" style="width: 40px">
         <input
           type="checkbox"
           class="form-check-input"
           [checked]="selectedSamples.size === samples.length && samples.length > 0"
-          (change)="selectedSamples.size === samples.length ? deselectAll() : selectAll()">
+          (change)="selectedSamples.size === samples.length ? deselectAll() : selectAll()"
+          aria-label="Select all samples">
       </th>
-      <th>Sample</th>
-      <th>Condition</th>
-      <th style="width: 100px">Actions</th>
+      <th scope="col">Sample</th>
+      <th scope="col">Condition</th>
+      <th scope="col" style="width: 100px">Actions</th>
     </tr>
     </thead>
     <tbody>
@@ -56,11 +59,17 @@
             type="checkbox"
             class="form-check-input"
             [checked]="selectedSamples.has(s)"
-            (change)="toggleSampleSelection(s)">
+            (change)="toggleSampleSelection(s)"
+            [attr.aria-label]="'Select sample ' + s">
         </td>
         <td><b>{{s}}</b></td>
         <td>
-          <input type="text" [(ngModel)]="sampleMap[s].condition" class="form-control form-control-sm">
+          <label [for]="'condition-' + i" class="visually-hidden">Condition for {{s}}</label>
+          <input
+            type="text"
+            [id]="'condition-' + i"
+            [(ngModel)]="sampleMap[s].condition"
+            class="form-control form-control-sm">
         </td>
         <td>
           <button
@@ -68,8 +77,8 @@
             class="btn btn-sm btn-outline-secondary"
             (click)="copyFromAbove(i)"
             [disabled]="i === 0"
-            title="Copy condition from above">
-            <i class="bi bi-arrow-down"></i>
+            [attr.aria-label]="'Copy condition from above to ' + s">
+            <i class="bi bi-arrow-down" aria-hidden="true"></i>
           </button>
         </td>
       </tr>

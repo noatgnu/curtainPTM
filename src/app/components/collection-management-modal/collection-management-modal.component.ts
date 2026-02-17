@@ -5,12 +5,21 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ToastService } from '../../toast.service';
 
+interface AccessibleCurtain {
+  id: number;
+  link_id: string;
+  description: string;
+  created: string;
+  curtain_type: string;
+}
+
 interface Collection {
   id: number;
   name: string;
   description: string;
   curtain_count: number;
-  curtains: string[];
+  curtains: number[];
+  accessible_curtains: AccessibleCurtain[];
   updated: Date;
   owner_username: string;
   enable?: boolean;
@@ -65,7 +74,10 @@ export class CollectionManagementModalComponent implements OnInit {
   }
 
   isSessionInCollection(collection: Collection): boolean {
-    return collection.curtains && collection.curtains.includes(this.linkId);
+    if (!collection.accessible_curtains || collection.accessible_curtains.length === 0) {
+      return false;
+    }
+    return collection.accessible_curtains.some(curtain => curtain.link_id === this.linkId);
   }
 
   async toggleCollection(collection: Collection): Promise<void> {

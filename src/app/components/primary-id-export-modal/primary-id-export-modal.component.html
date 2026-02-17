@@ -1,85 +1,85 @@
 <div class="modal-header">
-  <h4 class="modal-title">
-    <i class="bi bi-download me-2"></i>Export Selected Data
+  <h4 class="modal-title" id="export-modal-title">
+    <i class="bi bi-download me-2" aria-hidden="true"></i>Export Selected Data
   </h4>
-  <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+  <button type="button" class="btn-close" (click)="modal.dismiss()" aria-label="Close export dialog"></button>
 </div>
-<div class="modal-body">
-  <div class="alert alert-info mb-3">
-    <i class="bi bi-info-circle me-2"></i>
+<div class="modal-body" aria-labelledby="export-modal-title">
+  <div class="alert alert-info mb-3" role="status">
+    <i class="bi bi-info-circle me-2" aria-hidden="true"></i>
     <strong>Export Options:</strong> Download selected proteins by individual selection or export all selected data together.
   </div>
 
   @if (selections.length > 0) {
-    <div class="mb-4">
-      <h5 class="mb-3">
-        <i class="bi bi-collection me-2"></i>Export by Selection
+    <section class="mb-4" aria-labelledby="export-by-selection-heading">
+      <h5 class="mb-3" id="export-by-selection-heading">
+        <i class="bi bi-collection me-2" aria-hidden="true"></i>Export by Selection
       </h5>
-      @for (s of selections; track s) {
-        <div class="card mb-3 shadow-sm">
+      @for (s of selections; track s; let i = $index) {
+        <div class="card mb-3 shadow-sm" role="group" [attr.aria-labelledby]="'selection-heading-' + i">
           <div class="card-header d-flex justify-content-between align-items-center">
-            <span class="fw-bold">{{s}}</span>
-            <span class="badge bg-secondary">{{getSelectionCount(s)}} items</span>
+            <span class="fw-bold" [id]="'selection-heading-' + i">{{s}}</span>
+            <span class="badge bg-secondary" [attr.aria-label]="getSelectionCount(s) + ' items in ' + s + ' selection'">{{getSelectionCount(s)}} items</span>
           </div>
           <div class="card-body">
-            <div class="d-flex flex-wrap gap-2">
-              <button class="btn btn-sm btn-outline-primary" (click)="export(s, 'primaryID')">
-                <i class="bi bi-fingerprint me-1"></i>Primary IDs
+            <div class="d-flex flex-wrap gap-2" role="group" [attr.aria-label]="'Export options for ' + s">
+              <button class="btn btn-sm btn-outline-primary" (click)="export(s, 'primaryID')" [attr.aria-label]="'Export Primary IDs from ' + s">
+                <i class="bi bi-fingerprint me-1" aria-hidden="true"></i>Primary IDs
               </button>
-              <button class="btn btn-sm btn-outline-primary" (click)="export(s, 'geneNames')">
-                <i class="bi bi-dna me-1"></i>Gene Names
+              <button class="btn btn-sm btn-outline-primary" (click)="export(s, 'geneNames')" [attr.aria-label]="'Export Gene Names from ' + s">
+                <i class="bi bi-dna me-1" aria-hidden="true"></i>Gene Names
               </button>
-              <button class="btn btn-sm btn-outline-info" (click)="export(s, 'dataSearched')">
-                <i class="bi bi-table me-1"></i>Raw Data
+              <button class="btn btn-sm btn-outline-info" (click)="export(s, 'dataSearched')" [attr.aria-label]="'Export Raw Data from ' + s">
+                <i class="bi bi-table me-1" aria-hidden="true"></i>Raw Data
               </button>
-              <button class="btn btn-sm btn-outline-success" (click)="export(s, 'dataDF')">
-                <i class="bi bi-graph-up me-1"></i>Differential Data
+              <button class="btn btn-sm btn-outline-success" (click)="export(s, 'dataDF')" [attr.aria-label]="'Export Differential Data from ' + s">
+                <i class="bi bi-graph-up me-1" aria-hidden="true"></i>Differential Data
               </button>
             </div>
           </div>
         </div>
       }
-    </div>
+    </section>
   }
 
-  <div>
-    <h5 class="mb-3">
-      <i class="bi bi-box-arrow-down me-2"></i>Export All Selections
+  <section aria-labelledby="export-all-heading">
+    <h5 class="mb-3" id="export-all-heading">
+      <i class="bi bi-box-arrow-down me-2" aria-hidden="true"></i>Export All Selections
     </h5>
-    <div class="card shadow-sm">
+    <div class="card shadow-sm" role="group" aria-labelledby="export-all-items-heading">
       <div class="card-header d-flex justify-content-between align-items-center">
-        <span class="fw-bold">All Selected Items</span>
-        <span class="badge bg-secondary">{{getTotalCount()}} items</span>
+        <span class="fw-bold" id="export-all-items-heading">All Selected Items</span>
+        <span class="badge bg-secondary" [attr.aria-label]="getTotalCount() + ' total items selected'">{{getTotalCount()}} items</span>
       </div>
       <div class="card-body">
-        <div class="row g-2">
+        <div class="row g-2" role="group" aria-label="Export all options">
           <div class="col-md-6">
-            <button type="button" class="btn btn-primary w-100" (click)="export('', 'primaryID')">
-              <i class="bi bi-fingerprint me-1"></i>Export Primary IDs
+            <button type="button" class="btn btn-primary w-100" (click)="export('', 'primaryID')" aria-label="Export all Primary IDs">
+              <i class="bi bi-fingerprint me-1" aria-hidden="true"></i>Export Primary IDs
             </button>
           </div>
           <div class="col-md-6">
-            <button type="button" class="btn btn-primary w-100" (click)="export('', 'geneNames')">
-              <i class="bi bi-dna me-1"></i>Export Gene Names
+            <button type="button" class="btn btn-primary w-100" (click)="export('', 'geneNames')" aria-label="Export all Gene Names">
+              <i class="bi bi-dna me-1" aria-hidden="true"></i>Export Gene Names
             </button>
           </div>
           <div class="col-md-6">
-            <button type="button" class="btn btn-info w-100" (click)="export('', 'dataSearched')">
-              <i class="bi bi-table me-1"></i>Export Raw Data
+            <button type="button" class="btn btn-info w-100" (click)="export('', 'dataSearched')" aria-label="Export all Raw Data">
+              <i class="bi bi-table me-1" aria-hidden="true"></i>Export Raw Data
             </button>
           </div>
           <div class="col-md-6">
-            <button type="button" class="btn btn-success w-100" (click)="export('', 'dataDF')">
-              <i class="bi bi-graph-up me-1"></i>Export Differential Data
+            <button type="button" class="btn btn-success w-100" (click)="export('', 'dataDF')" aria-label="Export all Differential Data">
+              <i class="bi bi-graph-up me-1" aria-hidden="true"></i>Export Differential Data
             </button>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  </section>
 </div>
 <div class="modal-footer">
-  <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">
-    <i class="bi bi-x-circle me-1"></i>Close
+  <button type="button" class="btn btn-secondary" (click)="modal.dismiss()" aria-label="Close export dialog">
+    <i class="bi bi-x-circle me-1" aria-hidden="true"></i>Close
   </button>
 </div>

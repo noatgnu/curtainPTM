@@ -4,7 +4,7 @@
   </h5>
   <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss()"></button>
 </div>
-<div class="modal-body">
+<div class="modal-body" [attr.aria-busy]="isLoading">
   @if (isLoading) {
     <div class="d-flex justify-content-center align-items-center py-5">
       <div class="spinner-border text-primary" role="status">
@@ -38,14 +38,16 @@
       </div>
 
       <div class="input-group">
-        <span class="input-group-text"><i class="bi bi-search"></i></span>
+        <span class="input-group-text" id="searchCollections-addon"><i class="bi bi-search" aria-hidden="true"></i></span>
         <input
           type="text"
           [(ngModel)]="searchQuery"
           (ngModelChange)="searchCollections()"
           class="form-control"
           placeholder="Search collections..."
-          [disabled]="isLoading">
+          [disabled]="isLoading"
+          aria-label="Search collections"
+          aria-describedby="searchCollections-addon">
       </div>
     </div>
   </div>
@@ -98,15 +100,16 @@
                         [id]="'enable-' + collection.id"
                         [checked]="collection.enable"
                         (change)="toggleEnable(collection)"
-                        [disabled]="isLoading">
+                        [disabled]="isLoading"
+                        [attr.aria-label]="'Enable sharing for ' + collection.name">
                     </div>
                     @if (collection.enable) {
                       <button
                         class="btn btn-sm btn-outline-secondary"
                         (click)="copyCollectionLink(collection)"
                         [disabled]="isLoading"
-                        title="Copy share link">
-                        <i class="bi bi-link-45deg"></i>
+                        [attr.aria-label]="'Copy share link for ' + collection.name">
+                        <i class="bi bi-link-45deg" aria-hidden="true"></i>
                       </button>
                     }
                   </div>

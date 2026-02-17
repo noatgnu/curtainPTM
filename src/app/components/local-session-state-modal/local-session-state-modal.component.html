@@ -1,12 +1,12 @@
 <div class="modal-header">
-  <h5 class="modal-title">
-    <i class="bi bi-save me-2"></i>Local State Management
+  <h5 class="modal-title" id="local-state-modal-title">
+    <i class="bi bi-save me-2" aria-hidden="true"></i>Local State Management
   </h5>
-  <button type="button" class="btn-close" aria-label="Close" (click)="close()"></button>
+  <button type="button" class="btn-close" aria-label="Close local state management dialog" (click)="close()"></button>
 </div>
-<div class="modal-body">
-  <div class="alert alert-info">
-    <h6 class="alert-heading"><i class="bi bi-info-circle me-2"></i>What are Local States?</h6>
+<div class="modal-body" aria-labelledby="local-state-modal-title">
+  <div class="alert alert-info" role="status">
+    <h6 class="alert-heading"><i class="bi bi-info-circle me-2" aria-hidden="true"></i>What are Local States?</h6>
     <p class="mb-2">Local states save your <strong>visualization settings and selections</strong> without the raw data:</p>
     <ul class="mb-2">
       <li>Colors, plot settings, annotations, and labels</li>
@@ -19,15 +19,15 @@
 
   @if (states.length === 0) {
     <div class="text-center py-4">
-      <i class="bi bi-inbox display-1 text-muted"></i>
+      <i class="bi bi-inbox display-1 text-muted" aria-hidden="true"></i>
       <p class="text-muted mt-3">No saved states found</p>
       <p class="small text-muted">Create a state by clicking <strong>State → Create local state</strong> in the navbar</p>
     </div>
   } @else {
     <div class="mb-3">
-      <h6 class="border-bottom pb-2">
-        <i class="bi bi-clock-history me-2"></i>Saved States
-        <span class="badge bg-secondary ms-2">{{states.length}}</span>
+      <h6 class="border-bottom pb-2" id="saved-states-heading">
+        <i class="bi bi-clock-history me-2" aria-hidden="true"></i>Saved States
+        <span class="badge bg-secondary ms-2" [attr.aria-label]="states.length + ' saved states'">{{states.length}}</span>
       </h6>
     </div>
 
@@ -37,7 +37,7 @@
           <div class="row align-items-center">
             <div class="col-md-8">
               <h6 class="card-title mb-2">
-                <i class="bi bi-file-earmark-text me-2"></i>
+                <i class="bi bi-file-earmark-text me-2" aria-hidden="true"></i>
                 @if (s.currentID && s.currentID !== '') {
                   Session: <span class="text-primary">{{s.currentID}}</span>
                 } @else {
@@ -45,24 +45,24 @@
                 }
               </h6>
               <p class="card-text small mb-1">
-                <i class="bi bi-calendar3 me-1"></i>
+                <i class="bi bi-calendar3 me-1" aria-hidden="true"></i>
                 <strong>Created:</strong> {{s.date | date:'medium'}}
               </p>
               <p class="card-text small text-muted mb-0">
-                <i class="bi bi-hdd me-1"></i>
+                <i class="bi bi-hdd me-1" aria-hidden="true"></i>
                 State ID: #{{s.id}}
               </p>
             </div>
             <div class="col-md-4">
-              <div class="btn-group-vertical w-100" role="group">
-                <button class="btn btn-sm btn-outline-primary" (click)="loadState(s.id)" title="Apply this state to current data">
-                  <i class="bi bi-arrow-clockwise me-1"></i>Load
+              <div class="btn-group-vertical w-100" role="group" aria-label="State actions">
+                <button class="btn btn-sm btn-outline-primary" (click)="loadState(s.id)" title="Apply this state to current data" aria-label="Load state {{s.id}}">
+                  <i class="bi bi-arrow-clockwise me-1" aria-hidden="true"></i>Load
                 </button>
-                <button class="btn btn-sm btn-outline-success" (click)="downloadState(s.id)" title="Download as JSON file">
-                  <i class="bi bi-download me-1"></i>Download
+                <button class="btn btn-sm btn-outline-success" (click)="downloadState(s.id)" title="Download as JSON file" aria-label="Download state {{s.id}} as JSON">
+                  <i class="bi bi-download me-1" aria-hidden="true"></i>Download
                 </button>
-                <button class="btn btn-sm btn-outline-danger" (click)="deleteState(s.id)" title="Remove from browser storage">
-                  <i class="bi bi-trash me-1"></i>Delete
+                <button class="btn btn-sm btn-outline-danger" (click)="deleteState(s.id)" title="Remove from browser storage" aria-label="Delete state {{s.id}}">
+                  <i class="bi bi-trash me-1" aria-hidden="true"></i>Delete
                 </button>
               </div>
             </div>
@@ -72,13 +72,13 @@
     }
   }
 
-  <input type="file" accept=".json" (change)="loadFromFile($event)" style="display: none" #fileInput [hidden]="true">
+  <input type="file" accept=".json" (change)="loadFromFile($event)" style="display: none" #fileInput [hidden]="true" aria-label="State file input">
 </div>
 <div class="modal-footer">
   <div class="me-auto">
-    <button class="btn btn-outline-primary" (click)="fileInput.click()">
-      <i class="bi bi-upload me-2"></i>Import State File
+    <button class="btn btn-outline-primary" (click)="fileInput.click()" aria-label="Import state from JSON file">
+      <i class="bi bi-upload me-2" aria-hidden="true"></i>Import State File
     </button>
   </div>
-  <button class="btn btn-secondary" (click)="close()">Close</button>
+  <button class="btn btn-secondary" (click)="close()" aria-label="Close dialog">Close</button>
 </div>
