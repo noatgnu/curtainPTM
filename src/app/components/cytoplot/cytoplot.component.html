@@ -1,13 +1,15 @@
-<div
-  [id]="componentID"
-  class="cytoplot"
-  role="img"
-  aria-label="Interactive network graph visualization"
-  tabindex="0"
-  (keydown)="handleKeyboardNavigation($event)">
-</div>
-<span
-  class="visually-hidden"
-  aria-live="polite"
-  [id]="componentID + '-status'">
-</span>
+@if (!hidden) {
+  <div
+    [id]="componentID"
+    class="cytoplot"
+    role="img"
+    aria-label="Interactive network graph visualization"
+    tabindex="0"
+    (keydown)="handleKeyboardNavigation($event)">
+  </div>
+  <span
+    class="visually-hidden"
+    aria-live="polite"
+    [id]="componentID + '-status'">
+  </span>
+}

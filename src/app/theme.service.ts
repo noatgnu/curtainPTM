@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 
 export type ThemeMode = 'light' | 'dark';
 export type ThemeName = 'default' | 'ocean' | 'forest' | 'sunset' | 'lavender';
@@ -40,9 +40,11 @@ export class ThemeService {
 
   private currentMode = new BehaviorSubject<ThemeMode>('light');
   private currentName = new BehaviorSubject<ThemeName>('default');
+  private beforeChange = new Subject<void>();
 
   public theme$ = this.currentMode.asObservable();
   public themeName$ = this.currentName.asObservable();
+  public beforeThemeChange$ = this.beforeChange.asObservable();
 
   private themes: Theme[] = [
     {
@@ -158,7 +160,7 @@ export class ThemeService {
     const initialMode = savedMode || (prefersDark ? 'dark' : 'light');
     const initialName = savedName || 'default';
 
-    this.setTheme(initialName, initialMode);
+    this.setTheme(initialName, initialMode, true);
 
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
       if (!this.getSavedMode()) {
@@ -177,7 +179,18 @@ export class ThemeService {
     return saved as ThemeName | null;
   }
 
-  setTheme(name: ThemeName, mode: ThemeMode): void {
+  setTheme(name: ThemeName, mode: ThemeMode, immediate: boolean = false): void {
+    if (immediate) {
+      this.applyThemeInternal(name, mode);
+    } else {
+      this.beforeChange.next();
+      setTimeout(() => {
+        this.applyThemeInternal(name, mode);
+      }, 500);
+    }
+  }
+
+  private applyThemeInternal(name: ThemeName, mode: ThemeMode): void {
     this.currentName.next(name);
     this.currentMode.next(mode);
     localStorage.setItem(this.STORAGE_KEY_NAME, name);

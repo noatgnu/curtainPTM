@@ -1,2 +1,287 @@
-<plotly-plot [config]="config" [divId]="geneName+'domain'" [data]="data" [layout]="layout" [updateOnDataChange]="true"></plotly-plot>
-<!--<button class="btn btn-sm btn-primary" (click)="downloadSVG()">Download as SVG</button>-->
+<div class="protein-domain-container">
+  <div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center py-2">
+      <div class="d-flex align-items-center">
+        <i class="bi bi-diagram-3 me-2"></i>
+        <span class="fw-semibold">Protein Domains</span>
+        @if (geneName) {
+          <span class="badge bg-secondary ms-2">{{ geneName }}</span>
+        }
+        @if (proteinLength > 0) {
+          <span class="badge bg-light text-dark ms-1">{{ proteinLength }} aa</span>
+        }
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        @if (domains.length > 0) {
+          <span class="badge bg-primary">{{ domains.length }} domains</span>
+        }
+        <button
+          class="btn btn-sm btn-outline-secondary"
+          (click)="showSettings = !showSettings"
+          [attr.aria-expanded]="showSettings"
+          aria-controls="settingsPanel"
+          title="Toggle settings">
+          <i class="bi" [class.bi-chevron-up]="showSettings" [class.bi-chevron-down]="!showSettings"></i>
+        </button>
+      </div>
+    </div>
+
+    @if (showSettings) {
+      <div class="card-body py-2" id="settingsPanel">
+        <div class="row g-2 align-items-end">
+          <div class="col-auto">
+            <label for="visualType" class="form-label small mb-1">Visualization</label>
+            <select
+              id="visualType"
+              class="form-select form-select-sm"
+              [(ngModel)]="visualizationType"
+              (change)="onVisualizationChange()"
+              aria-label="Visualization type">
+              <option value="segments">Linear Segments</option>
+              <option value="waterfall">Waterfall Chart</option>
+            </select>
+          </div>
+
+          @if (visualizationType === 'waterfall') {
+            <div class="col-auto">
+              <div class="form-check form-switch mt-3">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  id="showOther"
+                  [(ngModel)]="showOther"
+                  (change)="onShowOtherChange()">
+                <label class="form-check-label small" for="showOther">Show gaps</label>
+              </div>
+            </div>
+          }
+
+          <div class="col">
+            <label for="domainSearch" class="form-label small mb-1">Search Domains</label>
+            <div class="input-group input-group-sm">
+              <input
+                id="domainSearch"
+                type="text"
+                class="form-control"
+                placeholder="Filter domains..."
+                [(ngModel)]="searchTerm"
+                (input)="onSearchChange()"
+                aria-label="Search domains">
+              @if (searchTerm) {
+                <button
+                  class="btn btn-outline-secondary"
+                  type="button"
+                  (click)="clearSearch()"
+                  title="Clear search">
+                  <i class="bi bi-x"></i>
+                </button>
+              }
+            </div>
+          </div>
+
+          <div class="col-auto">
+            <button
+              class="btn btn-sm btn-outline-secondary"
+              (click)="showDomainList = !showDomainList"
+              [class.active]="showDomainList"
+              title="Toggle domain list">
+              <i class="bi bi-list-ul"></i>
+            </button>
+          </div>
+        </div>
+
+        @if (showDomainList && domains.length > 0) {
+          <div class="domain-list mt-2">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="small text-muted">
+                Showing {{ getVisibleDomainCount() }} of {{ domains.length }} domains
+              </span>
+              <div class="btn-group btn-group-sm">
+                <button
+                  class="btn btn-outline-secondary btn-sm"
+                  (click)="selectAllDomains()"
+                  [disabled]="getVisibleDomainCount() === domains.length">
+                  All
+                </button>
+                <button
+                  class="btn btn-outline-secondary btn-sm"
+                  (click)="deselectAllDomains()"
+                  [disabled]="getVisibleDomainCount() === 0">
+                  None
+                </button>
+              </div>
+            </div>
+            <div class="domain-items">
+              @for (domain of domains; track domain.name) {
+                <div
+                  class="domain-item d-flex align-items-center gap-2"
+                  [class.selected]="selectedDomain === domain"
+                  (click)="selectDomain(domain)">
+                  <input
+                    type="checkbox"
+                    class="form-check-input m-0"
+                    [checked]="domain.visible"
+                    (click)="$event.stopPropagation()"
+                    (change)="toggleDomainVisibility(domain)"
+                    [attr.aria-label]="'Toggle ' + domain.name">
+                  <span
+                    class="color-indicator"
+                    [style.background-color]="domain.color"
+                    [cpPosition]="'bottom'"
+                    [(colorPicker)]="domain.color!"
+                    (colorPickerChange)="updateDomainColor(domain, $event)"
+                    title="Click to change color"></span>
+                  <span class="domain-name flex-grow-1 small">{{ domain.name }}</span>
+                  <span class="domain-range text-muted small">{{ domain.start }}-{{ domain.end }}</span>
+                  <span class="badge bg-light text-dark">{{ domain.length }} aa</span>
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <div class="plot-area mt-2">
+    @if (loading) {
+      <div class="loading-overlay" role="status" aria-live="polite">
+        <div class="text-center">
+          <div class="spinner-border text-primary mb-2">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="text-muted small mb-0">Processing domain data...</p>
+        </div>
+      </div>
+    }
+
+    @if (!loading && _data.length > 0) {
+      <div class="plot-container" [id]="geneName + 'domain'">
+        <plotly-plot
+          [config]="config"
+          [divId]="geneName + 'domain'"
+          [data]="_data"
+          [layout]="layout"
+          [revision]="revision"
+          [updateOnLayoutChange]="true"
+          [updateOnDataChange]="true">
+        </plotly-plot>
+      </div>
+
+      <div class="d-flex justify-content-between align-items-start mt-2 flex-wrap gap-2">
+        <div class="stats-summary small">
+          <span class="text-muted me-3" title="Total domain coverage">
+            <i class="bi bi-pie-chart me-1"></i>
+            Coverage: <strong>{{ getTotalDomainCoverage() | number:'1.1-1' }}%</strong>
+          </span>
+          @if (getLongestDomain(); as longest) {
+            <span class="text-muted me-3" title="Longest domain">
+              Longest: <strong>{{ longest.name }}</strong> ({{ longest.length }} aa)
+            </span>
+          }
+          @if (getShortestDomain(); as shortest) {
+            <span class="text-muted" title="Shortest domain">
+              Shortest: <strong>{{ shortest.name }}</strong> ({{ shortest.length }} aa)
+            </span>
+          }
+        </div>
+
+        <div class="btn-group btn-group-sm">
+          <button
+            class="btn btn-outline-secondary"
+            (click)="copyToClipboard()"
+            [disabled]="domains.length === 0"
+            title="Copy to clipboard">
+            <i class="bi bi-clipboard"></i>
+          </button>
+          <button
+            class="btn btn-outline-secondary"
+            (click)="exportCSV()"
+            [disabled]="domains.length === 0"
+            title="Export as CSV">
+            <i class="bi bi-filetype-csv"></i>
+          </button>
+          <div class="btn-group btn-group-sm" ngbDropdown>
+            <button
+              class="btn btn-outline-secondary"
+              ngbDropdownToggle
+              [disabled]="_data.length === 0"
+              title="Download plot">
+              <i class="bi bi-download"></i>
+            </button>
+            <div ngbDropdownMenu>
+              <button ngbDropdownItem (click)="downloadPlot('svg')">
+                <i class="bi bi-filetype-svg me-2"></i>SVG
+              </button>
+              <button ngbDropdownItem (click)="downloadPlot('png')">
+                <i class="bi bi-filetype-png me-2"></i>PNG
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
+    @if (!loading && _data.length === 0 && geneName) {
+      <div class="empty-state text-center py-4">
+        <i class="bi bi-diagram-3 display-4 text-muted mb-2"></i>
+        <p class="text-muted mb-0">
+          @if (searchTerm) {
+            No domains match "{{ searchTerm }}"
+          } @else if (getVisibleDomainCount() === 0 && domains.length > 0) {
+            All domains are hidden
+          } @else {
+            No domain information available for {{ geneName }}
+          }
+        </p>
+        @if (searchTerm) {
+          <button class="btn btn-sm btn-link" (click)="clearSearch()">Clear search</button>
+        }
+        @if (getVisibleDomainCount() === 0 && domains.length > 0) {
+          <button class="btn btn-sm btn-link" (click)="selectAllDomains()">Show all domains</button>
+        }
+      </div>
+    }
+
+    @if (!geneName) {
+      <div class="empty-state text-center py-4">
+        <i class="bi bi-info-circle display-4 text-muted mb-2"></i>
+        <p class="text-muted mb-0">Select a protein to view domain information</p>
+      </div>
+    }
+  </div>
+
+  @if (selectedDomain) {
+    <div class="domain-detail-panel mt-2">
+      <div class="card">
+        <div class="card-header py-2 d-flex justify-content-between align-items-center">
+          <span class="fw-semibold small">
+            <span class="color-dot" [style.background-color]="selectedDomain.color"></span>
+            {{ selectedDomain.name }}
+          </span>
+          <button class="btn btn-sm btn-close" (click)="selectedDomain = null" aria-label="Close"></button>
+        </div>
+        <div class="card-body py-2">
+          <div class="row g-2 small">
+            <div class="col-6">
+              <span class="text-muted">Position:</span>
+              <strong class="ms-1">{{ selectedDomain.start }} - {{ selectedDomain.end }}</strong>
+            </div>
+            <div class="col-6">
+              <span class="text-muted">Length:</span>
+              <strong class="ms-1">{{ selectedDomain.length }} aa</strong>
+            </div>
+            <div class="col-6">
+              <span class="text-muted">Coverage:</span>
+              <strong class="ms-1">{{ (selectedDomain.length / proteinLength * 100) | number:'1.1-1' }}%</strong>
+            </div>
+            <div class="col-6">
+              <span class="text-muted">Protein:</span>
+              <strong class="ms-1">{{ geneName }}</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

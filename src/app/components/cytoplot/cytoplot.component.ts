@@ -1,21 +1,12 @@
 import {AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
-import {Subscription} from "rxjs";
 import cytoscape from "cytoscape";
 import fcose from "cytoscape-fcose";
-//import * as cxtmenu from "cytoscape-cxtmenu";
-
-
-
-// @ts-ignore
-//import * as cytoscapeSVG from "cytoscape-svg";
-// @ts-ignore
-//import * as panzoom from "cytoscape-panzoom";
 import {SettingsService} from "../../settings.service";
 import {ThemeService} from "../../theme.service";
+import {Subscription} from "rxjs";
 
-//cytoscape.use(cytoscapeSVG);
 cytoscape.use(fcose);
-//cytoscape.use(cxtmenu);
+
 @Component({
     selector: 'app-cytoplot',
     templateUrl: './cytoplot.component.html',
@@ -32,6 +23,8 @@ export class CytoplotComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   cy: any
   componentID: string = "cy"
+  hidden = false;
+
   get drawData(): any {
     return this._drawData
   }
@@ -52,9 +45,11 @@ export class CytoplotComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(private settings: SettingsService, private themeService: ThemeService) { }
 
   ngOnInit(): void {
-    this.themeSubscription = this.themeService.theme$.subscribe(() => {
-      if (this.cy && this._drawData) {
-        this.updateTheme();
+    this.themeSubscription = this.themeService.beforeThemeChange$.subscribe(() => {
+      this.hidden = true;
+      if (this.cy) {
+        this.cy.destroy();
+        this.cy = null;
       }
     });
   }
@@ -63,15 +58,18 @@ export class CytoplotComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.themeSubscription) {
       this.themeSubscription.unsubscribe();
     }
+    if (this.cy) {
+      this.cy.destroy();
+      this.cy = null;
+    }
   }
 
   ngAfterViewInit() {
   }
 
-  private updateTheme(): void {
-    if (this.cy && this._drawData && this._drawData.stylesheet) {
-      this.cy.style().clear().fromJson(this._drawData.stylesheet).update();
-    }
+  updateStyles(styles: any[]): void {
+    if (!this.cy) return;
+    this.cy.style().clear().fromJson(styles).update();
   }
 
   draw() {
@@ -166,32 +164,287 @@ export class CytoplotComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  download() {
-/*    const svgContent = this.cy.svg({full:true})
-    console.log(svgContent)
-    const blob = new Blob([svgContent], {type:"image/svg+xml;charset=utf-8"});
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a")
-    a.href = url
-    a.download = "cytoplot.svg"
-    document.body.appendChild(a)
-    a.click();
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url)*/
+  download(format: 'png' | 'svg' = 'png') {
+    if (!this.cy) return;
 
-    const pngContent = this.cy.png({full:true, scale: 10, bg: "#FFFFFF", output: "blob"})
-    const url = window.URL.createObjectURL(pngContent);
-    const a = document.createElement("a")
-    a.href = url
-    a.download = "cytoplot.png"
-    document.body.appendChild(a)
-    a.click();
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url)
+    const bgColor = this.themeService.isDarkMode() ? "#212529" : "#FFFFFF";
+
+    if (format === 'svg') {
+      const svgContent = this.generateSVG(bgColor);
+      const blob = new Blob([svgContent], { type: "image/svg+xml;charset=utf-8" });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "network.svg";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    } else {
+      const pngContent = this.cy.png({ full: true, scale: 10, bg: bgColor, output: "blob" });
+      const url = window.URL.createObjectURL(pngContent);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "network.png";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    }
+  }
+
+  private generateSVG(bgColor: string): string {
+    const padding = 50;
+    const bb = this.cy.elements().boundingBox();
+    const width = bb.w + padding * 2;
+    const height = bb.h + padding * 2;
+    const offsetX = -bb.x1 + padding;
+    const offsetY = -bb.y1 + padding;
+
+    let svg = `<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+  <defs>
+    <style type="text/css"><![CDATA[
+      .node-label { dominant-baseline: central; text-anchor: middle; }
+    ]]></style>
+  </defs>
+  <rect width="100%" height="100%" fill="${bgColor}"/>
+  <g transform="translate(${offsetX}, ${offsetY})">`;
+
+    svg += this.generateEdgesSVG();
+    svg += this.generateNodesSVG();
+
+    svg += `
+  </g>
+</svg>`;
+
+    return svg;
+  }
+
+  private generateEdgesSVG(): string {
+    let edgesSvg = '\n    <!-- Edges -->\n    <g class="edges">';
+
+    this.cy.edges().forEach((edge: any) => {
+      const display = edge.style('display');
+      if (display === 'none') return;
+
+      const sourcePos = edge.source().position();
+      const targetPos = edge.target().position();
+      const lineColor = edge.style('line-color');
+      const lineWidth = parseFloat(edge.style('width')) || 1;
+      const lineStyle = edge.style('line-style');
+      const opacity = parseFloat(edge.style('opacity')) || 1;
+      const curveStyle = edge.style('curve-style');
+
+      let strokeDasharray = '';
+      if (lineStyle === 'dashed') {
+        strokeDasharray = `stroke-dasharray="${lineWidth * 3} ${lineWidth * 2}"`;
+      } else if (lineStyle === 'dotted') {
+        strokeDasharray = `stroke-dasharray="${lineWidth} ${lineWidth}"`;
+      }
+
+      if (curveStyle === 'bezier' || curveStyle === 'unbundled-bezier') {
+        const ctrlPts = edge.controlPoints();
+        if (ctrlPts && ctrlPts.length > 0) {
+          let pathD = `M ${sourcePos.x} ${sourcePos.y}`;
+          if (ctrlPts.length === 1) {
+            pathD += ` Q ${ctrlPts[0].x} ${ctrlPts[0].y} ${targetPos.x} ${targetPos.y}`;
+          } else if (ctrlPts.length >= 2) {
+            pathD += ` C ${ctrlPts[0].x} ${ctrlPts[0].y} ${ctrlPts[1].x} ${ctrlPts[1].y} ${targetPos.x} ${targetPos.y}`;
+          }
+          edgesSvg += `
+      <path d="${pathD}" fill="none" stroke="${lineColor}" stroke-width="${lineWidth}"
+        opacity="${opacity}" ${strokeDasharray}/>`;
+        } else {
+          edgesSvg += `
+      <line x1="${sourcePos.x}" y1="${sourcePos.y}" x2="${targetPos.x}" y2="${targetPos.y}"
+        stroke="${lineColor}" stroke-width="${lineWidth}" opacity="${opacity}" ${strokeDasharray}/>`;
+        }
+      } else {
+        edgesSvg += `
+      <line x1="${sourcePos.x}" y1="${sourcePos.y}" x2="${targetPos.x}" y2="${targetPos.y}"
+        stroke="${lineColor}" stroke-width="${lineWidth}" opacity="${opacity}" ${strokeDasharray}/>`;
+      }
+    });
+
+    edgesSvg += '\n    </g>';
+    return edgesSvg;
+  }
+
+  private generateNodesSVG(): string {
+    let nodesSvg = '\n    <!-- Nodes -->\n    <g class="nodes">';
+
+    this.cy.nodes().forEach((node: any) => {
+      const display = node.style('display');
+      if (display === 'none') return;
+
+      const pos = node.position();
+      const bgColor = node.style('background-color');
+      const borderColor = node.style('border-color');
+      const borderWidth = parseFloat(node.style('border-width')) || 0;
+      const nodeWidth = parseFloat(node.style('width')) || 20;
+      const nodeHeight = parseFloat(node.style('height')) || 20;
+      const opacity = parseFloat(node.style('opacity')) || 1;
+      const shape = node.style('shape');
+
+      const label = node.data('label') || node.style('label') || '';
+      const fontSize = parseFloat(node.style('font-size')) || 10;
+      const fontFamily = node.style('font-family') || 'Arial, Helvetica, sans-serif';
+      const textColor = node.style('color') || '#000000';
+      const textOutlineColor = node.style('text-outline-color');
+      const textOutlineWidth = parseFloat(node.style('text-outline-width')) || 0;
+
+      nodesSvg += `
+      <g class="node" data-id="${this.escapeXml(node.id())}" transform="translate(${pos.x}, ${pos.y})">`;
+
+      const rx = nodeWidth / 2;
+      const ry = nodeHeight / 2;
+
+      switch (shape) {
+        case 'rectangle':
+        case 'roundrectangle':
+          const cornerRadius = shape === 'roundrectangle' ? Math.min(rx, ry) * 0.3 : 0;
+          nodesSvg += `
+        <rect x="${-rx}" y="${-ry}" width="${nodeWidth}" height="${nodeHeight}" rx="${cornerRadius}" ry="${cornerRadius}"
+          fill="${bgColor}" stroke="${borderColor}" stroke-width="${borderWidth}" opacity="${opacity}"/>`;
+          break;
+        case 'triangle':
+          const triPoints = `0,${-ry} ${rx},${ry} ${-rx},${ry}`;
+          nodesSvg += `
+        <polygon points="${triPoints}" fill="${bgColor}" stroke="${borderColor}" stroke-width="${borderWidth}" opacity="${opacity}"/>`;
+          break;
+        case 'diamond':
+          const diaPoints = `0,${-ry} ${rx},0 0,${ry} ${-rx},0`;
+          nodesSvg += `
+        <polygon points="${diaPoints}" fill="${bgColor}" stroke="${borderColor}" stroke-width="${borderWidth}" opacity="${opacity}"/>`;
+          break;
+        case 'hexagon':
+          const hexW = rx * 0.866;
+          const hexH = ry * 0.5;
+          const hexPoints = `${hexW},${-hexH} ${hexW},${hexH} 0,${ry} ${-hexW},${hexH} ${-hexW},${-hexH} 0,${-ry}`;
+          nodesSvg += `
+        <polygon points="${hexPoints}" fill="${bgColor}" stroke="${borderColor}" stroke-width="${borderWidth}" opacity="${opacity}"/>`;
+          break;
+        case 'star':
+          nodesSvg += this.generateStarPath(rx, ry, bgColor, borderColor, borderWidth, opacity);
+          break;
+        default:
+          nodesSvg += `
+        <ellipse cx="0" cy="0" rx="${rx}" ry="${ry}" fill="${bgColor}" stroke="${borderColor}" stroke-width="${borderWidth}" opacity="${opacity}"/>`;
+      }
+
+      if (label) {
+        const escapedLabel = this.escapeXml(label);
+
+        if (textOutlineWidth > 0) {
+          nodesSvg += `
+        <text class="node-label" x="0" y="0" font-family="${fontFamily}" font-size="${fontSize}px"
+          fill="${textOutlineColor}" stroke="${textOutlineColor}" stroke-width="${textOutlineWidth * 2}px" stroke-linejoin="round">${escapedLabel}</text>`;
+        }
+
+        nodesSvg += `
+        <text class="node-label" x="0" y="0" font-family="${fontFamily}" font-size="${fontSize}px" fill="${textColor}">${escapedLabel}</text>`;
+      }
+
+      nodesSvg += `
+      </g>`;
+    });
+
+    nodesSvg += '\n    </g>';
+    return nodesSvg;
+  }
+
+  private generateStarPath(rx: number, ry: number, fill: string, stroke: string, strokeWidth: number, opacity: number): string {
+    const points = 5;
+    const outerR = Math.min(rx, ry);
+    const innerR = outerR * 0.4;
+    let pathD = '';
+
+    for (let i = 0; i < points * 2; i++) {
+      const angle = (i * Math.PI) / points - Math.PI / 2;
+      const r = i % 2 === 0 ? outerR : innerR;
+      const x = Math.cos(angle) * r;
+      const y = Math.sin(angle) * r;
+      pathD += (i === 0 ? 'M' : 'L') + ` ${x} ${y} `;
+    }
+    pathD += 'Z';
+
+    return `
+        <path d="${pathD}" fill="${fill}" stroke="${stroke}" stroke-width="${strokeWidth}" opacity="${opacity}"/>`;
+  }
+
+  private escapeXml(str: string): string {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&apos;');
   }
 
   saveJSON() {
     return this.cy.elements().jsons()
+  }
+
+  highlightNodes(nodeIds: string[]): void {
+    if (!this.cy) return;
+    this.cy.nodes().removeClass('highlighted');
+    for (const id of nodeIds) {
+      const node = this.cy.getElementById(id);
+      if (node) {
+        node.addClass('highlighted');
+      }
+    }
+  }
+
+  clearHighlights(): void {
+    if (!this.cy) return;
+    this.cy.nodes().removeClass('highlighted');
+  }
+
+  filterEdges(source: 'all' | 'stringdb' | 'interactome'): void {
+    if (!this.cy) return;
+
+    this.cy.edges().removeClass('hidden');
+
+    if (source === 'stringdb') {
+      this.cy.edges('.interactome').addClass('hidden');
+    } else if (source === 'interactome') {
+      this.cy.edges('.stringdb').addClass('hidden');
+    }
+  }
+
+  runLayout(layoutType: string): void {
+    if (!this.cy) return;
+
+    const layoutOptions: any = {
+      name: layoutType,
+      animate: true,
+      animationDuration: 500
+    };
+
+    if (layoutType === 'fcose' || layoutType === 'cose') {
+      layoutOptions.name = 'fcose';
+    }
+
+    this.cy.layout(layoutOptions).run();
+  }
+
+  fit(): void {
+    if (!this.cy) return;
+    this.cy.fit();
+  }
+
+  zoomIn(): void {
+    if (!this.cy) return;
+    this.cy.zoom(this.cy.zoom() * 1.2);
+  }
+
+  zoomOut(): void {
+    if (!this.cy) return;
+    this.cy.zoom(this.cy.zoom() / 1.2);
   }
 
   handleKeyboardNavigation(event: KeyboardEvent): void {

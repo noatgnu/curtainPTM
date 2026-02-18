@@ -1,228 +1,447 @@
-<div class="card">
-  <div class="card-body">
-    <h5 class="card-title">Network Parameters</h5>
-    <div class="card">
-      <div class="card-body">
-        <h5 class="card-title">StringDB</h5>
-        <form [formGroup]="form">
-          <div class="row">
-            <div class="col">
-              <label for="stringNT">StringDB Network Type</label>
-              <select formControlName="networkType" class="form-control" id="stringNT">
-                <option value="functional">
-                  Functional
-                </option>
-                <option value="physical">
-                  Physical
-                </option>
-              </select>
-            </div>
-            <div class="col">
-              <label for="string">Required Combined Score (Max = 1)</label>
-              <input formControlName="requiredScore" class="form-control" id="string" type="number">
-            </div>
-            <div class="col">
-              <label for="stringT">Required T-Score Score (Max = 1)</label>
-              <input formControlName="tscore" class="form-control" id="stringT" type="number">
-            </div>
+<div class="network-interactions-container">
+  <div class="row g-3">
+    <div class="col-lg-3">
+      <div class="settings-sidebar">
+        <div class="card mb-2">
+          <div class="card-header py-2 d-flex justify-content-between align-items-center">
+            <span class="fw-semibold small">
+              <i class="bi bi-gear me-1"></i>Network Parameters
+            </span>
+            <button
+              class="btn btn-sm btn-outline-secondary"
+              (click)="showSettings = !showSettings"
+              [attr.aria-expanded]="showSettings"
+              title="Toggle settings">
+              <i class="bi" [class.bi-chevron-up]="showSettings" [class.bi-chevron-down]="!showSettings"></i>
+            </button>
           </div>
-        </form>
-        <form [formGroup]="form">
-          <div class="row">
-            <div class="col">
-              <label for="stringA">Required A-Score Score (Max = 1)</label>
-              <input formControlName="ascore" class="form-control" id="stringA" type="number">
-            </div>
-            <div class="col">
-              <label for="stringD">Required D-Score Score (Max = 1)</label>
-              <input formControlName="dscore" class="form-control" id="stringD" type="number">
-            </div>
-            <div class="col">
-              <label for="stringE">Required E-Score Score (Max = 1)</label>
-              <input formControlName="escore" class="form-control" id="stringE" type="number">
-            </div>
-          </div>
-        </form>
-        <form [formGroup]="form">
-          <div class="row">
-            <div class="col">
-              <label for="stringF">Required F-Score Score (Max = 1)</label>
-              <input formControlName="fscore" class="form-control" id="stringF" type="number">
-            </div>
-            <div class="col">
-              <label for="stringN">Required N-Score Score (Max = 1)</label>
-              <input formControlName="nscore" class="form-control" id="stringN" type="number">
-            </div>
-            <div class="col">
-              <label for="stringP">Required P-Score Score (Max = 1)</label>
-              <input formControlName="pscore" class="form-control" id="stringP" type="number">
-            </div>
-          </div>
-        </form>
 
+          @if (showSettings) {
+            <div class="card-body py-2">
+              <form [formGroup]="form">
+                <div class="accordion accordion-flush" id="settingsAccordion">
+                  <div class="accordion-item">
+                    <h2 class="accordion-header">
+                      <button
+                        class="accordion-button py-2 small"
+                        [class.collapsed]="!showStringDbSettings"
+                        type="button"
+                        (click)="showStringDbSettings = !showStringDbSettings"
+                        aria-expanded="true">
+                        <i class="bi bi-diagram-2 me-2"></i>StringDB
+                      </button>
+                    </h2>
+                    @if (showStringDbSettings) {
+                      <div class="accordion-body py-2">
+                        <div class="mb-2">
+                          <label for="networkType" class="form-label small mb-1">Network Type</label>
+                          <select
+                            id="networkType"
+                            formControlName="networkType"
+                            class="form-select form-select-sm"
+                            aria-label="StringDB network type">
+                            <option value="functional">Functional</option>
+                            <option value="physical">Physical</option>
+                          </select>
+                        </div>
+
+                        <div class="mb-2">
+                          <label class="form-label small mb-1">
+                            Combined Score: {{ form.value.requiredScore | number:'1.2-2' }}
+                          </label>
+                          <input
+                            type="range"
+                            class="form-range"
+                            formControlName="requiredScore"
+                            min="0"
+                            max="1"
+                            step="0.05"
+                            aria-label="Required combined score">
+                        </div>
+
+                        <div class="score-filters">
+                          <div class="small text-muted mb-1">Score Filters (optional)</div>
+                          @for (score of scoreDefinitions; track score.key) {
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                              <span
+                                class="score-label"
+                                [ngbTooltip]="score.description"
+                                placement="right">
+                                {{ score.label }}
+                              </span>
+                              <input
+                                type="range"
+                                class="form-range flex-grow-1"
+                                [formControlName]="score.key"
+                                min="0"
+                                max="1"
+                                step="0.1"
+                                [attr.aria-label]="score.label">
+                              <span class="score-value">{{ form.value[score.key] | number:'1.1-1' }}</span>
+                            </div>
+                          }
+                        </div>
+                      </div>
+                    }
+                  </div>
+
+                  <div class="accordion-item">
+                    <h2 class="accordion-header">
+                      <button
+                        class="accordion-button py-2 small"
+                        [class.collapsed]="!showInteractomeSettings"
+                        type="button"
+                        (click)="showInteractomeSettings = !showInteractomeSettings">
+                        <i class="bi bi-diagram-3 me-2"></i>Interactome Atlas
+                      </button>
+                    </h2>
+                    @if (showInteractomeSettings) {
+                      <div class="accordion-body py-2">
+                        <div class="mb-2">
+                          <label class="form-label small mb-1">
+                            Min Score: {{ form.value.atlasScore | number:'1.2-2' }}
+                          </label>
+                          <input
+                            type="range"
+                            class="form-range"
+                            formControlName="atlasScore"
+                            min="0"
+                            max="1"
+                            step="0.05"
+                            aria-label="Interactome Atlas minimum score">
+                        </div>
+                      </div>
+                    }
+                  </div>
+
+                  <div class="accordion-item">
+                    <h2 class="accordion-header">
+                      <button
+                        class="accordion-button py-2 small"
+                        [class.collapsed]="!showColorSettings"
+                        type="button"
+                        (click)="showColorSettings = !showColorSettings">
+                        <i class="bi bi-palette me-2"></i>Colors
+                      </button>
+                    </h2>
+                    @if (showColorSettings) {
+                      <div class="accordion-body py-2">
+                        <div class="color-legend">
+                          <div class="small text-muted mb-2">Node Colors</div>
+                          <div class="color-item">
+                            <span
+                              class="color-swatch"
+                              [style.background]="colorMap['Increase']"
+                              [(colorPicker)]="colorMap['Increase']"
+                              (colorPickerChange)="updateColor($event, 'Increase')"></span>
+                            <span class="small">Increased (FC &gt; {{ settings.settings.log2FCCutoff }})</span>
+                          </div>
+                          <div class="color-item">
+                            <span
+                              class="color-swatch"
+                              [style.background]="colorMap['Decrease']"
+                              [(colorPicker)]="colorMap['Decrease']"
+                              (colorPickerChange)="updateColor($event, 'Decrease')"></span>
+                            <span class="small">Decreased (FC &lt; -{{ settings.settings.log2FCCutoff }})</span>
+                          </div>
+                          <div class="color-item">
+                            <span
+                              class="color-swatch"
+                              [style.background]="colorMap['No change']"
+                              [(colorPicker)]="colorMap['No change']"
+                              (colorPickerChange)="updateColor($event, 'No change')"></span>
+                            <span class="small">No change</span>
+                          </div>
+
+                          <div class="small text-muted mb-2 mt-3">Text Colors</div>
+                          <div class="color-item">
+                            <span
+                              class="color-swatch"
+                              [style.background]="colorMap['Significant']"
+                              [(colorPicker)]="colorMap['Significant']"
+                              (colorPickerChange)="updateColor($event, 'Significant')"></span>
+                            <span class="small">Significant (p &le; {{ settings.settings.pCutoff }})</span>
+                          </div>
+                          <div class="color-item">
+                            <span
+                              class="color-swatch"
+                              [style.background]="colorMap['Not significant']"
+                              [(colorPicker)]="colorMap['Not significant']"
+                              (colorPickerChange)="updateColor($event, 'Not significant')"></span>
+                            <span class="small">Not significant</span>
+                          </div>
+
+                          <div class="small text-muted mb-2 mt-3">Edge Colors</div>
+                          <div class="color-item">
+                            <span
+                              class="color-swatch"
+                              [style.background]="colorMap['StringDB']"
+                              [(colorPicker)]="colorMap['StringDB']"
+                              (colorPickerChange)="updateColor($event, 'StringDB')"></span>
+                            <span class="small">StringDB</span>
+                          </div>
+                          <div class="color-item">
+                            <span
+                              class="color-swatch"
+                              [style.background]="colorMap['InteractomeAtlas']"
+                              [(colorPicker)]="colorMap['InteractomeAtlas']"
+                              (colorPickerChange)="updateColor($event, 'InteractomeAtlas')"></span>
+                            <span class="small">Interactome Atlas</span>
+                          </div>
+                        </div>
+                      </div>
+                    }
+                  </div>
+                </div>
+              </form>
+
+              <button
+                class="btn btn-primary btn-sm w-100 mt-2"
+                (click)="getInteractions()"
+                [disabled]="loading"
+                aria-label="Redraw network">
+                @if (loading) {
+                  <span class="spinner-border spinner-border-sm me-1"></span>
+                } @else {
+                  <i class="bi bi-arrow-repeat me-1"></i>
+                }
+                Redraw Network
+              </button>
+            </div>
+          }
+        </div>
+
+        @if (networkStats.totalNodes > 0) {
+          <div class="card mb-2">
+            <div class="card-header py-2">
+              <span class="fw-semibold small"><i class="bi bi-bar-chart me-1"></i>Statistics</span>
+            </div>
+            <div class="card-body py-2">
+              <div class="stats-grid">
+                <div class="stat-item">
+                  <span class="stat-value">{{ networkStats.geneNodes }}</span>
+                  <span class="stat-label">Genes</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-value">{{ networkStats.ptmNodes }}</span>
+                  <span class="stat-label">PTM Sites</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-value text-success">{{ networkStats.increasedNodes }}</span>
+                  <span class="stat-label">Increased</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-value text-danger">{{ networkStats.decreasedNodes }}</span>
+                  <span class="stat-label">Decreased</span>
+                </div>
+              </div>
+
+              <div class="mt-2 small">
+                <div class="d-flex justify-content-between">
+                  <span class="text-muted">StringDB edges:</span>
+                  <strong>{{ networkStats.stringDbEdges }}</strong>
+                </div>
+                <div class="d-flex justify-content-between">
+                  <span class="text-muted">Interactome edges:</span>
+                  <strong>{{ networkStats.interactomeEdges }}</strong>
+                </div>
+                <div class="d-flex justify-content-between">
+                  <span class="text-muted">Significant:</span>
+                  <strong>{{ networkStats.significantNodes }}</strong>
+                </div>
+              </div>
+
+              @if (getTopConnectedGenes(3).length > 0) {
+                <div class="mt-2 pt-2 border-top">
+                  <div class="small text-muted mb-1">Top Connected</div>
+                  @for (item of getTopConnectedGenes(3); track item.gene) {
+                    <div class="d-flex justify-content-between small">
+                      <span>{{ item.gene }}</span>
+                      <span class="badge bg-secondary">{{ item.connections }}</span>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        @if (showEdgePanel && edgeDataViewer[edgeDataSource]) {
+          <div class="card edge-panel">
+            <div class="card-header py-2 d-flex justify-content-between align-items-center">
+              <span class="fw-semibold small">
+                <i class="bi bi-link-45deg me-1"></i>
+                {{ edgeDataSource === 'stringdb' ? 'StringDB' : 'Interactome' }} Edge
+              </span>
+              <button class="btn btn-sm btn-close" (click)="closeEdgePanel()" aria-label="Close"></button>
+            </div>
+            <div class="card-body py-2">
+              @if (edgeDataSource === 'stringdb') {
+                <div class="edge-details small">
+                  <div class="edge-nodes mb-2">
+                    <strong>{{ edgeDataViewer[edgeDataSource]["preferredName_A"] }}</strong>
+                    <i class="bi bi-arrow-left-right mx-2"></i>
+                    <strong>{{ edgeDataViewer[edgeDataSource]["preferredName_B"] }}</strong>
+                  </div>
+                  <div class="d-flex justify-content-between">
+                    <span>Combined Score:</span>
+                    <strong>{{ edgeDataViewer[edgeDataSource]["score"] }}</strong>
+                  </div>
+                  @for (score of scoreDefinitions; track score.key) {
+                    <div class="d-flex justify-content-between">
+                      <span [ngbTooltip]="score.description">{{ score.label }}:</span>
+                      <span>{{ edgeDataViewer[edgeDataSource][score.key] }}</span>
+                    </div>
+                  }
+                </div>
+              } @else {
+                <div class="edge-details small">
+                  <div class="edge-nodes mb-2">
+                    <strong>{{ edgeDataViewer[edgeDataSource]["interactor_A"]["protein_gene_name"] }}</strong>
+                    <i class="bi bi-arrow-left-right mx-2"></i>
+                    <strong>{{ edgeDataViewer[edgeDataSource]["interactor_B"]["protein_gene_name"] }}</strong>
+                  </div>
+                  <div class="d-flex justify-content-between">
+                    <span>Score:</span>
+                    <strong>{{ edgeDataViewer[edgeDataSource]["score"] }}</strong>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        }
       </div>
     </div>
-    <form [formGroup]="form">
-      <div class="row">
-        <div class="col">
-          <label for="atlasScore">Interactome Required Score (Max = 1)</label>
-          <input formControlName="atlasScore" class="form-control" id="atlasScore" type="number" max="1">
+
+    <div class="col-lg-9">
+      <div class="network-main">
+        <div class="toolbar mb-2">
+          <div class="d-flex flex-wrap gap-2 align-items-center">
+            <div class="input-group input-group-sm" style="max-width: 200px;">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Search genes..."
+                [(ngModel)]="searchTerm"
+                (input)="onSearchChange()"
+                aria-label="Search genes">
+              @if (searchTerm) {
+                <button class="btn btn-outline-secondary" (click)="clearSearch()" title="Clear">
+                  <i class="bi bi-x"></i>
+                </button>
+              }
+            </div>
+
+            <select
+              class="form-select form-select-sm"
+              style="max-width: 150px;"
+              [(ngModel)]="edgeSourceFilter"
+              (change)="onEdgeSourceFilterChange()"
+              aria-label="Filter by source">
+              <option value="all">All Sources</option>
+              <option value="stringdb">StringDB Only</option>
+              <option value="interactome">Interactome Only</option>
+            </select>
+
+            <select
+              class="form-select form-select-sm"
+              style="max-width: 140px;"
+              [(ngModel)]="layoutType"
+              (change)="onLayoutChange()"
+              aria-label="Layout type">
+              @for (layout of layoutOptions; track layout.value) {
+                <option [value]="layout.value">{{ layout.label }}</option>
+              }
+            </select>
+
+            <div class="btn-group btn-group-sm">
+              <button class="btn btn-outline-secondary" (click)="zoomIn()" title="Zoom in">
+                <i class="bi bi-zoom-in"></i>
+              </button>
+              <button class="btn btn-outline-secondary" (click)="zoomOut()" title="Zoom out">
+                <i class="bi bi-zoom-out"></i>
+              </button>
+              <button class="btn btn-outline-secondary" (click)="fitToView()" title="Fit to view">
+                <i class="bi bi-arrows-fullscreen"></i>
+              </button>
+            </div>
+
+            <div class="ms-auto d-flex gap-1">
+              <button class="btn btn-sm btn-outline-secondary" (click)="saveNetwork()" title="Save configuration">
+                <i class="bi bi-save"></i>
+              </button>
+              <div class="btn-group btn-group-sm" ngbDropdown>
+                <button class="btn btn-outline-secondary" ngbDropdownToggle title="Export">
+                  <i class="bi bi-download"></i>
+                </button>
+                <div ngbDropdownMenu>
+                  <button ngbDropdownItem (click)="downloadPNG()">
+                    <i class="bi bi-filetype-png me-2"></i>PNG Image
+                  </button>
+                  <button ngbDropdownItem (click)="downloadSVG()">
+                    <i class="bi bi-filetype-svg me-2"></i>SVG Vector
+                  </button>
+                  <div class="dropdown-divider"></div>
+                  <button ngbDropdownItem (click)="exportNodesCSV()">
+                    <i class="bi bi-filetype-csv me-2"></i>Genes CSV
+                  </button>
+                  <button ngbDropdownItem (click)="exportEdgesCSV()">
+                    <i class="bi bi-filetype-csv me-2"></i>Edges CSV
+                  </button>
+                  <div class="dropdown-divider"></div>
+                  <button ngbDropdownItem (click)="copyGenesToClipboard()">
+                    <i class="bi bi-clipboard me-2"></i>Copy Gene List
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </form>
 
-  </div>
-  <div class="card-footer">
-    <button type="button" class="btn btn-primary" (click)="getInteractions()" aria-label="Redraw network graph with current parameters">Redraw</button>
-  </div>
-</div>
-<div class="d-grid gap-2 d-md-flex justify-content-md-end mt-2">
-  <button class="btn btn-primary" (click)="saveNetwork()" aria-label="Save current network configuration">Save current network configuration</button>
-  <button class="btn btn-primary" (click)="cytoplot.download()" aria-label="Download network graph as PNG image">Download PNG</button>
-</div>
-<div class="row">
-  <div class="col-3">
-    <form [formGroup]="form">
-      <table class="table table-bordered mt-2" aria-label="Network color legend">
-        <caption class="visually-hidden">Color legend for network graph nodes and edges</caption>
-        <thead>
-        <tr>
-          <th scope="col">
-            Color
-          </th>
-          <th scope="col">
-            Description
-          </th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-          <td>
-            <label for="color-increase" class="visually-hidden">Color for increased fold change nodes</label>
-            <input id="color-increase" formControlName="Increase" (colorPickerChange)="updateColor($event, 'Increase')" class="form-control" [(colorPicker)]="colorMap['Increase']" [style.background]="colorMap['Increase']" aria-label="Select color for increased fold change">
-          </td>
-          <td>Fold change > {{settings.settings.log2FCCutoff}}</td>
-        </tr>
-        <tr>
-          <td>
-            <label for="color-decrease" class="visually-hidden">Color for decreased fold change nodes</label>
-            <input id="color-decrease" formControlName="Decrease" (colorPickerChange)="updateColor($event, 'Decrease')" class="form-control" [(colorPicker)]="colorMap['Decrease']" [style.background]="colorMap['Decrease']" aria-label="Select color for decreased fold change">
-          </td>
-          <td>Fold change < {{-settings.settings.log2FCCutoff}}</td>
-        </tr>
-        <tr>
-          <td>
-            <label for="color-nochange" class="visually-hidden">Color for no change nodes</label>
-            <input id="color-nochange" formControlName="No change" (colorPickerChange)="updateColor($event, 'No change')" class="form-control" [(colorPicker)]="colorMap['No change']" [style.background]="colorMap['No change']" aria-label="Select color for no change">
-          </td>
-          <td>{{-settings.settings.log2FCCutoff}} < Fold change < {{settings.settings.log2FCCutoff}}</td>
-        </tr>
-        <tr>
-          <td>
-            <label for="color-significant" class="visually-hidden">Color for significant text</label>
-            <input id="color-significant" formControlName="Significant" (colorPickerChange)="updateColor($event, 'Significant')" class="form-control" [(colorPicker)]="colorMap['Significant']" [style.background]="colorMap['Significant']" aria-label="Select color for significant">
-          </td>
-          <td>pvalue <= {{settings.settings.pCutoff}}</td>
-        </tr>
-        <tr>
-          <td>
-            <label for="color-notsignificant" class="visually-hidden">Color for not significant text</label>
-            <input id="color-notsignificant" formControlName="Not significant" (colorPickerChange)="updateColor($event, 'Not significant')" class="form-control" [(colorPicker)]="colorMap['Not significant']" [style.background]="colorMap['Not significant']" aria-label="Select color for not significant">
-          </td>
-          <td>pvalue > {{settings.settings.pCutoff}}</td>
-        </tr>
-        <tr>
-          <td>
-            <label for="color-stringdb" class="visually-hidden">Color for StringDB edges</label>
-            <input id="color-stringdb" formControlName="StringDB" (colorPickerChange)="updateColor($event, 'StringDB')" class="form-control" [(colorPicker)]="colorMap['StringDB']" [style.background]="colorMap['StringDB']" aria-label="Select color for StringDB interaction">
-          </td>
-          <td>StringDB interaction</td>
-        </tr>
-        <tr>
-          <td>
-            <label for="color-interactome" class="visually-hidden">Color for Interactome Atlas edges</label>
-            <input id="color-interactome" formControlName="InteractomeAtlas" (colorPickerChange)="updateColor($event, 'InteractomeAtlas')" class="form-control" [(colorPicker)]="colorMap['InteractomeAtlas']" [style.background]="colorMap['InteractomeAtlas']" aria-label="Select color for Interactome Atlas interaction">
-          </td>
-          <td>Interactome Atlas interaction</td>
-        </tr>
-        </tbody>
-      </table>
-    </form>
+        <div class="network-container">
+          @if (loading) {
+            <div class="loading-overlay" role="status" aria-live="polite">
+              <div class="text-center">
+                <div class="spinner-border text-primary mb-2" style="width: 3rem; height: 3rem;">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="text-muted mb-0">{{ loadingMessage }}</p>
+              </div>
+            </div>
+          }
 
-    @if (edgeDataViewer[edgeDataSource]) {
-      <table class="table table-bordered table-striped mt-2" aria-label="Selected edge properties">
-        <caption class="visually-hidden">Properties of the currently selected network edge</caption>
-        <thead>
-        <tr>
-          <th scope="col">
-            Properties
-          </th>
-          <th scope="col">
-            Values
-          </th>
-        </tr>
-        </thead>
-        <tbody>
-        @if (edgeDataSource==='stringdb') {
-          <tr>
-            <td>Node A</td>
-            <td>{{edgeDataViewer[edgeDataSource]["preferredName_A"]}}</td>
-          </tr>
-          <tr>
-            <td>Node B</td>
-            <td>{{edgeDataViewer[edgeDataSource]["preferredName_B"]}}</td>
-          </tr>
-          <tr>
-            <td><span ngbTooltip="coexpression score (derived from similar pattern of mRNA expression measured by DNA arrays and similar technologies)">A-score</span></td>
-            <td>{{edgeDataViewer[edgeDataSource]["ascore"]}}</td>
-          </tr>
-          <tr>
-            <td><span ngbTooltip="database score (derived from curated data of various databases)">D-score</span></td>
-            <td>{{edgeDataViewer[edgeDataSource]["dscore"]}}</td>
-          </tr>
-          <tr>
-            <td><span ngbTooltip="experimental score (derived from experimental data, such as, affinity chromatography)">E-score</span></td>
-            <td>{{edgeDataViewer[edgeDataSource]["escore"]}}</td>
-          </tr>
-          <tr>
-            <td><span ngbTooltip="fusion score (derived from fused proteins in other species)">F-score</span></td>
-            <td>{{edgeDataViewer[edgeDataSource]["fscore"]}}</td>
-          </tr>
-          <tr>
-            <td><span ngbTooltip="neighborhood score, (computed from the inter-gene nucleotide count)">N-score</span></td>
-            <td>{{edgeDataViewer[edgeDataSource]["nscore"]}}</td>
-          </tr>
-          <tr>
-            <td><span ngbTooltip="cooccurence score of the phyletic profile (derived from similar absence/presence patterns of genes)">P-score</span></td>
-            <td>{{edgeDataViewer[edgeDataSource]["pscore"]}}</td>
-          </tr>
-          <tr>
-            <td><span ngbTooltip="textmining score (derived from the co-occurrence of gene/protein names in abstracts)">T-score</span></td>
-            <td>{{edgeDataViewer[edgeDataSource]["tscore"]}}</td>
-          </tr>
-          <tr>
-            <td><span ngbTooltip="combined score is computed by combining the probabilities from the different evidence channels and corrected for the probability of randomly observing an interaction">Score</span></td>
-            <td>{{edgeDataViewer[edgeDataSource]["score"]}}</td>
-          </tr>
-        } @else {
-          <tr>
-            <td>Node A</td>
-            <td>{{edgeDataViewer[edgeDataSource]["interactor_A"]["protein_gene_name"]}}</td>
-          </tr>
-          <tr>
-            <td>Node B</td>
-            <td>{{edgeDataViewer[edgeDataSource]["interactor_B"]["protein_gene_name"]}}</td>
-          </tr>
-          <tr>
-            <td>Score</td>
-            <td>{{edgeDataViewer[edgeDataSource]["score"]}}</td>
-          </tr>
+          @if (error) {
+            <div class="alert alert-warning m-3" role="alert">
+              <i class="bi bi-exclamation-triangle me-2"></i>{{ error }}
+            </div>
+          }
+
+          <app-cytoplot
+            #cytoplot
+            [dimensions]="{width: '100%', height: 600}"
+            [drawData]="result"
+            (clickedID)="handleSelect($event)"
+            (ready)="saveNetwork()">
+          </app-cytoplot>
+
+          @if (!loading && networkStats.totalNodes === 0 && _genes.length > 0) {
+            <div class="empty-state">
+              <i class="bi bi-diagram-3 display-1 text-muted"></i>
+              <p class="text-muted mt-2">No interactions found for the selected proteins</p>
+              <p class="small text-muted">Try adjusting the score thresholds</p>
+            </div>
+          }
+        </div>
+
+        @if (highlightedNodes.size > 0) {
+          <div class="highlight-info mt-2">
+            <span class="badge bg-warning text-dark">
+              <i class="bi bi-search me-1"></i>
+              {{ highlightedNodes.size }} gene(s) highlighted
+            </span>
+          </div>
         }
-        </tbody>
-      </table>
-    }
-  </div>
-  <div class="col-9">
-    <app-cytoplot #cytoplot [drawData]="result" [dimensions]="{width: 1200, height: 700}" (clickedID)="handleSelect($event)" (ready)="saveNetwork()"></app-cytoplot>
+      </div>
+    </div>
   </div>
 </div>

@@ -1,0 +1,178 @@
+.protein-domain-container {
+  position: relative;
+}
+
+.card {
+  border-radius: 0.375rem;
+
+  .card-header {
+    background: var(--bs-body-bg);
+    border-bottom: 1px solid var(--bs-border-color);
+  }
+
+  .card-body {
+    background: var(--bs-body-bg);
+  }
+}
+
+.plot-area {
+  position: relative;
+  min-height: 150px;
+}
+
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  border-radius: 0.375rem;
+
+  [data-bs-theme="dark"] & {
+    background: rgba(33, 37, 41, 0.9);
+  }
+}
+
+.plot-container {
+  background: var(--bs-body-bg);
+  border: 1px solid var(--bs-border-color);
+  border-radius: 0.375rem;
+  overflow: hidden;
+
+  plotly-plot {
+    width: 100%;
+  }
+}
+
+.domain-list {
+  border: 1px solid var(--bs-border-color);
+  border-radius: 0.375rem;
+  padding: 0.5rem;
+  background: var(--bs-body-bg);
+}
+
+.domain-items {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.domain-item {
+  padding: 0.375rem 0.5rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background-color: var(--bs-tertiary-bg);
+  }
+
+  &.selected {
+    background-color: var(--bs-primary-bg-subtle);
+    border-left: 3px solid var(--bs-primary);
+  }
+}
+
+.color-indicator {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  flex-shrink: 0;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+}
+
+.color-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.domain-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.domain-range {
+  font-family: monospace;
+  font-size: 0.75rem;
+}
+
+.stats-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  align-items: center;
+
+  strong {
+    color: var(--bs-body-color);
+  }
+}
+
+.empty-state {
+  background: var(--bs-body-bg);
+  border: 1px dashed var(--bs-border-color);
+  border-radius: 0.375rem;
+
+  i {
+    display: block;
+  }
+}
+
+.domain-detail-panel {
+  .card {
+    border-color: var(--bs-primary);
+
+    .card-header {
+      background: var(--bs-primary-bg-subtle);
+    }
+  }
+}
+
+:host ::ng-deep {
+  .js-plotly-plot {
+    width: 100% !important;
+  }
+
+  .plotly {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .stats-summary {
+    flex-direction: column;
+    align-items: flex-start;
+
+    span {
+      margin-right: 0 !important;
+    }
+  }
+
+  .domain-name {
+    max-width: 120px;
+  }
+
+  .d-flex.justify-content-between {
+    flex-direction: column;
+    align-items: stretch !important;
+
+    .btn-group {
+      justify-content: flex-end;
+      margin-top: 0.5rem;
+    }
+  }
+}
