@@ -1,11 +1,11 @@
 <div class="modal-header">
-  <h5 class="modal-title">
-    <i class="bi bi-layers me-2"></i>Data Selection Management
+  <h5 class="modal-title" id="dataSelectionModalTitle">
+    <i class="bi bi-layers me-2" aria-hidden="true"></i>Data Selection Management
   </h5>
-  <button type="button" class="btn-close" aria-label="Close" (click)="close()"></button>
+  <button type="button" class="btn-close" aria-label="Close modal" (click)="close()"></button>
 </div>
 
-<div class="modal-body">
+<div class="modal-body" role="dialog" aria-modal="true" aria-labelledby="dataSelectionModalTitle">
   <div class="card mb-3">
     <div class="card-header">
       <h6 class="mb-0"><i class="bi bi-file-earmark-text me-2"></i>FASTA Library Import</h6>
@@ -72,8 +72,11 @@
                 <button
                   class="btn btn-outline-primary btn-sm"
                   type="button"
-                  (click)="selectionToggle[s] = !selectionToggle[s]">
-                  <i class="bi" [ngClass]="selectionToggle[s] ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+                  (click)="selectionToggle[s] = !selectionToggle[s]"
+                  [attr.aria-expanded]="selectionToggle[s]"
+                  [attr.aria-controls]="'selection-items-' + i"
+                  [attr.aria-label]="(selectionToggle[s] ? 'Hide' : 'Edit') + ' items for ' + s">
+                  <i class="bi" [ngClass]="selectionToggle[s] ? 'bi-chevron-up' : 'bi-chevron-down'" aria-hidden="true"></i>
                   {{selectionToggle[s] ? 'Hide' : 'Edit'}} Items
                   <span class="badge bg-primary ms-2">{{selectionMap[s]?.length || 0}}</span>
                 </button>
@@ -82,7 +85,7 @@
           </div>
 
           @if (selectionToggle[s] === true && primaryIDForms[s]) {
-            <div class="accordion-body border-top">
+            <div class="accordion-body border-top" [id]="'selection-items-' + i">
               <div class="card mb-3" style="background-color: var(--app-bg-tertiary);">
                 <div class="card-body py-2">
                   <form [formGroup]="selectAllForms[s]">

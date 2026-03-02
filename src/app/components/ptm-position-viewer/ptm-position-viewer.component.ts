@@ -895,7 +895,7 @@ export class PtmPositionViewerComponent implements OnInit {
     this.toast.show('Success', 'PNG files downloaded').then();
   }
 
-  downloadCSV(): void {
+  downloadTSV(): void {
     const headers = ['Position', 'Aligned Position', 'Residue', 'Significant', 'Selected', 'ID'];
 
     for (const g of this.graphData) {
@@ -922,16 +922,16 @@ export class PtmPositionViewerComponent implements OnInit {
       rows.push(row);
     }
 
-    const csvContent = rows.map(row => row.join(',')).join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const tsvContent = rows.map(row => row.join('\t')).join('\n');
+    const blob = new Blob([tsvContent], { type: 'text/tab-separated-values;charset=utf-8;' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `ptm_positions_${this.accessionID}.csv`;
+    a.download = `ptm_positions_${this.accessionID}.tsv`;
     a.click();
     window.URL.revokeObjectURL(url);
 
-    this.toast.show('Success', 'CSV file downloaded').then();
+    this.toast.show('Success', 'TSV file downloaded').then();
   }
 
   getKinaseLibrary(): void {

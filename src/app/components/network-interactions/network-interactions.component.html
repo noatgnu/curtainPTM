@@ -21,18 +21,19 @@
               <form [formGroup]="form">
                 <div class="accordion accordion-flush" id="settingsAccordion">
                   <div class="accordion-item">
-                    <h2 class="accordion-header">
+                    <h2 class="accordion-header" id="stringDbSettingsHeader">
                       <button
                         class="accordion-button py-2 small"
                         [class.collapsed]="!showStringDbSettings"
                         type="button"
                         (click)="showStringDbSettings = !showStringDbSettings"
-                        aria-expanded="true">
-                        <i class="bi bi-diagram-2 me-2"></i>StringDB
+                        [attr.aria-expanded]="showStringDbSettings"
+                        aria-controls="stringDbSettingsContent">
+                        <i class="bi bi-diagram-2 me-2" aria-hidden="true"></i>StringDB
                       </button>
                     </h2>
                     @if (showStringDbSettings) {
-                      <div class="accordion-body py-2">
+                      <div class="accordion-body py-2" id="stringDbSettingsContent" aria-labelledby="stringDbSettingsHeader">
                         <div class="mb-2">
                           <label for="networkType" class="form-label small mb-1">Network Type</label>
                           <select
@@ -86,17 +87,19 @@
                   </div>
 
                   <div class="accordion-item">
-                    <h2 class="accordion-header">
+                    <h2 class="accordion-header" id="interactomeSettingsHeader">
                       <button
                         class="accordion-button py-2 small"
                         [class.collapsed]="!showInteractomeSettings"
                         type="button"
-                        (click)="showInteractomeSettings = !showInteractomeSettings">
-                        <i class="bi bi-diagram-3 me-2"></i>Interactome Atlas
+                        (click)="showInteractomeSettings = !showInteractomeSettings"
+                        [attr.aria-expanded]="showInteractomeSettings"
+                        aria-controls="interactomeSettingsContent">
+                        <i class="bi bi-diagram-3 me-2" aria-hidden="true"></i>Interactome Atlas
                       </button>
                     </h2>
                     @if (showInteractomeSettings) {
-                      <div class="accordion-body py-2">
+                      <div class="accordion-body py-2" id="interactomeSettingsContent" aria-labelledby="interactomeSettingsHeader">
                         <div class="mb-2">
                           <label class="form-label small mb-1">
                             Min Score: {{ form.value.atlasScore | number:'1.2-2' }}
@@ -115,17 +118,19 @@
                   </div>
 
                   <div class="accordion-item">
-                    <h2 class="accordion-header">
+                    <h2 class="accordion-header" id="colorSettingsHeader">
                       <button
                         class="accordion-button py-2 small"
                         [class.collapsed]="!showColorSettings"
                         type="button"
-                        (click)="showColorSettings = !showColorSettings">
-                        <i class="bi bi-palette me-2"></i>Colors
+                        (click)="showColorSettings = !showColorSettings"
+                        [attr.aria-expanded]="showColorSettings"
+                        aria-controls="colorSettingsContent">
+                        <i class="bi bi-palette me-2" aria-hidden="true"></i>Colors
                       </button>
                     </h2>
                     @if (showColorSettings) {
-                      <div class="accordion-body py-2">
+                      <div class="accordion-body py-2" id="colorSettingsContent" aria-labelledby="colorSettingsHeader">
                         <div class="color-legend">
                           <div class="small text-muted mb-2">Node Colors</div>
                           <div class="color-item">

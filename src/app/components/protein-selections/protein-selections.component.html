@@ -1,45 +1,69 @@
 <div class="container mt-4">
-  <div class="container mt-4" id="protein-selections">
+  <div class="container mt-4" id="protein-selections" role="search" aria-label="Protein search">
     <div class="accordion">
       <div class="accordion-item">
-        <h2 class="accordion-header">
-          <button [ngClass]="{'accordion-button': true, 'collapsed': iscollapse}" type="button" (click)=" iscollapse=!iscollapse">
+        <h2 class="accordion-header" id="protein-search-header">
+          <button
+            [ngClass]="{'accordion-button': true, 'collapsed': iscollapse}"
+            type="button"
+            (click)="iscollapse=!iscollapse"
+            [attr.aria-expanded]="!iscollapse"
+            aria-controls="protein-search-content">
             Protein Search Parameters
           </button>
         </h2>
-        <div #collapse="ngbCollapse" [(ngbCollapse)]="iscollapse">
+        <div
+          #collapse="ngbCollapse"
+          [(ngbCollapse)]="iscollapse"
+          id="protein-search-content"
+          aria-labelledby="protein-search-header">
           <div class="accordion-body">
-            <form (ngSubmit)="singleSearchHandle()">
+            <form (ngSubmit)="singleSearchHandle()" role="search">
               <div class="row">
                 <div class="col-3">
-                  <input id="searchProteinOrGene" [ngModelOptions]="{standalone: true}" type="text" class="form-control" [(ngModel)]="tableFilterModel" placeholder="Search" [ngbTypeahead]="data.search">
+                  <label for="searchProteinOrGene" class="visually-hidden">Search proteins or genes</label>
+                  <input
+                    id="searchProteinOrGene"
+                    [ngModelOptions]="{standalone: true}"
+                    type="text"
+                    class="form-control"
+                    [(ngModel)]="tableFilterModel"
+                    placeholder="Search"
+                    [ngbTypeahead]="data.search"
+                    aria-label="Search proteins or genes">
                 </div>
                 <div class="col-2">
-                  <select class="form-control" [ngModelOptions]="{standalone: true}" [(ngModel)]="data.searchType">
-                    <option>
-                      Gene Names
-                    </option>
-                    <option>
-                      Accession IDs
-                    </option>
-                    <option>
-                      Primary IDs
-                    </option>
+                  <label for="searchType" class="visually-hidden">Search type</label>
+                  <select
+                    class="form-control"
+                    id="searchType"
+                    [ngModelOptions]="{standalone: true}"
+                    [(ngModel)]="data.searchType"
+                    aria-label="Select search type">
+                    <option>Gene Names</option>
+                    <option>Accession IDs</option>
+                    <option>Primary IDs</option>
                   </select>
                 </div>
                 <div class="col-1">
-                  <button class="btn btn-primary" (click)="singleSearchHandle()">
+                  <button
+                    class="btn btn-primary"
+                    type="submit"
+                    aria-label="Search for proteins">
                     Search
                   </button>
                 </div>
                 <div class="col-2">
-                  <button class="btn btn-primary" (click)="openBatchSearch()">
+                  <button
+                    class="btn btn-primary"
+                    type="button"
+                    (click)="openBatchSearch()"
+                    aria-label="Open batch search dialog">
                     Batch Search
                   </button>
                 </div>
               </div>
             </form>
-
           </div>
         </div>
       </div>

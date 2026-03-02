@@ -1,11 +1,19 @@
 <!-- Help Panel -->
 @if (showHelpPanel()) {
-  <div class="card help-panel" style="position: fixed; z-index: 1031; top: 60px; right: 20px; width: 400px; max-height: calc(100vh - 80px); overflow-y: auto;">
+  <aside
+    class="card help-panel"
+    style="position: fixed; z-index: 1031; top: 60px; right: 20px; width: 400px; max-height: calc(100vh - 80px); overflow-y: auto;"
+    role="complementary"
+    aria-labelledby="help-panel-title">
     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-      <h6 class="mb-0">
-        <i class="bi bi-question-circle me-2"></i>Command Help
-      </h6>
-      <button type="button" class="btn-close btn-close-white" aria-label="Close" (click)="toggleHelp()"></button>
+      <h2 class="mb-0 h6" id="help-panel-title">
+        <i class="bi bi-question-circle me-2" aria-hidden="true"></i>Command Help
+      </h2>
+      <button
+        type="button"
+        class="btn-close btn-close-white"
+        aria-label="Close help panel"
+        (click)="toggleHelp()"></button>
     </div>
     <div class="card-body">
       <div class="alert alert-info small mb-3">
@@ -158,11 +166,74 @@
         </div>
       </div>
 
+      <!-- Selection Commands -->
+      <section class="mb-4" aria-labelledby="selection-commands-heading">
+        <h3 class="border-bottom pb-2 h6" id="selection-commands-heading">
+          <i class="bi bi-check2-square me-2" aria-hidden="true"></i>Selection Commands
+        </h3>
+
+        <div class="command-item mb-3">
+          <div class="d-flex justify-content-between align-items-start">
+            <code class="text-primary">!select</code>
+            <span class="badge bg-primary">Selection</span>
+          </div>
+          <p class="small mb-1 mt-2">Quick selection operations (alias: !sel)</p>
+          <div class="example">
+            <strong>Flags:</strong>
+            <code class="d-block">!select -sig</code> (select significant)
+            <code class="d-block">!select -up</code> (select upregulated)
+            <code class="d-block">!select -down</code> (select downregulated)
+            <code class="d-block">!select -clear</code> (clear all)
+            <code class="d-block">!select -invert</code> (invert selection)
+          </div>
+        </div>
+
+        <div class="command-item mb-3">
+          <div class="d-flex justify-content-between align-items-start">
+            <code class="text-primary">!filter</code>
+            <span class="badge bg-primary">Selection</span>
+          </div>
+          <p class="small mb-1 mt-2">Filter and select by criteria (alias: !f)</p>
+          <div class="example">
+            <strong>Examples:</strong>
+            <code class="d-block">!filter -fc 1 2</code> (FC between 1 and 2)
+            <code class="d-block">!filter -p 0.05</code> (p-value ≤ 0.05)
+          </div>
+        </div>
+
+        <div class="command-item mb-3">
+          <div class="d-flex justify-content-between align-items-start">
+            <code class="text-primary">!count</code>
+            <span class="badge bg-primary">Selection</span>
+          </div>
+          <p class="small mb-1 mt-2">Count proteins matching criteria</p>
+          <div class="example">
+            <strong>Examples:</strong>
+            <code class="d-block">!count -sig</code> (count significant)
+            <code class="d-block">!count -selected</code> (count selected)
+            <code class="d-block">!count -all</code> (count total)
+          </div>
+        </div>
+      </section>
+
       <!-- System Commands -->
-      <div class="mb-4">
-        <h6 class="border-bottom pb-2">
-          <i class="bi bi-gear me-2"></i>System Commands
-        </h6>
+      <section class="mb-4" aria-labelledby="system-commands-heading">
+        <h3 class="border-bottom pb-2 h6" id="system-commands-heading">
+          <i class="bi bi-gear me-2" aria-hidden="true"></i>System Commands
+        </h3>
+
+        <div class="command-item mb-3">
+          <div class="d-flex justify-content-between align-items-start">
+            <code class="text-primary">!help</code>
+            <span class="badge bg-secondary">System</span>
+          </div>
+          <p class="small mb-1 mt-2">Show help panel or get help for a specific command</p>
+          <div class="example">
+            <strong>Examples:</strong>
+            <code class="d-block">!help</code>
+            <code class="d-block">!help select</code>
+          </div>
+        </div>
 
         <div class="command-item mb-3">
           <div class="d-flex justify-content-between align-items-start">
@@ -178,6 +249,18 @@
 
         <div class="command-item mb-3">
           <div class="d-flex justify-content-between align-items-start">
+            <code class="text-primary">!clear</code>
+            <span class="badge bg-secondary">System</span>
+          </div>
+          <p class="small mb-1 mt-2">Clear all chat messages</p>
+          <div class="example">
+            <strong>Example:</strong>
+            <code class="d-block">!clear</code>
+          </div>
+        </div>
+
+        <div class="command-item mb-3">
+          <div class="d-flex justify-content-between align-items-start">
             <code class="text-primary">!instructor</code>
             <span class="badge bg-secondary">System</span>
           </div>
@@ -187,12 +270,32 @@
             <code class="d-block">!instructor</code>
           </div>
         </div>
-      </div>
+      </section>
+
+      <!-- Command Aliases -->
+      <section class="mb-4" aria-labelledby="aliases-heading">
+        <h3 class="border-bottom pb-2 h6" id="aliases-heading">
+          <i class="bi bi-lightning me-2" aria-hidden="true"></i>Quick Aliases
+        </h3>
+        <div class="row small">
+          <div class="col-6">
+            <code>!sg</code> → !searchgene<br>
+            <code>!sp</code> → !searchpid<br>
+            <code>!ag</code> → !anngene
+          </div>
+          <div class="col-6">
+            <code>!ap</code> → !annpid<br>
+            <code>!ss</code> → !savestate<br>
+            <code>!sel</code> → !select
+          </div>
+        </div>
+      </section>
 
       <!-- Tips -->
-      <div class="alert alert-success small mb-0">
-        <strong><i class="bi bi-lightbulb me-2"></i>Tips:</strong>
+      <div class="alert alert-success small mb-0" role="note">
+        <strong><i class="bi bi-lightbulb me-2" aria-hidden="true"></i>Tips:</strong>
         <ul class="mb-0 ps-3">
+          <li>Use <kbd>↑</kbd>/<kbd>↓</kbd> arrows to navigate command history</li>
           <li>Use autocomplete by typing <code>@</code> after command</li>
           <li>Separate multiple items with spaces</li>
           <li>Drag & drop selections into chat to share</li>
@@ -200,34 +303,53 @@
         </ul>
       </div>
     </div>
-  </div>
+  </aside>
 }
 
 <!-- Chat Panel -->
 @if (toggleChatPanel()) {
-<div class="card chat-panel" style="position: fixed; z-index: 1030; bottom: 110px; left: 120px; width: 450px; height: 500px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+<div
+  class="card chat-panel"
+  style="position: fixed; z-index: 1030; bottom: 110px; left: 120px; width: 450px; height: 500px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);"
+  role="dialog"
+  aria-labelledby="chat-panel-title"
+  aria-describedby="chat-panel-desc">
   <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-    <h6 class="mb-0">
-      <i class="bi bi-chat-dots me-2"></i>Live Chat
+    <h6 class="mb-0" id="chat-panel-title">
+      <i class="bi bi-chat-dots me-2" aria-hidden="true"></i>Live Chat
       @if (ws.connection) {
-        <span class="badge bg-success ms-2">
-          <i class="bi bi-circle-fill" style="font-size: 8px;"></i> Connected
+        <span class="badge bg-success ms-2" role="status" aria-label="Connection status: connected">
+          <i class="bi bi-circle-fill" style="font-size: 8px;" aria-hidden="true"></i> Connected
         </span>
       } @else {
-        <span class="badge bg-danger ms-2">
-          <i class="bi bi-circle-fill" style="font-size: 8px;"></i> Disconnected
+        <span class="badge bg-danger ms-2" role="status" aria-label="Connection status: disconnected">
+          <i class="bi bi-circle-fill" style="font-size: 8px;" aria-hidden="true"></i> Disconnected
         </span>
       }
     </h6>
-    <div>
-      <button type="button" class="btn btn-sm btn-outline-light me-2" (click)="toggleHelp()" title="Command help">
-        <i class="bi bi-question-circle"></i>
+    <div role="toolbar" aria-label="Chat panel controls">
+      <button
+        type="button"
+        class="btn btn-sm btn-outline-light me-2"
+        (click)="toggleHelp()"
+        title="Command help"
+        aria-label="Open command help panel"
+        aria-expanded="{{showHelpPanel()}}">
+        <i class="bi bi-question-circle" aria-hidden="true"></i>
       </button>
-      <button type="button" class="btn btn-sm btn-outline-light" (click)="toggleChat()" title="Minimize">
-        <i class="bi bi-dash-lg"></i>
+      <button
+        type="button"
+        class="btn btn-sm btn-outline-light"
+        (click)="toggleChat()"
+        title="Minimize"
+        aria-label="Minimize chat panel">
+        <i class="bi bi-dash-lg" aria-hidden="true"></i>
       </button>
     </div>
   </div>
+  <span id="chat-panel-desc" class="visually-hidden">
+    Chat panel for live collaboration and commands. Type messages or use commands starting with ! for actions.
+  </span>
 
   <div class="card-body d-flex flex-column p-0" style="height: calc(100% - 56px);">
     <!-- Messages Area -->
@@ -236,10 +358,14 @@
       (dragover)="handleDragOver($event)"
       class="p-3 d-flex flex-column-reverse flex-grow-1"
       style="overflow-y: auto; background: var(--bs-body-bg);"
-      #chatbox>
+      #chatbox
+      role="log"
+      aria-live="polite"
+      aria-label="Chat messages"
+      tabindex="0">
       <div></div>
       @for (m of messagesList; track m) {
-        <div class="message-item mb-2">
+        <div class="message-item mb-2" role="article">
           @if (m.requestType==='push-state-all-force') {
             <div class="alert alert-danger alert-sm mb-0 py-1 px-2">
               <i class="bi bi-arrow-clockwise me-1"></i>
@@ -315,9 +441,11 @@
 
     <!-- Input Area -->
     <div class="p-2 border-top">
-      <form #chatForm="ngForm" (ngSubmit)="sendMessage()" [formGroup]="form">
+      <form #chatForm="ngForm" (ngSubmit)="sendMessage()" [formGroup]="form" role="search">
+        <label for="chat-input" class="visually-hidden">Type a message or command</label>
         <div class="input-group">
           <input
+            id="chat-input"
             spellcheck="false"
             type="text"
             class="form-control"
@@ -325,11 +453,21 @@
             [ngbTypeahead]="typeAheadCommandComplete"
             [inputFormatter]="formatTypeAheadCommandComplete"
             placeholder="Type a message or command..."
-            (keydown.enter)="$event.preventDefault(); sendMessage()">
-          <button type="submit" class="btn btn-primary">
-            <i class="bi bi-send"></i>
+            aria-describedby="chat-input-help"
+            autocomplete="off"
+            (keydown.enter)="$event.preventDefault(); sendMessage()"
+            (keydown.arrowUp)="$event.preventDefault(); navigateHistory('up')"
+            (keydown.arrowDown)="$event.preventDefault(); navigateHistory('down')">
+          <button
+            type="submit"
+            class="btn btn-primary"
+            aria-label="Send message">
+            <i class="bi bi-send" aria-hidden="true"></i>
           </button>
         </div>
+        <small id="chat-input-help" class="visually-hidden">
+          Use ! for commands, @ for mentions. Press up/down arrows to navigate command history.
+        </small>
       </form>
     </div>
   </div>
@@ -337,16 +475,23 @@
 }
 
 <!-- Floating Control Buttons -->
-<div class="floating-controls" style="position: fixed; z-index: 1030; bottom: 50px; left: 50px;">
-  <div class="btn-group-vertical shadow" role="group">
+<nav
+  class="floating-controls"
+  style="position: fixed; z-index: 1030; bottom: 50px; left: 50px;"
+  aria-label="Chat and help controls">
+  <div class="btn-group-vertical shadow" role="group" aria-label="Control buttons">
     <button
-      class="btn btn-lg"
+      class="btn btn-lg position-relative"
       [ngClass]="toggleChatPanel() ? 'btn-primary' : 'btn-outline-primary'"
       (click)="toggleChat()"
-      title="Toggle chat panel">
-      <i class="bi bi-chat-dots"></i>
+      [attr.aria-pressed]="toggleChatPanel()"
+      [attr.aria-expanded]="toggleChatPanel()"
+      aria-label="Toggle chat panel{{unreadCount() > 0 && !toggleChatPanel() ? ', ' + unreadCount() + ' unread messages' : ''}}">
+      <i class="bi bi-chat-dots" aria-hidden="true"></i>
       @if (unreadCount() > 0 && !toggleChatPanel()) {
-        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+        <span
+          class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+          aria-hidden="true">
           {{unreadCount()}}
         </span>
       }
@@ -356,17 +501,19 @@
       class="btn btn-lg"
       [ngClass]="showHelpPanel() ? 'btn-info' : 'btn-outline-info'"
       (click)="toggleHelp()"
-      title="Command help">
-      <i class="bi bi-question-circle"></i>
+      [attr.aria-pressed]="showHelpPanel()"
+      [attr.aria-expanded]="showHelpPanel()"
+      aria-label="Toggle command help panel">
+      <i class="bi bi-question-circle" aria-hidden="true"></i>
     </button>
 
     @if (data.instructorMode) {
       <button
         class="btn btn-lg btn-outline-danger"
         (click)="forcePushState()"
-        title="Force push state to all users">
-        <i class="bi bi-arrow-up-right"></i>
+        aria-label="Force push current state to all connected users">
+        <i class="bi bi-arrow-up-right" aria-hidden="true"></i>
       </button>
     }
   </div>
-</div>
+</nav>

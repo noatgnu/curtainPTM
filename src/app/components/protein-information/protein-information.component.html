@@ -42,12 +42,17 @@
   <div class="accordion">
     @if (diseases.length > 0) {
       <div class="accordion-item">
-      <h2 class="accordion-header">
-        <button [ngClass]="{'accordion-button': true, 'collapsed': isDiseaseCollapse}" type="button" (click)="isDiseaseCollapse=!isDiseaseCollapse">
+      <h2 class="accordion-header" id="diseaseHeader">
+        <button
+          [ngClass]="{'accordion-button': true, 'collapsed': isDiseaseCollapse}"
+          type="button"
+          (click)="isDiseaseCollapse=!isDiseaseCollapse"
+          [attr.aria-expanded]="!isDiseaseCollapse"
+          aria-controls="diseaseContent">
           Involvement in Diseases (UniProt)
         </button>
       </h2>
-      <div #collapse="ngbCollapse" [(ngbCollapse)]="isDiseaseCollapse">
+      <div #collapse="ngbCollapse" [(ngbCollapse)]="isDiseaseCollapse" id="diseaseContent" aria-labelledby="diseaseHeader">
         <div class="accordion-body">
           @if (diseases.length > 0) {
             <div>
@@ -66,12 +71,17 @@
     }
     @if (pharmaUse.length > 0) {
       <div class="accordion-item">
-      <h2 class="accordion-header">
-        <button [ngClass]="{'accordion-button': true, 'collapsed': isPharmaUseCollapse}" type="button" (click)="isPharmaUseCollapse=!isPharmaUseCollapse">
+      <h2 class="accordion-header" id="pharmaHeader">
+        <button
+          [ngClass]="{'accordion-button': true, 'collapsed': isPharmaUseCollapse}"
+          type="button"
+          (click)="isPharmaUseCollapse=!isPharmaUseCollapse"
+          [attr.aria-expanded]="!isPharmaUseCollapse"
+          aria-controls="pharmaContent">
           Pharmaceutical use (UniProt)
         </button>
       </h2>
-      <div #collapse="ngbCollapse" [(ngbCollapse)]="isPharmaUseCollapse">
+      <div #collapse="ngbCollapse" [(ngbCollapse)]="isPharmaUseCollapse" id="pharmaContent" aria-labelledby="pharmaHeader">
         <div class="accordion-body">
           @if (pharmaUse.length > 0) {
             <div>
@@ -90,12 +100,17 @@
     }
     @if (_data['Mutagenesis'].length > 0) {
       <div class="accordion-item">
-      <h2 class="accordion-header">
-        <button [ngClass]="{'accordion-button': true, 'collapsed': isMutagenesisCollapse}" type="button" (click)="isMutagenesisCollapse=!isMutagenesisCollapse">
+      <h2 class="accordion-header" id="mutagenesisHeader">
+        <button
+          [ngClass]="{'accordion-button': true, 'collapsed': isMutagenesisCollapse}"
+          type="button"
+          (click)="isMutagenesisCollapse=!isMutagenesisCollapse"
+          [attr.aria-expanded]="!isMutagenesisCollapse"
+          aria-controls="mutagenesisContent">
           Mutagenesis (UniProt)
         </button>
       </h2>
-      <div #collapse="ngbCollapse" [(ngbCollapse)]="isMutagenesisCollapse">
+      <div #collapse="ngbCollapse" [(ngbCollapse)]="isMutagenesisCollapse" id="mutagenesisContent" aria-labelledby="mutagenesisHeader">
         <div class="accordion-body">
           @if (_data['Mutagenesis'].length > 0) {
             <div>

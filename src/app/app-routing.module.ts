@@ -1,23 +1,13 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import {HomeComponent} from "./components/home/home.component";
+import {DataciteComponent} from "./components/datacite/datacite.component";
 import {CollectionLandingComponent} from "./components/collection-landing/collection-landing.component";
 import {AppLayoutComponent} from "./components/app-layout/app-layout.component";
 
 const routes: Routes = [
-
-  {
-    path: '', component: HomeComponent,
-    children: [
-      {
-        path: 'home', component: HomeComponent
-      },
-      {
-        path: "home/:settings", component: HomeComponent
-      }
-    ],
-
-  },
+  { path: 'datacite', component: DataciteComponent },
+  { path: 'datacite/:linkID', component: DataciteComponent },
   {
     path: 'collection/:id',
     component: AppLayoutComponent,
@@ -25,8 +15,11 @@ const routes: Routes = [
       { path: '', component: CollectionLandingComponent }
     ]
   },
-  {path: ':settings', component: HomeComponent},
-  {path: "**", redirectTo:"home"}
+  { path: 'home', component: HomeComponent },
+  { path: 'home/:settings', component: HomeComponent },
+  { path: '', component: HomeComponent, pathMatch: 'full' },
+  { path: ':settings', component: HomeComponent },
+  { path: '**', redirectTo: 'home' }
 ];
 
 @NgModule({

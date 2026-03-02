@@ -1,13 +1,17 @@
 import { TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
-import { DataCiteService } from './data-cite.service';
+import { DataciteService } from './data-cite.service';
 
-describe('DataCiteService', () => {
-  let service: DataCiteService;
+describe('DataciteService', () => {
+  let service: DataciteService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(DataCiteService);
+    TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
+      providers: [DataciteService]
+    });
+    service = TestBed.inject(DataciteService);
   });
 
   it('should be created', () => {

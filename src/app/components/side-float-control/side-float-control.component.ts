@@ -1,15 +1,25 @@
 import {Component, signal, ElementRef, EventEmitter, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
 import {WebsocketService} from "../../websocket.service";
-import {FormBuilder} from "@angular/forms";
-import {debounceTime, distinctUntilChanged, map, Observable, OperatorFunction, Subscription} from "rxjs";
+import {FormBuilder, NgForm} from "@angular/forms";
+import {distinctUntilChanged, map, Observable, OperatorFunction, Subscription} from "rxjs";
 import {DataService} from "../../data.service";
 import {SaveStateService} from "../../save-state.service";
+import {SettingsService} from "../../settings.service";
+import {ToastService} from "../../toast.service";
 
 interface Message {
   senderID: string,
   senderName: string,
   message: any,
   requestType: string
+}
+
+interface CommandHelp {
+  command: string,
+  aliases: string[],
+  description: string,
+  usage: string,
+  examples: string[]
 }
 
 @Component({
@@ -27,9 +37,10 @@ export class SideFloatControlComponent implements OnInit, OnDestroy {
   form = this.fb.group({
     message: ['']
   })
+  commandCompleteModel = signal("")
 
   senderMap: {[key: string]: string} = {'system': 'System'}
-
+  @ViewChild("chatForm") chatForm: NgForm|undefined
   @ViewChild("chatbox") chatbox: ElementRef|undefined
   @Output() searchChatSelection: EventEmitter<any> = new EventEmitter()
   webSub: Subscription | undefined
@@ -46,6 +57,19 @@ export class SideFloatControlComponent implements OnInit, OnDestroy {
     significantOnly: false
   }
 
+  commandHistory: string[] = []
+  historyIndex = -1
+
+  commandAliases: {[key: string]: string} = {
+    '!sg': '!searchgene',
+    '!sp': '!searchpid',
+    '!ag': '!anngene',
+    '!ap': '!annpid',
+    '!ss': '!savestate',
+    '!sel': '!select',
+    '!f': '!filter'
+  }
+
   allCommands: string[] = [
     "!searchgene",
     "!searchpid",
@@ -53,8 +77,115 @@ export class SideFloatControlComponent implements OnInit, OnDestroy {
     "!anngene",
     "!annpid",
     "!savestate",
+    "!help",
+    "!clear",
+    "!select",
+    "!filter",
+    "!count",
+    "!sg",
+    "!sp",
+    "!ag",
+    "!ap",
+    "!ss",
+    "!sel",
+    "!f"
   ]
-  constructor(private saveState: SaveStateService, public ws: WebsocketService, private fb: FormBuilder, public data: DataService) {
+
+  commandHelpData: CommandHelp[] = [
+    {
+      command: '!help',
+      aliases: [],
+      description: 'Show available commands',
+      usage: '!help [command]',
+      examples: ['!help', '!help select']
+    },
+    {
+      command: '!searchgene',
+      aliases: ['!sg'],
+      description: 'Search for proteins by gene names',
+      usage: '!searchgene @gene1 @gene2',
+      examples: ['!searchgene @TP53', '!sg @BRCA1 @BRCA2']
+    },
+    {
+      command: '!searchpid',
+      aliases: ['!sp'],
+      description: 'Search for proteins by primary IDs',
+      usage: '!searchpid @id1 @id2',
+      examples: ['!searchpid @P04637', '!sp @P38398']
+    },
+    {
+      command: '!anngene',
+      aliases: ['!ag'],
+      description: 'Add or remove annotations by gene names',
+      usage: '!anngene -a|-r @gene1 @gene2',
+      examples: ['!anngene -a @TP53', '!ag -r @BRCA1']
+    },
+    {
+      command: '!annpid',
+      aliases: ['!ap'],
+      description: 'Add or remove annotations by primary IDs',
+      usage: '!annpid -a|-r @id1 @id2',
+      examples: ['!annpid -a @P04637', '!ap -r @P38398']
+    },
+    {
+      command: '!select',
+      aliases: ['!sel'],
+      description: 'Quick selection operations',
+      usage: '!select -sig|-up|-down|-clear|-invert',
+      examples: ['!select -sig', '!sel -up', '!select -clear']
+    },
+    {
+      command: '!filter',
+      aliases: ['!f'],
+      description: 'Filter data by criteria',
+      usage: '!filter -fc <min> <max> | -p <max>',
+      examples: ['!filter -fc 1 2', '!f -p 0.05']
+    },
+    {
+      command: '!count',
+      aliases: [],
+      description: 'Count proteins matching criteria',
+      usage: '!count -sig|-selected|-all',
+      examples: ['!count -sig', '!count -selected']
+    },
+    {
+      command: '!savestate',
+      aliases: ['!ss'],
+      description: 'Save, load, or manage states',
+      usage: '!savestate [-l|-r|-a|-ra|-p] [id]',
+      examples: ['!savestate', '!ss -l 0', '!savestate -a']
+    },
+    {
+      command: '!rd',
+      aliases: [],
+      description: 'Redraw all plots',
+      usage: '!rd',
+      examples: ['!rd']
+    },
+    {
+      command: '!clear',
+      aliases: [],
+      description: 'Clear chat messages',
+      usage: '!clear',
+      examples: ['!clear']
+    },
+    {
+      command: '!instructor',
+      aliases: [],
+      description: 'Toggle instructor mode',
+      usage: '!instructor',
+      examples: ['!instructor']
+    }
+  ]
+
+  constructor(
+    private saveState: SaveStateService,
+    public ws: WebsocketService,
+    private fb: FormBuilder,
+    public data: DataService,
+    private settings: SettingsService,
+    private toast: ToastService
+  ) {
     this.ws.connection = this.ws.connect()
 
     if (this.webSub) {
@@ -72,9 +203,8 @@ export class SideFloatControlComponent implements OnInit, OnDestroy {
       this.messagesList = [message].concat(this.messagesList)
     }
   }
-  commandCompleteModel = signal("")
+
   private setSubscription() {
-    console.log("set subscription")
     this.webSub = this.ws.getMessages()?.subscribe((data: any) => {
       data.message.timestamp = new Date(data.message.timestamp)
       this.messagesList = [data].concat(this.messagesList)
@@ -91,8 +221,15 @@ export class SideFloatControlComponent implements OnInit, OnDestroy {
     }, () => {
       const message = {message: {message: "Disconnected from server", timestamp: Date.now()}, senderID: "system", senderName: "System", requestType: "chat-system"}
       this.messagesList = [message].concat(this.messagesList)
-      console.log("complete")
     })
+  }
+
+  triggerEnter() {
+    if (this.chatForm) {
+      if (this.form.valid) {
+        this.chatForm.ngSubmit.emit()
+      }
+    }
   }
 
   ngOnInit(): void {
@@ -103,11 +240,29 @@ export class SideFloatControlComponent implements OnInit, OnDestroy {
     if (this.form.value.message !== this.commandCompleteModel()) {
       message = this.commandCompleteModel()
     }
+
+    if (!message || message.trim() === '') {
+      return
+    }
+
+    if (message.startsWith("!")) {
+      this.commandHistory.unshift(message)
+      if (this.commandHistory.length > 50) {
+        this.commandHistory.pop()
+      }
+      this.historyIndex = -1
+    }
+
     if (message !== "" && !message?.startsWith("@") && !message?.startsWith("!")) {
       this.ws.send({message: {message: message, timestamp: Date.now()}, senderName: this.ws.displayName, requestType: "chat"})
     } else if (message?.startsWith("!")) {
       const command = message.split(" ")
-      const firstParameter = command[0]
+      let firstParameter = command[0].toLowerCase()
+
+      if (this.commandAliases[firstParameter]) {
+        firstParameter = this.commandAliases[firstParameter]
+      }
+
       switch (firstParameter) {
         case "!searchgene":
           this.searchGene(command);
@@ -118,6 +273,7 @@ export class SideFloatControlComponent implements OnInit, OnDestroy {
         case "!rd":
           this.data.redrawTrigger.next(true)
           this.data.selectionUpdateTrigger.next(true)
+          this.addSystemMessage("Plots redrawn")
           break
         case "!anngene":
           this.annotateGene(command)
@@ -130,24 +286,277 @@ export class SideFloatControlComponent implements OnInit, OnDestroy {
           break
         case "!instructor":
           this.data.instructorMode = !this.data.instructorMode
-          this.messagesList = [{message: {message: `Instructor mode ${this.data.instructorMode ? "enabled" : "disabled"}`, timestamp: Date.now()}, senderID: "system", senderName: "System", requestType: "chat-system"}].concat(this.messagesList)
+          this.addSystemMessage(`Instructor mode ${this.data.instructorMode ? "enabled" : "disabled"}`)
+          break
+        case "!help":
+          this.showHelp(command)
+          break
+        case "!clear":
+          this.clearMessages()
+          break
+        case "!select":
+          this.selectCommand(command)
+          break
+        case "!filter":
+          this.filterCommand(command)
+          break
+        case "!count":
+          this.countCommand(command)
           break
         default:
-          const messageSystem = {message: {message: "Command not found", timestamp: Date.now()}, senderID: "system", senderName: "System", requestType: "chat-system"}
-          this.messagesList = [messageSystem].concat(this.messagesList)
+          this.addSystemMessage(`Unknown command: ${firstParameter}. Type !help for available commands.`)
       }
 
     } else {
-      //const message: Message = {message: {message: this.form.value.message, timestamp: Date.now()}, senderID: "system", senderName: "System", requestType: "chat-system"}
       this.ws.send({message: {message: message, timestamp: Date.now()}, senderName: this.ws.displayName, requestType: "chat"})
     }
 
     this.form.reset()
     this.commandCompleteModel.set("")
-
   }
+
+  private addSystemMessage(text: string, type: string = "chat-system") {
+    const message: Message = {
+      message: {message: text, timestamp: Date.now()},
+      senderID: "system",
+      senderName: "System",
+      requestType: type
+    }
+    this.messagesList = [message].concat(this.messagesList)
+  }
+
+  navigateHistory(direction: 'up' | 'down') {
+    if (this.commandHistory.length === 0) return
+
+    if (direction === 'up') {
+      if (this.historyIndex < this.commandHistory.length - 1) {
+        this.historyIndex++
+        this.form.patchValue({message: this.commandHistory[this.historyIndex]})
+        this.commandCompleteModel.set(this.commandHistory[this.historyIndex])
+      }
+    } else {
+      if (this.historyIndex > 0) {
+        this.historyIndex--
+        this.form.patchValue({message: this.commandHistory[this.historyIndex]})
+        this.commandCompleteModel.set(this.commandHistory[this.historyIndex])
+      } else if (this.historyIndex === 0) {
+        this.historyIndex = -1
+        this.form.patchValue({message: ''})
+        this.commandCompleteModel.set('')
+      }
+    }
+  }
+
+  private showHelp(command: string[]) {
+    if (command.length === 1) {
+      this.showHelpPanel.set(true)
+      this.addSystemMessage("Help panel opened. Available commands: " + this.commandHelpData.map(c => c.command).join(", "))
+    } else {
+      const searchCmd = command[1].startsWith('!') ? command[1] : '!' + command[1]
+      const help = this.commandHelpData.find(h =>
+        h.command === searchCmd || h.aliases.includes(searchCmd)
+      )
+      if (help) {
+        const aliasText = help.aliases.length > 0 ? ` (aliases: ${help.aliases.join(", ")})` : ''
+        this.addSystemMessage(`${help.command}${aliasText}: ${help.description}. Usage: ${help.usage}`)
+      } else {
+        this.addSystemMessage(`Unknown command: ${searchCmd}`)
+      }
+    }
+  }
+
+  private clearMessages() {
+    this.messagesList = []
+    this.addSystemMessage("Chat cleared")
+  }
+
+  private selectCommand(command: string[]) {
+    if (command.length < 2) {
+      this.addSystemMessage("Usage: !select -sig|-up|-down|-clear|-invert")
+      return
+    }
+
+    const flag = command[1].toLowerCase()
+    let count = 0
+
+    switch (flag) {
+      case '-sig':
+        for (const row of this.data.differential.df) {
+          const pid = row[this.data.differentialForm.primaryIDs]
+          const fc = Math.abs(row[this.data.differentialForm.foldChange])
+          const pval = row[this.data.differentialForm.significant]
+          if (fc >= this.settings.settings.log2FCCutoff && pval <= this.settings.settings.pCutoff) {
+            if (!this.data.selected.includes(pid)) {
+              this.data.selected.push(pid)
+              count++
+            }
+          }
+        }
+        this.data.selectionUpdateTrigger.next(true)
+        this.addSystemMessage(`Selected ${count} significant proteins`)
+        break
+
+      case '-up':
+        for (const row of this.data.differential.df) {
+          const pid = row[this.data.differentialForm.primaryIDs]
+          const fc = row[this.data.differentialForm.foldChange]
+          const pval = row[this.data.differentialForm.significant]
+          if (fc >= this.settings.settings.log2FCCutoff && pval <= this.settings.settings.pCutoff) {
+            if (!this.data.selected.includes(pid)) {
+              this.data.selected.push(pid)
+              count++
+            }
+          }
+        }
+        this.data.selectionUpdateTrigger.next(true)
+        this.addSystemMessage(`Selected ${count} upregulated proteins`)
+        break
+
+      case '-down':
+        for (const row of this.data.differential.df) {
+          const pid = row[this.data.differentialForm.primaryIDs]
+          const fc = row[this.data.differentialForm.foldChange]
+          const pval = row[this.data.differentialForm.significant]
+          if (fc <= -this.settings.settings.log2FCCutoff && pval <= this.settings.settings.pCutoff) {
+            if (!this.data.selected.includes(pid)) {
+              this.data.selected.push(pid)
+              count++
+            }
+          }
+        }
+        this.data.selectionUpdateTrigger.next(true)
+        this.addSystemMessage(`Selected ${count} downregulated proteins`)
+        break
+
+      case '-clear':
+        count = this.data.selected.length
+        this.data.selected = []
+        this.data.selectedMap = {}
+        this.data.selectOperationNames = []
+        this.data.selectionUpdateTrigger.next(true)
+        this.addSystemMessage(`Cleared ${count} selections`)
+        break
+
+      case '-invert':
+        const allPids: string[] = []
+        for (const row of this.data.differential.df) {
+          allPids.push(row[this.data.differentialForm.primaryIDs])
+        }
+        const newSelection = allPids.filter((pid: string) => !this.data.selected.includes(pid))
+        this.data.selected = newSelection
+        this.data.selectionUpdateTrigger.next(true)
+        this.addSystemMessage(`Inverted selection: ${newSelection.length} proteins now selected`)
+        break
+
+      default:
+        this.addSystemMessage(`Unknown select flag: ${flag}. Use -sig, -up, -down, -clear, or -invert`)
+    }
+  }
+
+  private filterCommand(command: string[]) {
+    if (command.length < 2) {
+      this.addSystemMessage("Usage: !filter -fc <min> <max> | -p <max>")
+      return
+    }
+
+    const flag = command[1].toLowerCase()
+
+    switch (flag) {
+      case '-fc':
+        if (command.length < 4) {
+          this.addSystemMessage("Usage: !filter -fc <min> <max>")
+          return
+        }
+        const fcMin = parseFloat(command[2])
+        const fcMax = parseFloat(command[3])
+        if (isNaN(fcMin) || isNaN(fcMax)) {
+          this.addSystemMessage("Invalid fold change values")
+          return
+        }
+        let fcCount = 0
+        for (const row of this.data.differential.df) {
+          const pid = row[this.data.differentialForm.primaryIDs]
+          const fc = row[this.data.differentialForm.foldChange]
+          if (fc >= fcMin && fc <= fcMax) {
+            if (!this.data.selected.includes(pid)) {
+              this.data.selected.push(pid)
+              fcCount++
+            }
+          }
+        }
+        this.data.selectionUpdateTrigger.next(true)
+        this.addSystemMessage(`Selected ${fcCount} proteins with FC between ${fcMin} and ${fcMax}`)
+        break
+
+      case '-p':
+        if (command.length < 3) {
+          this.addSystemMessage("Usage: !filter -p <max>")
+          return
+        }
+        const pMax = parseFloat(command[2])
+        if (isNaN(pMax)) {
+          this.addSystemMessage("Invalid p-value")
+          return
+        }
+        let pCount = 0
+        for (const row of this.data.differential.df) {
+          const pid = row[this.data.differentialForm.primaryIDs]
+          const pval = row[this.data.differentialForm.significant]
+          if (pval <= pMax) {
+            if (!this.data.selected.includes(pid)) {
+              this.data.selected.push(pid)
+              pCount++
+            }
+          }
+        }
+        this.data.selectionUpdateTrigger.next(true)
+        this.addSystemMessage(`Selected ${pCount} proteins with p-value <= ${pMax}`)
+        break
+
+      default:
+        this.addSystemMessage(`Unknown filter flag: ${flag}. Use -fc or -p`)
+    }
+  }
+
+  private countCommand(command: string[]) {
+    if (command.length < 2) {
+      this.addSystemMessage("Usage: !count -sig|-selected|-all")
+      return
+    }
+
+    const flag = command[1].toLowerCase()
+
+    switch (flag) {
+      case '-sig':
+        let sigCount = 0
+        for (const row of this.data.differential.df) {
+          const fc = Math.abs(row[this.data.differentialForm.foldChange])
+          const pval = row[this.data.differentialForm.significant]
+          if (fc >= this.settings.settings.log2FCCutoff && pval <= this.settings.settings.pCutoff) {
+            sigCount++
+          }
+        }
+        this.addSystemMessage(`Significant proteins: ${sigCount} (FC >= ${this.settings.settings.log2FCCutoff}, p <= ${this.settings.settings.pCutoff})`)
+        break
+
+      case '-selected':
+        this.addSystemMessage(`Selected proteins: ${this.data.selected.length}`)
+        break
+
+      case '-all':
+        let totalCount = 0
+        for (const _ of this.data.differential.df) {
+          totalCount++
+        }
+        this.addSystemMessage(`Total proteins: ${totalCount}`)
+        break
+
+      default:
+        this.addSystemMessage(`Unknown count flag: ${flag}. Use -sig, -selected, or -all`)
+    }
+  }
+
   saveStateCommand(command: string[]) {
-    console.log(command)
     if (command[0] === "!savestate") {
       if (command.length === 1) {
         const stateNumber = this.saveState.saveState()
@@ -209,6 +618,7 @@ export class SideFloatControlComponent implements OnInit, OnDestroy {
       }
     }
   }
+
   private searchPID(command: string[]) {
     if (command.length > 1) {
       const pidList = []
@@ -242,6 +652,7 @@ export class SideFloatControlComponent implements OnInit, OnDestroy {
       }
     }
   }
+
   private searchGene(command: string[]) {
     if (command.length > 1) {
       const geneList = []
@@ -294,20 +705,22 @@ export class SideFloatControlComponent implements OnInit, OnDestroy {
           }
         }
       }
-      if (command[1] === "-a") {
-        com.remove = false
-      } else if (command[1] === "-r") {
-        com.remove = true
-      }
-      if (com.id.length > 0) {
-        this.data.annotationService.next(com)
-      }
       const message: Message = {
-        message: {message: `Annotate ${com.id.length} data points`, timestamp: Date.now()},
+        message: {message: `Add annotations to ${com.id.length} data points`, timestamp: Date.now()},
         senderID: "system",
         senderName: "System",
         requestType: "chat-system"
       }
+      if (command[1] === "-a") {
+        com.remove = false
+      } else if (command[1] === "-r") {
+        com.remove = true
+        message.message.message = `Remove annotations from ${com.id.length} data points`
+      }
+      if (com.id.length > 0) {
+        this.data.annotationService.next(com)
+      }
+
       this.messagesList = [message].concat(this.messagesList)
     }
   }
@@ -320,23 +733,25 @@ export class SideFloatControlComponent implements OnInit, OnDestroy {
           com.id.push(c.substring(1))
         }
       }
-      if (command[1] === "-a") {
-        com.remove = false
-      } else if (command[1] === "-r") {
-        com.remove = true
-      }
-      if (com.id.length > 0) {
-        this.data.annotationService.next(com)
-      }
       const message: Message = {
         message: {message: `Annotate ${com.id.length} data points`, timestamp: Date.now()},
         senderID: "system",
         senderName: "System",
         requestType: "chat-system"
       }
+      if (command[1] === "-a") {
+        com.remove = false
+      } else if (command[1] === "-r") {
+        com.remove = true
+        message.message.message = `Remove annotations from ${com.id.length} data points`
+      }
+      if (com.id.length > 0) {
+        this.data.annotationService.next(com)
+      }
       this.messagesList = [message].concat(this.messagesList)
     }
   }
+
   ngOnDestroy() {
     this.webSub?.unsubscribe()
     this.ws.close()
@@ -374,7 +789,6 @@ export class SideFloatControlComponent implements OnInit, OnDestroy {
         }
         break;
     }
-
   }
 
   handleDragOver(event: any) {
@@ -386,19 +800,18 @@ export class SideFloatControlComponent implements OnInit, OnDestroy {
   searchChatSelectionGroup(event: any) {
     this.searchChatSelection.emit({title:event.title, data: event.data})
   }
+
   searchChatSelectionSingle(event: any) {
     this.searchChatSelection.emit({title:event.title, data: event.data})
   }
 
   typeAheadCommandComplete: OperatorFunction<string, string[]> = (text$: Observable<string>) =>
     text$.pipe(
-      //debounceTime(200),
       distinctUntilChanged(),
       map((term) => {
         this.commandCompleteModel.set(term)
         const command = term.split(" ")
         const lastParameter = command[command.length - 1]
-        console.log(lastParameter)
         if (lastParameter.startsWith("@")) {
           if (lastParameter.length < 3) {
             return []
@@ -433,6 +846,7 @@ export class SideFloatControlComponent implements OnInit, OnDestroy {
     }
     return x
   }
+
   loadStateDirect(state: number) {
     this.saveState.loadState(state)
   }

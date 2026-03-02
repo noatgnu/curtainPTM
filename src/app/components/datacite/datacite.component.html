@@ -1,10 +1,10 @@
-<div class="modal-header ">
-  <h5 class="modal-title d-flex align-items-center gap-2">
+<div class="modal-header">
+  <h5 class="modal-title d-flex align-items-center gap-2" id="dataciteModalTitle">
     DOI Registration
-    @if(lock) {<span class="badge bg-secondary"><i class="bi bi-lock me-1"></i>Locked</span>}
+    @if(lock) {<span class="badge bg-secondary"><i class="bi bi-lock me-1" aria-hidden="true"></i>Locked</span>}
   </h5>
 </div>
-<div class="modal-body">
+<div class="modal-body" role="dialog" aria-modal="true" aria-labelledby="dataciteModalTitle">
   <div class="container mb-3">
     @if (dataCiteMetadata) {
       @if (dataCiteMetadata.status === "published") {
@@ -57,7 +57,13 @@
           <p class="text-muted small mb-2">
             This session belongs to {{availableCollections.length}} collection(s). Optionally select one to include all collection sessions in the DOI.
           </p>
-          <select class="form-select" [(ngModel)]="selectedCollectionId" [ngModelOptions]="{standalone: true}">
+          <label for="collectionSelect" class="visually-hidden">Collection assignment</label>
+          <select
+            class="form-select"
+            id="collectionSelect"
+            [(ngModel)]="selectedCollectionId"
+            [ngModelOptions]="{standalone: true}"
+            aria-label="Select collection for DOI assignment">
             <option [ngValue]="null">No collection (DOI for this session only)</option>
             @for (collection of availableCollections; track collection.id) {
               <option [ngValue]="collection.id">
@@ -80,15 +86,21 @@
   <form [formGroup]="dataCiteForm" class="needs-validation">
     <!-- DOI Information section -->
     <div class="card mb-3">
-      <div class="card-header  d-flex justify-content-between align-items-center">
-        <h5 class="mb-0 d-flex align-items-center">
-          <i class="bi bi-fingerprint me-2"></i>DOI Information
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 d-flex align-items-center" id="doiInfoHeader">
+          <i class="bi bi-fingerprint me-2" aria-hidden="true"></i>DOI Information
         </h5>
-        <button class="btn btn-link p-0" type="button" (click)="isCollapsedInfo = !isCollapsedInfo">
-          <i class="bi" [ngClass]="isCollapsedInfo ? 'bi-chevron-down' : 'bi-chevron-up'"></i>
+        <button
+          class="btn btn-link p-0"
+          type="button"
+          (click)="isCollapsedInfo = !isCollapsedInfo"
+          [attr.aria-expanded]="!isCollapsedInfo"
+          aria-controls="doiInfoContent"
+          aria-label="Toggle DOI Information section">
+          <i class="bi" [ngClass]="isCollapsedInfo ? 'bi-chevron-down' : 'bi-chevron-up'" aria-hidden="true"></i>
         </button>
       </div>
-      <div [ngbCollapse]="isCollapsedInfo">
+      <div [ngbCollapse]="isCollapsedInfo" id="doiInfoContent" aria-labelledby="doiInfoHeader">
         <div class="card-body">
           <p class="text-muted mb-3">These fields are automatically set by the system.</p>
           <div class="row g-3">
@@ -113,16 +125,22 @@
     </div>
 
     <div class="card mb-3">
-      <div class="card-header  d-flex justify-content-between align-items-center">
-        <h5 class="mb-0 d-flex align-items-center">
-          <i class="bi bi-people-fill me-2"></i>Creators
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 d-flex align-items-center" id="creatorsHeader">
+          <i class="bi bi-people-fill me-2" aria-hidden="true"></i>Creators
           <span class="badge bg-primary ms-2 rounded-pill">{{dataCiteForm.controls.creators.controls.length}}</span>
         </h5>
-        <button class="btn btn-link p-0" type="button" (click)="isCollapsedCreators = !isCollapsedCreators">
-          <i class="bi" [ngClass]="isCollapsedCreators ? 'bi-chevron-down' : 'bi-chevron-up'"></i>
+        <button
+          class="btn btn-link p-0"
+          type="button"
+          (click)="isCollapsedCreators = !isCollapsedCreators"
+          [attr.aria-expanded]="!isCollapsedCreators"
+          aria-controls="creatorsContent"
+          aria-label="Toggle Creators section">
+          <i class="bi" [ngClass]="isCollapsedCreators ? 'bi-chevron-down' : 'bi-chevron-up'" aria-hidden="true"></i>
         </button>
       </div>
-      <div [ngbCollapse]="isCollapsedCreators">
+      <div [ngbCollapse]="isCollapsedCreators" id="creatorsContent" aria-labelledby="creatorsHeader">
         <div class="card-body">
           <p class="text-muted mb-3">The main researchers involved in producing the data, or the authors of the publication, in priority order. ORCID is required for all creators.</p>
 

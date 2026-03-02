@@ -1,11 +1,11 @@
 <div class="modal-header">
-  <h5 class="modal-title">
-    <i class="bi bi-sliders me-2"></i>Sample & Display Settings
+  <h5 class="modal-title" id="sampleSettingsTitle">
+    <i class="bi bi-sliders me-2" aria-hidden="true"></i>Sample & Display Settings
   </h5>
-  <button type="button" class="btn-close" aria-label="Close" (click)="modal.close()"></button>
+  <button type="button" class="btn-close" aria-label="Close modal" (click)="modal.close()"></button>
 </div>
 
-<div class="modal-body">
+<div class="modal-body" role="dialog" aria-modal="true" aria-labelledby="sampleSettingsTitle">
   <ul ngbNav #nav="ngbNav" [(activeId)]="activeTab" class="nav-tabs mb-3">
     <li [ngbNavItem]="1">
       <button ngbNavLink>
@@ -30,12 +30,13 @@
             <div class="accordion">
               @for (c of condition; track c; let i = $index) {
                 <div class="accordion-item">
-                  <h2 class="accordion-header">
+                  <h2 class="accordion-header" [id]="'condition-header-' + i">
                     <button class="accordion-button"
                             [class.collapsed]="collapseState[c]"
                             type="button"
                             (click)="toggleCollapse(c)"
-                            [attr.aria-expanded]="!collapseState[c]">
+                            [attr.aria-expanded]="!collapseState[c]"
+                            [attr.aria-controls]="'condition-content-' + i">
                       <div class="row w-100 align-items-center me-2">
                         <div class="col-5">
                           <span class="fw-bold"><i class="bi bi-folder me-2"></i>{{c}}</span>
@@ -73,7 +74,7 @@
                       </div>
                     </button>
                   </h2>
-                  <div [ngbCollapse]="collapseState[c]">
+                  <div [ngbCollapse]="collapseState[c]" [id]="'condition-content-' + i" [attr.aria-labelledby]="'condition-header-' + i">
                       <div class="table-responsive">
                         <table class="table table-sm table-hover mb-0">
                           <thead class="table-light">

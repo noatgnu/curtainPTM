@@ -364,7 +364,7 @@ export class ProteinDomainPlotComponent implements OnInit, OnDestroy {
     this.web.downloadPlotlyImage(format, "domain", this.geneName + "domain").then();
   }
 
-  exportCSV(): void {
+  exportTSV(): void {
     if (this.domains.length === 0) {
       this.toast.show("Export", "No domain data to export").then();
       return;
@@ -379,23 +379,23 @@ export class ProteinDomainPlotComponent implements OnInit, OnDestroy {
       ((d.length / this.proteinLength) * 100).toFixed(2)
     ]);
 
-    const csvContent = [
+    const tsvContent = [
       `# Protein: ${this.geneName}`,
       `# Length: ${this.proteinLength} aa`,
       `# Total Domains: ${this.domains.length}`,
       '',
-      headers.join(','),
-      ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+      headers.join('\t'),
+      ...rows.map(row => row.join('\t'))
     ].join('\n');
 
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const blob = new Blob([tsvContent], { type: 'text/tab-separated-values;charset=utf-8;' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = `protein-domains-${this.geneName}.csv`;
+    link.download = `protein-domains-${this.geneName}.tsv`;
     link.click();
     URL.revokeObjectURL(link.href);
 
-    this.toast.show("Export", "Domain data exported to CSV").then();
+    this.toast.show("Export", "Domain data exported to TSV").then();
   }
 
   copyToClipboard(): void {
