@@ -17,6 +17,8 @@
                 [id]="c.group + 'id'"
                 class="form-control form-control-sm color-input"
                 [(colorPicker)]="c.color"
+                [cpDisableInput]="false"
+                [cpAlphaChannel]="'disabled'"
                 [style.background]="c.color"
                 [style.color]="getContrastColor(c.color)"
                 [value]="c.color">
