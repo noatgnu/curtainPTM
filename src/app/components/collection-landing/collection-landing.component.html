@@ -19,8 +19,13 @@
         </h4>
         <div class="d-flex align-items-center gap-2">
           @if (showNativeAppButton) {
-            <button class="btn btn-sm btn-outline-primary" (click)="openInNativeApp()">
+            <button class="btn btn-sm btn-outline-secondary" (click)="openInNativeApp()">
               <i class="bi bi-arrow-up-right-square me-1"></i>Open in App
+            </button>
+          }
+          @if (collection()!.accessible_curtains.length > 0) {
+            <button class="btn btn-sm btn-outline-primary" (click)="exportSessionsToCSV()" title="Export sessions to CSV">
+              <i class="bi bi-download"></i> Export CSV
             </button>
           }
           <span class="badge bg-info">{{collection()!.accessible_curtains.length}} sessions</span>

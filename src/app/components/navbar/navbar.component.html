@@ -336,12 +336,6 @@
               {{uniqueLink}}
             </a>
           </div>
-          @if (!data.session.permanent) {
-            <div class="small text-muted">
-              <i class="bi bi-info-circle me-1"></i>
-              This is a temporary link. Save your session to make it permanent.
-            </div>
-          }
         </div>
         <div class="d-flex flex-column gap-2">
           <button [ngClass]="themeService.isDarkMode() ? 'btn btn-sm btn-outline-light' : 'btn btn-sm btn-outline-dark'" (click)="copyToClipboard(uniqueLink)" title="Copy to clipboard">

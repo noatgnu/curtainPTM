@@ -121,4 +121,43 @@ export class CollectionLandingComponent implements OnInit, OnDestroy {
       }
     });
   }
+
+  exportSessionsToCSV(): void {
+    const col = this.collection();
+    if (!col || col.accessible_curtains.length === 0) {
+      return;
+    }
+
+    const baseUrl = location.origin + '/#/';
+    const headers = ['Name', 'Description', 'Link', 'Curtain Type', 'Created', 'Contact'];
+    const rows = col.accessible_curtains.map(curtain => {
+      const link = baseUrl + curtain.link_id;
+      return [
+        this.escapeCSV(curtain.description || 'Untitled Session'),
+        this.escapeCSV(col.description || ''),
+        this.escapeCSV(link),
+        this.escapeCSV(curtain.curtain_type),
+        this.escapeCSV(this.formatDate(curtain.created)),
+        this.escapeCSV(col.owner_username)
+      ].join(',');
+    });
+
+    const csvContent = [headers.join(','), ...rows].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `${col.name.replace(/[^a-zA-Z0-9]/g, '_')}_sessions.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
+
+  private escapeCSV(value: string): string {
+    if (value.includes(',') || value.includes('"') || value.includes('\n')) {
+      return `"${value.replace(/"/g, '""')}"`;
+    }
+    return value;
+  }
 }
