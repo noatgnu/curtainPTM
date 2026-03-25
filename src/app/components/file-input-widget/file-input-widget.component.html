@@ -1,10 +1,11 @@
 <div class="input-group mb-3">
-  <label class="input-group-text" [for]="inputId">{{fileType}}</label>
+  <label class="input-group-text" [for]="inputId" [class.text-muted]="disabled">{{fileType}}</label>
   <input
     type="file"
     class="form-control"
     [id]="inputId"
     [attr.aria-describedby]="inputId + '-hint'"
+    [disabled]="disabled"
     accept=".csv,.tsv,.txt"
     (change)="handleFile($event)">
   <span [id]="inputId + '-hint'" class="visually-hidden">

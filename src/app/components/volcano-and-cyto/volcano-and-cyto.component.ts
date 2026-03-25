@@ -1,9 +1,8 @@
-import {Component, EventEmitter, OnDestroy, OnInit, Output} from '@angular/core';
+import {Component, effect, EventEmitter, OnInit, Output} from '@angular/core';
 import {DataService} from "../../data.service";
 import {selectionData} from "../protein-selections/protein-selections.component";
 import {ScrollService} from "../../scroll.service";
 import {ThemeService} from "../../theme.service";
-import {Subscription} from "rxjs";
 
 @Component({
     selector: 'app-volcano-and-cyto',
@@ -11,25 +10,20 @@ import {Subscription} from "rxjs";
     styleUrls: ['./volcano-and-cyto.component.scss'],
     standalone: false
 })
-export class VolcanoAndCytoComponent implements OnInit, OnDestroy {
-  private themeSubscription?: Subscription;
+export class VolcanoAndCytoComponent implements OnInit {
   @Output() selected: EventEmitter<selectionData> = new EventEmitter<selectionData>()
   isVolcanoCollapse: boolean = false
   isNetworkCollapse: boolean = true
-  constructor(public data: DataService, private scroll: ScrollService, private themeService: ThemeService) { }
-
-  ngOnInit(): void {
-    this.themeSubscription = this.themeService.beforeThemeChange$.subscribe(() => {
-      if (!this.isNetworkCollapse) {
+  constructor(public data: DataService, private scroll: ScrollService, private themeService: ThemeService) {
+    effect(() => {
+      const counter = this.themeService.beforeThemeChange();
+      if (counter > 0 && !this.isNetworkCollapse) {
         this.isNetworkCollapse = true;
       }
     });
   }
 
-  ngOnDestroy(): void {
-    if (this.themeSubscription) {
-      this.themeSubscription.unsubscribe();
-    }
+  ngOnInit(): void {
   }
 
   handleVolcanoSelection(e: selectionData){

@@ -1,4 +1,4 @@
-import { NgModule, isDevMode } from '@angular/core';
+import { NgModule, isDevMode, provideZonelessChangeDetection } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -151,5 +151,5 @@ import { SelectiveImportDialogComponent } from './components/selective-import-di
         ToastProgressbarComponent,
         ShapesComponent,
         DragDropModule,
-        DataciteMetadataDisplayComponent], providers: [HttpClient, provideHttpClient(withInterceptorsFromDi()), StringNetworkService] })
+        DataciteMetadataDisplayComponent], providers: [HttpClient, provideHttpClient(withInterceptorsFromDi()), StringNetworkService, provideZonelessChangeDetection()] })
 export class AppModule { }

@@ -90,10 +90,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
     public autoSave: AutoSaveService,
     public themeService: ThemeService
   ) {
-    if (this.subscription) {
-      this.subscription.unsubscribe()
-    }
-    this.subscription = this.uniprot.uniprotProgressBar.asObservable().subscribe((data: any) => {
+    effect(() => {
+      const data = this.uniprot.progressBar();
       this.progressEvent = data
     })
 
@@ -104,11 +102,17 @@ export class NavbarComponent implements OnInit, OnDestroy {
       this.GDPR.set(false)
       this.gdprAccepted.set(false)
     }
-    this.data.dataClear.asObservable().subscribe((data: any) => {
+    effect(() => {
+      this.data.dataClear();
       this.hasSavedClearSettings.set(localStorage.getItem('curtainClearSettingsSelection') !== null)
     })
     effect(() => {
       localStorage.setItem("CurtainGDPR", this.gdprAccepted().toString())
+    })
+    effect(() => {
+      this.autoSave.autoSaveTrigger();
+      this.lastAutoSave = new Date()
+      this.saveLastAutoSaveTime()
     })
   }
 
@@ -118,10 +122,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
       this.loadSessionCollections(this.data.session.link_id)
     }
     this.loadLastAutoSaveTime()
-    this.autoSave.autoSaveTrigger.pipe(takeUntil(this.destroy$)).subscribe(() => {
-      this.lastAutoSave = new Date()
-      this.saveLastAutoSaveTime()
-    })
   }
 
   ngOnDestroy(): void {
@@ -312,11 +312,11 @@ export class NavbarComponent implements OnInit, OnDestroy {
             expiry_duration: expiryDuration,
             enable: !this.accounts.curtainAPI.user.loginStatus,
             onProgress: (progress: number) => {
-              this.uniprot.uniprotProgressBar.next({
+              this.uniprot.progressBar.set({
                 value: progress,
                 text: `Uploading session data at ${Math.round(progress)}%`
               })
-              this.data.uploadProgress.next(progress)
+              this.data.uploadProgress.set(progress)
             }
           }
         )
@@ -325,7 +325,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
           this.toast.show("User information", `Curtain link has been saved with unique id ${response.curtain.link_id}`).then()
           this.settings.settings.currentID = response.curtain.link_id
           this.uniqueLink = location.origin + "/#/" + this.settings.settings.currentID
-          this.uniprot.uniprotProgressBar.next({value: 100, text: "Session data saved"})
+          this.uniprot.progressBar.set({value: 100, text: "Session data saved"})
           this.permanent = response.curtain.permanent
           this.sessionLinkMinimized.set(false)
           this.data.session = response.curtain
@@ -346,7 +346,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
         this.toast.show("User information", `Curtain link has been saved with unique id ${data.data.link_id}`).then()
         this.settings.settings.currentID = data.data.link_id
         this.uniqueLink = location.origin + "/#/" + this.settings.settings.currentID
-        this.uniprot.uniprotProgressBar.next({value: 100, text: "Session data saved"})
+        this.uniprot.progressBar.set({value: 100, text: "Session data saved"})
         this.permanent = data.data.permanent
         this.sessionLinkMinimized.set(false)
         this.data.session = data.data
@@ -357,8 +357,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
     })
   }
   onUploadProgress = (progressEvent: any) => {
-    this.uniprot.uniprotProgressBar.next({value: progressEvent.progress * 100, text: "Uploading session data at " + Math.round(progressEvent.progress *100) + "%"})
-    this.data.uploadProgress.next(progressEvent.progress * 100)
+    this.uniprot.progressBar.set({value: progressEvent.progress * 100, text: "Uploading session data at " + Math.round(progressEvent.progress *100) + "%"})
+    this.data.uploadProgress.set(progressEvent.progress * 100)
   }
   clearSelections() {
     const rememberClearSettings = localStorage.getItem("curtainRememberClearSettings")
@@ -389,7 +389,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
       if (settingsToClear['annotatedData']) {
         this.data.annotatedData = {}
       }
-      this.data.dataClear.next(true)
+      this.data.triggerDataClear()
     } else {
       const ref = this.modal.open(AreYouSureClearModalComponent)
       ref.closed.subscribe(data => {
@@ -410,7 +410,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
           if (data.annotatedData) {
             this.data.annotatedData = {}
           }
-          this.data.dataClear.next(true)
+          this.data.triggerDataClear()
         }
       })
     }

@@ -55,13 +55,13 @@ export class DefaultColorPaletteComponent implements OnInit {
     }
     let currentPosition = 0
     if (this.form.value["resetVolcanoColor"]) {
-      this.data.resetVolcanoColor.next(true)
+      this.data.triggerResetVolcanoColor()
       const colorMap: any = {}
       for (const c of this.settings.settings.conditionOrder) {
         colorMap[c] = this.settings.settings.colorMap[c].slice()
       }
       this.settings.settings.colorMap = colorMap
-      this.data.selectionUpdateTrigger.next(true)
+      this.data.triggerSelectionUpdate()
     }
     if (this.form.value["resetBarChartColor"]) {
       for (const s of this.settings.settings.conditionOrder) {
@@ -77,7 +77,7 @@ export class DefaultColorPaletteComponent implements OnInit {
     }
 
 
-    this.data.redrawTrigger.next(true)
+    this.data.triggerRedraw()
     this.modal.close()
   }
 

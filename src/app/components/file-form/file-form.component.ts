@@ -1,9 +1,10 @@
-import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {Component, effect, EventEmitter, OnInit, Output} from '@angular/core';
 import {InputFile} from "../../classes/input-file";
 import {DataService} from "../../data.service";
 import {DataFrame, fromCSV, fromJSON, Series} from "data-forge";
 import {UniprotService} from "../../uniprot.service";
 import {SettingsService} from "../../settings.service";
+import {ToastService} from "../../toast.service";
 
 @Component({
     selector: 'app-file-form',
@@ -16,13 +17,16 @@ export class FileFormComponent implements OnInit {
   transformedFC: boolean = false
   transformedP: boolean = false
   iscollapsed = false
+  useDifferentialAsRaw = false
   @Output() finished: EventEmitter<boolean> = new EventEmitter<boolean>()
-  constructor(private uniprot: UniprotService, public data: DataService, public settings: SettingsService) {
-    this.uniprot.uniprotProgressBar.subscribe(data => {
-      this.progressBar.value = data.value
-      this.progressBar.text = data.text
+  constructor(private uniprot: UniprotService, public data: DataService, public settings: SettingsService, private toast: ToastService) {
+    effect(() => {
+      const progressData = this.uniprot.progressBar();
+      this.progressBar.value = progressData.value
+      this.progressBar.text = progressData.text
     })
-    this.data.restoreTrigger.asObservable().subscribe(data => {
+    effect(() => {
+      const data = this.data.restoreTrigger();
       if (data) {
         this.startWork();
       }
@@ -298,17 +302,22 @@ export class FileFormComponent implements OnInit {
     this.processUniProt()
   }
 
-  processUniProt() {
+  async processUniProt() {
     console.log(this.data.fetchUniProt)
     console.log(this.data.bypassUniProt)
     if (this.data.fetchUniProt) {
       if (!this.data.bypassUniProt) {
+        this.data.processingProgress.set(0)
+        await this.toast.show("UniProt", "Preparing accession list from data...", 60000, 'info', 'processing')
         this.uniprot.geneNameToPrimary = {}
         const accList: string[] = []
         this.data.dataMap = new Map<string, string>()
         this.data.genesMap = {}
         this.uniprot.accMap = new Map<string, string>()
         this.uniprot.dataMap = new Map<string, string>()
+        const totalRows = this.data.currentDF.count()
+        let processedRows = 0
+        const progressInterval = Math.max(100, Math.floor(totalRows / 100))
         for (const r of this.data.currentDF) {
           const a = r[this.data.differentialForm.accession]
           this.data.dataMap.set(a, r[this.data.differentialForm.accession])
@@ -331,8 +340,15 @@ export class FileFormComponent implements OnInit {
               }
             }
           }
+          processedRows++
+          if (processedRows % progressInterval === 0) {
+            const percent = Math.round((processedRows / totalRows) * 100)
+            this.data.processingProgress.set(percent)
+          }
         }
+        this.data.processingProgress.set(100)
         if (accList.length > 0) {
+          await this.toast.show("UniProt", `Found ${accList.length} unique accessions. Building local UniProt database...`)
           this.uniprot.UniprotParserJS(accList).then(r => {
             this.createUniprotDatabase().then((allGenes)=> {
               this.data.allGenes = allGenes
@@ -485,6 +501,25 @@ export class FileFormComponent implements OnInit {
       this.updateProgressBar(progress, "Finished loading "+fileType)
     } else {
       this.updateProgressBar(progress, "Loading "+fileType)
+    }
+  }
+
+  toggleUseDifferentialAsRaw(): void {
+    if (this.useDifferentialAsRaw) {
+      if (this.data.differential.df.count() === 0) {
+        this.useDifferentialAsRaw = false
+        return
+      }
+      this.data.raw.df = this.data.differential.df.bake()
+      this.data.raw.originalFile = this.data.differential.originalFile
+      this.data.raw.filename = this.data.differential.filename
+      this.data.rawForm.primaryIDs = this.data.differentialForm.primaryIDs
+    } else {
+      this.data.raw.df = new DataFrame()
+      this.data.raw.originalFile = ""
+      this.data.raw.filename = ""
+      this.data.rawForm.primaryIDs = ""
+      this.data.rawForm.samples = []
     }
   }
 }

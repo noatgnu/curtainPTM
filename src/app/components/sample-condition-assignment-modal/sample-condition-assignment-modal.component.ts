@@ -82,7 +82,7 @@ export class SampleConditionAssignmentModalComponent implements OnInit {
     }
     this.settings.settings.sampleMap = this.sampleMap
     this.dataService.conditions = conditions.slice()
-    this.dataService.redrawTrigger.next(true)
+    this.dataService.triggerRedraw()
     this.modal.close()
   }
 

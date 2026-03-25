@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, effect, Input, OnInit} from '@angular/core';
 import {DataFrame, IDataFrame} from "data-forge";
 import {DataService} from "../../data.service";
 import {UniprotService} from "../../uniprot.service";
@@ -146,13 +146,13 @@ export class DataBlockComponent implements OnInit {
   }
   accessionID: string = ""
   constructor(private modal: NgbModal, public dataService: DataService, private uniprot: UniprotService, private scroll: ScrollService, private settingsService: SettingsService) {
-    this.dataService.updateVariantCorrection.asObservable().subscribe((value) => {
+    effect(() => {
+      const value = this.dataService.updateVariantCorrection();
       if (value) {
         if (this.settingsService.settings.variantCorrection[this.accessionID]) {
           this.sourceMap["Experimental Data"] = `${this.accessionID} (custom)`
           this.getSequence().then()
         }
-
       }
     })
   }

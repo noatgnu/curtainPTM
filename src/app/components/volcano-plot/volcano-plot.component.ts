@@ -1,5 +1,4 @@
-import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
-import {Subscription} from "rxjs";
+import {Component, effect, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {DataFrame, fromCSV, IDataFrame} from "data-forge";
 import {DataService} from "../../data.service";
 import {UniprotService} from "../../uniprot.service";
@@ -153,8 +152,7 @@ export interface PlotlyConfig {
     styleUrls: ['./volcano-plot.component.scss'],
     standalone: false
 })
-export class VolcanoPlotComponent implements OnInit, OnDestroy {
-  private themeSubscription?: Subscription;
+export class VolcanoPlotComponent implements OnInit {
   settingsNav = "parameters"
   editMode: boolean = false
   explorerMode: boolean = false
@@ -743,17 +741,20 @@ export class VolcanoPlotComponent implements OnInit, OnDestroy {
       this.annotated[i] = this.settings.settings.textAnnotation[i]
     }
 
-    this.dataService.resetVolcanoColor.asObservable().subscribe(data => {
+    effect(() => {
+      const data = this.dataService.resetVolcanoColor();
       if (data) {
         this.specialColorMap = {}
       }
     })
-    this.dataService.selectionUpdateTrigger.asObservable().subscribe(data => {
+    effect(() => {
+      const data = this.dataService.selectionUpdateTrigger();
       if (data) {
         this.drawVolcano()
       }
     })
-    this.dataService.annotationService.asObservable().subscribe(data => {
+    effect(() => {
+      const data = this.dataService.annotationEvent();
       if (data) {
         if (data.remove) {
           if (typeof data.id === "string") {
@@ -761,40 +762,33 @@ export class VolcanoPlotComponent implements OnInit, OnDestroy {
               this.dataService.annotatedData = this.annotated
             })
           } else {
-            this.removeAnnotatedDataPoints(data.id).then(() => {
+            this.removeAnnotatedDataPoints(data.id as string[]).then(() => {
               this.dataService.annotatedData = this.annotated
             })
           }
-
         } else {
           if (typeof data.id === "string") {
             this.annotateDataPoints([data.id]).then(() => {
               this.dataService.annotatedData = this.annotated
             })
           } else {
-            this.annotateDataPoints(data.id).then(() => {
+            this.annotateDataPoints(data.id as string[]).then(() => {
               this.dataService.annotatedData = this.annotated
             })
           }
-
         }
+      }
+    })
+    effect(() => {
+      this.themeService.mode();
+      if (this._data && this._data.count()) {
+        this.graphLayout = this.plotlyTheme.applyThemeToLayout(this.graphLayout);
+        this.revision++;
       }
     })
   }
 
   ngOnInit(): void {
-    this.themeSubscription = this.themeService.theme$.subscribe(() => {
-      if (this._data && this._data.count()) {
-        this.graphLayout = this.plotlyTheme.applyThemeToLayout(this.graphLayout);
-        this.revision++;
-      }
-    });
-  }
-
-  ngOnDestroy(): void {
-    if (this.themeSubscription) {
-      this.themeSubscription.unsubscribe();
-    }
   }
 
   selectData(e: any) {
@@ -963,14 +957,14 @@ export class VolcanoPlotComponent implements OnInit, OnDestroy {
             break;
           case 'annotate':
             // Handle single annotation
-            this.dataService.annotationService.next({
+            this.dataService.annotationEvent.set({
               id: result.data[0],
               remove: false
             });
             break;
           case 'annotateMultiple':
             // Handle multiple annotations
-            this.dataService.annotationService.next({
+            this.dataService.annotationEvent.set({
               id: result.data,
               remove: false
             });
@@ -1164,7 +1158,7 @@ export class VolcanoPlotComponent implements OnInit, OnDestroy {
           }
         }
       }
-      this.dataService.volcanoAdditionalShapesSubject.next(true)
+      this.dataService.triggerVolcanoShapesChange()
     }
     if (data["legend.x"]) {
       this.settings.settings.volcanoPlotLegendX = data["legend.x"]
@@ -1209,7 +1203,7 @@ export class VolcanoPlotComponent implements OnInit, OnDestroy {
           shape.y1 = data[k]
         }
       }
-      this.dataService.volcanoAdditionalShapesSubject.next(true)
+      this.dataService.triggerVolcanoShapesChange()
     }
   }
 

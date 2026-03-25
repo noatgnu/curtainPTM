@@ -151,12 +151,12 @@ export class DataSelectionManagementComponent implements OnInit {
     this.data.selectOperationNames = renamedList
     this.data.selected = Object.keys(this.data.selectedMap)
     if (annotateList.length > 0) {
-      this.data.annotationService.next({id: annotateList, remove: false})
-      this.data.batchAnnotateAnnoucement.next({id: annotateList, remove: false})
+      this.data.annotationEvent.set({id: annotateList, remove: false})
+      this.data.batchAnnotate.set({id: annotateList, remove: false})
     }
     if (removeAnnotateList.length > 0) {
-      this.data.annotationService.next({id: removeAnnotateList, remove: true})
-      this.data.batchAnnotateAnnoucement.next({id: removeAnnotateList, remove: true})
+      this.data.annotationEvent.set({id: removeAnnotateList, remove: true})
+      this.data.batchAnnotate.set({id: removeAnnotateList, remove: true})
     }
     this.modal.close(true)
   }
@@ -175,7 +175,7 @@ export class DataSelectionManagementComponent implements OnInit {
           for (const {id, seq} of this.uniprot.parseMultiFasta(<string>loadedFile)) {
             this.settings.settings.customSequences[id] = seq
           }
-          this.data.updateVariantCorrection.next(true)
+          this.data.triggerUpdateVariantCorrection()
         }
         reader.readAsText(target.files[0]);
       }

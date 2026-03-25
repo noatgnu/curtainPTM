@@ -1,4 +1,4 @@
-import {Component, signal, ElementRef, EventEmitter, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
+import {Component, effect, signal, ElementRef, EventEmitter, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
 import {WebsocketService} from "../../websocket.service";
 import {FormBuilder, NgForm} from "@angular/forms";
 import {distinctUntilChanged, map, Observable, OperatorFunction, Subscription} from "rxjs";
@@ -192,8 +192,9 @@ export class SideFloatControlComponent implements OnInit, OnDestroy {
       this.webSub.unsubscribe()
     }
     this.setSubscription();
-    this.ws.reSubscribeSubject.asObservable().subscribe((data: boolean) => {
-      if (data) {
+    effect(() => {
+      const counter = this.ws.resubscribe();
+      if (counter > 0) {
         this.webSub?.unsubscribe()
         this.setSubscription();
       }
@@ -271,8 +272,8 @@ export class SideFloatControlComponent implements OnInit, OnDestroy {
           this.searchPID(command);
           break
         case "!rd":
-          this.data.redrawTrigger.next(true)
-          this.data.selectionUpdateTrigger.next(true)
+          this.data.triggerRedraw()
+          this.data.triggerSelectionUpdate()
           this.addSystemMessage("Plots redrawn")
           break
         case "!anngene":
@@ -392,7 +393,7 @@ export class SideFloatControlComponent implements OnInit, OnDestroy {
             }
           }
         }
-        this.data.selectionUpdateTrigger.next(true)
+        this.data.triggerSelectionUpdate()
         this.addSystemMessage(`Selected ${count} significant proteins`)
         break
 
@@ -408,7 +409,7 @@ export class SideFloatControlComponent implements OnInit, OnDestroy {
             }
           }
         }
-        this.data.selectionUpdateTrigger.next(true)
+        this.data.triggerSelectionUpdate()
         this.addSystemMessage(`Selected ${count} upregulated proteins`)
         break
 
@@ -424,7 +425,7 @@ export class SideFloatControlComponent implements OnInit, OnDestroy {
             }
           }
         }
-        this.data.selectionUpdateTrigger.next(true)
+        this.data.triggerSelectionUpdate()
         this.addSystemMessage(`Selected ${count} downregulated proteins`)
         break
 
@@ -433,7 +434,7 @@ export class SideFloatControlComponent implements OnInit, OnDestroy {
         this.data.selected = []
         this.data.selectedMap = {}
         this.data.selectOperationNames = []
-        this.data.selectionUpdateTrigger.next(true)
+        this.data.triggerSelectionUpdate()
         this.addSystemMessage(`Cleared ${count} selections`)
         break
 
@@ -444,7 +445,7 @@ export class SideFloatControlComponent implements OnInit, OnDestroy {
         }
         const newSelection = allPids.filter((pid: string) => !this.data.selected.includes(pid))
         this.data.selected = newSelection
-        this.data.selectionUpdateTrigger.next(true)
+        this.data.triggerSelectionUpdate()
         this.addSystemMessage(`Inverted selection: ${newSelection.length} proteins now selected`)
         break
 
@@ -484,7 +485,7 @@ export class SideFloatControlComponent implements OnInit, OnDestroy {
             }
           }
         }
-        this.data.selectionUpdateTrigger.next(true)
+        this.data.triggerSelectionUpdate()
         this.addSystemMessage(`Selected ${fcCount} proteins with FC between ${fcMin} and ${fcMax}`)
         break
 
@@ -509,7 +510,7 @@ export class SideFloatControlComponent implements OnInit, OnDestroy {
             }
           }
         }
-        this.data.selectionUpdateTrigger.next(true)
+        this.data.triggerSelectionUpdate()
         this.addSystemMessage(`Selected ${pCount} proteins with p-value <= ${pMax}`)
         break
 
@@ -645,7 +646,7 @@ export class SideFloatControlComponent implements OnInit, OnDestroy {
           title: `Search #${this.data.selectOperationNames.length}`,
           params: Object.assign(this.params)
         }
-        this.data.searchCommandService.next(payload)
+        this.data.searchCommand.set(payload)
       } else {
         message.message.message = "No primary ids found"
         this.messagesList = [message].concat(this.messagesList)
@@ -679,7 +680,7 @@ export class SideFloatControlComponent implements OnInit, OnDestroy {
           title: `Search #${this.data.selectOperationNames.length}`,
           params: Object.assign(this.params)
         }
-        this.data.searchCommandService.next(payload)
+        this.data.searchCommand.set(payload)
       } else {
         message.message.message = "No genes found"
         this.messagesList = [message].concat(this.messagesList)
@@ -718,7 +719,7 @@ export class SideFloatControlComponent implements OnInit, OnDestroy {
         message.message.message = `Remove annotations from ${com.id.length} data points`
       }
       if (com.id.length > 0) {
-        this.data.annotationService.next(com)
+        this.data.annotationEvent.set(com)
       }
 
       this.messagesList = [message].concat(this.messagesList)
@@ -746,7 +747,7 @@ export class SideFloatControlComponent implements OnInit, OnDestroy {
         message.message.message = `Remove annotations from ${com.id.length} data points`
       }
       if (com.id.length > 0) {
-        this.data.annotationService.next(com)
+        this.data.annotationEvent.set(com)
       }
       this.messagesList = [message].concat(this.messagesList)
     }

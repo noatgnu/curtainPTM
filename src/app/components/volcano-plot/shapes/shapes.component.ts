@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Output} from '@angular/core';
+import {Component, effect, EventEmitter, Output} from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule} from "@angular/forms";
 import {SettingsService} from "../../../settings.service";
 import {ColorPickerDirective} from "ngx-color-picker";
@@ -21,8 +21,11 @@ export class ShapesComponent {
   @Output() updateShapes: EventEmitter<any> = new EventEmitter<any>()
   constructor(public settings: SettingsService, private fb: FormBuilder, private dataService: DataService) {
     this.updateForms();
-    this.dataService.volcanoAdditionalShapesSubject.subscribe((value) => {
-      this.updateForms()
+    effect(() => {
+      const counter = this.dataService.volcanoShapesChanged();
+      if (counter > 0) {
+        this.updateForms()
+      }
     })
   }
 

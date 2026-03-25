@@ -1,10 +1,12 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
-import {WebService} from "./web.service";
 import {fromCSV} from "data-forge";
-import {BehaviorSubject, Subject} from "rxjs";
-import {Parser, Accession} from "uniprotparserjs";
-import {UniprotDb} from "./classes/uniprot-db";
+import {Accession, Parser} from "uniprotparserjs";
+
+export interface UniprotProgress {
+  value: number;
+  text: string;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -16,15 +18,17 @@ export class UniprotService {
   dataMap: Map<string, any> = new Map<string, any>()
   db: Map<string, any> = new Map<string, any>()
   organism = ""
-  uniprotParseStatus = new BehaviorSubject<boolean>(false)
-  uniprotProgressBar = new Subject<any>()
+
+  readonly parseStatus = signal(false);
+  readonly progressBar = signal<UniprotProgress>({value: 0, text: ''});
+
   accMap: Map<string, string> = new Map<string, string>()
   geneNameToPrimary: any = {}
+
   constructor(private http: HttpClient) { }
 
   async UniprotParserJS(accList: string[]) {
     const parser = new Parser(5, "accession,id,gene_names,protein_name,organism_name,organism_id,length,cc_subcellular_location,sequence,ft_var_seq,cc_alternative_products,ft_domain,xref_string,ft_mod_res,cc_function,cc_disease,cc_pharmaceutical,ft_mutagen,xref_mim")
-    //randomly shuffle the array
     accList.sort(() => Math.random() - 0.5);
     const res = await parser.parse(accList, 5000)
     let currentRun = 1
@@ -39,10 +43,10 @@ export class UniprotService {
         currentSegment = r.segment
       }
 
-      this.uniprotProgressBar.next({value: currentRun * 100/totalRun, text: `Processed UniProt Job ${currentRun}/${totalRun} (Segment ${r.segment/5000+1})`})
+      this.progressBar.set({value: currentRun * 100/totalRun, text: `Processed UniProt Job ${currentRun}/${totalRun} (Segment ${r.segment/5000+1})`})
       await this.PrimeProcessReceivedData(r.data)
       if (currentRun === totalRun) {
-        this.uniprotParseStatus.next(true)
+        this.parseStatus.set(true)
       } else {
         currentRun ++
       }
@@ -210,7 +214,6 @@ export class UniprotService {
   }
 
   *parseMultiFasta(data: string) {
-    const multiFastaMap = new Map<string, string>()
     const lines = data.split("\n")
     let seq: string = ""
     let id: string = ""

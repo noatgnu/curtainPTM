@@ -1,4 +1,4 @@
-import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {Component, effect, EventEmitter, OnInit, Output} from '@angular/core';
 import {ToastService} from "../../toast.service";
 import {DataFrame, fromCSV, IDataFrame, ISeries, Series} from "data-forge";
 import {DataService} from "../../data.service";
@@ -42,6 +42,23 @@ export class HomeComponent implements OnInit {
   @Output() currentIDChanged: EventEmitter<string> = new EventEmitter<string>()
   constructor(private ptmd: PtmDiseasesService, private ws: WebsocketService, private accounts: AccountsService, private modal: NgbModal, public settings: SettingsService, private data: DataService, private route: ActivatedRoute, private toast: ToastService, private uniprot: UniprotService, private web: WebService, private ptm: PtmService) {
 
+    effect(() => {
+      const data = this.data.dataClear();
+      if (data) {
+        this.rawFiltered = new DataFrame()
+        this.differentialFiltered = new Series()
+      }
+    })
+    effect(() => {
+      const data = this.data.loadDataTrigger();
+      if (data) {
+        this.rawFiltered = new DataFrame()
+        this.differentialFiltered = new Series()
+        this.handleFinish(true)
+        this.data.triggerRedraw()
+        this.data.triggerSelectionUpdate()
+      }
+    })
 
     // if (location.protocol === "https:" && location.hostname === "curtainptm.proteo.info") {
     //   this.toast.show("Initialization", "Error: The webpage requires the url protocol to be http instead of https")
@@ -52,21 +69,6 @@ export class HomeComponent implements OnInit {
       this.ptm.getDatabase("PSP_PHOSPHO")
       this.ptm.getDatabase("PLMD_UBI")
       this.ptm.getDatabase("CDB_CARBONYL")
-      this.data.dataClear.asObservable().subscribe(data => {
-        if (data) {
-          this.rawFiltered = new DataFrame()
-          this.differentialFiltered = new Series()
-        }
-      })
-      this.data.loadDataTrigger.asObservable().subscribe(data => {
-        if (data) {
-          this.rawFiltered = new DataFrame()
-          this.differentialFiltered = new Series()
-          this.handleFinish(true)
-          this.data.redrawTrigger.next(true)
-          this.data.selectionUpdateTrigger.next(true)
-        }
-      })
 
       this.route.params.subscribe(params => {
         console.log(params)
@@ -226,7 +228,7 @@ export class HomeComponent implements OnInit {
   async tryAlternateIdentifiers(alternateIdentifiers: any[], doiLink: string, index: number) {
     if (index < 0) {
       this.toast.show("Initialization", "Error: No valid alternate identifier found in DOI").then()
-      this.data.downloadProgress.next(100)
+      this.data.downloadProgress.set(100)
       return
     }
 
@@ -251,7 +253,7 @@ export class HomeComponent implements OnInit {
         if (this.data.session) {
           this.data.session.permanent = true
         }
-        this.data.restoreTrigger.next(true)
+        this.data.triggerRestore()
       })
     } else {
       throw new Error("No data returned from alternate identifier")
@@ -294,8 +296,8 @@ export class HomeComponent implements OnInit {
                 this.data.session = d.data
                 this.settings.settings.currentID = d.data.link_id
                 this.uniqueLink = location.origin + "/#/" + this.settings.settings.currentID
-                this.uniprot.uniprotProgressBar.next({value: 100, text: "Restoring Session..."})
-                this.data.restoreTrigger.next(true)
+                this.uniprot.progressBar.set({value: 100, text: "Restoring Session..."})
+                this.data.triggerRestore()
 
               })
             })
@@ -310,15 +312,15 @@ export class HomeComponent implements OnInit {
               this.data.session = d.data
               this.settings.settings.currentID = d.data.link_id
               this.uniqueLink = location.origin + "/#/" + this.settings.settings.currentID
-              this.uniprot.uniprotProgressBar.next({value: 100, text: "Restoring Session..."})
-              this.data.restoreTrigger.next(true)
+              this.uniprot.progressBar.set({value: 100, text: "Restoring Session..."})
+              this.data.triggerRestore()
             })
           })
         }
       }
     } catch (error: any) {
       console.error("Error loading session:", error)
-      this.data.downloadProgress.next(100)
+      this.data.downloadProgress.set(100)
 
       if (error.message && error.message.includes("Failed to parse")) {
         this.toast.show("Decryption Error", "The session data appears to be encrypted or corrupted. Please ensure you have the correct decryption key.").then()
@@ -589,7 +591,7 @@ export class HomeComponent implements OnInit {
     this.finished = e
     if (this.finished) {
       if (this.data.selected.length > 0) {
-        this.data.finishedProcessingData.next(e)
+        this.data.finishedProcessing.set(e)
         this.updateSelections().then(() => {
           const differential = this.data.currentDF.where(r => this.data.selectedAccessions.includes(r[this.data.differentialForm.accession])).bake()
           this.differentialFiltered = differential.groupBy(r => r[this.data.differentialForm.accession]).bake()
@@ -634,7 +636,7 @@ export class HomeComponent implements OnInit {
       const differential = this.data.currentDF.where(r => this.data.selectedAccessions.includes(r[this.data.differentialForm.accession])).bake()
       const groups = differential.groupBy(r => r[this.data.differentialForm.accession]).bake()
       this.differentialFiltered = groups
-      this.data.selectionUpdateTrigger.next(true)
+      this.data.triggerSelectionUpdate()
     });
   }
 
@@ -650,12 +652,12 @@ export class HomeComponent implements OnInit {
 
   onDownloadProgress = (progressEvent: any) => {
     if (progressEvent.progress) {
-      this.uniprot.uniprotProgressBar.next({value: progressEvent.progress *100, text: "Downloading session data at " + Math.round(progressEvent.progress * 100) + "%"})
-      this.data.downloadProgress.next(progressEvent.progress*100)
+      this.uniprot.progressBar.set({value: progressEvent.progress *100, text: "Downloading session data at " + Math.round(progressEvent.progress * 100) + "%"})
+      this.data.downloadProgress.set(progressEvent.progress*100)
     } else {
       const sizeDownloaded = (progressEvent.loaded / (1024*1024)).toFixed(2)
-      this.uniprot.uniprotProgressBar.next({value: 100, text: "Downloading session data at " + sizeDownloaded + " MB"})
-      this.data.downloadProgress.next(100)
+      this.uniprot.progressBar.set({value: 100, text: "Downloading session data at " + sizeDownloaded + " MB"})
+      this.data.downloadProgress.set(100)
     }
 
   }

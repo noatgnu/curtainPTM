@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 
 export type ToastType = 'info' | 'success' | 'warning' | 'error';
-export type ToastAction = 'other' | 'download' | 'upload';
+export type ToastAction = 'other' | 'download' | 'upload' | 'processing';
 
 export interface Toast {
   id: string;
@@ -17,7 +17,8 @@ export interface Toast {
   providedIn: 'root'
 })
 export class ToastService {
-  toasts: Toast[] = []
+  private readonly _toasts = signal<Toast[]>([]);
+  readonly toasts = this._toasts.asReadonly();
   private maxToasts = 5
 
   show(
@@ -25,7 +26,7 @@ export class ToastService {
     body: string,
     delay: number = 5000,
     type: string = 'info',
-    action: 'other' | 'download' | 'upload' = 'other'
+    action: ToastAction = 'other'
   ): Promise<Toast> {
     const toast: Toast = {
       id: this.generateId(),
@@ -37,11 +38,10 @@ export class ToastService {
       timestamp: Date.now()
     }
 
-    if (this.toasts.length >= this.maxToasts) {
-      this.toasts.shift()
-    }
-
-    this.toasts.push(toast)
+    this._toasts.update(toasts => {
+      const newToasts = toasts.length >= this.maxToasts ? toasts.slice(1) : [...toasts];
+      return [...newToasts, toast];
+    });
     return Promise.resolve(toast)
   }
 
@@ -63,18 +63,18 @@ export class ToastService {
 
   remove(toast: Toast | any): void {
     if (toast?.id) {
-      this.toasts = this.toasts.filter(t => t.id !== toast.id)
+      this._toasts.update(toasts => toasts.filter(t => t.id !== toast.id));
     } else {
-      this.toasts = this.toasts.filter(t => t !== toast)
+      this._toasts.update(toasts => toasts.filter(t => t !== toast));
     }
   }
 
   removeById(id: string): void {
-    this.toasts = this.toasts.filter(t => t.id !== id)
+    this._toasts.update(toasts => toasts.filter(t => t.id !== id));
   }
 
   clear(): void {
-    this.toasts = []
+    this._toasts.set([]);
   }
 
   getToastClasses(toast: Toast): string {

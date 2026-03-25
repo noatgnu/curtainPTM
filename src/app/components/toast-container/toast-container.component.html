@@ -1,5 +1,5 @@
 <div class="toast-wrapper" role="region" aria-label="Notifications" aria-live="polite">
-  @for (toast of toastService.toasts; track toast.id) {
+  @for (toast of toastService.toasts(); track toast.id) {
     @if (toast.action === "other") {
       <ngb-toast
         [autohide]="true"

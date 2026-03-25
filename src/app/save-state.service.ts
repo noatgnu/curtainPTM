@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { effect, Injectable } from '@angular/core';
 import { SettingsService } from "./settings.service";
 import { DataService } from "./data.service";
 import { AutoSaveService } from "./auto-save.service";
@@ -29,11 +29,8 @@ export class SaveStateService {
     this.migration.migrateOldStates();
     this.states = this.getAvailableStates();
     this.loadAutoSaveKeys();
-    this.setupAutoSave();
-  }
-
-  private setupAutoSave(): void {
-    this.autoSave.autoSaveTrigger.subscribe(() => {
+    effect(() => {
+      this.autoSave.autoSaveTrigger();
       this.autoSaveState();
     });
   }
@@ -163,7 +160,7 @@ export class SaveStateService {
       }
     }
 
-    this.data.loadDataTrigger.next(true);
+    this.data.triggerLoadData();
   }
 
   loadState(stateNumber: number): void {
@@ -186,7 +183,7 @@ export class SaveStateService {
       }
     }
 
-    this.data.loadDataTrigger.next(true);
+    this.data.triggerLoadData();
   }
 
   getStatePreview(stateNumber: number): StatePreview | null {
@@ -315,7 +312,7 @@ export class SaveStateService {
       }
     }
 
-    this.data.loadDataTrigger.next(true);
+    this.data.triggerLoadData();
   }
 
   deleteAutoSave(autoSaveKey: string): void {
@@ -494,7 +491,7 @@ export class SaveStateService {
       }
     }
 
-    this.data.loadDataTrigger.next(true);
+    this.data.triggerLoadData();
   }
 
   downloadState(stateNumber: number): void {

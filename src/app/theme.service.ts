@@ -1,5 +1,4 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { Injectable, signal } from '@angular/core';
 
 export type ThemeMode = 'light' | 'dark';
 export type ThemeName = 'default' | 'ocean' | 'forest' | 'sunset' | 'lavender';
@@ -38,13 +37,10 @@ export class ThemeService {
   private readonly STORAGE_KEY_MODE = 'curtain-theme-mode';
   private readonly STORAGE_KEY_NAME = 'curtain-theme-name';
 
-  private currentMode = new BehaviorSubject<ThemeMode>('light');
-  private currentName = new BehaviorSubject<ThemeName>('default');
-  private beforeChange = new Subject<void>();
-
-  public theme$ = this.currentMode.asObservable();
-  public themeName$ = this.currentName.asObservable();
-  public beforeThemeChange$ = this.beforeChange.asObservable();
+  readonly mode = signal<ThemeMode>('light');
+  readonly name = signal<ThemeName>('default');
+  private readonly _beforeChangeCounter = signal(0);
+  readonly beforeThemeChange = this._beforeChangeCounter.asReadonly();
 
   private themes: Theme[] = [
     {
@@ -179,42 +175,42 @@ export class ThemeService {
     return saved as ThemeName | null;
   }
 
-  setTheme(name: ThemeName, mode: ThemeMode, immediate: boolean = false): void {
+  setTheme(themeName: ThemeName, themeMode: ThemeMode, immediate: boolean = false): void {
     if (immediate) {
-      this.applyThemeInternal(name, mode);
+      this.applyThemeInternal(themeName, themeMode);
     } else {
-      this.beforeChange.next();
+      this._beforeChangeCounter.update(v => v + 1);
       setTimeout(() => {
-        this.applyThemeInternal(name, mode);
+        this.applyThemeInternal(themeName, themeMode);
       }, 500);
     }
   }
 
-  private applyThemeInternal(name: ThemeName, mode: ThemeMode): void {
-    this.currentName.next(name);
-    this.currentMode.next(mode);
-    localStorage.setItem(this.STORAGE_KEY_NAME, name);
-    localStorage.setItem(this.STORAGE_KEY_MODE, mode);
+  private applyThemeInternal(themeName: ThemeName, themeMode: ThemeMode): void {
+    this.name.set(themeName);
+    this.mode.set(themeMode);
+    localStorage.setItem(this.STORAGE_KEY_NAME, themeName);
+    localStorage.setItem(this.STORAGE_KEY_MODE, themeMode);
 
-    document.documentElement.setAttribute('data-bs-theme', mode);
-    document.documentElement.setAttribute('data-theme-name', name);
+    document.documentElement.setAttribute('data-bs-theme', themeMode);
+    document.documentElement.setAttribute('data-theme-name', themeName);
 
-    this.applyThemeColors(name, mode);
+    this.applyThemeColors(themeName, themeMode);
   }
 
-  setMode(mode: ThemeMode): void {
-    this.setTheme(this.currentName.value, mode);
+  setMode(themeMode: ThemeMode): void {
+    this.setTheme(this.name(), themeMode);
   }
 
-  setName(name: ThemeName): void {
-    this.setTheme(name, this.currentMode.value);
+  setName(themeName: ThemeName): void {
+    this.setTheme(themeName, this.mode());
   }
 
-  private applyThemeColors(name: ThemeName, mode: ThemeMode): void {
-    const theme = this.themes.find(t => t.name === name);
+  private applyThemeColors(themeName: ThemeName, themeMode: ThemeMode): void {
+    const theme = this.themes.find(t => t.name === themeName);
     if (!theme) return;
 
-    const colors = mode === 'dark' ? theme.dark : theme.light;
+    const colors = themeMode === 'dark' ? theme.dark : theme.light;
     const root = document.documentElement;
 
     root.style.setProperty('--bs-primary', colors.primary);
@@ -240,20 +236,20 @@ export class ThemeService {
   }
 
   toggleTheme(): void {
-    const newMode = this.currentMode.value === 'light' ? 'dark' : 'light';
+    const newMode = this.mode() === 'light' ? 'dark' : 'light';
     this.setMode(newMode);
   }
 
   getCurrentTheme(): ThemeMode {
-    return this.currentMode.value;
+    return this.mode();
   }
 
   getCurrentThemeName(): ThemeName {
-    return this.currentName.value;
+    return this.name();
   }
 
   isDarkMode(): boolean {
-    return this.currentMode.value === 'dark';
+    return this.mode() === 'dark';
   }
 
   getAvailableThemes(): Theme[] {
@@ -262,9 +258,9 @@ export class ThemeService {
 
   getThemeConfig(): ThemeConfig {
     return {
-      name: this.currentName.value,
-      displayName: this.themes.find(t => t.name === this.currentName.value)?.displayName || 'Default',
-      mode: this.currentMode.value
+      name: this.name(),
+      displayName: this.themes.find(t => t.name === this.name())?.displayName || 'Default',
+      mode: this.mode()
     };
   }
 }

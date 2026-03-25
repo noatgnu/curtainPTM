@@ -1,11 +1,10 @@
-import {Component, computed, DestroyRef, effect, inject, input, OnInit, signal} from '@angular/core';
+import {Component, effect, input, OnInit, signal} from '@angular/core';
 import {DataService} from "../../data.service";
 import {Series} from "data-forge";
 import {UniprotService} from "../../uniprot.service";
 import {WebService} from "../../web.service";
 import {StatsService} from "../../stats.service";
 import {SettingsService} from "../../settings.service";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {ThemeService} from "../../theme.service";
 import {PlotlyThemeService} from "../../plotly-theme.service";
 
@@ -16,7 +15,6 @@ import {PlotlyThemeService} from "../../plotly-theme.service";
     standalone: false
 })
 export class BarChartComponent implements OnInit {
-  private destroyRef = inject(DestroyRef)
 
   data = input<any>()
 
@@ -103,7 +101,8 @@ export class BarChartComponent implements OnInit {
       }
     })
 
-    this.dataService.redrawTrigger.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(data => {
+    effect(() => {
+      const data = this.dataService.redrawTrigger();
       if (data) {
         this.volcanoConditionLeft = this.settings.settings.volcanoConditionLabels.leftCondition
         this.volcanoConditionRight = this.settings.settings.volcanoConditionLabels.rightCondition
@@ -127,7 +126,8 @@ export class BarChartComponent implements OnInit {
       }
     })
 
-    this.themeService.theme$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+    effect(() => {
+      this.themeService.mode();
       this.drawBarChart();
       this.drawAverageBarChart();
       this.applyThemeToLayouts()

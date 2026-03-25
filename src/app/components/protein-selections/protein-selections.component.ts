@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, effect, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {DataService} from "../../data.service";
 import {debounceTime, distinctUntilChanged, map, Observable, OperatorFunction} from "rxjs";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
@@ -141,10 +141,11 @@ export class ProteinSelectionsComponent implements OnInit {
 
 
   constructor(public data: DataService, private modal: NgbModal, private uniprot: UniprotService) {
-    this.data.searchCommandService.subscribe(data => {
-      if (data) {
-        const result = this.getPrimaryIDsFromBatch(data);
-        this.searchResult.emit({data: result, title: data.title})
+    effect(() => {
+      const searchData = this.data.searchCommand();
+      if (searchData) {
+        const result = this.getPrimaryIDsFromBatch(searchData);
+        this.searchResult.emit({data: result, title: searchData.title})
       }
     })
   }

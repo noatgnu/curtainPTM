@@ -12,6 +12,7 @@ export class FileInputWidgetComponent implements OnInit {
   @Output() readData: EventEmitter<InputFile> =  new EventEmitter<InputFile>()
   @Output() eventProgress: EventEmitter<number> = new EventEmitter<number>()
   @Input() fileType: string = ""
+  @Input() disabled: boolean = false
   filename: string = ""
   constructor() { }
 

@@ -28,6 +28,7 @@
               <app-file-input-widget
                 (eventProgress)="handleFileLoadingProgress($event, 'raw file')"
                 [fileType]="'Raw File'"
+                [disabled]="useDifferentialAsRaw"
                 (readData)="handleFile($event, true)">
               </app-file-input-widget>
             </div>
@@ -213,8 +214,15 @@
 
           <!-- Raw File Section -->
           <div class="card mb-4 border-success border-opacity-25">
-            <div class="card-header bg-success bg-opacity-10">
+            <div class="card-header bg-success bg-opacity-10 d-flex justify-content-between align-items-center">
               <span class="mb-0">Raw File</span>
+              <div class="form-check form-switch mb-0">
+                <input type="checkbox" class="form-check-input" id="useDifferentialAsRaw"
+                       [(ngModel)]="useDifferentialAsRaw"
+                       (change)="toggleUseDifferentialAsRaw()"
+                       [disabled]="data.differential.df.count() === 0">
+                <label class="form-check-label" for="useDifferentialAsRaw">Use Differential File</label>
+              </div>
             </div>
             <div class="card-body">
               <div class="row g-3">

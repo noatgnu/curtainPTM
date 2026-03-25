@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, effect, Input, OnInit} from '@angular/core';
 import {DataFrame, IDataFrame} from "data-forge";
 import {DataService} from "../../data.service";
 import {SettingsService} from "../../settings.service";
@@ -144,8 +144,10 @@ export class RawDataComponent implements OnInit {
     public dataService: DataService,
     private settings: SettingsService
   ) {
-    this.dataService.batchAnnotateAnnoucement.subscribe((data: any) => {
-      for (const i of data.id) {
+    effect(() => {
+      const data = this.dataService.batchAnnotate();
+      if (!data) return;
+      for (const i of data.id as string[]) {
         if (i in this.annotateMap) {
           this.annotateMap[i] = !data.remove;
         }
@@ -233,7 +235,7 @@ export class RawDataComponent implements OnInit {
 
   annotate(uid: string): void {
     const remove = !this.annotateMap[uid];
-    this.dataService.annotationService.next({
+    this.dataService.annotationEvent.set({
       id: uid,
       remove: remove
     });

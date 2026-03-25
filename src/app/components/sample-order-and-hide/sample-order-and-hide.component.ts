@@ -122,7 +122,7 @@ export class SampleOrderAndHideComponent implements OnInit {
       }
     }
     this.settings.settings.sampleMap = sampleMap
-    this.dataService.redrawTrigger.next(true)
+    this.dataService.triggerRedraw()
     this.modal.close()
   }
 

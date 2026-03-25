@@ -1,9 +1,8 @@
-import {AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
+import {AfterViewInit, ChangeDetectorRef, Component, effect, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import cytoscape from "cytoscape";
 import fcose from "cytoscape-fcose";
 import {SettingsService} from "../../settings.service";
 import {ThemeService} from "../../theme.service";
-import {Subscription} from "rxjs";
 
 cytoscape.use(fcose);
 
@@ -14,7 +13,6 @@ cytoscape.use(fcose);
     standalone: false
 })
 export class CytoplotComponent implements OnInit, AfterViewInit, OnDestroy {
-  private themeSubscription?: Subscription;
   private _dimensions = {width: 700, height: 700}
   @Output() clickedID = new EventEmitter<string>()
   @Output() ready = new EventEmitter<boolean>()
@@ -35,6 +33,8 @@ export class CytoplotComponent implements OnInit, AfterViewInit, OnDestroy {
     if(this._drawData) {
       if (this._drawData.data.length > 2) {
         this.componentID = this._drawData.id
+        this.hidden = false
+        this.cdr.markForCheck()
         setTimeout(() => {
           this.draw()
         }, 3000)
@@ -42,22 +42,23 @@ export class CytoplotComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  constructor(private settings: SettingsService, private themeService: ThemeService) { }
-
-  ngOnInit(): void {
-    this.themeSubscription = this.themeService.beforeThemeChange$.subscribe(() => {
-      this.hidden = true;
-      if (this.cy) {
-        this.cy.destroy();
-        this.cy = null;
+  constructor(private settings: SettingsService, private themeService: ThemeService, private cdr: ChangeDetectorRef) {
+    effect(() => {
+      const counter = this.themeService.beforeThemeChange();
+      if (counter > 0) {
+        this.hidden = true;
+        if (this.cy) {
+          this.cy.destroy();
+          this.cy = null;
+        }
       }
     });
   }
 
+  ngOnInit(): void {
+  }
+
   ngOnDestroy(): void {
-    if (this.themeSubscription) {
-      this.themeSubscription.unsubscribe();
-    }
     if (this.cy) {
       this.cy.destroy();
       this.cy = null;
@@ -73,11 +74,12 @@ export class CytoplotComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   draw() {
-    console.log(this._drawData)
     const container = document.getElementById(this._drawData.id)
-    container?.style.setProperty("width", this._dimensions.width+"px")
-    container?.style.setProperty("height", this._dimensions.height+"px")
-    console.log(container)
+    if (!container) {
+      return
+    }
+    container.style.setProperty("width", this._dimensions.width+"px")
+    container.style.setProperty("height", this._dimensions.height+"px")
     const ad = this
     if (!this.cy) {
       this.cy = cytoscape(

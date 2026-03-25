@@ -1,12 +1,17 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import {InputFile} from "./classes/input-file";
 import {Raw} from "./classes/raw";
 import {Differential} from "./classes/differential";
 import {DataFrame, IDataFrame} from "data-forge";
-import {BehaviorSubject, debounceTime, distinctUntilChanged, map, Observable, OperatorFunction, Subject} from "rxjs";
+import {debounceTime, distinctUntilChanged, map, Observable, OperatorFunction} from "rxjs";
 import {SettingsService} from "./settings.service";
 import {UniprotService} from "./uniprot.service";
 import {loadFromLocalStorage} from "curtain-web-api";
+
+export interface AnnotationEvent {
+  id: string | string[];
+  remove: boolean;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -15,17 +20,33 @@ export class DataService {
   draftDataCiteCount: number = 0
   bypassUniProt: boolean = false
   instructorMode: boolean = false
-  loadDataTrigger: Subject<boolean> = new Subject<boolean>()
+
+  private readonly _loadDataTrigger = signal(0);
+  readonly loadDataTrigger = this._loadDataTrigger.asReadonly();
+
   session: any = {}
   tempLink: boolean = false
-  dataClear: Subject<boolean> = new Subject()
-  finishedProcessingData: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false)
-  selectionUpdateTrigger: Subject<boolean> = new Subject<boolean>()
-  restoreTrigger: Subject<boolean> = new Subject<boolean>()
-  annotationService: Subject<any> = new Subject<any>()
-  batchAnnotateAnnoucement: Subject<any> = new Subject<any>()
-  updateVariantCorrection: Subject<boolean> = new Subject<boolean>()
-  searchCommandService: Subject<any> = new Subject<any>()
+
+  private readonly _dataClear = signal(0);
+  readonly dataClear = this._dataClear.asReadonly();
+
+  readonly finishedProcessing = signal(false);
+
+  private readonly _selectionUpdateTrigger = signal(0);
+  readonly selectionUpdateTrigger = this._selectionUpdateTrigger.asReadonly();
+
+  private readonly _restoreTrigger = signal(0);
+  readonly restoreTrigger = this._restoreTrigger.asReadonly();
+
+  readonly annotationEvent = signal<AnnotationEvent | null>(null);
+
+  readonly batchAnnotate = signal<AnnotationEvent | null>(null);
+
+  private readonly _updateVariantCorrection = signal(0);
+  readonly updateVariantCorrection = this._updateVariantCorrection.asReadonly();
+
+  readonly searchCommand = signal<any>(null);
+
   raw: InputFile = new InputFile()
   rawForm: Raw = new Raw()
   differential: InputFile = new InputFile()
@@ -33,11 +54,18 @@ export class DataService {
   dataMap: Map<string, string> = new Map<string, string>()
   sampleMap: any = {}
   conditions: string[] = []
-  resetVolcanoColor: Subject<boolean> = new Subject<boolean>()
-  volcanoAdditionalShapesSubject: Subject<boolean> = new Subject<boolean>()
-  downloadProgress: Subject<number> = new Subject<number>()
-  uploadProgress: Subject<number> = new Subject<number>()
 
+  private readonly _resetVolcanoColor = signal(0);
+  readonly resetVolcanoColor = this._resetVolcanoColor.asReadonly();
+
+  private readonly _volcanoShapesChanged = signal(0);
+  readonly volcanoShapesChanged = this._volcanoShapesChanged.asReadonly();
+
+  readonly downloadProgress = signal(0);
+
+  readonly uploadProgress = signal(0);
+
+  readonly processingProgress = signal(0);
 
   minMax = {
     fcMin: 0,
@@ -162,17 +190,7 @@ export class DataService {
   dbIDMap: any = {}
   public_key: CryptoKey|undefined = undefined
   private_key: CryptoKey|undefined = undefined
-  /*defaultColorList = [
-    '#1f77b4',
-    '#ff7f0e',
-    '#2ca02c',
-    '#d62728',
-    '#9467bd',
-    '#8c564b',
-    '#e377c2',
-    '#7f7f7f',
-    '#bcbd22',
-    '#17becf']*/
+
   defaultColorList = [
     "#fd7f6f",
     "#7eb0d5",
@@ -184,9 +202,45 @@ export class DataService {
     "#fdcce5",
     "#8bd3c7"
   ]
-  redrawTrigger: Subject<boolean> = new Subject()
+
+  private readonly _redrawTrigger = signal(0);
+  readonly redrawTrigger = this._redrawTrigger.asReadonly();
+
   colorMap: any = {}
+
   constructor(private settings: SettingsService, private uniprot: UniprotService) { }
+
+  triggerLoadData(): void {
+    this._loadDataTrigger.update(v => v + 1);
+  }
+
+  triggerDataClear(): void {
+    this._dataClear.update(v => v + 1);
+  }
+
+  triggerSelectionUpdate(): void {
+    this._selectionUpdateTrigger.update(v => v + 1);
+  }
+
+  triggerRestore(): void {
+    this._restoreTrigger.update(v => v + 1);
+  }
+
+  triggerUpdateVariantCorrection(): void {
+    this._updateVariantCorrection.update(v => v + 1);
+  }
+
+  triggerResetVolcanoColor(): void {
+    this._resetVolcanoColor.update(v => v + 1);
+  }
+
+  triggerVolcanoShapesChange(): void {
+    this._volcanoShapesChanged.update(v => v + 1);
+  }
+
+  triggerRedraw(): void {
+    this._redrawTrigger.update(v => v + 1);
+  }
 
   clear() {
     this.selected = []
@@ -199,7 +253,7 @@ export class DataService {
     this.settings.settings.barchartColorMap = {}
     this.annotatedData = {}
     this.settings.settings.volcanoAdditionalShapes = []
-    this.dataClear.next(true)
+    this.triggerDataClear()
   }
 
   significantGroup(x: number, y: number) {

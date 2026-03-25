@@ -1,9 +1,8 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, effect, Input, OnInit } from '@angular/core';
 import { WebService } from "../../web.service";
 import { SettingsService } from "../../settings.service";
 import { PlotlyThemeService } from "../../plotly-theme.service";
 import { ThemeService } from "../../theme.service";
-import { Subscription } from "rxjs";
 import { ToastService } from "../../toast.service";
 
 interface Domain {
@@ -23,8 +22,7 @@ type VisualizationType = 'waterfall' | 'segments';
   styleUrls: ['./protein-domain-plot.component.scss'],
   standalone: false
 })
-export class ProteinDomainPlotComponent implements OnInit, OnDestroy {
-  private themeSubscription?: Subscription;
+export class ProteinDomainPlotComponent implements OnInit {
   revision = 0;
 
   _data: any[] = [];
@@ -83,19 +81,15 @@ export class ProteinDomainPlotComponent implements OnInit, OnDestroy {
     private plotlyTheme: PlotlyThemeService,
     private themeService: ThemeService,
     private toast: ToastService
-  ) {}
-
-  ngOnInit(): void {
-    this.themeSubscription = this.themeService.theme$.subscribe(() => {
+  ) {
+    effect(() => {
+      this.themeService.mode();
       this.updateLayout();
       this.revision++;
-    });
+    })
   }
 
-  ngOnDestroy(): void {
-    if (this.themeSubscription) {
-      this.themeSubscription.unsubscribe();
-    }
+  ngOnInit(): void {
   }
 
   private processDomains(): void {

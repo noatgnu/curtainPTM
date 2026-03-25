@@ -83,7 +83,7 @@ describe('AutoSaveService', () => {
 
   it('should emit autoSaveTrigger when interval fires', fakeAsync(() => {
     let triggered = false;
-    service.autoSaveTrigger.subscribe(() => {
+    service.autoSaveTrigger$.subscribe(() => {
       triggered = true;
     });
 
