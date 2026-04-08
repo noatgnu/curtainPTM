@@ -5,6 +5,8 @@ import {DataFrame, fromCSV, fromJSON, Series} from "data-forge";
 import {UniprotService} from "../../uniprot.service";
 import {SettingsService} from "../../settings.service";
 import {ToastService} from "../../toast.service";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {UniprotErrorModalComponent} from "../uniprot-error-modal/uniprot-error-modal.component";
 
 @Component({
     selector: 'app-file-form',
@@ -19,7 +21,7 @@ export class FileFormComponent implements OnInit {
   iscollapsed = false
   useDifferentialAsRaw = false
   @Output() finished: EventEmitter<boolean> = new EventEmitter<boolean>()
-  constructor(private uniprot: UniprotService, public data: DataService, public settings: SettingsService, private toast: ToastService) {
+  constructor(private uniprot: UniprotService, public data: DataService, public settings: SettingsService, private toast: ToastService, private modal: NgbModal) {
     effect(() => {
       const progressData = this.uniprot.progressBar();
       this.progressBar.value = progressData.value
@@ -349,53 +351,122 @@ export class FileFormComponent implements OnInit {
         this.data.processingProgress.set(100)
         if (accList.length > 0) {
           await this.toast.show("UniProt", `Found ${accList.length} unique accessions. Building local UniProt database...`)
-          this.uniprot.UniprotParserJS(accList).then(r => {
-            this.createUniprotDatabase().then((allGenes)=> {
-              this.data.allGenes = allGenes
-
+          const result = await this.uniprot.UniprotParserJS(accList)
+          if (!result.success) {
+            const continueWithoutUniprot = await this.showUniprotErrorDialog(result.error || "Unknown error")
+            if (continueWithoutUniprot) {
+              this.data.fetchUniProt = false
+              this.processGeneNamesWithoutUniProt()
+              await this.toast.show("UniProt", "Continuing without UniProt data. Gene names extracted from file.")
               this.finished.emit(true)
               this.updateProgressBar(100, "Finished")
-            });
-          })
+            } else {
+              await this.toast.show("Error", "Processing cancelled due to UniProt service error.")
+              this.finished.emit(true)
+              this.updateProgressBar(100, "Finished")
+            }
+            return
+          }
+          const allGenes = await this.createUniprotDatabase()
+          this.data.allGenes = allGenes
+          this.finished.emit(true)
+          this.updateProgressBar(100, "Finished")
         } else {
           this.finished.emit(true)
           this.updateProgressBar(100, "Finished")
         }
       } else {
-        this.finished.emit(true)
         this.data.bypassUniProt = false
+        if (this.data.allGenes.length === 0) {
+          this.rebuildAllGenesFromUniprotDb()
+        }
+        this.finished.emit(true)
         this.updateProgressBar(100, "Finished")
       }
 
     } else {
-      this.uniprot.geneNameToPrimary = {}
-      if (this.data.differentialForm.geneNames !== "") {
-        for (const r of this.data.differential.df) {
-          if (r[this.data.differentialForm.geneNames] !== "") {
-            const g = r[this.data.differentialForm.geneNames]
-            if (!this.data.genesMap[g])  {
-              this.data.genesMap[g] = {}
-              this.data.genesMap[g][g] = true
-            }
-            for (const n of g.split(";")) {
-              if (!this.data.genesMap[n]) {
-                this.data.genesMap[n] = {}
-              }
-              this.data.genesMap[n][g] = true
-            }
-            if (!this.data.allGenes.includes(g)) {
-              this.data.allGenes.push(g)
-            }
-            if (!this.uniprot.geneNameToPrimary[g]) {
-              this.uniprot.geneNameToPrimary[g] = {}
-            }
-            this.uniprot.geneNameToPrimary[g][r[this.data.differentialForm.primaryIDs]] = true
-          }
-        }
-        this.data.allGenes = this.data.differential.df.getSeries(this.data.differentialForm.geneNames).bake().toArray().filter(v => v !== "")
-      }
+      this.processGeneNamesWithoutUniProt()
       this.finished.emit(true)
       this.updateProgressBar(100, "Finished")
+    }
+  }
+
+  private rebuildAllGenesFromUniprotDb(): void {
+    const allGenes: string[] = []
+    this.data.genesMap = {}
+    this.uniprot.geneNameToPrimary = {}
+
+    for (const p of this.data.accessionList) {
+      const uni: any = this.uniprot.getUniprotFromAcc(p)
+      if (uni && uni["Gene Names"] && uni["Gene Names"] !== "") {
+        const geneName = uni["Gene Names"]
+        if (!allGenes.includes(geneName)) {
+          allGenes.push(geneName)
+          if (!this.data.genesMap[geneName]) {
+            this.data.genesMap[geneName] = {}
+            this.data.genesMap[geneName][geneName] = true
+          }
+          for (const n of geneName.split(";")) {
+            if (!this.data.genesMap[n]) {
+              this.data.genesMap[n] = {}
+            }
+            this.data.genesMap[n][geneName] = true
+          }
+          if (!this.uniprot.geneNameToPrimary[geneName]) {
+            this.uniprot.geneNameToPrimary[geneName] = {}
+          }
+          if (this.data.accessionToPrimaryIDs[uni["Entry"]]) {
+            for (const e in this.data.accessionToPrimaryIDs[uni["Entry"]]) {
+              this.uniprot.geneNameToPrimary[geneName][e] = true
+            }
+          }
+        }
+      }
+    }
+
+    this.data.allGenes = allGenes
+  }
+
+  private processGeneNamesWithoutUniProt(): void {
+    this.uniprot.geneNameToPrimary = {}
+    if (this.data.differentialForm.geneNames !== "") {
+      for (const r of this.data.differential.df) {
+        if (r[this.data.differentialForm.geneNames] !== "") {
+          const g = r[this.data.differentialForm.geneNames]
+          if (!this.data.genesMap[g])  {
+            this.data.genesMap[g] = {}
+            this.data.genesMap[g][g] = true
+          }
+          for (const n of g.split(";")) {
+            if (!this.data.genesMap[n]) {
+              this.data.genesMap[n] = {}
+            }
+            this.data.genesMap[n][g] = true
+          }
+          if (!this.data.allGenes.includes(g)) {
+            this.data.allGenes.push(g)
+          }
+          if (!this.uniprot.geneNameToPrimary[g]) {
+            this.uniprot.geneNameToPrimary[g] = {}
+          }
+          this.uniprot.geneNameToPrimary[g][r[this.data.differentialForm.primaryIDs]] = true
+        }
+      }
+      this.data.allGenes = this.data.differential.df.getSeries(this.data.differentialForm.geneNames).bake().toArray().filter(v => v !== "")
+    }
+  }
+
+  private async showUniprotErrorDialog(errorMessage: string): Promise<boolean> {
+    const modalRef = this.modal.open(UniprotErrorModalComponent, {
+      centered: true,
+      backdrop: 'static'
+    })
+    modalRef.componentInstance.errorMessage = errorMessage
+    try {
+      const result = await modalRef.result
+      return result === true
+    } catch {
+      return false
     }
   }
 

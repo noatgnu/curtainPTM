@@ -27,30 +27,47 @@ export class UniprotService {
 
   constructor(private http: HttpClient) { }
 
-  async UniprotParserJS(accList: string[]) {
+  async UniprotParserJS(accList: string[]): Promise<{success: boolean, error?: string}> {
     const parser = new Parser(5, "accession,id,gene_names,protein_name,organism_name,organism_id,length,cc_subcellular_location,sequence,ft_var_seq,cc_alternative_products,ft_domain,xref_string,ft_mod_res,cc_function,cc_disease,cc_pharmaceutical,ft_mutagen,xref_mim")
     accList.sort(() => Math.random() - 0.5);
-    const res = await parser.parse(accList, 5000)
-    let currentRun = 1
-    let totalRun = 0
-    let currentSegment = 0
-    for await (const r of res) {
-      if (currentSegment === 0) {
-        totalRun = Math.ceil(r.total/500)
-      }
-      if (currentSegment !== r.segment) {
-        totalRun = totalRun + Math.ceil(r.total/500)
-        currentSegment = r.segment
-      }
+    try {
+      const res = await parser.parse(accList, 5000)
+      let currentRun = 1
+      let totalRun = 0
+      let currentSegment = 0
+      let hasData = false
+      for await (const r of res) {
+        if (currentSegment === 0) {
+          totalRun = Math.ceil(r.total/500)
+        }
+        if (currentSegment !== r.segment) {
+          totalRun = totalRun + Math.ceil(r.total/500)
+          currentSegment = r.segment
+        }
 
-      this.progressBar.set({value: currentRun * 100/totalRun, text: `Processed UniProt Job ${currentRun}/${totalRun} (Segment ${r.segment/5000+1})`})
-      await this.PrimeProcessReceivedData(r.data)
-      if (currentRun === totalRun) {
-        this.parseStatus.set(true)
-      } else {
-        currentRun ++
+        this.progressBar.set({value: currentRun * 100/totalRun, text: `Processed UniProt Job ${currentRun}/${totalRun} (Segment ${r.segment/5000+1})`})
+        if (r.data) {
+          await this.PrimeProcessReceivedData(r.data)
+          hasData = true
+        }
+        if (currentRun === totalRun) {
+          this.parseStatus.set(true)
+        } else {
+          currentRun ++
+        }
       }
+      if (!hasData) {
+        return {success: false, error: "UniProt service is unavailable or returned no data. The service may be experiencing downtime."}
+      }
+      return {success: true}
+    } catch (error: any) {
+      console.error("UniProt parsing error:", error)
+      return {success: false, error: error.message || "Failed to connect to UniProt service"}
     }
+  }
+
+  isUniprotDataEmpty(): boolean {
+    return this.dataMap.size === 0 && this.accMap.size === 0 && this.db.size === 0
   }
 
 

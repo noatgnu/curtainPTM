@@ -385,6 +385,13 @@ export class IndividualSessionComponent implements OnChanges, AfterViewInit {
         }
         if (accList.length > 0) {
           this.uniprot.UniprotParserJS(accList).then(r => {
+            if (!r.success) {
+              this.toast.show("UniProt", `Session #${this.sessionId+1}: UniProt unavailable, saving without gene data.`).then()
+              this.updateProgressBar(100, "Finished")
+              this.payload = this.createPayload(this.session!.data.permanent)
+              this.saveSession()
+              return
+            }
             this.createUniprotDatabase().then((allGenes)=> {
               this.data.allGenes = allGenes
               this.updateProgressBar(100, "Finished")
