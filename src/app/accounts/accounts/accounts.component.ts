@@ -36,7 +36,8 @@ export class AccountsComponent implements OnInit, OnDestroy {
   collectionPage: number = 1
   totalCollections: number = 0
   collectionSearchQuery: string = ''
-  private readonly COLLECTIONS_PER_PAGE = 20
+  private readonly ITEMS_PER_PAGE = 10
+  private readonly COLLECTIONS_PER_PAGE = 10
   userCollections: any[] = []
 
   constructor(
@@ -99,7 +100,7 @@ export class AccountsComponent implements OnInit, OnDestroy {
       const data = await this.accounts.curtainAPI.getCurtainLinks(
         this.accounts.curtainAPI.user.username,
         searchTerm,
-        page * 20,
+        page * this.ITEMS_PER_PAGE,
         "PTM"
       );
       this.updateShowingLink(data);
@@ -126,7 +127,7 @@ export class AccountsComponent implements OnInit, OnDestroy {
         };
       });
       this.totalItems = data.data.count || 0;
-      this.pageNumber = Math.ceil(this.totalItems / 20);
+      this.pageNumber = Math.ceil(this.totalItems / this.ITEMS_PER_PAGE);
       this.data = data.data;
     }
   }
@@ -249,7 +250,7 @@ export class AccountsComponent implements OnInit, OnDestroy {
         this.accounts.curtainAPI.getCurtainLinks(
           this.accounts.curtainAPI.user.username,
           searchTerm,
-          (this.currentPage - 1) * 20,
+          (this.currentPage - 1) * this.ITEMS_PER_PAGE,
           "PTM"
         ),
         this.accounts.getUser()
