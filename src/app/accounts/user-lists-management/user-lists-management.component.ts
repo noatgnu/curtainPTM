@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, signal, computed } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, OnDestroy, signal, computed } from '@angular/core';
 import { AccountsService } from '../accounts.service';
 import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { Subject } from 'rxjs';
@@ -68,7 +68,8 @@ export class UserListsManagementComponent implements OnInit, OnDestroy {
 
   constructor(
     public accounts: AccountsService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private cdr: ChangeDetectorRef
   ) {
     this.initializeForm();
   }
@@ -108,6 +109,7 @@ export class UserListsManagementComponent implements OnInit, OnDestroy {
       await this.handleApiError(error as ApiError);
     } finally {
       this.isLoading.set(false);
+      this.cdr.detectChanges();
     }
   }
 
@@ -167,6 +169,7 @@ export class UserListsManagementComponent implements OnInit, OnDestroy {
       await this.handleApiError(error as ApiError);
     } finally {
       this.isLoading.set(false);
+      this.cdr.detectChanges();
     }
   }
 
@@ -230,6 +233,7 @@ export class UserListsManagementComponent implements OnInit, OnDestroy {
       await this.handleApiError(error as ApiError);
     } finally {
       this.isLoading.set(false);
+      this.cdr.detectChanges();
     }
   }
 
@@ -295,6 +299,7 @@ export class UserListsManagementComponent implements OnInit, OnDestroy {
       await this.handleApiError(error as ApiError);
     } finally {
       this.isLoading.set(false);
+      this.cdr.detectChanges();
     }
   }
 

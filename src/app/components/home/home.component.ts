@@ -1,4 +1,4 @@
-import {Component, effect, EventEmitter, OnInit, Output} from '@angular/core';
+import {ChangeDetectorRef, Component, effect, EventEmitter, OnInit, Output} from '@angular/core';
 import {ToastService} from "../../toast.service";
 import {DataFrame, fromCSV, IDataFrame, ISeries, Series} from "data-forge";
 import {DataService} from "../../data.service";
@@ -40,7 +40,7 @@ export class HomeComponent implements OnInit {
   filterModel: string = ""
   currentID: string = ""
   @Output() currentIDChanged: EventEmitter<string> = new EventEmitter<string>()
-  constructor(private ptmd: PtmDiseasesService, private ws: WebsocketService, private accounts: AccountsService, private modal: NgbModal, public settings: SettingsService, private data: DataService, private route: ActivatedRoute, private toast: ToastService, private uniprot: UniprotService, private web: WebService, private ptm: PtmService) {
+  constructor(private ptmd: PtmDiseasesService, private ws: WebsocketService, private accounts: AccountsService, private modal: NgbModal, public settings: SettingsService, private data: DataService, private route: ActivatedRoute, private toast: ToastService, private uniprot: UniprotService, private web: WebService, private ptm: PtmService, private cdr: ChangeDetectorRef) {
 
     effect(() => {
       const data = this.data.dataClear();
@@ -65,6 +65,7 @@ export class HomeComponent implements OnInit {
     // }
 
     this.initialize().then(() => {
+      this.cdr.detectChanges()
       this.ptmd.parsePTMDiseases()
       this.ptm.getDatabase("PSP_PHOSPHO")
       this.ptm.getDatabase("PLMD_UBI")
@@ -254,6 +255,7 @@ export class HomeComponent implements OnInit {
           this.data.session.permanent = true
         }
         this.data.triggerRestore()
+        this.cdr.detectChanges()
       })
     } else {
       throw new Error("No data returned from alternate identifier")
@@ -324,6 +326,7 @@ export class HomeComponent implements OnInit {
 
       if (error.message && error.message.includes("Failed to parse")) {
         this.toast.show("Decryption Error", "The session data appears to be encrypted or corrupted. Please ensure you have the correct decryption key.").then()
+        this.cdr.detectChanges()
         return
       }
 
@@ -336,6 +339,8 @@ export class HomeComponent implements OnInit {
           }
         })
       }
+    } finally {
+      this.cdr.detectChanges()
     }
   }
 

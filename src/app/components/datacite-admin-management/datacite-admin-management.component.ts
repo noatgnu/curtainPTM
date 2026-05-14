@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import {
   NgbActiveModal,
   NgbNav,
@@ -41,10 +41,11 @@ export class DataciteAdminManagementComponent {
     searchTerm: [""]
   })
 
-  constructor(public activeModal: NgbActiveModal, public accountService: AccountsService, private fb: FormBuilder) {
+  constructor(public activeModal: NgbActiveModal, public accountService: AccountsService, private fb: FormBuilder, private cdr: ChangeDetectorRef) {
     this.accountService.curtainAPI.getDataCites(undefined, undefined, undefined, this.pageSize, this.page-1, false, "TP").then(
       (data) => {
         this.dataCiteDraftQuery = data.data
+        this.cdr.detectChanges()
       }
     )
     this.searchForm.controls.searchTerm.valueChanges.subscribe((value) => {
@@ -67,6 +68,7 @@ export class DataciteAdminManagementComponent {
           return dc
         })
       }
+      this.cdr.detectChanges()
     })
   }
 
@@ -80,6 +82,7 @@ export class DataciteAdminManagementComponent {
           return dc
         })
       }
+      this.cdr.detectChanges()
     })
   }
 
@@ -93,6 +96,7 @@ export class DataciteAdminManagementComponent {
           return dc
         })
       }
+      this.cdr.detectChanges()
     })
   }
 
@@ -106,6 +110,7 @@ export class DataciteAdminManagementComponent {
           return dc
         })
       }
+      this.cdr.detectChanges()
     })
   }
 
@@ -119,12 +124,14 @@ export class DataciteAdminManagementComponent {
         this.accountService.curtainAPI.getDataCites(undefined, term, "draft", this.pageSize, this.page-1, true, "TP").then(
           (data) => {
             this.dataCiteDraftQuery = data.data
+            this.cdr.detectChanges()
           }
         )
       } else {
         this.accountService.curtainAPI.getDataCites(undefined, undefined, "draft", this.pageSize, this.page-1, true, "TP").then(
           (data) => {
             this.dataCiteDraftQuery = data.data
+            this.cdr.detectChanges()
           }
         )
       }
@@ -133,12 +140,14 @@ export class DataciteAdminManagementComponent {
         this.accountService.curtainAPI.getDataCites(undefined, term, undefined, this.pageSize, this.page-1, false, "TP").then(
           (data) => {
             this.dataCiteDraftQuery = data.data
+            this.cdr.detectChanges()
           }
         )
       } else {
         this.accountService.curtainAPI.getDataCites(undefined, undefined, undefined, this.pageSize, this.page-1, false, "TP").then(
           (data) => {
             this.dataCiteDraftQuery = data.data
+            this.cdr.detectChanges()
           }
         )
       }

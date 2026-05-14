@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {UntypedFormBuilder, Validators} from "@angular/forms";
 import {AccountsService} from "../accounts.service";
 import {WebService} from "../../web.service";
@@ -31,7 +31,7 @@ export class LoginModalComponent implements OnInit, OnDestroy {
   loginError: string = ''
   rememberMeDays: number = 0
 
-  constructor(private dataService: DataService, public modal: NgbActiveModal, private fb: UntypedFormBuilder, private accounts: AccountsService, private web: WebService, private toast: ToastService) {
+  constructor(private dataService: DataService, public modal: NgbActiveModal, private fb: UntypedFormBuilder, private accounts: AccountsService, private web: WebService, private toast: ToastService, private cdr: ChangeDetectorRef) {
 
   }
 
@@ -44,6 +44,7 @@ export class LoginModalComponent implements OnInit, OnDestroy {
           this.allowOrcid = true
         }
       }
+      this.cdr.detectChanges()
     }).catch(err => {
       console.error('Failed to load site properties:', err)
     })
@@ -60,6 +61,7 @@ export class LoginModalComponent implements OnInit, OnDestroy {
         this.isLoading = false
         this.loginError = 'Invalid username or password. Please try again.'
         this.toast.show("Login Error", "Incorrect Login Credential.").then()
+        this.cdr.detectChanges()
       })
     } else {
       Object.keys(this.form.controls).forEach(key => {
@@ -75,10 +77,12 @@ export class LoginModalComponent implements OnInit, OnDestroy {
       this.isLoading = false
       this.modal.dismiss()
       this.toast.show("Login Information","Login Successful.").then()
+      this.cdr.detectChanges()
     }, error =>{
       this.isLoading = false
       this.loginError = 'Failed to retrieve user information. Please try again.'
       this.toast.show("Login Error", "Incorrect Login Credential.").then()
+      this.cdr.detectChanges()
     })
   }
 

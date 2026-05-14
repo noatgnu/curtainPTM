@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { AccountsService } from "../accounts.service";
 import { FormBuilder, FormGroup } from "@angular/forms";
 import { Subject } from "rxjs";
@@ -41,10 +41,11 @@ export class AccountsComponent implements OnInit, OnDestroy {
   userCollections: any[] = []
 
   constructor(
-    public accounts: AccountsService, 
+    public accounts: AccountsService,
     private fb: FormBuilder,
     private toast: ToastService,
-    private modal: NgbModal
+    private modal: NgbModal,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -89,6 +90,7 @@ export class AccountsComponent implements OnInit, OnDestroy {
       this.toast.show("Error", "Failed to load account information").then();
     } finally {
       this.isLoading = false;
+      this.cdr.detectChanges();
     }
   }
 
@@ -111,6 +113,7 @@ export class AccountsComponent implements OnInit, OnDestroy {
       this.toast.show("Error", "Failed to search sessions").then();
     } finally {
       this.isLoading = false;
+      this.cdr.detectChanges();
     }
   }
 
@@ -147,6 +150,7 @@ export class AccountsComponent implements OnInit, OnDestroy {
       this.toast.show("Error", "Failed to delete session").then();
     } finally {
       this.isLoading = false;
+      this.cdr.detectChanges();
     }
   }
 
@@ -190,6 +194,7 @@ export class AccountsComponent implements OnInit, OnDestroy {
       this.toast.show("Error", "Failed to add owner to sessions").then();
     } finally {
       this.isLoading = false;
+      this.cdr.detectChanges();
     }
   }
 
@@ -217,6 +222,7 @@ export class AccountsComponent implements OnInit, OnDestroy {
       this.toast.show("Error", "Failed to delete sessions").then();
     } finally {
       this.isLoading = false;
+      this.cdr.detectChanges();
     }
   }
 
@@ -240,6 +246,7 @@ export class AccountsComponent implements OnInit, OnDestroy {
       this.toast.show("Error", "Failed to change session publicity").then();
     } finally {
       this.isLoading = false;
+      this.cdr.detectChanges();
     }
   }
 
@@ -297,6 +304,7 @@ export class AccountsComponent implements OnInit, OnDestroy {
       console.error('Failed to load collections:', error);
     } finally {
       this.collectionsLoading = false;
+      this.cdr.detectChanges();
     }
   }
 
@@ -322,6 +330,7 @@ export class AccountsComponent implements OnInit, OnDestroy {
       console.error('Failed to create collection:', error);
     } finally {
       this.collectionsLoading = false;
+      this.cdr.detectChanges();
     }
   }
 
@@ -342,6 +351,7 @@ export class AccountsComponent implements OnInit, OnDestroy {
       console.error('Failed to update collection:', error);
     } finally {
       this.collectionsLoading = false;
+      this.cdr.detectChanges();
     }
   }
 
@@ -360,6 +370,7 @@ export class AccountsComponent implements OnInit, OnDestroy {
       console.error('Failed to delete collection:', error);
     } finally {
       this.collectionsLoading = false;
+      this.cdr.detectChanges();
     }
   }
 
@@ -409,6 +420,7 @@ export class AccountsComponent implements OnInit, OnDestroy {
       this.toast.show("Error", "Failed to add sessions to collection").then();
     } finally {
       this.isLoading = false;
+      this.cdr.detectChanges();
     }
   }
 
@@ -422,6 +434,7 @@ export class AccountsComponent implements OnInit, OnDestroy {
       console.error('Failed to toggle collection sharing:', error);
     } finally {
       this.collectionsLoading = false;
+      this.cdr.detectChanges();
     }
   }
 

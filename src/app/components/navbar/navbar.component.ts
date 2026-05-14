@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, OnDestroy, Output, signal, effect} from '@angular/core';
+import {ChangeDetectorRef, Component, EventEmitter, Input, OnInit, OnDestroy, Output, signal, effect} from '@angular/core';
 import {WebService} from "../../web.service";
 import {DataService} from "../../data.service";
 import {ScrollService} from "../../scroll.service";
@@ -88,7 +88,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
     private uniprot: UniprotService,
     private saveState: SaveStateService,
     public autoSave: AutoSaveService,
-    public themeService: ThemeService
+    public themeService: ThemeService,
+    private cdr: ChangeDetectorRef
   ) {
     effect(() => {
       const data = this.uniprot.progressBar();
@@ -334,6 +335,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
       } catch (err) {
         console.error('Chunk upload failed, falling back to regular upload:', err)
         this.fallbackToRegularUpload(data, encryption, permanent, expiryDuration, sessionName)
+      } finally {
+        this.cdr.detectChanges()
       }
     } else {
       this.fallbackToRegularUpload(data, encryption, permanent, expiryDuration, sessionName)
@@ -640,6 +643,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
       this.selectedCollectionId = null
     } finally {
       this.loadingCollections = false
+      this.cdr.detectChanges()
     }
   }
 

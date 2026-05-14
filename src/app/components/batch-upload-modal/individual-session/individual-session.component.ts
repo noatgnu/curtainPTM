@@ -154,6 +154,7 @@ export class IndividualSessionComponent implements OnChanges, AfterViewInit {
       this.availableCollections = []
     } finally {
       this.loadingCollections = false
+      this.cd.detectChanges()
     }
   }
 
@@ -174,6 +175,7 @@ export class IndividualSessionComponent implements OnChanges, AfterViewInit {
     } catch (error) {
     } finally {
       this.isCreatingCollection = false
+      this.cd.detectChanges()
     }
   }
 
@@ -702,6 +704,8 @@ export class IndividualSessionComponent implements OnChanges, AfterViewInit {
         }
       } catch (err) {
         this.fallbackToRegularUpload(encryption)
+      } finally {
+        this.cd.detectChanges()
       }
     } else {
       this.fallbackToRegularUpload(encryption)
@@ -724,6 +728,8 @@ export class IndividualSessionComponent implements OnChanges, AfterViewInit {
     } catch (err) {
       this.updateProgressBar(100, "Error on upload")
       this.toast.show("User information", `Curtain link #${this.sessionId+1} cannot be saved`).then()
+    } finally {
+      this.cd.detectChanges()
     }
   }
 

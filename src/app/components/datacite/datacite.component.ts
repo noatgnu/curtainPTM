@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {ChangeDetectorRef, Component, Input} from '@angular/core';
 import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {AccountsService} from "../../accounts/accounts.service";
 import {WebService} from "../../web.service";
@@ -262,7 +262,7 @@ export class DataciteComponent {
     return [...new Set([...creators, ...contributors])];
   }
 
-  constructor(private toastService: ToastService, private modal: NgbActiveModal, private fb: FormBuilder, public accountsService: AccountsService, private web: WebService, private dataciteService: DataciteService) {
+  constructor(private toastService: ToastService, private modal: NgbActiveModal, private fb: FormBuilder, public accountsService: AccountsService, private web: WebService, private dataciteService: DataciteService, private cdr: ChangeDetectorRef) {
     if (!this.accountsService.isOwner) {
       this.dataCiteForm.disable()
     }
@@ -727,6 +727,7 @@ export class DataciteComponent {
       this.availableCollections = []
     } finally {
       this.collectionsLoading = false
+      this.cdr.detectChanges()
     }
   }
 

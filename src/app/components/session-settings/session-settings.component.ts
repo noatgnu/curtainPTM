@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
 import {UntypedFormBuilder} from "@angular/forms";
 import {WebService} from "../../web.service";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
@@ -47,7 +47,7 @@ export class SessionSettingsComponent implements OnInit {
     additionalOwner: ["",]
   })
   temporaryLink: string = ""
-  constructor(private fb: UntypedFormBuilder, private accounts: AccountsService, private web: WebService, public modal: NgbActiveModal, private data: DataService, private settings: SettingsService, private uniprot: UniprotService, private toast: ToastService) {
+  constructor(private fb: UntypedFormBuilder, private accounts: AccountsService, private web: WebService, public modal: NgbActiveModal, private data: DataService, private settings: SettingsService, private uniprot: UniprotService, private toast: ToastService, private cdr: ChangeDetectorRef) {
 
   }
 
@@ -128,6 +128,8 @@ export class SessionSettingsComponent implements OnInit {
       } catch (error) {
         console.error('Failed to update session:', error)
         this.isUpdating = false
+      } finally {
+        this.cdr.detectChanges()
       }
     } else {
       const payload: any = {name: this.form.value["name"], enable: this.form.value["enable"]}
@@ -145,6 +147,8 @@ export class SessionSettingsComponent implements OnInit {
       } catch (error) {
         console.error('Failed to update session:', error)
         this.isUpdating = false
+      } finally {
+        this.cdr.detectChanges()
       }
     }
   }

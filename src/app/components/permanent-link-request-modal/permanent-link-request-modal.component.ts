@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, signal } from '@angular/core';
 import {NgbActiveModal, NgbAlert} from "@ng-bootstrap/ng-bootstrap";
 import {FormBuilder, FormControl, ReactiveFormsModule, Validators} from "@angular/forms";
 import {AccountsService} from "../../accounts/accounts.service";
@@ -35,7 +35,8 @@ export class PermanentLinkRequestModalComponent implements OnInit {
     private fb: FormBuilder,
     private accounts: AccountsService,
     private toast: ToastService,
-    public data: DataService
+    public data: DataService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
@@ -59,6 +60,7 @@ export class PermanentLinkRequestModalComponent implements OnInit {
       if (response.data) {
         this.expiryOptions = response.data.expiry_duration_options || []
       }
+      this.cdr.detectChanges()
     })
   }
 
@@ -70,9 +72,11 @@ export class PermanentLinkRequestModalComponent implements OnInit {
           this.existingRequests.set(response.data.results)
         }
         this.loading.set(false)
+        this.cdr.detectChanges()
       }).catch(err => {
         console.error('Failed to load requests:', err)
         this.loading.set(false)
+        this.cdr.detectChanges()
       })
     }
   }
@@ -94,9 +98,11 @@ export class PermanentLinkRequestModalComponent implements OnInit {
         this.toast.show('Request Submitted', 'Your request has been submitted and is pending review')
         this.form.reset()
         this.loadExistingRequests()
+        this.cdr.detectChanges()
       }).catch(err => {
         console.error('Failed to submit request:', err)
         this.toast.show('Error', 'Failed to submit request. Please try again.')
+        this.cdr.detectChanges()
       })
     }
   }

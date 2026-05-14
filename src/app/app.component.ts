@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnDestroy} from '@angular/core';
+import {AfterViewInit, ChangeDetectorRef, Component, OnDestroy} from '@angular/core';
 import {AccountsService} from "./accounts/accounts.service";
 import {SwUpdate} from "@angular/service-worker";
 import {Subscription} from "rxjs";
@@ -18,7 +18,7 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   title = 'CurtainPTM';
   newVersionSubscription: Subscription|undefined;
   baseURL = environment.apiURL
-  constructor(private accounts: AccountsService, private swUpdate: SwUpdate, private settings: SettingsService, private modal: NgbModal, private analytics: AnalyticsService) {
+  constructor(private accounts: AccountsService, private swUpdate: SwUpdate, private settings: SettingsService, private modal: NgbModal, private analytics: AnalyticsService, private cdr: ChangeDetectorRef) {
     const path = document.URL.replace(window.location.origin+"/", "")
     if (path.startsWith("?code=")) {
       const code = path.split("=")
@@ -26,6 +26,7 @@ export class AppComponent implements AfterViewInit, OnDestroy {
       this.accounts.ORCIDLogin(code[1], rememberMe).then((data: any) => {
         console.log(data)
         localStorage.removeItem("orcidRememberMe")
+        this.cdr.detectChanges()
       })
     }
     this.analytics.initialize()
@@ -38,6 +39,7 @@ export class AppComponent implements AfterViewInit, OnDestroy {
           if (available) {
             console.log("New version available")
             this.settings.newVersionAvailable = true;
+            this.cdr.detectChanges()
           }
         })
       }, 1000*10)
