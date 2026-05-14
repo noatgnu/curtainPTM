@@ -85,18 +85,20 @@
     </div>
   }
 
-  @if (!isLoading && totalItems > 0) {
+  @if (totalItems > 0) {
     <div class="d-flex justify-content-between align-items-center mb-3">
       <div>
         @if (hasSelectedLinks) {
           <span class="badge bg-info">{{selectedCount}} selected</span>
         }
       </div>
-      <ngb-pagination 
-        [collectionSize]="totalItems" 
-        [(page)]="currentPage" 
-        [maxSize]="5" 
-        [boundaryLinks]="true" 
+      <ngb-pagination
+        [collectionSize]="totalItems"
+        [(page)]="currentPage"
+        [pageSize]="ITEMS_PER_PAGE"
+        [maxSize]="5"
+        [boundaryLinks]="true"
+        [disabled]="isLoading"
         (pageChange)="submit($event - 1)">
       </ngb-pagination>
     </div>
@@ -277,11 +279,13 @@
     </div>
 
     <div class="d-flex justify-content-center mt-3">
-      <ngb-pagination 
-        [collectionSize]="totalItems" 
-        [(page)]="currentPage" 
-        [maxSize]="5" 
-        [boundaryLinks]="true" 
+      <ngb-pagination
+        [collectionSize]="totalItems"
+        [(page)]="currentPage"
+        [pageSize]="ITEMS_PER_PAGE"
+        [maxSize]="5"
+        [boundaryLinks]="true"
+        [disabled]="isLoading"
         (pageChange)="submit($event - 1)">
       </ngb-pagination>
     </div>

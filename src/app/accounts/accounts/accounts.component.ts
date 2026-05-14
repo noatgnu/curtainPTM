@@ -36,7 +36,7 @@ export class AccountsComponent implements OnInit, OnDestroy {
   collectionPage: number = 1
   totalCollections: number = 0
   collectionSearchQuery: string = ''
-  private readonly ITEMS_PER_PAGE = 10
+  readonly ITEMS_PER_PAGE = 10
   private readonly COLLECTIONS_PER_PAGE = 10
   userCollections: any[] = []
 
