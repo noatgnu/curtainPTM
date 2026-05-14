@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1775646611792,
+  "timestamp": 1778771356061,
   "index": "/index.html",
   "assetGroups": [
     {
@@ -11,18 +11,18 @@
         "ignoreVary": true
       },
       "urls": [
-        "/chunk-K75X5KV3.js",
+        "/chunk-3D3CCIO3.js",
+        "/chunk-4DZFUZPQ.js",
+        "/chunk-AMNV5GDE.js",
         "/chunk-N57AJHA5.js",
-        "/chunk-NHPXYI6Y.js",
-        "/chunk-OPKXG5HT.js",
         "/favicon.ico",
         "/index.html",
-        "/main-SSERUUMY.js",
+        "/main-47UVSODF.js",
         "/manifest.webmanifest",
         "/polyfills-IH6WGJLB.js",
         "/scripts-VOFQY67P.js",
         "/styles-KODM7UYO.css",
-        "/worker-NS6NDQ6P.js"
+        "/worker-T67IMYXC.js"
       ],
       "patterns": []
     },
@@ -130,18 +130,18 @@
     "/assets/proteinLists/pd.txt": "915c4a708c5dc7227d0b8fdc5eb51b17b2342746",
     "/assets/proteinLists/phosphatases.txt": "c350ec4656fee8be08c7dead8fdd42a0cd20e350",
     "/assets/proteinLists/pink1.txt": "6b73c270d0407981851903bae49a622c0c22e0f8",
-    "/chunk-K75X5KV3.js": "8aa285f9fba3974b00fd3805892f4faa1e38ba9e",
+    "/chunk-3D3CCIO3.js": "9614e145e3d4e60ea629f88f484e62704a1f2587",
+    "/chunk-4DZFUZPQ.js": "d5030108cbfe5a8b71c1160d31ac71d9b73d38c0",
+    "/chunk-AMNV5GDE.js": "92f75454fa4edd020842fa1b684b3e857b51d1ac",
     "/chunk-N57AJHA5.js": "0596171feebf974cc1f5eeeef7f1e75616da8bca",
-    "/chunk-NHPXYI6Y.js": "90396cda85a62be0376d3ab0d8bf7f59402c2c04",
-    "/chunk-OPKXG5HT.js": "d5030108cbfe5a8b71c1160d31ac71d9b73d38c0",
     "/favicon.ico": "22f6a4a3bcaafafb0254e0f2fa4ceb89e505e8b2",
-    "/index.html": "77a343566f600b5c5794510dab680b474c450692",
-    "/main-SSERUUMY.js": "e931c56c220b59b85297f399f49a501bd2443a14",
+    "/index.html": "5ac10dc2a6d11fc797b748f9aaecbd625a3cba4f",
+    "/main-47UVSODF.js": "10373fd58c107da75484f10845545af5b69332ee",
     "/manifest.webmanifest": "0eb74bee05d08791252872d45422389a4c8ede7e",
     "/polyfills-IH6WGJLB.js": "960a2fe0962101aae4da2dc4d064684c634167ff",
     "/scripts-VOFQY67P.js": "f33c9e3ae42bd89b8ee7ee9155462ba48cd3de23",
     "/styles-KODM7UYO.css": "3242dd16d219577ac3006a9642ae9f9d66129188",
-    "/worker-NS6NDQ6P.js": "4692603b04990019d63bd2a7fd301ac722df0870"
+    "/worker-T67IMYXC.js": "42f3f1675ce2bf34c96986bc8fa217acd4bc8af5"
   },
   "navigationUrls": [
     {

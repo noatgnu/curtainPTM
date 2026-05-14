@@ -35,27 +35,11 @@ export class CollectionSessionsViewerModalComponent implements OnInit {
         this.accounts.curtainAPI.baseURL + `curtain-collections/${this.collectionId}/`
       );
       this.collection = response.data;
-
-      if (this.collection && this.collection.curtains) {
-        await this.loadSessions(this.collection.curtains);
-      }
+      this.sessions = this.collection?.accessible_curtains ?? [];
     } catch (error) {
       console.error('Failed to load collection details:', error);
     } finally {
       this.isLoading = false;
-    }
-  }
-
-  async loadSessions(curtainIds: string[]): Promise<void> {
-    try {
-      const sessionPromises = curtainIds.map(linkId =>
-        this.accounts.curtainAPI.getSessionSettings(linkId)
-      );
-      const results = await Promise.all(sessionPromises);
-      this.sessions = results.map(r => r.data).filter(s => s);
-    } catch (error) {
-      console.error('Failed to load sessions:', error);
-      this.sessions = [];
     }
   }
 }

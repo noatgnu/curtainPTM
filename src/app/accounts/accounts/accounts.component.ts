@@ -72,14 +72,16 @@ export class AccountsComponent implements OnInit, OnDestroy {
       this.isLoading = true;
       this.errorMessage = '';
       await this.accounts.getUser();
-      const data = await this.accounts.curtainAPI.getCurtainLinks(
-        this.accounts.curtainAPI.user.username,
-        "",
-        undefined,
-        "PTM"
-      );
+      const [data] = await Promise.all([
+        this.accounts.curtainAPI.getCurtainLinks(
+          this.accounts.curtainAPI.user.username,
+          "",
+          undefined,
+          "PTM"
+        ),
+        this.loadUserCollections()
+      ]);
       this.updateShowingLink(data);
-      await this.loadUserCollections();
     } catch (error) {
       this.errorMessage = 'Failed to load account information. Please try again.';
       console.error('Error initializing component:', error);
@@ -371,7 +373,7 @@ export class AccountsComponent implements OnInit, OnDestroy {
 
   async loadUserCollections(): Promise<void> {
     try {
-      const response = await this.accounts.getCollections(1, 100, '', true);
+      const response = await this.accounts.getCollections(1, 10, '', true);
       this.userCollections = response.results || [];
     } catch (error) {
       console.error('Failed to load user collections:', error);
