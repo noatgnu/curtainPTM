@@ -35,7 +35,7 @@ export class ToastProgressbarComponent {
       const downloadProgress = this.data.downloadProgress();
       if (this.action === 'download') {
         this.progress = downloadProgress;
-        this.cdr.markForCheck();
+        this.cdr.detectChanges();
         if (downloadProgress === 100) {
           this.finished.emit(true);
         }
@@ -46,7 +46,7 @@ export class ToastProgressbarComponent {
       const uploadProgress = this.data.uploadProgress();
       if (this.action === 'upload') {
         this.progress = uploadProgress;
-        this.cdr.markForCheck();
+        this.cdr.detectChanges();
         if (uploadProgress === 100) {
           this.finished.emit(true);
         }
@@ -57,7 +57,7 @@ export class ToastProgressbarComponent {
       const processingProgress = this.data.processingProgress();
       if (this.action === 'processing') {
         this.progress = processingProgress;
-        this.cdr.markForCheck();
+        this.cdr.detectChanges();
         if (processingProgress === 100) {
           this.finished.emit(true);
         }

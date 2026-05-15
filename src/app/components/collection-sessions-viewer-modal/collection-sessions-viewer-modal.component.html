@@ -42,10 +42,10 @@
           <div class="list-group-item">
             <div class="d-flex justify-content-between align-items-start">
               <div class="flex-grow-1">
-                <div class="d-flex align-items-center mb-2">
+                <div class="d-flex align-items-center mb-1">
                   <a href="{{base}}/#/{{session.link_id}}" target="_blank" class="text-decoration-none me-2">
                     <i class="bi bi-box-arrow-up-right me-1"></i>
-                    <strong>{{session.link_id}}</strong>
+                    <strong>{{session.name || 'Untitled Session'}}</strong>
                   </a>
                   @if (session.enable) {
                     <span class="badge bg-success">
@@ -57,6 +57,7 @@
                     </span>
                   }
                 </div>
+                <div class="text-muted small mb-1">{{session.link_id}}</div>
                 @if (session.description) {
                   <div [innerHTML]="session.description" class="text-muted small"></div>
                 }

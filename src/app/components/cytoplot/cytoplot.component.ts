@@ -34,7 +34,7 @@ export class CytoplotComponent implements OnInit, AfterViewInit, OnDestroy {
       if (this._drawData.data.length > 2) {
         this.componentID = this._drawData.id
         this.hidden = false
-        this.cdr.markForCheck()
+        this.cdr.detectChanges()
         setTimeout(() => {
           this.draw()
         }, 3000)

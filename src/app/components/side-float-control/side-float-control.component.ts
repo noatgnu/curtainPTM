@@ -206,22 +206,27 @@ export class SideFloatControlComponent implements OnInit, OnDestroy {
   }
 
   private setSubscription() {
-    this.webSub = this.ws.getMessages()?.subscribe((data: any) => {
-      data.message.timestamp = new Date(data.message.timestamp)
-      this.messagesList = [data].concat(this.messagesList)
-      this.senderMap[data.senderID] = data.senderName
-      if (data.requestType === "push-state-all-force") {
-        this.loadSentState(data.message.data)
+    this.webSub = this.ws.getMessages()?.subscribe({
+      next: (data: any) => {
+        data.message.timestamp = new Date(data.message.timestamp)
+        this.messagesList = [data].concat(this.messagesList)
+        this.senderMap[data.senderID] = data.senderName
+        if (data.requestType === "push-state-all-force") {
+          this.loadSentState(data.message.data)
+        }
+        if (!this.toggleChatPanel()) {
+          this.unreadCount.set(this.unreadCount() + 1)
+        }
+        this.chatbox?.nativeElement.scrollTo(0, this.chatbox.nativeElement.scrollHeight)
+      },
+      error: () => {
+        const message = {message: {message: "Connection error. Reconnecting...", timestamp: Date.now()}, senderID: "system", senderName: "System", requestType: "chat-system"}
+        this.messagesList = [message].concat(this.messagesList)
+      },
+      complete: () => {
+        const message = {message: {message: "Disconnected from server", timestamp: Date.now()}, senderID: "system", senderName: "System", requestType: "chat-system"}
+        this.messagesList = [message].concat(this.messagesList)
       }
-      if (!this.toggleChatPanel()) {
-        this.unreadCount.set(this.unreadCount() + 1)
-      }
-      this.chatbox?.nativeElement.scrollTo(0, this.chatbox.nativeElement.scrollHeight)
-    }, (error: any) => {
-      console.log(error)
-    }, () => {
-      const message = {message: {message: "Disconnected from server", timestamp: Date.now()}, senderID: "system", senderName: "System", requestType: "chat-system"}
-      this.messagesList = [message].concat(this.messagesList)
     })
   }
 

@@ -603,11 +603,13 @@ export class HomeComponent implements OnInit {
         this.updateSelections().then(() => {
           const differential = this.data.currentDF.where(r => this.data.selectedAccessions.includes(r[this.data.differentialForm.accession])).bake()
           this.differentialFiltered = differential.groupBy(r => r[this.data.differentialForm.accession]).bake()
+          this.cdr.detectChanges()
         });
       } else {
         this.differentialFiltered = new Series()
       }
     }
+    this.cdr.detectChanges()
   }
 
   private async updateSelections() {

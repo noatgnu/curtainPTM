@@ -1,4 +1,4 @@
-import {Component, effect, EventEmitter, OnInit, Output} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, effect, EventEmitter, OnInit, Output} from '@angular/core';
 import {InputFile} from "../../classes/input-file";
 import {DataService} from "../../data.service";
 import {DataFrame, fromCSV, fromJSON, Series} from "data-forge";
@@ -12,7 +12,8 @@ import {UniprotErrorModalComponent} from "../uniprot-error-modal/uniprot-error-m
     selector: 'app-file-form',
     templateUrl: './file-form.component.html',
     styleUrls: ['./file-form.component.scss'],
-    standalone: false
+    standalone: false,
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FileFormComponent implements OnInit {
   progressBar: any = {value: 0, text: ""}
@@ -21,7 +22,7 @@ export class FileFormComponent implements OnInit {
   iscollapsed = false
   useDifferentialAsRaw = false
   @Output() finished: EventEmitter<boolean> = new EventEmitter<boolean>()
-  constructor(private uniprot: UniprotService, public data: DataService, public settings: SettingsService, private toast: ToastService, private modal: NgbModal) {
+  constructor(private uniprot: UniprotService, public data: DataService, public settings: SettingsService, private toast: ToastService, private modal: NgbModal, private cdr: ChangeDetectorRef) {
     effect(() => {
       const progressData = this.uniprot.progressBar();
       this.progressBar.value = progressData.value
@@ -38,7 +39,6 @@ export class FileFormComponent implements OnInit {
   startWork() {
     this.finished.emit(false)
     if (typeof Worker !== 'undefined') {
-      console.log("start worker")
       // Create a new
       const worker = new Worker(new URL('./data.worker', import.meta.url));
       worker.onmessage = (data: MessageEvent<any>) => {
@@ -103,12 +103,14 @@ export class FileFormComponent implements OnInit {
               this.data.conditions = data.data.conditions
               this.processUniProt()
               worker.terminate()
+              this.cdr.detectChanges()
             } else if (data.data.type === "resultDifferentialCompleted") {
-
+              this.cdr.detectChanges()
             }
           }
         } else {
           worker.terminate()
+          this.cdr.detectChanges()
         }
 
       };
@@ -137,6 +139,7 @@ export class FileFormComponent implements OnInit {
   updateProgressBar(value: number, text: string) {
     this.progressBar.value = value
     this.progressBar.text = text
+    this.cdr.detectChanges()
   }
   convertToNumber(arr: string[]) {
     const newCol = arr.map(Number)
@@ -305,8 +308,6 @@ export class FileFormComponent implements OnInit {
   }
 
   async processUniProt() {
-    console.log(this.data.fetchUniProt)
-    console.log(this.data.bypassUniProt)
     if (this.data.fetchUniProt) {
       if (!this.data.bypassUniProt) {
         this.data.processingProgress.set(0)

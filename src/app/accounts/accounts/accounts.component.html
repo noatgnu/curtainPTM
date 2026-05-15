@@ -199,7 +199,10 @@
                 </a>
               </td>
               <td>
-                <div [innerHTML]="d.description" class="text-truncate" style="max-width: 400px;"></div>
+                <div class="text-truncate" style="max-width: 400px;">{{d.name || 'Untitled Session'}}</div>
+                @if (d.description) {
+                  <div [innerHTML]="d.description" class="text-muted small text-truncate" style="max-width: 400px;"></div>
+                }
                 <small class="text-muted">
                   <i class="bi bi-calendar3 me-1"></i>{{d.created | date:'short'}}
                 </small>
