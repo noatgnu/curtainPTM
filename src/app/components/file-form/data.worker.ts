@@ -303,9 +303,6 @@ function validateRawForm(form: RawForm): string[] {
   if (!form._primaryIDs) {
     errors.push('Primary ID column is required');
   }
-  if (!form._samples || form._samples.length === 0) {
-    errors.push('At least one sample column is required');
-  }
 
   return errors;
 }

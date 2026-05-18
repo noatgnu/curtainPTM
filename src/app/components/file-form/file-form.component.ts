@@ -106,6 +106,11 @@ export class FileFormComponent implements OnInit {
               this.cdr.detectChanges()
             } else if (data.data.type === "resultDifferentialCompleted") {
               this.cdr.detectChanges()
+            } else if (data.data.type === "error") {
+              worker.terminate()
+              this.toast.show("Processing Error", data.data.message || "An error occurred during data processing").then()
+              this.finished.emit(true)
+              this.updateProgressBar(100, "Finished")
             }
           }
         } else {
