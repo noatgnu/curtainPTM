@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  apiURL: "/api/",
+  apiURL: "/",
   orcid: "",
   datacite: "https://api.datacite.org/dois/"
 };
