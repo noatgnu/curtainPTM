@@ -1,0 +1,10 @@
+.plotly-container {
+  position: relative;
+  z-index: 1;
+}
+
+.settings-column {
+  position: relative;
+  z-index: 10;
+  background-color: var(--bs-body-bg);
+}

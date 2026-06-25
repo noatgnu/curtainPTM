@@ -32,6 +32,7 @@ export class HomeComponent implements OnInit {
   isDOI: boolean = false;
   doiMetadata: any = {}
   doiParsedData: any = undefined
+  activeSessionId: string | undefined = undefined
   loadingDataCite: boolean = false
   finished: boolean = false
   rawFiltered: IDataFrame = new DataFrame()
@@ -182,12 +183,15 @@ export class HomeComponent implements OnInit {
       this.doiParsedData = parsedData
 
       if (sessionId) {
+        this.activeSessionId = sessionId
         const sessionUrl = this.findSessionUrlById(parsedData, sessionId)
         if (sessionUrl) {
           this.toast.show("Initialization", "Loading specific session from collection", undefined, undefined, "download").then()
           await this.getDOISessionData(sessionUrl, doiLink)
           return
         }
+      } else if (parsedData.collectionMetadata?.main_session?.link_id) {
+        this.activeSessionId = parsedData.collectionMetadata.main_session.link_id
       }
 
       if (parsedData.mainSessionUrl) {
@@ -198,13 +202,22 @@ export class HomeComponent implements OnInit {
     } catch (e) {
       console.log("Failed to parse new format, falling back to old format:", e)
       this.doiParsedData = undefined
+      this.activeSessionId = undefined
     }
 
     await this.tryAlternateIdentifiers(alternateIdentifiers, doiLink, alternateIdentifiers.length - 1)
   }
 
   findSessionUrlById(parsedData: any, sessionId: string): string | null {
-    if (!parsedData || !parsedData.collectionMetadata || !parsedData.collectionMetadata.sessions) {
+    if (!parsedData) {
+      return null
+    }
+
+    if (parsedData.collectionMetadata?.main_session?.link_id === sessionId) {
+      return parsedData.mainSessionUrl || null
+    }
+
+    if (!parsedData.collectionMetadata || !parsedData.collectionMetadata.sessions) {
       return null
     }
 
@@ -221,7 +234,7 @@ export class HomeComponent implements OnInit {
     const params = this.route.snapshot.params
     if (params && params["settings"] && params["settings"].startsWith("doi.org/")) {
       const doiPart = params["settings"].split("&")[0]
-      const newUrl = `${location.origin}/#/${doiPart}&${sessionLinkId}`
+      const newUrl = `${location.origin}/#/${encodeURIComponent(doiPart)}&${sessionLinkId}`
       window.open(newUrl, '_blank')
     }
   }

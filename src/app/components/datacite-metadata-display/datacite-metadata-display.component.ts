@@ -44,9 +44,35 @@ export class DataciteMetadataDisplayComponent {
   }
 
   @Input() parsedData: ParsedDataCiteData | undefined = undefined
+  @Input() activeSessionId: string | undefined = undefined
 
   @Output() clickDownload: EventEmitter<string> = new EventEmitter<string>()
   @Output() navigateToSession: EventEmitter<string> = new EventEmitter<string>()
+
+  get allSessions() {
+    const sessions: any[] = [];
+    const meta = this.parsedData?.collectionMetadata;
+    if (meta) {
+      if (meta.main_session && meta.main_session.link_id) {
+        sessions.push({
+          link_id: meta.main_session.link_id,
+          name: (meta.main_session as any).name || this.metadata?.data.attributes.titles[0]?.title || "Main Session",
+          description: (meta.main_session as any).description || "Primary Session",
+          isMain: true
+        });
+      }
+      if (meta.sessions) {
+        for (const s of meta.sessions) {
+          sessions.push({
+            ...s,
+            isMain: false
+          });
+        }
+      }
+    }
+    return sessions;
+  }
+
   creatorsString: string = ""
   get metadata(): DataCiteMetadata|undefined {
     return this._metadata

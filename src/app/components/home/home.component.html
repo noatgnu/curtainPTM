@@ -5,6 +5,7 @@
     @if (doiMetadata) {
       <app-datacite-metadata-display [metadata]="doiMetadata"
                                      [parsedData]="doiParsedData"
+                                     [activeSessionId]="activeSessionId"
                                      (clickDownload)="handleDataCiteClickDownload($event)"
                                      (navigateToSession)="handleNavigateToSession($event)">
       </app-datacite-metadata-display>
