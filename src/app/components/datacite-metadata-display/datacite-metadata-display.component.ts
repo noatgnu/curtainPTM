@@ -16,19 +16,64 @@ import {QuillViewComponent} from "ngx-quill";
 export class DataciteMetadataDisplayComponent {
   private _metadata: DataCiteMetadata|undefined
   contributorsString: string = ""
+  getDisplayName(person: any): string {
+    if (person.name) {
+      return person.name;
+    }
+    const family = person.familyName || "";
+    const given = person.givenName || "";
+    if (family && given) {
+      return `${family}, ${given}`;
+    }
+    return family || given || "";
+  }
+
+  getAffiliationsString(person: any): string {
+    if (!person.affiliation || person.affiliation.length === 0) {
+      return "No affiliation";
+    }
+    return person.affiliation.map((aff: any) => aff.name).join(", ");
+  }
+
   @Input() set metadata(value: DataCiteMetadata|undefined) {
     this._metadata = value
     let authors: string[] = []
     let contributors: string[] = []
     if (this._metadata) {
+      if (this._metadata.data.attributes.creators) {
+        for (const creator of this._metadata.data.attributes.creators) {
+          if (creator.affiliation) {
+            creator.affiliation = creator.affiliation.map((aff: any) => {
+              if (typeof aff === 'string') {
+                return { name: aff };
+              }
+              return aff;
+            });
+          }
+        }
+      }
+
+      if (this._metadata.data.attributes.contributors) {
+        for (const contributor of this._metadata.data.attributes.contributors) {
+          if (contributor.affiliation) {
+            contributor.affiliation = contributor.affiliation.map((aff: any) => {
+              if (typeof aff === 'string') {
+                return { name: aff };
+              }
+              return aff;
+            });
+          }
+        }
+      }
+
       if (this._metadata.data.attributes.contributors.length > 0) {
         contributors = this._metadata.data.attributes.contributors.map((a) => {
-          return a.name
+          return this.getDisplayName(a)
         })
       }
       if (this._metadata.data.attributes.creators.length > 0) {
         authors = this._metadata.data.attributes.creators.map((a) => {
-          return a.name
+          return this.getDisplayName(a)
         })
       }
 

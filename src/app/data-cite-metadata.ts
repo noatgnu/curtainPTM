@@ -13,6 +13,8 @@ export interface DataCiteMetadataNameIdentifier {
 
 export interface DataCiteMetadataCreator {
   "name": string,
+  "givenName"?: string,
+  "familyName"?: string,
   "affiliation": DataCiteMetadataAffiliation[],
   "nameIdentifiers": DataCiteMetadataNameIdentifier[]
 }

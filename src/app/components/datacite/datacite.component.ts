@@ -368,7 +368,7 @@ export class DataciteComponent {
     if (!this.form_additional_data.value.informationIsTrue) {
       return
     }
-    const dataCiteMetadata = this.dataCiteForm.value;
+    const dataCiteMetadata: any = this.dataCiteForm.getRawValue();
     if (dataCiteMetadata.creators) {
       for (let i = 0; i < dataCiteMetadata.creators.length; i++) {
         if (dataCiteMetadata.creators[i].name === "") {
@@ -376,7 +376,7 @@ export class DataciteComponent {
         }
         const affiliation = dataCiteMetadata.creators[i].affiliation
         if (affiliation) {
-          const checkedAffiliation = affiliation.filter((aff) => aff.name !== "")
+          const checkedAffiliation = affiliation.filter((aff: any) => aff.name !== "")
           if (checkedAffiliation.length === 0) {
             delete dataCiteMetadata.creators[i].affiliation
           }
@@ -400,7 +400,7 @@ export class DataciteComponent {
         }
         const affiliation = dataCiteMetadata.contributors[i].affiliation
         if (affiliation) {
-          const checkedAffiliation = affiliation.filter((aff) => aff.name !== "")
+          const checkedAffiliation = affiliation.filter((aff: any) => aff.name !== "")
           if (checkedAffiliation.length === 0) {
             delete dataCiteMetadata.contributors[i].affiliation
           }
@@ -427,7 +427,7 @@ export class DataciteComponent {
       }
     }
     if (dataCiteMetadata.fundingReferences) {
-      const checkedFundingReferences = dataCiteMetadata.fundingReferences.filter((fundingReference) => fundingReference.funderName !== "")
+      const checkedFundingReferences = dataCiteMetadata.fundingReferences.filter((fundingReference: any) => fundingReference.funderName !== "")
       if (checkedFundingReferences.length === 0) {
         delete dataCiteMetadata.fundingReferences
       }
@@ -736,7 +736,7 @@ export class DataciteComponent {
   }
 
   exportJSON() {
-    const dataCiteMetadata: any = this.dataCiteForm.value;
+    const dataCiteMetadata: any = this.dataCiteForm.getRawValue();
     const data = JSON.stringify(dataCiteMetadata, null, 2);
     const blob = new Blob([data], { type: 'application/json' });
     const a = document.createElement('a');

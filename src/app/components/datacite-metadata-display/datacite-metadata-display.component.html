@@ -19,17 +19,9 @@
             <strong class="text-secondary me-2">Authors:</strong>
             <div class="d-flex flex-wrap gap-1 mt-1">
               @for (a of metadata.data.attributes.creators; track a) {
-                <span class="badge bg-primary" [ngbTooltip]="affiliation" placement="top">
-                <i class="bi bi-person-fill me-1"></i>{{a.name}}
-              </span>
-                <ng-template #affiliation>
-                  <div class="p-1">
-                    <strong>Affiliations:</strong>
-                    @for (aff of a.affiliation; track aff) {
-                      <div class="mt-1">{{aff.name}}</div>
-                    }
-                  </div>
-                </ng-template>
+                <span class="badge bg-primary" [ngbTooltip]="getAffiliationsString(a)" placement="top">
+                  <i class="bi bi-person-fill me-1"></i>{{getDisplayName(a)}}
+                </span>
               }
             </div>
           </div>
@@ -39,17 +31,9 @@
               <strong class="text-secondary me-2">Contributors:</strong>
               <div class="d-flex flex-wrap gap-1 mt-1">
                 @for (c of metadata.data.attributes.contributors; track c) {
-                  <span class="badge bg-secondary" [ngbTooltip]="affiliationContributor" placement="top">
-                  <i class="bi bi-person me-1"></i>{{c.name}}
-                </span>
-                  <ng-template #affiliationContributor>
-                    <div class="p-1">
-                      <strong>Affiliations:</strong>
-                      @for (aff of c.affiliation; track aff) {
-                        <div class="mt-1">{{aff.name}}</div>
-                      }
-                    </div>
-                  </ng-template>
+                  <span class="badge bg-secondary" [ngbTooltip]="getAffiliationsString(c)" placement="top">
+                    <i class="bi bi-person me-1"></i>{{getDisplayName(c)}}
+                  </span>
                 }
               </div>
             </div>
