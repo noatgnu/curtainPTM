@@ -26,7 +26,7 @@
                   <div class="p-1">
                     <strong>Affiliations:</strong>
                     @for (aff of a.affiliation; track aff) {
-                      <div class="mt-1">{{aff}}</div>
+                      <div class="mt-1">{{aff.name}}</div>
                     }
                   </div>
                 </ng-template>
@@ -46,7 +46,7 @@
                     <div class="p-1">
                       <strong>Affiliations:</strong>
                       @for (aff of c.affiliation; track aff) {
-                        <div class="mt-1">{{aff}}</div>
+                        <div class="mt-1">{{aff.name}}</div>
                       }
                     </div>
                   </ng-template>

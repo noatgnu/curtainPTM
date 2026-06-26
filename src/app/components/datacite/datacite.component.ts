@@ -278,9 +278,21 @@ export class DataciteComponent {
           }
           this.accountsService.curtainAPI.getDataCiteProxyOrcidPublicRecord(value).then((publicRecord: any)=> {
             const orcidData = publicRecord.data as OrcidPublicRecord
-            c.controls.givenName.setValue(orcidData.names.givenNames.value)
-            c.controls.familyName.setValue(orcidData.names.familyName.value)
-            c.controls.name.setValue(orcidData.names.creditName.value)
+            const givenName = orcidData.names?.givenNames?.value || ""
+            const familyName = orcidData.names?.familyName?.value || ""
+            let creditName = orcidData.names?.creditName?.value || ""
+            if (!creditName) {
+              if (familyName && givenName) {
+                creditName = `${familyName}, ${givenName}`
+              } else if (familyName) {
+                creditName = familyName
+              } else {
+                creditName = givenName
+              }
+            }
+            c.controls.givenName.setValue(givenName)
+            c.controls.familyName.setValue(familyName)
+            c.controls.name.setValue(creditName)
           })
         })
       }
@@ -294,9 +306,21 @@ export class DataciteComponent {
           }
           this.accountsService.curtainAPI.getDataCiteProxyOrcidPublicRecord(value).then((publicRecord: any)=> {
             const orcidData = publicRecord.data as OrcidPublicRecord
-            c.controls.givenName.setValue(orcidData.names.givenNames.value)
-            c.controls.familyName.setValue(orcidData.names.familyName.value)
-            c.controls.name.setValue(orcidData.names.creditName.value)
+            const givenName = orcidData.names?.givenNames?.value || ""
+            const familyName = orcidData.names?.familyName?.value || ""
+            let creditName = orcidData.names?.creditName?.value || ""
+            if (!creditName) {
+              if (familyName && givenName) {
+                creditName = `${familyName}, ${givenName}`
+              } else if (familyName) {
+                creditName = familyName
+              } else {
+                creditName = givenName
+              }
+            }
+            c.controls.givenName.setValue(givenName)
+            c.controls.familyName.setValue(familyName)
+            c.controls.name.setValue(creditName)
           })
         })
       }
@@ -492,9 +516,21 @@ export class DataciteComponent {
       }
       this.accountsService.curtainAPI.getDataCiteProxyOrcidPublicRecord(value).then((publicRecord: any)=> {
         const orcidData = publicRecord.data as OrcidPublicRecord
-        form.controls.givenName.setValue(orcidData.names.givenNames.value)
-        form.controls.familyName.setValue(orcidData.names.familyName.value)
-        form.controls.name.setValue(orcidData.names.creditName.value)
+        const givenName = orcidData.names?.givenNames?.value || ""
+        const familyName = orcidData.names?.familyName?.value || ""
+        let creditName = orcidData.names?.creditName?.value || ""
+        if (!creditName) {
+          if (familyName && givenName) {
+            creditName = `${familyName}, ${givenName}`
+          } else if (familyName) {
+            creditName = familyName
+          } else {
+            creditName = givenName
+          }
+        }
+        form.controls.givenName.setValue(givenName)
+        form.controls.familyName.setValue(familyName)
+        form.controls.name.setValue(creditName)
       })
     })
     this.dataCiteForm.controls.creators.push(form);
@@ -587,9 +623,21 @@ export class DataciteComponent {
       }
       this.accountsService.curtainAPI.getDataCiteProxyOrcidPublicRecord(value).then((publicRecord: any)=> {
         const orcidData = publicRecord.data as OrcidPublicRecord
-        form.controls.givenName.setValue(orcidData.names.givenNames.value)
-        form.controls.familyName.setValue(orcidData.names.familyName.value)
-        form.controls.name.setValue(orcidData.names.creditName.value)
+        const givenName = orcidData.names?.givenNames?.value || ""
+        const familyName = orcidData.names?.familyName?.value || ""
+        let creditName = orcidData.names?.creditName?.value || ""
+        if (!creditName) {
+          if (familyName && givenName) {
+            creditName = `${familyName}, ${givenName}`
+          } else if (familyName) {
+            creditName = familyName
+          } else {
+            creditName = givenName
+          }
+        }
+        form.controls.givenName.setValue(givenName)
+        form.controls.familyName.setValue(familyName)
+        form.controls.name.setValue(creditName)
       })
     })
     this.dataCiteForm.controls.contributors.push(form)

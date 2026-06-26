@@ -1,7 +1,20 @@
+export interface DataCiteMetadataAffiliation {
+  "name": string,
+  "affiliationIdentifier"?: string,
+  "affiliationIdentifierScheme"?: string,
+  "schemeUri"?: string
+}
+
+export interface DataCiteMetadataNameIdentifier {
+  "schemeUri"?: string,
+  "nameIdentifier"?: string,
+  "nameIdentifierScheme"?: string
+}
+
 export interface DataCiteMetadataCreator {
   "name": string,
-  "affiliation": string[],
-  "nameIdentifiers": string[]
+  "affiliation": DataCiteMetadataAffiliation[],
+  "nameIdentifiers": DataCiteMetadataNameIdentifier[]
 }
 
 export interface DataCiteMetadataTitle {
@@ -62,9 +75,9 @@ export interface DataCiteMetadataConstributor {
   "nameType": string,
   "givenName": string,
   "familyName": string,
-  "affiliation": string[],
+  "affiliation": DataCiteMetadataAffiliation[],
   "contributorType": string,
-  "nameIdentifiers": string[]
+  "nameIdentifiers": DataCiteMetadataNameIdentifier[]
 }
 
 export interface DataCiteMetadataDescription {
