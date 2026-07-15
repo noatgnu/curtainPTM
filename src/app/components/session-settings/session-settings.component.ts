@@ -6,7 +6,15 @@ import {DataService} from "../../data.service";
 import {SettingsService} from "../../settings.service";
 import {AccountsService} from "../../accounts/accounts.service";
 import {UniprotService} from "../../uniprot.service";
-import {CurtainEncryption} from "curtain-web-api";
+import {
+  CurtainEncryption,
+  generateAESKey,
+  encryptAESData,
+  encryptAESKey,
+  exportAESKey,
+  arrayBufferToBase64String,
+  base64ToArrayBuffer
+} from "curtain-web-api";
 import {ToastService} from "../../toast.service";
 
 @Component({
@@ -105,9 +113,26 @@ export class SessionSettingsComponent implements OnInit {
           extraData: extraData,
         }
 
+        const encryption: CurtainEncryption = {
+          encrypted: this.settings.settings.encrypted,
+          e2e: this.settings.settings.encrypted,
+          publicKey: this.data.public_key,
+        }
+
         const jsonString = JSON.stringify(fileData)
-        const blob = new Blob([jsonString], { type: 'application/json' })
-        const file = new File([blob], 'session_update.json', { type: 'application/json' })
+        let fileBlob = new Blob([jsonString], { type: 'application/json' })
+        let encryptedKey: string | undefined
+        let encryptedIV: string | undefined
+
+        if (encryption.encrypted && encryption.e2e && encryption.publicKey !== undefined) {
+          const aesKey = await generateAESKey()
+          const encryptedData = await encryptAESData(aesKey, jsonString)
+          encryptedKey = arrayBufferToBase64String(await encryptAESKey(encryption.publicKey, await exportAESKey(aesKey)))
+          encryptedIV = arrayBufferToBase64String(await encryptAESKey(encryption.publicKey, base64ToArrayBuffer(encryptedData.iv)))
+          fileBlob = new Blob([encryptedData.encrypted], { type: 'application/json' })
+        }
+
+        const file = new File([fileBlob], 'session_update.json', { type: 'application/json' })
 
         const result = await this.accounts.curtainAPI.uploadCurtainFileInChunks(
           file,
@@ -116,6 +141,10 @@ export class SessionSettingsComponent implements OnInit {
             link_id: this.currentID,
             name: this.form.value["name"],
             enable: this.form.value["enable"],
+            encrypted: encryption.encrypted,
+            e2e: encryption.e2e,
+            encryptedKey: encryptedKey,
+            encryptedIV: encryptedIV,
             onProgress: (progress: number) => {
               this.uploadProgress = progress
             }
@@ -133,14 +162,9 @@ export class SessionSettingsComponent implements OnInit {
       }
     } else {
       const payload: any = {name: this.form.value["name"], enable: this.form.value["enable"]}
-      const encryption: CurtainEncryption = {
-        encrypted: this.settings.settings.encrypted,
-        e2e: this.settings.settings.encrypted,
-        publicKey: this.data.public_key,
-      }
 
       try {
-        const data = await this.accounts.curtainAPI.updateSession(payload, this.currentID, encryption)
+        const data = await this.accounts.curtainAPI.updateSession(payload, this.currentID)
         this.data.session = data.data
         this.isUpdating = false
         this.modal.dismiss()

@@ -27,7 +27,18 @@ import {
 } from "../sample-condition-assignment-modal/sample-condition-assignment-modal.component";
 import {UserPtmImportManagementComponent} from "../user-ptm-import-management/user-ptm-import-management.component";
 import {EncryptionSettingsComponent} from "../encryption-settings/encryption-settings.component";
-import {CurtainEncryption, saveToLocalStorage, replacer, Announcement} from "curtain-web-api";
+import {
+  CurtainEncryption,
+  saveToLocalStorage,
+  replacer,
+  Announcement,
+  generateAESKey,
+  encryptAESData,
+  encryptAESKey,
+  exportAESKey,
+  arrayBufferToBase64String,
+  base64ToArrayBuffer
+} from "curtain-web-api";
 import {PrimaryIdExportModalComponent} from "../primary-id-export-modal/primary-id-export-modal.component";
 import {AreYouSureClearModalComponent} from "../are-you-sure-clear-modal/are-you-sure-clear-modal.component";
 import {LogFileModalComponent} from "../log-file-modal/log-file-modal.component";
@@ -294,12 +305,25 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.toast.show("User information", "Uploading session data", undefined, undefined, "upload").then()
 
     const jsonString = JSON.stringify(data, replacer)
-    const blob = new Blob([jsonString], { type: 'application/json' })
-    const file = new File([blob], 'curtain-settings.json', { type: 'application/json' })
+    const plainBlob = new Blob([jsonString], { type: 'application/json' })
 
     const CHUNK_THRESHOLD = 5 * 1024 * 1024
 
-    if (file.size > CHUNK_THRESHOLD) {
+    if (plainBlob.size > CHUNK_THRESHOLD) {
+      let fileBlob = plainBlob
+      let encryptedKey: string | undefined
+      let encryptedIV: string | undefined
+
+      if (encryption.encrypted && encryption.e2e && encryption.publicKey !== undefined) {
+        const aesKey = await generateAESKey()
+        const encryptedData = await encryptAESData(aesKey, jsonString)
+        encryptedKey = arrayBufferToBase64String(await encryptAESKey(encryption.publicKey, await exportAESKey(aesKey)))
+        encryptedIV = arrayBufferToBase64String(await encryptAESKey(encryption.publicKey, base64ToArrayBuffer(encryptedData.iv)))
+        fileBlob = new Blob([encryptedData.encrypted], { type: 'application/json' })
+      }
+
+      const file = new File([fileBlob], 'curtain-settings.json', { type: 'application/json' })
+
       try {
         const response = await this.accounts.curtainAPI.uploadCurtainFileInChunks(
           file,
@@ -310,6 +334,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
             curtain_type: "PTM",
             permanent: permanent,
             encrypted: encryption.encrypted,
+            e2e: encryption.e2e,
+            encryptedKey: encryptedKey,
+            encryptedIV: encryptedIV,
             expiry_duration: expiryDuration,
             enable: !this.accounts.curtainAPI.user.loginStatus,
             onProgress: (progress: number) => {

@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1782482800024,
+  "timestamp": 1784124281769,
   "index": "/index.html",
   "assetGroups": [
     {
@@ -11,18 +11,18 @@
         "ignoreVary": true
       },
       "urls": [
-        "/chunk-3D3CCIO3.js",
-        "/chunk-4DZFUZPQ.js",
-        "/chunk-AMNV5GDE.js",
-        "/chunk-N57AJHA5.js",
+        "/chunk-432R7RBM.js",
+        "/chunk-AF6HQAGH.js",
+        "/chunk-FRF7MTH4.js",
+        "/chunk-R54XS6HB.js",
         "/favicon.ico",
         "/index.html",
-        "/main-APUSLL3Y.js",
+        "/main-33JLL6FB.js",
         "/manifest.webmanifest",
         "/polyfills-IH6WGJLB.js",
         "/scripts-VOFQY67P.js",
         "/styles-KODM7UYO.css",
-        "/worker-FM72H6LS.js"
+        "/worker-TKGEGUCR.js"
       ],
       "patterns": []
     },
@@ -130,18 +130,18 @@
     "/assets/proteinLists/pd.txt": "915c4a708c5dc7227d0b8fdc5eb51b17b2342746",
     "/assets/proteinLists/phosphatases.txt": "c350ec4656fee8be08c7dead8fdd42a0cd20e350",
     "/assets/proteinLists/pink1.txt": "6b73c270d0407981851903bae49a622c0c22e0f8",
-    "/chunk-3D3CCIO3.js": "9614e145e3d4e60ea629f88f484e62704a1f2587",
-    "/chunk-4DZFUZPQ.js": "d5030108cbfe5a8b71c1160d31ac71d9b73d38c0",
-    "/chunk-AMNV5GDE.js": "92f75454fa4edd020842fa1b684b3e857b51d1ac",
-    "/chunk-N57AJHA5.js": "0596171feebf974cc1f5eeeef7f1e75616da8bca",
+    "/chunk-432R7RBM.js": "01f46c982d0510df50437766d4322c8d8e0b3c01",
+    "/chunk-AF6HQAGH.js": "634a637b77db60b7f2eae8c425e3e75d3e22305c",
+    "/chunk-FRF7MTH4.js": "7a30535f37e8f2833df97290d4afc8eee5e50671",
+    "/chunk-R54XS6HB.js": "80c0ae51009618c77c3fcd731e2137e11fcc768b",
     "/favicon.ico": "22f6a4a3bcaafafb0254e0f2fa4ceb89e505e8b2",
-    "/index.html": "add1c18c28d41e781c5dd1ff065974d8c97b3cad",
-    "/main-APUSLL3Y.js": "296a29c4b03ea07e5b0369df1856d79a8941525a",
+    "/index.html": "95c2f310dd5a141e80d9474b750c8d7ed442bdeb",
+    "/main-33JLL6FB.js": "e23f9ff40a009cd1e48b14ccb99daf14c69a6f3b",
     "/manifest.webmanifest": "0eb74bee05d08791252872d45422389a4c8ede7e",
     "/polyfills-IH6WGJLB.js": "960a2fe0962101aae4da2dc4d064684c634167ff",
     "/scripts-VOFQY67P.js": "f33c9e3ae42bd89b8ee7ee9155462ba48cd3de23",
     "/styles-KODM7UYO.css": "3242dd16d219577ac3006a9642ae9f9d66129188",
-    "/worker-FM72H6LS.js": "57ffbf1d9532f704d93b5d533d468692eca13f2a"
+    "/worker-TKGEGUCR.js": "616a529a67110d6e7b535398b74499bbced062fe"
   },
   "navigationUrls": [
     {
