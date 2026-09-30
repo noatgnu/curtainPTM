@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
 import {SettingsService} from '../../../settings.service';
@@ -13,6 +13,7 @@ interface TraceItem {
   selector: 'app-reorder-traces-modal',
   templateUrl: './reorder-traces-modal.component.html',
   styleUrls: ['./reorder-traces-modal.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class ReorderTracesModalComponent implements OnInit {

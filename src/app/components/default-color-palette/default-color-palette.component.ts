@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {DataService} from "../../data.service";
 import {SettingsService} from "../../settings.service";
@@ -9,6 +9,7 @@ import {ToastService} from "../../toast.service";
     selector: 'app-default-color-palette',
     templateUrl: './default-color-palette.component.html',
     styleUrls: ['./default-color-palette.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class DefaultColorPaletteComponent implements OnInit {

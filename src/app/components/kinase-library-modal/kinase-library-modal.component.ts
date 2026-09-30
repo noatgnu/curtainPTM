@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {WebService} from "../../web.service";
 import {KinaseLibraryService} from "../../kinase-library.service";
@@ -7,6 +7,7 @@ import {KinaseLibraryService} from "../../kinase-library.service";
     selector: 'app-kinase-library-modal',
     templateUrl: './kinase-library-modal.component.html',
     styleUrls: ['./kinase-library-modal.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class KinaseLibraryModalComponent implements OnInit {

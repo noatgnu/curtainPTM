@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, effect, EventEmitter, OnInit, Output} from '@angular/core';
+import {ChangeDetectorRef, Component, effect, EventEmitter, OnInit, Output, ChangeDetectionStrategy} from '@angular/core';
 import {ToastService} from "../../toast.service";
 import {DataFrame, fromCSV, IDataFrame, ISeries, Series} from "data-forge";
 import {DataService} from "../../data.service";
@@ -25,6 +25,7 @@ import {environment} from "../../../environments/environment";
     selector: 'app-home',
     templateUrl: './home.component.html',
     styleUrls: ['./home.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class HomeComponent implements OnInit {
@@ -174,6 +175,8 @@ export class HomeComponent implements OnInit {
           }
         }
       })
+    }).catch((error) => {
+      console.error('Failed to initialize home component:', error);
     })
   }
 

@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { DataBlockComponent } from './data-block.component';
 
@@ -8,6 +9,7 @@ describe('DataBlockComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      imports: [ NgbModule ],
       declarations: [ DataBlockComponent ]
     })
     .compileComponents();

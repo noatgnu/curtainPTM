@@ -1,6 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { PlotlyModule } from 'angular-plotly.js';
+import * as PlotlyJS from 'plotly.js-dist-min';
 
 import { ProteinInformationComponent } from './protein-information.component';
+import { ProteinDomainPlotComponent } from '../protein-domain-plot/protein-domain-plot.component';
+
+PlotlyModule.forRoot(PlotlyJS);
 
 describe('ProteinInformationComponent', () => {
   let component: ProteinInformationComponent;
@@ -8,7 +14,8 @@ describe('ProteinInformationComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ProteinInformationComponent ]
+      imports: [ NgbModule ],
+      declarations: [ ProteinInformationComponent, ProteinDomainPlotComponent ]
     })
     .compileComponents();
   });

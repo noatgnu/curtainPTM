@@ -1,10 +1,10 @@
 <p>
-  <b>Functional Description:</b> {{_data["Function [CC]"].replace("FUNCTION: ", "")}}
+  <b>Functional Description:</b> {{_data["Function [CC]"]?.replace("FUNCTION: ", "")}}
   <br>
 </p>
 <app-protein-domain-plot [data]="_data"></app-protein-domain-plot>
 <div class="mt-2">
-  @if (_data['Domain [FT]'].length > 0) {
+  @if (_data['Domain [FT]']?.length > 0) {
     <table class="table table-bordered">
     <thead>
     <tr>
@@ -37,7 +37,7 @@
   }
 </div>
 
-@if (diseases.length > 0 || pharmaUse.length > 0 || _data['Mutagenesis'].length) {
+@if (diseases.length > 0 || pharmaUse.length > 0 || _data['Mutagenesis']?.length) {
   <div class="mt-4">
   <div class="accordion">
     @if (diseases.length > 0) {
@@ -98,7 +98,7 @@
       </div>
     </div>
     }
-    @if (_data['Mutagenesis'].length > 0) {
+    @if (_data['Mutagenesis']?.length > 0) {
       <div class="accordion-item">
       <h2 class="accordion-header" id="mutagenesisHeader">
         <button
@@ -112,7 +112,7 @@
       </h2>
       <div #collapse="ngbCollapse" [(ngbCollapse)]="isMutagenesisCollapse" id="mutagenesisContent" aria-labelledby="mutagenesisHeader">
         <div class="accordion-body">
-          @if (_data['Mutagenesis'].length > 0) {
+          @if (_data['Mutagenesis']?.length > 0) {
             <div>
               <ul>
                 @for (d of _data['Mutagenesis']; track d) {

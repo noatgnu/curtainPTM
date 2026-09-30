@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component } from '@angular/core';
+import { ChangeDetectorRef, Component, ChangeDetectionStrategy } from '@angular/core';
 import {
   NgbActiveModal,
   NgbNav,
@@ -24,6 +24,7 @@ import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
     ReactiveFormsModule
   ],
   templateUrl: './datacite-admin-management.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './datacite-admin-management.component.scss'
 })
 export class DataciteAdminManagementComponent {
@@ -47,7 +48,9 @@ export class DataciteAdminManagementComponent {
         this.dataCiteDraftQuery = data.data
         this.cdr.detectChanges()
       }
-    )
+    ).catch((error) => {
+      console.error('Failed to load DataCite entries:', error);
+    })
     this.searchForm.controls.searchTerm.valueChanges.subscribe((value) => {
       this.changed(this.activeID, value)
     })

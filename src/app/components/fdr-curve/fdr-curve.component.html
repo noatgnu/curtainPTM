@@ -10,22 +10,77 @@
       <i class="bi bi-info-circle me-2 mt-1"></i>
       <div>
         <strong>About FDR Curves</strong>
-        <p class="mb-1 mt-1">Define custom False Discovery Rate thresholds across different fold change values. This allows for more nuanced significance cutoffs than a single global FDR threshold.</p>
+        <p class="mb-1 mt-1">In normal mode, significance uses the p-value and fold change cutoffs and a pasted curve is only drawn. In curve mode, points on or above the curve are significant and volcano groups are labelled above or below the curve.</p>
         <small class="text-muted">
-          <strong>Note:</strong> Enabling this will override standard cutoff annotations on the volcano plot.
+          <strong>Note:</strong> A curve replaces the standard cutoff lines on the volcano plot.
         </small>
       </div>
     </div>
   </div>
 
   <div class="card mb-3">
-    <div class="card-header">
-      <div class="form-check mb-0">
-        <input type="checkbox" class="form-check-input" id="enableFdrCurve" [(ngModel)]="fdrCurveTextEnable">
-        <label class="form-check-label fw-bold" for="enableFdrCurve">
-          Enable Custom FDR Curve
-        </label>
+    <div class="card-header fw-bold">Cutoff Mode</div>
+    <div class="card-body">
+      <div class="row g-2">
+        <div class="col-6">
+          <label for="cutoffMode" class="form-label">Mode</label>
+          <select id="cutoffMode" class="form-select form-select-sm" [(ngModel)]="cutoffMode">
+            <option value="normal">Normal (p-value and fold change)</option>
+            <option value="curve">Curve</option>
+          </select>
+        </div>
+        @if (cutoffMode === 'curve') {
+          <div class="col-6">
+            <label for="curveType" class="form-label">Curve type</label>
+            <select id="curveType" class="form-select form-select-sm" [(ngModel)]="curve.type">
+              <option value="sam">SAM (Perseus s0)</option>
+              <option value="hyperbolic">Hyperbolic</option>
+              <option value="points">Pasted points</option>
+            </select>
+          </div>
+          @if (curve.type === 'sam') {
+            <div class="col-4">
+              <label for="curveC" class="form-label">c (t threshold)</label>
+              <input id="curveC" type="number" class="form-control form-control-sm" [(ngModel)]="curve.c" min="0" step="0.1">
+            </div>
+            <div class="col-4">
+              <label for="curveS0" class="form-label">s0</label>
+              <input id="curveS0" type="number" class="form-control form-control-sm" [(ngModel)]="curve.s0" min="0" step="0.1">
+            </div>
+            <div class="col-4">
+              <label for="curveDf" class="form-label">Degrees of freedom</label>
+              <input id="curveDf" type="number" class="form-control form-control-sm" [(ngModel)]="curve.df" min="1" step="1">
+            </div>
+            <div class="col-12 form-text">Curve where |log2FC| / (s + s0) = c, drawn on -log10(p) of a t-test with n1 + n2 - 2 degrees of freedom.</div>
+          }
+          @if (curve.type === 'hyperbolic') {
+            <div class="col-6">
+              <label for="curveHc" class="form-label">c</label>
+              <input id="curveHc" type="number" class="form-control form-control-sm" [(ngModel)]="curve.c" min="0" step="0.1">
+            </div>
+            <div class="col-6">
+              <label for="curveX0" class="form-label">x0</label>
+              <input id="curveX0" type="number" class="form-control form-control-sm" [(ngModel)]="curve.x0" min="0" step="0.1">
+            </div>
+            <div class="col-12 form-text">Curve y = c / (|log2FC| - x0).</div>
+          }
+        }
       </div>
+    </div>
+  </div>
+
+  <div class="card mb-3">
+    <div class="card-header">
+      @if (cutoffMode === 'curve') {
+        <span class="fw-bold">Pasted Curve Points</span>
+      } @else {
+        <div class="form-check mb-0">
+          <input type="checkbox" class="form-check-input" id="enableFdrCurve" [(ngModel)]="fdrCurveTextEnable">
+          <label class="form-check-label fw-bold" for="enableFdrCurve">
+            Enable Custom FDR Curve
+          </label>
+        </div>
+      }
     </div>
     <div class="card-body">
       <div class="mb-2">
@@ -36,21 +91,25 @@
         <textarea
           class="form-control font-monospace"
           id="entryList"
-          [(ngModel)]="settings.settings.fdrCurveText"
+          [(ngModel)]="fdrCurveText"
           rows="8"
-          [disabled]="!fdrCurveTextEnable"
-          placeholder="x&#9;y&#10;0.0&#9;0.05&#10;1.0&#9;0.01&#10;2.0&#9;0.001"
+          [disabled]="!curvePointsEditable"
+          placeholder="x&#9;y&#10;-2.0&#9;3.1&#10;-1.0&#9;4.5&#10;1.0&#9;4.5&#10;2.0&#9;3.1"
           style="resize: vertical;"></textarea>
         <div class="form-text">
           <i class="bi bi-lightbulb me-1"></i>
-          <strong>Format:</strong> First row should be column headers (x and y). Subsequent rows contain fold change (x) and FDR threshold (y) values separated by tabs.
+          <strong>Format:</strong> First row should be column headers (x and y). Subsequent rows contain log2 fold change (x) and -log10(p-value) (y) of the curve separated by tabs, with negative x for the left curve.
         </div>
       </div>
 
-      @if (!fdrCurveTextEnable) {
+      @if (!curvePointsEditable) {
         <div class="alert alert-warning alert-sm mb-0">
           <i class="bi bi-exclamation-triangle me-1"></i>
-          <small>Enable the FDR curve above to edit the data.</small>
+          @if (cutoffMode === 'curve') {
+            <small>Select the pasted points curve type to edit the data.</small>
+          } @else {
+            <small>Enable the FDR curve above to edit the data.</small>
+          }
         </div>
       }
     </div>

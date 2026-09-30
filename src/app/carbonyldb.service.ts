@@ -29,6 +29,6 @@ export class CarbonyldbService {
           }
         }
       }
-    })
+    }, error => console.error('Failed to load carbonylation database:', error))
   }
 }

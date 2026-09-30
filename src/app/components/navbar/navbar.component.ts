@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, EventEmitter, Input, OnInit, OnDestroy, Output, signal, effect} from '@angular/core';
+import {ChangeDetectorRef, Component, EventEmitter, Input, OnInit, OnDestroy, Output, signal, effect, ChangeDetectionStrategy} from '@angular/core';
 import {WebService} from "../../web.service";
 import {DataService} from "../../data.service";
 import {ScrollService} from "../../scroll.service";
@@ -60,6 +60,7 @@ import {BatchUploadModalComponent} from "../batch-upload-modal/batch-upload-moda
     selector: 'app-navbar',
     templateUrl: './navbar.component.html',
     styleUrls: ['./navbar.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class NavbarComponent implements OnInit, OnDestroy {

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { SaveStateService } from '../../save-state.service';
 import { STATE_CATEGORIES, StateCategory } from '../../interfaces/saved-state.interface';
@@ -7,6 +7,7 @@ import { STATE_CATEGORIES, StateCategory } from '../../interfaces/saved-state.in
   selector: 'app-state-save-dialog',
   standalone: false,
   templateUrl: './state-save-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./state-save-dialog.component.scss'],
 })
 export class StateSaveDialogComponent implements OnInit {

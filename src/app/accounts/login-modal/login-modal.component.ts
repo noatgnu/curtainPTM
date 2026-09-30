@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild, ChangeDetectionStrategy} from '@angular/core';
 import {UntypedFormBuilder, Validators} from "@angular/forms";
 import {AccountsService} from "../accounts.service";
 import {WebService} from "../../web.service";
@@ -12,6 +12,7 @@ import {DataService} from "../../data.service";
   selector: 'app-login-modal',
   templateUrl: './login-modal.component.html',
   styleUrls: ['./login-modal.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class LoginModalComponent implements OnInit, OnDestroy {

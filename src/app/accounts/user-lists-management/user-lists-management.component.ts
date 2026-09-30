@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit, OnDestroy, signal, computed } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, OnDestroy, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { AccountsService } from '../accounts.service';
 import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { Subject } from 'rxjs';
@@ -48,6 +48,7 @@ interface ApiError {
     NgbPagination
   ],
   templateUrl: './user-lists-management.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './user-lists-management.component.scss'
 })
 export class UserListsManagementComponent implements OnInit, OnDestroy {

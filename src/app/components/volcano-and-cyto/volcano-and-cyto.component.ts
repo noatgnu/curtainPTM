@@ -1,4 +1,4 @@
-import {Component, effect, EventEmitter, OnInit, Output} from '@angular/core';
+import {Component, effect, EventEmitter, OnInit, Output, ChangeDetectionStrategy} from '@angular/core';
 import {DataService} from "../../data.service";
 import {selectionData} from "../protein-selections/protein-selections.component";
 import {ScrollService} from "../../scroll.service";
@@ -8,6 +8,7 @@ import {ThemeService} from "../../theme.service";
     selector: 'app-volcano-and-cyto',
     templateUrl: './volcano-and-cyto.component.html',
     styleUrls: ['./volcano-and-cyto.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class VolcanoAndCytoComponent implements OnInit {

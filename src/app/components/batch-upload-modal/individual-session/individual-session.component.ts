@@ -1,4 +1,4 @@
-import {AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
+import {AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ChangeDetectionStrategy} from '@angular/core';
 import {InputFile} from "../../../classes/input-file";
 import {Raw} from "../../../classes/raw";
 import {Differential} from "../../../classes/differential";
@@ -18,6 +18,7 @@ import {ToastService} from "../../../toast.service";
   standalone: false,
   templateUrl: './individual-session.component.html',
   styleUrl: './individual-session.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [
     UniprotService,
     DataService,

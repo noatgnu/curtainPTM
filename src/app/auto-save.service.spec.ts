@@ -1,4 +1,4 @@
-import { TestBed, fakeAsync, tick, discardPeriodicTasks } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { NgZone } from '@angular/core';
 
 import { AutoSaveService } from './auto-save.service';
@@ -9,6 +9,7 @@ describe('AutoSaveService', () => {
 
   beforeEach(() => {
     localStorage.clear();
+    jasmine.clock().install();
 
     TestBed.configureTestingModule({
       providers: [AutoSaveService]
@@ -21,6 +22,7 @@ describe('AutoSaveService', () => {
   afterEach(() => {
     service.ngOnDestroy();
     localStorage.clear();
+    jasmine.clock().uninstall();
   });
 
   it('should be created', () => {
@@ -39,24 +41,21 @@ describe('AutoSaveService', () => {
     expect(service.isEnabled()).toBeFalse();
   });
 
-  it('should enable auto-save when startAutoSave is called', fakeAsync(() => {
+  it('should enable auto-save when startAutoSave is called', () => {
     service.startAutoSave();
     expect(service.isEnabled()).toBeTrue();
-    discardPeriodicTasks();
-  }));
+  });
 
-  it('should disable auto-save when stopAutoSave is called', fakeAsync(() => {
+  it('should disable auto-save when stopAutoSave is called', () => {
     service.startAutoSave();
     service.stopAutoSave();
     expect(service.isEnabled()).toBeFalse();
-    discardPeriodicTasks();
-  }));
+  });
 
-  it('should update interval', fakeAsync(() => {
+  it('should update interval', () => {
     service.setInterval(10);
     expect(service.getIntervalMinutes()).toBe(10);
-    discardPeriodicTasks();
-  }));
+  });
 
   it('should update max auto-saves', () => {
     service.setMaxAutoSaves(10);
@@ -81,16 +80,12 @@ describe('AutoSaveService', () => {
     expect(settings.maxAutoSaves).toBe(8);
   });
 
-  it('should emit autoSaveTrigger when interval fires', fakeAsync(() => {
-    let triggered = false;
-    service.autoSaveTrigger$.subscribe(() => {
-      triggered = true;
-    });
+  it('should emit autoSaveTrigger when interval fires', () => {
+    const initialValue = service.autoSaveTrigger();
 
     service.startAutoSave();
-    tick(5 * 60 * 1000);
+    jasmine.clock().tick(5 * 60 * 1000);
 
-    expect(triggered).toBeTrue();
-    discardPeriodicTasks();
-  }));
+    expect(service.autoSaveTrigger()).toBeGreaterThan(initialValue);
+  });
 });

@@ -11,7 +11,10 @@ describe('CollectionLandingComponent', () => {
 
   const mockAccountsService = {
     curtainAPI: {
-      user: { loginStatus: false },
+      user: {
+        loginStatus: false,
+        loadFromDB: jasmine.createSpy('loadFromDB').and.returnValue(Promise.resolve())
+      },
       getCurtainCollection: jasmine.createSpy('getCurtainCollection').and.returnValue(
         Promise.resolve({
           data: {
@@ -43,6 +46,26 @@ describe('CollectionLandingComponent', () => {
   };
 
   beforeEach(async () => {
+    mockAccountsService.curtainAPI.getCurtainCollection.and.returnValue(
+      Promise.resolve({
+        data: {
+          id: 1,
+          name: 'Test Collection',
+          description: 'Test Description',
+          enable: true,
+          owner: 1,
+          owner_username: 'testuser',
+          curtains: [1, 2],
+          curtain_count: 2,
+          accessible_curtains: [
+            { id: 1, link_id: 'abc123', description: 'Session 1', created: '2024-01-01', curtain_type: 'PTM' }
+          ],
+          created: '2024-01-01',
+          updated: '2024-01-01'
+        }
+      })
+    );
+
     await TestBed.configureTestingModule({
       imports: [CollectionLandingComponent],
       providers: [
@@ -67,7 +90,7 @@ describe('CollectionLandingComponent', () => {
   });
 
   it('should display collection name', async () => {
-    await fixture.whenStable();
+    await component.loadCollection(1);
     fixture.detectChanges();
     expect(component.collection()?.name).toBe('Test Collection');
   });

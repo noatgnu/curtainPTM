@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, EventEmitter, Input, Output, ChangeDetectionStrategy} from '@angular/core';
 import {DataCiteMetadata, ParsedDataCiteData} from "../../data-cite-metadata";
 import {DataciteCitationComponent} from "./datacite-citation/datacite-citation.component";
 import {NgbModal, NgbTooltip} from "@ng-bootstrap/ng-bootstrap";
@@ -11,6 +11,7 @@ import {QuillViewComponent} from "ngx-quill";
     QuillViewComponent
   ],
   templateUrl: './datacite-metadata-display.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './datacite-metadata-display.component.scss'
 })
 export class DataciteMetadataDisplayComponent {

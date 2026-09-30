@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgbDropdownModule, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ThemeService } from '../../theme.service';
@@ -11,6 +11,7 @@ import { AccountsComponent } from '../../accounts/accounts/accounts.component';
   standalone: true,
   imports: [CommonModule, NgbDropdownModule],
   templateUrl: './shared-navbar.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './shared-navbar.component.scss'
 })
 export class SharedNavbarComponent {

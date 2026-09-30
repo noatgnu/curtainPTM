@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild, ChangeDetectionStrategy} from '@angular/core';
 import {NgbActiveModal, NgbTypeahead, NgbTypeaheadSelectItemEvent} from "@ng-bootstrap/ng-bootstrap";
 import {WebService} from "../../web.service";
 import {DataService} from "../../data.service";
@@ -21,6 +21,7 @@ import {FormBuilder} from "@angular/forms";
     selector: 'app-batch-search',
     templateUrl: './batch-search.component.html',
     styleUrls: ['./batch-search.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class BatchSearchComponent implements OnInit {
@@ -128,6 +129,8 @@ export class BatchSearchComponent implements OnInit {
         }
 
       }
+    }).catch((error: any) => {
+      console.error('Failed to load data categories:', error);
     })
 
     this.formCategories.controls["category"].valueChanges.subscribe((value: string|null) => {

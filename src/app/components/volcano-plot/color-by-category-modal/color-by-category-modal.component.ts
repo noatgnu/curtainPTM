@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {DataFrame, IDataFrame} from "data-forge";
 import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
@@ -19,6 +19,7 @@ interface CategoryInfo {
         ReactiveFormsModule
     ],
     templateUrl: './color-by-category-modal.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './color-by-category-modal.component.scss'
 })
 export class ColorByCategoryModalComponent implements OnInit {

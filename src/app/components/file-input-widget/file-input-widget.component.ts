@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy} from '@angular/core';
 import {fromCSV, IDataFrame} from 'data-forge';
 import {InputFile} from "../../classes/input-file";
 
@@ -6,6 +6,7 @@ import {InputFile} from "../../classes/input-file";
     selector: 'app-file-input-widget',
     templateUrl: './file-input-widget.component.html',
     styleUrls: ['./file-input-widget.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class FileInputWidgetComponent implements OnInit {

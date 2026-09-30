@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {FormBuilder} from "@angular/forms";
 
@@ -6,6 +6,7 @@ import {FormBuilder} from "@angular/forms";
     selector: 'app-variant-selection',
     templateUrl: './variant-selection.component.html',
     styleUrls: ['./variant-selection.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class VariantSelectionComponent implements OnInit {

@@ -65,6 +65,19 @@
                   <i class="bi bi-calendar3 me-1"></i>Created: {{session.created | date:'short'}}
                 </div>
               </div>
+              @if (isOwner) {
+                <button
+                  type="button"
+                  class="btn btn-sm btn-outline-danger ms-2"
+                  [disabled]="removingLinkId === session.link_id"
+                  (click)="removeSession(session)">
+                  @if (removingLinkId === session.link_id) {
+                    <span class="spinner-border spinner-border-sm" role="status"></span>
+                  } @else {
+                    <i class="bi bi-x-lg"></i>
+                  }
+                </button>
+              }
             </div>
           </div>
         }

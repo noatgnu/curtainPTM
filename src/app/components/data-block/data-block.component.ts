@@ -1,4 +1,4 @@
-import {Component, effect, Input, OnInit} from '@angular/core';
+import {Component, effect, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {DataFrame, IDataFrame} from "data-forge";
 import {DataService} from "../../data.service";
 import {UniprotService} from "../../uniprot.service";
@@ -12,6 +12,7 @@ import {VariantSelectionComponent} from "../variant-selection/variant-selection.
     selector: 'app-data-block',
     templateUrl: './data-block.component.html',
     styleUrls: ['./data-block.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class DataBlockComponent implements OnInit {
@@ -93,8 +94,7 @@ export class DataBlockComponent implements OnInit {
         residue: "",
         id: r[this.dataService.differentialForm.primaryIDs],
         score: "",
-        significant: (r[this.dataService.differentialForm.significant] >= -Math.log10(this.settingsService.settings.pCutoff)) &&
-          (Math.abs(r[this.dataService.differentialForm.foldChange]) > this.settingsService.settings.log2FCCutoff),
+        significant: this.dataService.isSignificant(r[this.dataService.differentialForm.foldChange], r[this.dataService.differentialForm.significant]),
       };
 
       if (this.dataService.differentialForm.position !== "" && this.dataService.differentialForm.position !== undefined) {

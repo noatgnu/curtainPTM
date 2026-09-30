@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, ChangeDetectionStrategy } from '@angular/core';
 import {SettingsService} from "../../settings.service";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {FormsModule} from "@angular/forms";
@@ -9,6 +9,7 @@ import {FormsModule} from "@angular/forms";
         FormsModule
     ],
     templateUrl: './log-file-modal.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './log-file-modal.component.scss'
 })
 export class LogFileModalComponent {

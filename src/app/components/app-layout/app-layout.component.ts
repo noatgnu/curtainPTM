@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { SharedNavbarComponent } from '../shared-navbar/shared-navbar.component';
@@ -8,6 +8,7 @@ import { SharedNavbarComponent } from '../shared-navbar/shared-navbar.component'
   standalone: true,
   imports: [CommonModule, RouterOutlet, SharedNavbarComponent],
   templateUrl: './app-layout.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './app-layout.component.scss',
 })
 export class AppLayoutComponent {}

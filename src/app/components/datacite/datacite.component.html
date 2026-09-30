@@ -465,13 +465,23 @@
                     </div>
 
                     <div class="col-md-6">
-                      <label class="form-label">Contributor Type</label>
+                      <label class="form-label">Name Type</label>
                       <select class="form-select" formControlName="nameType" required>
                         @for (o of nameTypes; track o) {
                           <option [value]="o">{{o}}</option>
                         }
                       </select>
                       <div class="form-text">Whether or not the contributor is an individual or an organization.</div>
+                    </div>
+
+                    <div class="col-md-6">
+                      <label class="form-label">Contributor Type</label>
+                      <select class="form-select" formControlName="contributorType" required>
+                        @for (o of contributorTypes; track o) {
+                          <option [value]="o">{{o}}</option>
+                        }
+                      </select>
+                      <div class="form-text">The role of the contributor in relation to the resource.</div>
                     </div>
                   </div>
 

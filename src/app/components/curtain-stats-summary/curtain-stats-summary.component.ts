@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import {AccountsService} from "../../accounts/accounts.service";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {ReactiveFormsModule} from "@angular/forms";
@@ -11,6 +11,7 @@ import {PlotlyModule} from "angular-plotly.js";
     PlotlyModule
   ],
   templateUrl: './curtain-stats-summary.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './curtain-stats-summary.component.scss'
 })
 export class CurtainStatsSummaryComponent {
@@ -77,6 +78,8 @@ export class CurtainStatsSummaryComponent {
       })
       this.graphDataCreated.push(weekCreatedData)
       this.graphDataDownload.push(weekDownloadData)
+    }).catch((error) => {
+      console.error('Failed to load stats summary:', error);
     })
   }
 }

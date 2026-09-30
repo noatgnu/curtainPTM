@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {UntypedFormBuilder} from "@angular/forms";
 import {WebService} from "../../web.service";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
@@ -21,6 +21,7 @@ import {ToastService} from "../../toast.service";
     selector: 'app-session-settings',
     templateUrl: './session-settings.component.html',
     styleUrls: ['./session-settings.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class SessionSettingsComponent implements OnInit {

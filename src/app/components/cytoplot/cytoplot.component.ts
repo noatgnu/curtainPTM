@@ -1,4 +1,4 @@
-import {AfterViewInit, ChangeDetectorRef, Component, effect, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
+import {AfterViewInit, ChangeDetectorRef, Component, effect, EventEmitter, Input, OnDestroy, OnInit, Output, ChangeDetectionStrategy} from '@angular/core';
 import cytoscape from "cytoscape";
 import fcose from "cytoscape-fcose";
 import {SettingsService} from "../../settings.service";
@@ -10,6 +10,7 @@ cytoscape.use(fcose);
     selector: 'app-cytoplot',
     templateUrl: './cytoplot.component.html',
     styleUrls: ['./cytoplot.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class CytoplotComponent implements OnInit, AfterViewInit, OnDestroy {

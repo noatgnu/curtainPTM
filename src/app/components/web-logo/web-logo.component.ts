@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild, ChangeDetectionStrategy} from '@angular/core';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {UniprotService} from "../../uniprot.service";
 import {DataService} from "../../data.service";
@@ -9,6 +9,7 @@ declare const logojs: any;
     selector: 'app-web-logo',
     templateUrl: './web-logo.component.html',
     styleUrls: ['./web-logo.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class WebLogoComponent implements OnInit, AfterViewInit {

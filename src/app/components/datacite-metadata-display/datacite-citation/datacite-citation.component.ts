@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 // @ts-ignore
 import * as citation from "@citation-js/core";
 // @ts-ignore
@@ -16,6 +16,7 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
     FormsModule
   ],
   templateUrl: './datacite-citation.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './datacite-citation.component.scss'
 })
 export class DataciteCitationComponent implements OnInit {

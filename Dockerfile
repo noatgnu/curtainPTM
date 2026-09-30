@@ -1,4 +1,4 @@
-FROM node:18-bullseye-slim
+FROM node:22-bookworm-slim
 LABEL maintainer="tphung001@dundee.ac.uk"
 
 ARG BUILD_DATE
@@ -18,7 +18,7 @@ WORKDIR /app/curtainPTM
 RUN sed -i -r "s|https://celsus.muttsu.xyz/|${API_HOST}|" ./src/environments/environment.prod.ts
 RUN sed -i -r "s|APP-5RXLC3W1MS2MOW0F|${ORCID_APPID}|" ./src/environments/environment.prod.ts
 #RUN npm -g config set user root
-RUN npm install --quiet --no-progress -g @angular/cli@14
+RUN npm install --quiet --no-progress -g @angular/cli@22
 RUN npm install
 RUN node_modules/.bin/ng build
 

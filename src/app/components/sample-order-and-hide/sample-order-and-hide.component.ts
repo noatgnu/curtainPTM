@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import {DataService} from "../../data.service";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {SettingsService} from "../../settings.service";
@@ -7,6 +7,7 @@ import {SettingsService} from "../../settings.service";
     selector: 'app-sample-order-and-hide',
     templateUrl: './sample-order-and-hide.component.html',
     styleUrls: ['./sample-order-and-hide.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class SampleOrderAndHideComponent implements OnInit {

@@ -1,10 +1,11 @@
-import {AfterContentInit, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
+import {AfterContentInit, Component, ElementRef, Input, OnInit, ViewChild, ChangeDetectionStrategy} from '@angular/core';
 import {DataService} from "../../data.service";
 
 @Component({
     selector: 'app-draggable-element',
     templateUrl: './draggable-element.component.html',
     styleUrls: ['./draggable-element.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class DraggableElementComponent implements OnInit, AfterContentInit {

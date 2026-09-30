@@ -14,7 +14,7 @@
   <b>Functional description:</b>
   <div style="max-height: 300px; overflow-y: auto">
     <ul>
-      @for (f of _uni['Function [CC]'].split('. '); track f) {
+      @for (f of _uni['Function [CC]']?.split('. ') ?? []; track f) {
         @if (!f.startsWith('{')) {
           <li>
             {{f.replace('FUNCTION: ', '').replace('; ', '')}}

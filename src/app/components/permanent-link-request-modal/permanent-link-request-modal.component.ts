@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import {NgbActiveModal, NgbAlert} from "@ng-bootstrap/ng-bootstrap";
 import {FormBuilder, FormControl, ReactiveFormsModule, Validators} from "@angular/forms";
 import {AccountsService} from "../../accounts/accounts.service";
@@ -15,6 +15,7 @@ import {DatePipe} from "@angular/common";
     DatePipe
   ],
   templateUrl: './permanent-link-request-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './permanent-link-request-modal.component.scss',
 })
 export class PermanentLinkRequestModalComponent implements OnInit {
@@ -61,6 +62,8 @@ export class PermanentLinkRequestModalComponent implements OnInit {
         this.expiryOptions = response.data.expiry_duration_options || []
       }
       this.cdr.detectChanges()
+    }).catch(err => {
+      console.error('Failed to load expiry options:', err)
     })
   }
 

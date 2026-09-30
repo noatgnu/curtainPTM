@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, Input} from '@angular/core';
+import {ChangeDetectorRef, Component, Input, ChangeDetectionStrategy} from '@angular/core';
 import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {AccountsService} from "../../accounts/accounts.service";
 import {WebService} from "../../web.service";
@@ -27,6 +27,7 @@ import {NgClass} from "@angular/common";
     NgClass
   ],
   templateUrl: './datacite.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './datacite.component.scss'
 })
 export class DataciteComponent {
@@ -103,6 +104,7 @@ export class DataciteComponent {
   }
 
   nameTypes: string[] = ["Personal", "Organizational"]
+  contributorTypes: string[] = ["ContactPerson", "DataCollector", "DataCurator", "DataManager", "Distributor", "Editor", "HostingInstitution", "Producer", "ProjectLeader", "ProjectManager", "ProjectMember", "RegistrationAgency", "RegistrationAuthority", "RelatedPerson", "Researcher", "ResearchGroup", "RightsHolder", "Sponsor", "Supervisor", "WorkPackageLeader", "Other"]
   identifierTypes: string[] =  ["ARK", "arXiv", "bibcode", "DOI", "EAN13", "EISSN", "Handle", "IGSN", "ISBN", "ISSN", "ISTC", "LISSN", "LSID", "PMID", "PURL", "UPC", "URL", "URN", "w3id"]
   identifierRelationTypes: string[] = ["Cites", "IsCitedBy", "Compiles", "IsCompiledBy", "Continues", "IsContinuedBy", "Describes", "IsDescribedBy", "Documents", "IsDocumentedBy", "IsDerivedFrom", "IsSourceOf", "HasMetadata", "IsMetadataFor", "HasPart", "IsPartOf", "IsSupplementedBy", "IsSupplementTo", "Obsoletes", "IsObsoletedBy", "References", "IsReferencedBy", "Requires", "IsRequiredBy", "Reviews", "IsReviewedBy", "HasVersion", "IsVersionOf", "IsNewVersionOf", "IsPreviousVersionOf", "IsPublishedIn", "IsVariantFormOf", "IsOriginalFormOf", "IsIdenticalTo", "IsCollectedBy", "Collects"]
   resourceTypes: string[] = ["Audiovisual", "Collection", "DataPaper", "Dataset", "Event", "Image", "InteractiveResource", "Model", "PhysicalObject", "Service", "Software", "Sound", "Text", "Workflow", "Other"]
@@ -188,7 +190,7 @@ export class DataciteComponent {
           ]
         ),
         nameType: ["Personal", Validators.required],
-
+        contributorType: ["Researcher", Validators.required],
       })
     ]),
     descriptions: this.fb.array([
@@ -269,6 +271,8 @@ export class DataciteComponent {
     this.accountsService.curtainAPI.getDataCiteQuota().then((value) => {
       this.dataCiteQuota = value.data.quota
       this.dataCiteMaxQuota = value.data.max_quota
+    }).catch((error) => {
+      console.error('Failed to load DataCite quota:', error);
     })
     for (const c of this.dataCiteForm.controls.creators.controls) {
       for (const n of c.controls.nameIdentifiers.controls) {
@@ -434,18 +438,24 @@ export class DataciteComponent {
     }
 
     if (dataCiteMetadata.relatedIdentifiers) {
-      for (let i = 0; i < dataCiteMetadata.relatedIdentifiers.length; i++) {
-        if (dataCiteMetadata.relatedIdentifiers[i].relationType !== "HasMetadata" && dataCiteMetadata.relatedIdentifiers[i].relationType !== "IsMetadataFor") {
-          delete dataCiteMetadata.relatedIdentifiers[i].relatedMetadataScheme
-          delete dataCiteMetadata.relatedIdentifiers[i].schemeUri
-          delete dataCiteMetadata.relatedIdentifiers[i].schemeType
-        } else {
-          if (dataCiteMetadata.relatedIdentifiers[i].relatedMetadataScheme === "" || dataCiteMetadata.relatedIdentifiers[i].schemeUri === "" || dataCiteMetadata.relatedIdentifiers[i].schemeType === "" || dataCiteMetadata.relatedIdentifiers[i].relatedIdentifier === "") {
-            this.toastService.show("DOI Form Error", "Please fill in all fields for metadata related identifiers", 5000, "error").then()
-            return;
+      dataCiteMetadata.relatedIdentifiers = dataCiteMetadata.relatedIdentifiers.filter(
+        (ri: any) => ri.relatedIdentifier !== "" && ri.relatedIdentifierType !== "" && ri.relationType !== ""
+      )
+      if (dataCiteMetadata.relatedIdentifiers.length === 0) {
+        delete dataCiteMetadata.relatedIdentifiers
+      } else {
+        for (let i = 0; i < dataCiteMetadata.relatedIdentifiers.length; i++) {
+          if (dataCiteMetadata.relatedIdentifiers[i].relationType !== "HasMetadata" && dataCiteMetadata.relatedIdentifiers[i].relationType !== "IsMetadataFor") {
+            delete dataCiteMetadata.relatedIdentifiers[i].relatedMetadataScheme
+            delete dataCiteMetadata.relatedIdentifiers[i].schemeUri
+            delete dataCiteMetadata.relatedIdentifiers[i].schemeType
+          } else {
+            if (dataCiteMetadata.relatedIdentifiers[i].relatedMetadataScheme === "" || dataCiteMetadata.relatedIdentifiers[i].schemeUri === "" || dataCiteMetadata.relatedIdentifiers[i].schemeType === "" || dataCiteMetadata.relatedIdentifiers[i].relatedIdentifier === "") {
+              this.toastService.show("DOI Form Error", "Please fill in all fields for metadata related identifiers", 5000, "error").then()
+              return;
+            }
           }
         }
-
       }
     }
     if (this.form_additional_data.invalid) {
@@ -616,6 +626,7 @@ export class DataciteComponent {
         ]
       ),
       nameType: ["Personal", Validators.required],
+      contributorType: ["Researcher", Validators.required],
     })
     form.controls.nameIdentifiers.controls[0].controls.nameIdentifier.valueChanges.subscribe((value) => {
       if (!value) {

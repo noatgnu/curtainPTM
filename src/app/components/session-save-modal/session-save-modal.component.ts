@@ -1,4 +1,4 @@
-import { Component, Input, signal } from '@angular/core';
+import { Component, Input, signal, ChangeDetectionStrategy } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { FormsModule } from '@angular/forms';
@@ -14,6 +14,7 @@ export interface SessionSaveOptions {
   selector: 'app-session-save-modal',
   imports: [FormsModule],
   templateUrl: './session-save-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './session-save-modal.component.scss',
 })
 export class SessionSaveModalComponent {

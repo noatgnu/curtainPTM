@@ -1,4 +1,4 @@
-import {Component, effect, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, effect, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy} from '@angular/core';
 import {DataService} from "../../data.service";
 import {debounceTime, distinctUntilChanged, map, Observable, OperatorFunction} from "rxjs";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
@@ -15,6 +15,7 @@ export interface selectionData {
     selector: 'app-protein-selections',
     templateUrl: './protein-selections.component.html',
     styleUrls: ['./protein-selections.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class ProteinSelectionsComponent implements OnInit {

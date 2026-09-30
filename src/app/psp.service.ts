@@ -46,7 +46,7 @@ export class PspService {
           }
         }
       }
-    })
+    }, error => console.error('Failed to load phosphorylation PSP database:', error))
     this.http.get("assets/databases/Ubiquitination_PSP.tsv", {responseType: "text", observe: "body"}).subscribe(data => {
       if (data) {
         const lines = data.split("\n")
@@ -71,7 +71,7 @@ export class PspService {
           }
         }
       }
-    })
+    }, error => console.error('Failed to load ubiquitination PSP database:', error))
     this.http.get("assets/databases/Acetylation_PSP.tsv", {responseType: "text", observe: "body"}).subscribe(data => {
       if (data) {
         const lines = data.split("\n")
@@ -96,7 +96,7 @@ export class PspService {
           }
         }
       }
-    })
+    }, error => console.error('Failed to load acetylation PSP database:', error))
     this.http.get("assets/databases/Methylation_PSP.tsv", {responseType: "text", observe: "body"}).subscribe(data => {
       if (data) {
         const lines = data.split("\n")
@@ -121,7 +121,7 @@ export class PspService {
           }
         }
       }
-    })
+    }, error => console.error('Failed to load methylation PSP database:', error))
     this.http.get("assets/databases/Sumoylation_PSP.tsv", {responseType: "text", observe: "body"}).subscribe(data => {
       if (data) {
         const lines = data.split("\n")
@@ -146,7 +146,7 @@ export class PspService {
           }
         }
       }
-    })
+    }, error => console.error('Failed to load sumoylation PSP database:', error))
     this.http.get("assets/databases/Kinase_Substrate_PSP.tsv", {responseType: "text", observe: "body"}).subscribe(data => {
       if (data) {
         const lines = data.split("\n")
@@ -174,7 +174,7 @@ export class PspService {
           }
         }
       }
-    })
+    }, error => console.error('Failed to load kinase-substrate PSP database:', error))
   }
 
 }

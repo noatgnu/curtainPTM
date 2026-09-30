@@ -1,4 +1,4 @@
-import {Component, effect, input, OnInit, signal} from '@angular/core';
+import {Component, effect, input, OnInit, signal, ChangeDetectionStrategy} from '@angular/core';
 import {DataService} from "../../data.service";
 import {Series} from "data-forge";
 import {UniprotService} from "../../uniprot.service";
@@ -12,6 +12,7 @@ import {PlotlyThemeService} from "../../plotly-theme.service";
     selector: 'app-bar-chart',
     templateUrl: './bar-chart.component.html',
     styleUrls: ['./bar-chart.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class BarChartComponent implements OnInit {

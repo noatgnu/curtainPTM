@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {SettingsService} from "../../settings.service";
@@ -11,6 +11,7 @@ import {fromCSV} from "data-forge";
     selector: 'app-data-selection-management',
     templateUrl: './data-selection-management.component.html',
     styleUrls: ['./data-selection-management.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class DataSelectionManagementComponent implements OnInit {

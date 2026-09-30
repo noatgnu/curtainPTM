@@ -2,11 +2,12 @@ import { Injectable, signal } from '@angular/core';
 import {InputFile} from "./classes/input-file";
 import {Raw} from "./classes/raw";
 import {Differential} from "./classes/differential";
-import {DataFrame, IDataFrame} from "data-forge";
+import {DataFrame, fromCSV, IDataFrame} from "data-forge";
 import {debounceTime, distinctUntilChanged, map, Observable, OperatorFunction} from "rxjs";
 import {SettingsService} from "./settings.service";
 import {UniprotService} from "./uniprot.service";
 import {loadFromLocalStorage} from "curtain-web-api";
+import {VolcanoCurve, VolcanoCurvePoint} from "./classes/volcano-curve";
 
 export interface AnnotationEvent {
   id: string | string[];
@@ -256,7 +257,66 @@ export class DataService {
     this.triggerDataClear()
   }
 
+  private volcanoCurveCache: {key: string, curve: VolcanoCurve} | null = null
+
+  /**
+   * Returns true when the volcano plot significance is decided by the curve instead of the p-value and fold change cutoffs.
+   */
+  isCurveMode(): boolean {
+    return this.settings.settings.volcanoCutoffMode === "curve"
+  }
+
+  /**
+   * Parses the pasted curve text into points with numeric x and y.
+   */
+  parseCurvePoints(text: string): VolcanoCurvePoint[] {
+    if (!text || text.trim() === "") {
+      return []
+    }
+    return fromCSV(text).toArray().map((row: any) => ({x: Number(row.x), y: Number(row.y)}))
+  }
+
+  /**
+   * Returns the volcano curve built from the current settings, rebuilt only when the settings change.
+   */
+  getVolcanoCurve(): VolcanoCurve {
+    const parameters = this.settings.settings.volcanoCurve
+    const text = parameters.type === "points" ? this.settings.settings.fdrCurveText : ""
+    const key = JSON.stringify(parameters) + text
+    if (!this.volcanoCurveCache || this.volcanoCurveCache.key !== key) {
+      this.volcanoCurveCache = {key: key, curve: new VolcanoCurve({...parameters}, this.parseCurvePoints(text))}
+    }
+    return this.volcanoCurveCache.curve
+  }
+
+  /**
+   * Returns true when a point passes the active significance cutoff, with y given as -log10(p).
+   */
+  isSignificant(x: number, y: number): boolean {
+    if (this.isCurveMode()) {
+      return this.getVolcanoCurve().isAbove(x, y)
+    }
+    return y >= -Math.log10(this.settings.settings.pCutoff) && Math.abs(x) > this.settings.settings.log2FCCutoff
+  }
+
+  /**
+   * Returns a human readable description of the active significance cutoff.
+   */
+  cutoffDescription(): string {
+    if (this.isCurveMode()) {
+      const description = this.getVolcanoCurve().description()
+      return description ? `above curve ${description}` : "above curve"
+    }
+    return `FC > ${this.settings.settings.log2FCCutoff}, p <= ${this.settings.settings.pCutoff}`
+  }
+
   significantGroup(x: number, y: number) {
+    if (this.isCurveMode()) {
+      const curve = this.getVolcanoCurve()
+      const position = curve.isAbove(x, y) ? "Above curve" : "Below curve"
+      const description = curve.description()
+      return [description ? `${position};${description}` : position, position]
+    }
     const ylog = -Math.log10(this.settings.settings.pCutoff)
     const groups: string[] = []
     let position = ""

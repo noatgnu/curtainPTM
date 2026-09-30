@@ -54,25 +54,27 @@ describe('StringNetworkComponent', () => {
     expect(component.form.dirty).toBe(true);
   });
 
-  it('should load network when loadNetwork is called', () => {
+  it('should load network when loadNetwork is called', async () => {
     stringService.getInteractiveSVGNetwork.and.returnValue(of('<svg>Test SVG</svg>'));
     component.ids = ['TEST1'];
     component.organism = '9606';
 
-    component.loadNetwork();
+    await component.loadNetwork();
 
     expect(stringService.getInteractiveSVGNetwork).toHaveBeenCalled();
   });
 
   it('should handle node click events', () => {
-    spyOn(console, 'log');
     component.handleNodeClick({ nodeId: 'node1', nodeName: 'GENE1', event: new MouseEvent('click') });
-    expect(console.log).toHaveBeenCalledWith('Node clicked:', 'GENE1');
+    expect(component.infoPanelProteinId()).toBe('node1');
+    expect(component.infoPanelEdgeInfo()).toBeNull();
+    expect(component.showInfoPanel()).toBe(true);
   });
 
   it('should handle edge click events', () => {
-    spyOn(console, 'log');
     component.handleEdgeClick({ node1: 'node1', node2: 'node2', event: new MouseEvent('click') });
-    expect(console.log).toHaveBeenCalledWith('Edge clicked:', 'node1', 'node2');
+    expect(component.infoPanelProteinId()).toBeNull();
+    expect(component.infoPanelEdgeInfo()).toEqual({ node1: 'node1', node2: 'node2' });
+    expect(component.showInfoPanel()).toBe(true);
   });
 });

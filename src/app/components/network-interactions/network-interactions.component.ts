@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { DataService } from "../../data.service";
 import { DbStringService } from "../../db-string.service";
 import { InteractomeAtlasService } from "../../interactome-atlas.service";
@@ -48,6 +48,7 @@ const SCORE_DEFINITIONS: ScoreDefinition[] = [
   selector: 'app-network-interactions',
   templateUrl: './network-interactions.component.html',
   styleUrls: ['./network-interactions.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class NetworkInteractionsComponent implements OnInit, OnDestroy {
@@ -464,7 +465,10 @@ export class NetworkInteractionsComponent implements OnInit, OnDestroy {
             uidClasses += " noChange";
           }
 
-          if (r[this.data.differentialForm.significant] >= -Math.log10(this.settings.settings.pCutoff)) {
+          const significant = this.data.isCurveMode()
+            ? this.data.isSignificant(r[this.data.differentialForm.foldChange], r[this.data.differentialForm.significant])
+            : r[this.data.differentialForm.significant] >= -Math.log10(this.settings.settings.pCutoff)
+          if (significant) {
             uidClasses += " significant";
             this.networkStats.significantNodes++;
           } else {

@@ -1,8 +1,14 @@
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
+import { SwUpdate } from '@angular/service-worker';
 import { AppComponent } from './app.component';
 
 describe('AppComponent', () => {
+  const mockSwUpdate = {
+    isEnabled: false,
+    checkForUpdate: jasmine.createSpy('checkForUpdate').and.returnValue(Promise.resolve(false))
+  };
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
@@ -11,6 +17,9 @@ describe('AppComponent', () => {
       declarations: [
         AppComponent
       ],
+      providers: [
+        { provide: SwUpdate, useValue: mockSwUpdate }
+      ]
     }).compileComponents();
   });
 
@@ -20,16 +29,16 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have as title 'curtainPTM2'`, () => {
+  it(`should have as title 'CurtainPTM'`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.title).toEqual('curtainPTM2');
+    expect(app.title).toEqual('CurtainPTM');
   });
 
-  it('should render title', () => {
+  it('should render the router outlet', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.content span')?.textContent).toContain('curtainPTM2 app is running!');
+    expect(compiled.querySelector('router-outlet')).toBeTruthy();
   });
 });

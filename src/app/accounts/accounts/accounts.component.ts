@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { AccountsService } from "../accounts.service";
 import { FormBuilder, FormGroup } from "@angular/forms";
 import { Subject } from "rxjs";
@@ -12,6 +12,7 @@ import { QrcodeModalComponent } from '../../components/qrcode-modal/qrcode-modal
     selector: 'app-accounts',
     templateUrl: './accounts.component.html',
     styleUrls: ['./accounts.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class AccountsComponent implements OnInit, OnDestroy {

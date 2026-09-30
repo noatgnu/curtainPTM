@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { SaveStateService } from '../../save-state.service';
 import { StateMigrationService } from '../../state-migration.service';
@@ -8,6 +8,7 @@ import { SavedState, STATE_CATEGORIES, StateCategory, CURRENT_STATE_VERSION } fr
   selector: 'app-selective-import-dialog',
   standalone: false,
   templateUrl: './selective-import-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./selective-import-dialog.component.scss'],
 })
 export class SelectiveImportDialogComponent implements OnInit {
@@ -41,6 +42,7 @@ export class SelectiveImportDialogComponent implements OnInit {
         this.parsedState = parsed;
       }
     } catch (e) {
+      this.parsedState = null;
       this.parseError = 'Invalid JSON file format';
     }
   }

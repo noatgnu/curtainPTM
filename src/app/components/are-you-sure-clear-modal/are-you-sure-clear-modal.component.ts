@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, ChangeDetectionStrategy } from '@angular/core';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {FormsModule} from "@angular/forms";
 
@@ -16,6 +16,7 @@ interface ClearSetting {
     FormsModule
 ],
     templateUrl: './are-you-sure-clear-modal.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './are-you-sure-clear-modal.component.scss'
 })
 export class AreYouSureClearModalComponent {

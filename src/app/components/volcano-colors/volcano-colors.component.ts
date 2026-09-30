@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { Component, OnInit, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {SettingsService} from "../../settings.service";
 import {FormBuilder} from "@angular/forms";
@@ -8,6 +8,7 @@ import {ToastService} from "../../toast.service";
     selector: 'app-volcano-colors',
     templateUrl: './volcano-colors.component.html',
     styleUrls: ['./volcano-colors.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class VolcanoColorsComponent implements OnInit {

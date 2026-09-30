@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import {WebsocketService} from "../../websocket.service";
 import {FormBuilder, FormControl} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
@@ -10,6 +10,7 @@ import QRCodeStyling, {Options} from "qr-code-styling";
     selector: 'app-collaborate-modal',
     templateUrl: './collaborate-modal.component.html',
     styleUrls: ['./collaborate-modal.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class CollaborateModalComponent implements OnInit {

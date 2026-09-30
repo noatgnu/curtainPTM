@@ -1,10 +1,11 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {PtmDiseasesService} from "../../ptm-diseases.service";
 
 @Component({
     selector: 'app-protein-information',
     templateUrl: './protein-information.component.html',
     styleUrls: ['./protein-information.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class ProteinInformationComponent implements OnInit {

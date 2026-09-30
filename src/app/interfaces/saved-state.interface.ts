@@ -89,7 +89,11 @@ export const STATE_CATEGORIES: StateCategory[] = [
     settingsKeys: [
       'pCutoff',
       'log2FCCutoff',
-      'probabilityFilterMap'
+      'probabilityFilterMap',
+      'volcanoCutoffMode',
+      'volcanoCurve',
+      'fdrCurveText',
+      'fdrCurveTextEnable'
     ]
   },
   {

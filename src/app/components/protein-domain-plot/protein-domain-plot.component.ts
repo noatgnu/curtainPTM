@@ -1,4 +1,4 @@
-import { Component, effect, Input, OnInit } from '@angular/core';
+import { Component, effect, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { WebService } from "../../web.service";
 import { SettingsService } from "../../settings.service";
 import { PlotlyThemeService } from "../../plotly-theme.service";
@@ -20,6 +20,7 @@ type VisualizationType = 'waterfall' | 'segments';
   selector: 'app-protein-domain-plot',
   templateUrl: './protein-domain-plot.component.html',
   styleUrls: ['./protein-domain-plot.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class ProteinDomainPlotComponent implements OnInit {

@@ -1,10 +1,11 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
     selector: 'app-netphos-kinases',
     templateUrl: './netphos-kinases.component.html',
     styleUrls: ['./netphos-kinases.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class NetphosKinasesComponent implements OnInit {

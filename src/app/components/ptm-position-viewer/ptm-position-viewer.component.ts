@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {UniprotService} from "../../uniprot.service";
 import {DataFrame, IDataFrame} from "data-forge";
 import {BiomsaService} from "../../biomsa.service";
@@ -152,6 +152,7 @@ const COLOR_LEGEND: ColorLegendItem[] = [
   selector: 'app-ptm-position-viewer',
   templateUrl: './ptm-position-viewer.component.html',
   styleUrls: ['./ptm-position-viewer.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class PtmPositionViewerComponent implements OnInit {

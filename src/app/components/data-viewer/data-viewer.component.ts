@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {DataFrame, IDataFrame, ISeries, Series} from "data-forge";
 import {FormBuilder} from "@angular/forms";
 import {DataService} from "../../data.service";
@@ -10,6 +10,7 @@ import {ToastService} from "../../toast.service";
     selector: 'app-data-viewer',
     templateUrl: './data-viewer.component.html',
     styleUrls: ['./data-viewer.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class DataViewerComponent implements OnInit {

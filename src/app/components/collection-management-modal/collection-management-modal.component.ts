@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { AccountsService } from '../../accounts/accounts.service';
 import { CommonModule } from '@angular/common';
@@ -29,6 +29,7 @@ interface Collection {
   selector: 'app-collection-management-modal',
   imports: [CommonModule, FormsModule],
   templateUrl: './collection-management-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './collection-management-modal.component.scss',
 })
 export class CollectionManagementModalComponent implements OnInit {

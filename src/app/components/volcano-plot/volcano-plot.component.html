@@ -16,7 +16,11 @@
         <span class="visually-hidden" id="volcanoPlotDescription">
           Volcano plot showing {{graphData.length}} data groups.
           X-axis represents log2 fold change, Y-axis represents -log10 p-value.
-          Significance cutoff: p-value {{settings.settings.pCutoff}}, fold change ±{{settings.settings.log2FCCutoff}}.
+          @if (dataService.isCurveMode()) {
+            Significance cutoff: {{dataService.cutoffDescription()}}.
+          } @else {
+            Significance cutoff: p-value {{settings.settings.pCutoff}}, fold change ±{{settings.settings.log2FCCutoff}}.
+          }
           Click or use keyboard to select data points for detailed analysis.
         </span>
         <plotly-plot

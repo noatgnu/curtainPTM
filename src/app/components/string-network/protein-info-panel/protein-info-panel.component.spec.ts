@@ -81,9 +81,13 @@ describe('ProteinInfoPanelComponent', () => {
 
     const style = component.panelStyle;
 
+    const panelWidth = Math.min(800, window.innerWidth * 0.9);
+    const expectedX = Math.max(10, Math.min(100, window.innerWidth - panelWidth - 20));
+    const expectedY = Math.max(10, Math.min(200, window.innerHeight - 150));
+
     expect(style.position).toBe('fixed');
-    expect(style.left).toBe('100px');
-    expect(style.top).toBe('200px');
+    expect(style.left).toBe(`${expectedX}px`);
+    expect(style.top).toBe(`${expectedY}px`);
     expect(style.display).toBe('block');
   });
 

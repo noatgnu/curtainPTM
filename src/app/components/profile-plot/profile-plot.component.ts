@@ -1,4 +1,4 @@
-import {Component, effect, Input, OnInit} from '@angular/core';
+import {Component, effect, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {DataFrame, IDataFrame} from "data-forge";
 import {DataService} from "../../data.service";
 import {UniprotService} from "../../uniprot.service";
@@ -13,6 +13,7 @@ import {ThemeService} from "../../theme.service";
     selector: 'app-profile-plot',
     templateUrl: './profile-plot.component.html',
     styleUrls: ['./profile-plot.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class ProfilePlotComponent implements OnInit {
@@ -35,6 +36,9 @@ export class ProfilePlotComponent implements OnInit {
   _selected: string[] = []
   @Input() set selected(value: string[]) {
     this._selected = value
+  }
+  get selected(): string[] {
+    return this._selected
   }
 
   graphData: any[] = []

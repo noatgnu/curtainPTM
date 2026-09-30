@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import {FormBuilder, FormControl, Validators} from "@angular/forms";
 import {PtmService} from "../../ptm.service";
 import {SettingsService} from "../../settings.service";
@@ -9,6 +9,7 @@ import {DataService} from "../../data.service";
     selector: 'app-user-ptm-import-management',
     templateUrl: './user-ptm-import-management.component.html',
     styleUrls: ['./user-ptm-import-management.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class UserPtmImportManagementComponent {

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { StatePreview, CategorySummary } from '../../interfaces/saved-state.interface';
 import { SaveStateService } from '../../save-state.service';
 
@@ -6,6 +6,7 @@ import { SaveStateService } from '../../save-state.service';
   selector: 'app-state-preview',
   standalone: false,
   templateUrl: './state-preview.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./state-preview.component.scss'],
 })
 export class StatePreviewComponent implements OnInit {

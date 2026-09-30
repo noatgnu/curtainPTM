@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import {DataService} from "../../data.service";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {SettingsService} from "../../settings.service";
@@ -12,6 +12,7 @@ import {debounceTime, distinctUntilChanged, map, Observable} from "rxjs";
     selector: 'app-sample-annotation',
     templateUrl: './sample-annotation.component.html',
     styleUrls: ['./sample-annotation.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class SampleAnnotationComponent implements OnInit {

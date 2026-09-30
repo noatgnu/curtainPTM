@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, ChangeDetectionStrategy} from '@angular/core';
 import {ToastService} from "../../toast.service";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {DataService} from "../../data.service";
@@ -18,6 +18,7 @@ import {WebService} from "../../web.service";
     selector: 'app-encryption-settings',
     templateUrl: './encryption-settings.component.html',
     styleUrls: ['./encryption-settings.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class EncryptionSettingsComponent {

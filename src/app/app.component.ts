@@ -1,4 +1,4 @@
-import {AfterViewInit, ChangeDetectorRef, Component, OnDestroy} from '@angular/core';
+import {AfterViewInit, ChangeDetectorRef, Component, OnDestroy, ChangeDetectionStrategy} from '@angular/core';
 import {AccountsService} from "./accounts/accounts.service";
 import {SwUpdate} from "@angular/service-worker";
 import {Subscription} from "rxjs";
@@ -12,6 +12,7 @@ import {AnalyticsService} from "./analytics.service";
     selector: 'app-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class AppComponent implements AfterViewInit, OnDestroy {

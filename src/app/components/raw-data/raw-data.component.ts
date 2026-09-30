@@ -1,4 +1,4 @@
-import {Component, effect, Input, OnInit} from '@angular/core';
+import {Component, effect, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {DataFrame, IDataFrame} from "data-forge";
 import {DataService} from "../../data.service";
 import {SettingsService} from "../../settings.service";
@@ -36,6 +36,7 @@ export type SortDirection = 'asc' | 'desc';
   selector: 'app-raw-data',
   templateUrl: './raw-data.component.html',
   styleUrls: ['./raw-data.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class RawDataComponent implements OnInit {
@@ -310,9 +311,7 @@ export class RawDataComponent implements OnInit {
   }
 
   isSignificant(row: any): boolean {
-    const pValue = row[this.dataService.differentialForm.significant];
-    const fcValue = Math.abs(row[this.dataService.differentialForm.foldChange] || 0);
-    return pValue >= this.settings.settings.pCutoff && fcValue >= this.settings.settings.log2FCCutoff;
+    return this.dataService.isSignificant(row[this.dataService.differentialForm.foldChange] || 0, row[this.dataService.differentialForm.significant]);
   }
 
   isArray(value: any): boolean {

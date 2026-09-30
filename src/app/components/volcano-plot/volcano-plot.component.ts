@@ -1,4 +1,4 @@
-import {Component, effect, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, effect, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy} from '@angular/core';
 import {DataFrame, fromCSV, IDataFrame} from "data-forge";
 import {DataService} from "../../data.service";
 import {UniprotService} from "../../uniprot.service";
@@ -150,6 +150,7 @@ export interface PlotlyConfig {
     selector: 'app-volcano-plot',
     templateUrl: './volcano-plot.component.html',
     styleUrls: ['./volcano-plot.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class VolcanoPlotComponent implements OnInit {
@@ -230,18 +231,19 @@ export class VolcanoPlotComponent implements OnInit {
     this.currentColorPosition = currentColors.length < this.settings.settings.defaultColorList.length
       ? currentColors.length : 0
 
-    const fdrCurve = this.getFdrCurve()
     const traces = this.initializeTraces(currentColors)
 
     this.configureAxisRanges()
     this.configureAxisTitles()
+    const fdrCurve = this.getFdrCurve()
 
     this.populateTraces(traces)
     const graphData = this.buildGraphData(traces)
 
+    this.graphLayout.shapes = []
     if (fdrCurve.count() > 0) {
       this.addFdrCurves(fdrCurve, graphData)
-    } else {
+    } else if (!this.dataService.isCurveMode()) {
       this.graphLayout.shapes = this.buildCutoffShapes()
     }
 
@@ -285,6 +287,11 @@ export class VolcanoPlotComponent implements OnInit {
   }
 
   private getFdrCurve(): IDataFrame {
+    if (this.dataService.isCurveMode()) {
+      const xMax = Math.max(Math.abs(this.graphLayout.xaxis.range![0]), Math.abs(this.graphLayout.xaxis.range![1]))
+      const yMax = this.graphLayout.yaxis.range![1]
+      return new DataFrame(this.dataService.getVolcanoCurve().generate(xMax, yMax))
+    }
     if (this.settings.settings.fdrCurveTextEnable && this.settings.settings.fdrCurveText !== "") {
       return fromCSV(this.settings.settings.fdrCurveText)
     }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {SettingsService} from "../../settings.service";
 import {FormBuilder, FormGroup} from "@angular/forms";
@@ -8,6 +8,7 @@ import {DataService} from "../../data.service";
     selector: 'app-sample-condition-assignment-modal',
     templateUrl: './sample-condition-assignment-modal.component.html',
     styleUrls: ['./sample-condition-assignment-modal.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class SampleConditionAssignmentModalComponent implements OnInit {

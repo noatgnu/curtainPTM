@@ -133,13 +133,13 @@
                 <div class="col-6">
                   <label class="form-label small">Min Y</label>
                   <input type="number" class="form-control form-control-sm"
-                         [ngModel]="settings.settings.individualYAxisLimits[currentPrimaryID()]?.barChart?.min"
+                         [ngModel]="$safeNavigationMigration(settings.settings.individualYAxisLimits[currentPrimaryID()]?.barChart?.min)"
                          (ngModelChange)="setIndividualLimit('barChart', 'min', $event)">
                 </div>
                 <div class="col-6">
                   <label class="form-label small">Max Y</label>
                   <input type="number" class="form-control form-control-sm"
-                         [ngModel]="settings.settings.individualYAxisLimits[currentPrimaryID()]?.barChart?.max"
+                         [ngModel]="$safeNavigationMigration(settings.settings.individualYAxisLimits[currentPrimaryID()]?.barChart?.max)"
                          (ngModelChange)="setIndividualLimit('barChart', 'max', $event)">
                 </div>
               </div>
@@ -150,13 +150,13 @@
                 <div class="col-6">
                   <label class="form-label small">Min Y</label>
                   <input type="number" class="form-control form-control-sm"
-                         [ngModel]="settings.settings.individualYAxisLimits[currentPrimaryID()]?.averageBarChart?.min"
+                         [ngModel]="$safeNavigationMigration(settings.settings.individualYAxisLimits[currentPrimaryID()]?.averageBarChart?.min)"
                          (ngModelChange)="setIndividualLimit('averageBarChart', 'min', $event)">
                 </div>
                 <div class="col-6">
                   <label class="form-label small">Max Y</label>
                   <input type="number" class="form-control form-control-sm"
-                         [ngModel]="settings.settings.individualYAxisLimits[currentPrimaryID()]?.averageBarChart?.max"
+                         [ngModel]="$safeNavigationMigration(settings.settings.individualYAxisLimits[currentPrimaryID()]?.averageBarChart?.max)"
                          (ngModelChange)="setIndividualLimit('averageBarChart', 'max', $event)">
                 </div>
               </div>
@@ -167,13 +167,13 @@
                 <div class="col-6">
                   <label class="form-label small">Min Y</label>
                   <input type="number" class="form-control form-control-sm"
-                         [ngModel]="settings.settings.individualYAxisLimits[currentPrimaryID()]?.violinPlot?.min"
+                         [ngModel]="$safeNavigationMigration(settings.settings.individualYAxisLimits[currentPrimaryID()]?.violinPlot?.min)"
                          (ngModelChange)="setIndividualLimit('violinPlot', 'min', $event)">
                 </div>
                 <div class="col-6">
                   <label class="form-label small">Max Y</label>
                   <input type="number" class="form-control form-control-sm"
-                         [ngModel]="settings.settings.individualYAxisLimits[currentPrimaryID()]?.violinPlot?.max"
+                         [ngModel]="$safeNavigationMigration(settings.settings.individualYAxisLimits[currentPrimaryID()]?.violinPlot?.max)"
                          (ngModelChange)="setIndividualLimit('violinPlot', 'max', $event)">
                 </div>
               </div>

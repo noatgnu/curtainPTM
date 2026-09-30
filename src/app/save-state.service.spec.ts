@@ -27,7 +27,8 @@ describe('SaveStateService', () => {
     selectOperationNames: ['Selection 1'],
     differentialForm: { comparisonSelect: null },
     clear: jasmine.createSpy('clear'),
-    loadDataTrigger: new Subject<boolean>()
+    loadDataTrigger: new Subject<boolean>(),
+    triggerLoadData: jasmine.createSpy('triggerLoadData')
   };
 
   const mockAutoSaveService = {

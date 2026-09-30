@@ -9,7 +9,7 @@ import { ToastContainerComponent } from './components/toast-container/toast-cont
 import { FileFormComponent } from './components/file-form/file-form.component';
 import {FileInputWidgetComponent} from "./components/file-input-widget/file-input-widget.component";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import { HTTP_INTERCEPTORS, HttpClient, provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
+import { HTTP_INTERCEPTORS, HttpClient, provideHttpClient, withInterceptorsFromDi, withXhr } from "@angular/common/http";
 import {VolcanoColorsComponent} from "./components/volcano-colors/volcano-colors.component";
 import {VolcanoPlotComponent} from "./components/volcano-plot/volcano-plot.component";
 import {BatchSearchComponent} from "./components/batch-search/batch-search.component";
@@ -151,5 +151,5 @@ import { SelectiveImportDialogComponent } from './components/selective-import-di
         ToastProgressbarComponent,
         ShapesComponent,
         DragDropModule,
-        DataciteMetadataDisplayComponent], providers: [HttpClient, provideHttpClient(withInterceptorsFromDi()), StringNetworkService, provideZonelessChangeDetection()] })
+        DataciteMetadataDisplayComponent], providers: [HttpClient, provideHttpClient(withXhr(), withInterceptorsFromDi()), StringNetworkService, provideZonelessChangeDetection()] })
 export class AppModule { }

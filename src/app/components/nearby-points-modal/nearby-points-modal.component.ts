@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { DataService } from '../../data.service';
 import { SettingsService } from '../../settings.service';
@@ -27,6 +27,7 @@ interface DataPoint {
   selector: 'app-nearby-points-modal',
   templateUrl: './nearby-points-modal.component.html',
   styleUrls: ['./nearby-points-modal.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class NearbyPointsModalComponent {

@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit, OnDestroy, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, OnDestroy, signal, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AccountsService } from '../../accounts/accounts.service';
 import { CurtainCollection, AccessibleCurtain } from 'curtain-web-api';
@@ -12,6 +12,7 @@ import { environment } from '../../../environments/environment';
   selector: 'app-collection-landing',
   imports: [CommonModule, NgbProgressbarModule],
   templateUrl: './collection-landing.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './collection-landing.component.scss',
 })
 export class CollectionLandingComponent implements OnInit, OnDestroy {

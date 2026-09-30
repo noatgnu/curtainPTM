@@ -26,7 +26,7 @@ export class PtmDiseasesService {
           position: r[6],
         })
       }
-    })
+    }, error => console.error('Failed to load PTM diseases database:', error))
   }
 
   getPTMDiseases(acc: string) {

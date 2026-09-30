@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { ProteinSelectionsComponent } from './protein-selections.component';
 
@@ -8,6 +9,7 @@ describe('ProteinSelectionsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      imports: [ NgbModule ],
       declarations: [ ProteinSelectionsComponent ]
     })
     .compileComponents();

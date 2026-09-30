@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewChild, signal } from '@angular/core';
+import { Component, Input, OnInit, ViewChild, signal, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { UniprotService } from '../../uniprot.service';
 import { DataService } from '../../data.service';
@@ -11,6 +11,7 @@ import { InteractiveNetworkComponent, NetworkColorMap, NodeClickEvent, EdgeClick
   selector: 'app-string-network',
   templateUrl: './string-network.component.html',
   styleUrl: './string-network.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class StringNetworkComponent implements OnInit {

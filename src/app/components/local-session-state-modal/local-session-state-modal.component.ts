@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { SaveStateService } from "../../save-state.service";
 import { AutoSaveService } from "../../auto-save.service";
 import { NgbActiveModal, NgbModal } from "@ng-bootstrap/ng-bootstrap";
@@ -10,6 +10,7 @@ import { SelectiveImportDialogComponent } from '../selective-import-dialog/selec
   selector: 'app-local-session-state-modal',
   templateUrl: './local-session-state-modal.component.html',
   styleUrls: ['./local-session-state-modal.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class LocalSessionStateModalComponent implements OnInit {

@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {WebService} from "../../web.service";
 import {UniprotService} from "../../uniprot.service";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
@@ -7,6 +7,7 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
     selector: 'app-kinase-info',
     templateUrl: './kinase-info.component.html',
     styleUrls: ['./kinase-info.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class KinaseInfoComponent implements OnInit {

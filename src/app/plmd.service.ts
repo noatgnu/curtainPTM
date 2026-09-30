@@ -31,7 +31,7 @@ export class PlmdService {
           }
         }
       }
-    })
+    }, error => console.error('Failed to load ubiquitination PLMD database:', error))
     this.http.get("assets/databases/Methylation_PLMD.tsv", {responseType: "text", observe: "body"}).subscribe(data => {
       if (data) {
         const lines = data.split("\n")
@@ -51,7 +51,7 @@ export class PlmdService {
           }
         }
       }
-    })
+    }, error => console.error('Failed to load methylation PLMD database:', error))
     this.http.get("assets/databases/Acetylation_PLMD.tsv", {responseType: "text", observe: "body"}).subscribe(data => {
       if (data) {
         const lines = data.split("\n")
@@ -71,6 +71,6 @@ export class PlmdService {
           }
         }
       }
-    })
+    }, error => console.error('Failed to load acetylation PLMD database:', error))
   }
 }

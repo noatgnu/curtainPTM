@@ -1,4 +1,5 @@
 import {Project} from "./project";
+import {VolcanoCurveParameters} from "./volcano-curve";
 
 export class Settings {
   fetchUniprot: boolean = true
@@ -20,6 +21,14 @@ export class Settings {
   currentID: string = ""
   fdrCurveText: string = ""
   fdrCurveTextEnable: boolean = false
+  volcanoCutoffMode: string = "normal"
+  volcanoCurve: VolcanoCurveParameters = {
+    type: "sam",
+    c: 2,
+    s0: 0.1,
+    df: 4,
+    x0: 0.5,
+  }
   project: Project = new Project()
   sampleOrder: any = {}
   sampleVisible: any = {}

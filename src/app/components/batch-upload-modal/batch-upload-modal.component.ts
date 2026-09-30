@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import {Settings} from "../../classes/settings";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {fromCSV} from "data-forge";
@@ -13,6 +13,7 @@ import {ToastService} from "../../toast.service";
   selector: 'app-batch-upload-modal',
   standalone: false,
   templateUrl: './batch-upload-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './batch-upload-modal.component.scss',
 })
 export class BatchUploadModalComponent {

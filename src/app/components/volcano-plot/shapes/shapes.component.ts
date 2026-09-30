@@ -1,4 +1,4 @@
-import {Component, effect, EventEmitter, Output} from '@angular/core';
+import {Component, effect, EventEmitter, Output, ChangeDetectionStrategy} from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule} from "@angular/forms";
 import {SettingsService} from "../../../settings.service";
 import {ColorPickerDirective} from "ngx-color-picker";
@@ -11,6 +11,7 @@ import {DataService} from "../../../data.service";
         ReactiveFormsModule
     ],
     templateUrl: './shapes.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './shapes.component.scss'
 })
 export class ShapesComponent {
