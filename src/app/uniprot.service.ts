@@ -31,7 +31,7 @@ export class UniprotService {
     const parser = new Parser(5, "accession,id,gene_names,protein_name,organism_name,organism_id,length,cc_subcellular_location,sequence,ft_var_seq,cc_alternative_products,ft_domain,xref_string,ft_mod_res,cc_function,cc_disease,cc_pharmaceutical,ft_mutagen,xref_mim")
     accList.sort(() => Math.random() - 0.5);
     try {
-      const res = await parser.parse(accList, 5000)
+      const res = await parser.parse(accList, 1000)
       let currentRun = 1
       let totalRun = 0
       let currentSegment = 0
