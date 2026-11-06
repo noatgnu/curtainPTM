@@ -744,7 +744,11 @@
                   <div class="row g-3 mb-3">
                     <div class="col-md-6">
                       <label class="form-label" for="descType{{index}}">Description Type</label>
-                      <input class="form-control" id="descType{{index}}" formControlName="descriptionType" required readonly>
+                      <select class="form-select" id="descType{{index}}" formControlName="descriptionType" required>
+                        @for (t of descriptionTypes; track t) {
+                          <option [value]="t">{{t}}</option>
+                        }
+                      </select>
                       <div class="form-text">Type of description (abstract, methods, etc.)</div>
                     </div>
                   </div>

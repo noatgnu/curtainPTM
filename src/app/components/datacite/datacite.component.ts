@@ -425,8 +425,9 @@ export class DataciteComponent {
     }
     if (dataCiteMetadata.descriptions) {
       for (let i = 0; i < dataCiteMetadata.descriptions.length; i++) {
-        if (dataCiteMetadata.descriptions[i].description === "") {
+        if (dataCiteMetadata.descriptions[i].description === "" || !this.descriptionTypes.includes(dataCiteMetadata.descriptions[i].descriptionType)) {
           this.toastService.show("DOI Form Error", "Please fill in all fields for metadata descriptions", 5000, "error").then()
+          return;
         }
       }
     }
@@ -711,7 +712,7 @@ export class DataciteComponent {
   addDescription() {
     this.dataCiteForm.controls.descriptions.push(this.fb.group({
       description: ['', Validators.required],
-      descriptionType: ['', Validators.required]
+      descriptionType: ['Other', Validators.required]
     }))
   }
 

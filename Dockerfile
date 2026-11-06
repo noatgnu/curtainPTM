@@ -7,6 +7,7 @@ ARG ORCID_APPID=APP-5RXLC3W1MS2MOW0F
 LABEL build-date=$BUILD_DATE
 
 WORKDIR /app
+ENV PUPPETEER_SKIP_DOWNLOAD=true
 RUN apt-get -y update
 RUN apt-get -y upgrade
 
